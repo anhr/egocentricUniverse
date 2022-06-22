@@ -1,16 +1,16 @@
 <html>
 <head>
-	<title>egocentricUniverse</title>
+	<title>FermatSpiral</title>
 
 	<!--for mobile devices-->
 	<meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
 
 	<meta name="author" content="Andrej Hristoliubov https://github.com/anhr">
 	<!--<link type="text/css" rel="stylesheet" href="https://threejs.org/examples/main.css">-->
-	<link type="text/css" rel="stylesheet" href="../three.js/dev/examples/main.css">
+	<link type="text/css" rel="stylesheet" href="../../../three.js/dev/examples/main.css">
 
-	<!--<script src="../three.js/dev/build/three.js"></script>-->
-	<!--<script src="../three.js/dev/build/three.min.js"></script>-->
+	<!--<script src="../../../three.js/dev/build/three.js"></script>-->
+	<!--<script src="../../../three.js/dev/build/three.min.js"></script>-->
 	<!--<script src="https://raw.githack.com/anhr/three.js/dev/build/three.js"></script>-->
 	<!--<script src="https://raw.githack.com/anhr/three.js/dev/build/three.min.js"></script>-->
 	<!--<script src="https://threejs.org/build/three.js"></script>-->
@@ -19,23 +19,26 @@
 <body>
 	<script nomodule>alert( 'Fatal error: Your browser do not support modular JavaScript code.' );</script>
 	<div id="info">
-		<a href="https://github.com/anhr/egocentricUniverse" target="_blank" rel="noopener">Egocentric Universe</a>.
+		<a href="https://github.com/anhr/egocentricUniverse" target="_blank" rel="noopener">Fermat's spiral</a>.
 		By <a href="https://github.com/anhr" target="_blank" rel="noopener">anhr</a>
 	</div>
 
 	<script type="module">
 
-		import * as THREE from '../three.js/dev/build/three.module.js';
+		import * as THREE from '../../../three.js/dev/build/three.module.js';
 		//import * as THREE from 'https://threejs.org/build/three.module.js';
 		//import * as THREE from 'https://raw.githack.com/anhr/three.js/dev/build/three.module.js';
 
-		import MyThree from '../commonNodeJS/master/myThree/myThree.js';
-		//import MyThree from '../commonNodeJS/master/myThree/build/myThree.module.js';
-		//import MyThree from '../commonNodeJS/master/myThree/build/myThree.module.min.js';
+		import MyThree from '../../../commonNodeJS/master/myThree/myThree.js';
+		//import MyThree from '../../../commonNodeJS/master/myThree/build/myThree.module.js';
+		//import MyThree from '../../../commonNodeJS/master/myThree/build/myThree.module.min.js';
 		MyThree.three.THREE = THREE;
+
+		import FermatSpiral from '../fermatSpiral.js';
 
 		new MyThree( function ( group, options ) {
 
+			const fermatSpiral = new FermatSpiral();
 			const arrayFuncs = [
 				[],//first point. Zero position. White color.
 				[-0.5, 0.5, 0.5],//second point. White color.
@@ -44,7 +47,16 @@
 
 		}, {
 			
-//			title: '<a href="https://github.com/anhr/egocentricUniverse" target="_blank" rel="noopener">Egocentric Universe</a>',
+			player: false,
+			orbitControls: false,
+			stereoEffect: false,
+			scales: {
+
+				x: {},
+				y: {},
+				posAxesIntersection: new THREE.Vector3( -1, -1, -1 ),
+				text: { precision: 1, rect: { displayRect: false, }, }
+			}
 			
 		} );
 
