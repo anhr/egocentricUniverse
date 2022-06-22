@@ -1,6 +1,6 @@
 ﻿/**
  * @module FermatSpiral
- * @description Implementation of Vogel's model of [Fermat's spiral]{@link https://en.wikipedia.org/wiki/Fermat%27s_spiral}
+ * @description Implementation of Vogel's model of [Fermat's spiral]{@link https://en.wikipedia.org/wiki/Fermat's_spiral}.
  * Thanks to [Fermat_Spiral_Vogel_Model]{@link https://github.com/ceme/Fermat_Spiral_Vogel_Model}
  *
  * @author [Andrej Hristoliubov]{@link https://anhr.github.io/AboutMe/}
@@ -16,6 +16,9 @@
 
 class FermatSpiral {
 
+    /**
+     * Implementation of Vogel's model of <a href="https://en.wikipedia.org/wiki/Fermat%27s_spiral" target="_blank">Fermat's spiral</a>.
+     */
     constructor() {
 
         console.log( 'FermatSpiral' );
