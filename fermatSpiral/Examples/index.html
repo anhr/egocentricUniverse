@@ -36,20 +36,26 @@
 
 		import FermatSpiral from '../fermatSpiral.js';
 
-		new MyThree( function ( group, options ) {
+		new MyThree( function ( scene, options ) {
 
-			const fermatSpiral = new FermatSpiral();
-			const arrayFuncs = [
-				[],//first point. Zero position. White color.
-				[-0.5, 0.5, 0.5],//second point. White color.
-			];
-			MyThree.MyPoints( arrayFuncs, group, { options: options } );
+			const fermatSpiral = new FermatSpiral( { count: 50, c: 0.2 } );
+			const indices = fermatSpiral.indices;
+			const mesh = new THREE.Line( new THREE.BufferGeometry().setFromPoints( fermatSpiral.vertices ),
+				new THREE.LineBasicMaterial( { color: "green" } ) );
+/*
+			const mesh = new THREE.Mesh( new MyThree.three.ConvexGeometry( fermatSpiral.vertices ),
+				new THREE.MeshBasicMaterial( { color: "green", wireframe: true } ) );
+*/
+			scene.add( mesh );
+			if ( options.guiSelectPoint ) options.guiSelectPoint.addMesh( mesh );
+//			MyThree.MyPoints( fermatSpiral.vertices, scene, { options: options } );
 
 		}, {
 			
 			player: false,
 			orbitControls: false,
 			stereoEffect: false,
+			//canvasMenu: false,
 			scales: {
 
 				x: {},
