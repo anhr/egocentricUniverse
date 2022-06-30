@@ -15,59 +15,253 @@
 */
 
 import three from '../../commonNodeJS/master/three.js'
+//import { SpriteText } from '../../commonNodeJS/master/SpriteText/SpriteText.js'
 
 class FermatSpiral {
 
 	/**
 	 * Implementation of Vogel's model of <a href="https://en.wikipedia.org/wiki/Fermat%27s_spiral" target="_blank">Fermat's spiral</a>.
 	 * @param {Object} [settings={}] The following settings are available
-	 * @param {Number} [settings.count=500] vertices count.
+	 * @param {Number} [settings.count=500] points count.
 	 * @param {Float} [settings.c=0.01] constant scaling factor.
 	 * @param {Array} [settings.center=[0,0]] center of Vogel's model.
 	 * @param {Number} [settings.center[0]] x position of the center.
 	 * @param {Number} [settings.center[1]] y position of the center.
-	 * @returns An array of Vogel model vertices. Each array element represents a 2D vertex position.
+	 * @param {boolean} [settings.boDisplayVerticeID=false] true - displays on the scene the point ID near to the point.
 	 */
 	constructor( settings = {} ) {
 
-		const vertices = [], indices = [];
+		const points = [], indices = [], THREE = three.THREE;
+		var object;
+		/**
+		* @description
+		* Returns points of the Fermat's spiral.
+		*/
+		this.points;
+		/**
+		* @description
+		* Sets new Fermat's spiral [Object3D]{@link https://threejs.org/docs/index.html?q=mesh#api/en/core/Object3D}.
+		*/
+		this.object;
+		/**
+		* @description
+		* Gets Fermat's spiral [BufferGeometry.index]{@link https://threejs.org/docs/index.html?q=BufferGeometry#api/en/core/BufferGeometry.index}.
+		*/
+		this.indices;
 		Object.defineProperties( this, {
 
-			vertices: {
+			points: {
 
-				get: function () { return vertices; }
+				get: function () { return points; }
 
 			},
+			object: {
 
+				set: function ( objectNew ) {
+
+					object = objectNew;
+					object.userData.fermatSpiral = function ( fParent, dat, options ) {
+
+						if ( fParent.__controllers.length !== 0 ) return;
+
+						//Localization
+		
+						const getLanguageCode = options.getLanguageCode;
+		
+						const lang = {
+
+/*							
+							vertices: 'Vertices',
+							verticesTitle: 'Vertices.',
+							edges: 'Edges',
+							edgesTitle: 'The selected edge lists the vertex indices of the edge.',
+							faces: 'Faces',
+							facesTitle: 'The selected face lists the indexes of the edges of that face.',
+							bodies: 'Bodies',
+							bodiesTitle: 'The selected body lists the indexes of the faces of this body.',
+							objects: 'Objects',
+							objectsTitle: 'The selected object lists the indexes of the objects that this object consists of. It can be indexes of bodies.',
+		
+							position: 'Position',
+		
+							rotation: 'Rotation',
+							rotationPointTitle: 'Rotation point',
+							rotationAxisTitle: 'Rotation axis',
+							rotationPlaneTitle: 'Axes of plane of rotation.',
+							rotationSpaceTitle: 'Axes of space of rotation.',
+							rotationnDSpaceTitle: 'Axes of multi dimensional space of rotation.',
+		
+							defaultButton: 'Default',
+							defaultPositionTitle: 'Restore default position',
+							defaultRotationTitle: 'Restore default rotation',
+
+							displayVerticeID: 'Point ID',
+							displayVerticeIDTitle: 'Display on the scene the point ID near to the point',
+*/
+		
+							notSelected: 'Not selected',
+		
+						};
+		
+						const _languageCode = getLanguageCode();
+		
+						switch ( _languageCode ) {
+		
+							case 'ru'://Russian language
+
+/*								
+								lang.vertices = 'Вершины';
+								lang.verticesTitle = 'Вершины.';
+								lang.edges = 'Ребра';
+								lang.edgesTitle = 'В выбранном ребре перечислены индексы вершин ребра.';
+								lang.faces = 'Грани';
+								lang.facesTitle = 'В выбранной грани перечислены индексы ребер этой грани.';
+								lang.bodies = 'Тела';
+								lang.bodiesTitle = 'В выбранном теле перечислены индексы граней этого тела.';
+								lang.objects = 'Объекты';
+								lang.objectsTitle = 'В выбранном объекте перечислены индексы объектов, из которого состоит этот объект. Это могут быть индексы тел.';
+		
+								lang.position = 'Позиция';
+		
+								lang.rotation = 'Вращение';
+								lang.rotationPointTitle = 'Точка вращения.';
+								lang.rotationAxisTitle = 'Ось вращения.';
+								lang.rotationPlaneTitle = 'Оси плоскости вращения.';
+								lang.rotationSpaceTitle = 'Оси пространства вращения.';
+								lang.rotationnDSpaceTitle = 'Оси многомерного пространства вращения..';
+		
+								lang.defaultButton = 'Восстановить';
+								lang.defaultPositionTitle = 'Восстановить позицию объекта по умолчанию';
+								lang.defaultRotationTitle = 'Восстановить вращение объекта по умолчанию';
+
+								lang.displayVerticeID = 'Номера точек';
+								lang.displayVerticeIDTitle = 'На сцене возле каждой точки показать ее идентификатор';
+*/
+		
+								lang.notSelected = 'Не выбран';
+		
+								break;
+							default://Custom language
+								if ( ( guiParams.lang === undefined ) || ( guiParams.lang.languageCode != _languageCode ) )
+									break;
+		
+								Object.keys( guiParams.lang ).forEach( function ( key ) {
+		
+									if ( lang[key] === undefined )
+										return;
+									lang[key] = guiParams.lang[key];
+		
+								} );
+		
+						}
+//						for ( var i = fParent.__controllers.length - 1; i >= 0; i-- ) { fParent.remove( fParent.__controllers[i] ); }
+/*		
+						settings.boDisplayVerticeID = settings.boDisplayVerticeID || false;
+						const cDisplayVerticeID = fParent.add( settings, 'boDisplayVerticeID' ).onChange( function ( value ) {
+							
+							function displayVerticeID( object, geometry ) {
+
+								if ( !settings.boDisplayVerticeID ) {
+
+									for ( var i = object.children.length - 1; i >= 0; i-- ) {
+
+										const child = object.children[i];
+										if ( child.type === 'Sprite' ) object.remove( child );
+
+									}
+									return;
+
+								}
+								let gp = object.geometry.attributes.position;
+								for ( let i = 0; i < gp.count; i++ ) {
+
+									let p = new THREE.Vector3().fromBufferAttribute( gp, i ); // set p from `position`
+									object.localToWorld( p ); // p has wordl coords
+									const spriteText = new SpriteText( i, p, { group: object } );
+									spriteText.userData.pointID = i;
+
+								}
+
+							}
+							displayVerticeID( object );
+							
+						} );
+						dat.controllerNameAndTitle( cDisplayVerticeID, lang.displayVerticeID, lang.displayVerticeIDTitle );
+*/
+						
+					}
+
+				},
+
+			},
 			indices: {
 
 				get: function () {
 			
 					if ( indices.length > 0 ) return indices;
-					vertices.forEach( ( vertice1, i ) => {
+					points.forEach( ( vertice1, i ) => {
 
-						const edges = [];//индексы четырех вершин, которые ближе всего расположены к текущей вершине
-						edges.push( i );
-						vertices.forEach( ( vertice2, j ) => {
+						const aNear = [];//индексы четырех вершин, которые ближе всего расположены к текущей вершине
+							//aNear[0] индекс текущей вершины,
+							//aNear[1...4] индексы четырех вершин, которые ближе всего расположены к текущей вершине
+						aNear.push( [i] );
+//						aNear[0].iMax = 0;
+						points.forEach( ( vertice2, j ) => {
 
 							if ( i != j ) {
-								
+
 								const distance = vertice1.distanceTo( vertice2 );
-								if ( edges.length < 5 ) edges.push( j );
-								else edges.forEach( ( index, k ) => {
+								function getMax() {
 
-									if ( k != 0 ) {
+									for ( var iMax = 1; iMax < aNear.length; iMax++ ) {
 
-										console.log( 'qqq' );
-										
+										const item = aNear[iMax], maxItem = aNear[aNear[0].iMax];
+										if ( maxItem.distance < item.distance ) aNear[0].iMax = iMax;
+
 									}
 									
-								} );
+								}
+								if ( aNear.length < 5 ) {
+
+									const length = aNear.push( [j] );
+									aNear[length - 1].distance = distance;
+									if ( aNear[0].iMax === undefined ) aNear[0].iMax = length - 1;
+									getMax();
+
+								} else {
+
+									if ( aNear[aNear[0].iMax].distance > distance ) {
+										
+										aNear[aNear[0].iMax] = [j];
+										aNear[aNear[0].iMax].distance = distance;
+										getMax();
+
+									}
+/*										
+									aNear.forEach( ( index, k ) => {
+
+										if ( k != 0 ) {
+
+											if ( distance < index.distance )
+												console.log('qqq')
+
+										}
+
+									} );
+*/									
+									
+								}
 
 							}
+
+						} );
+						const i0 = aNear[0][0];
+						for ( var i = 1; i < aNear.length; i++ ) {
 							
-						} )
-						indices.push( edges );
+							indices.push( i0 );
+							indices.push( aNear[i][0] );
+
+						}
 						
 					} )
 					return indices;
@@ -77,56 +271,122 @@ class FermatSpiral {
 			},
 
 		} );
-		const c = settings.c === undefined ? 0.03 : settings.c,//constant scaling factor
-			center = settings.center || [0,0],
-			golden_angle = 137.508;//140.2554;
+		settings.count = settings.count === undefined ? 500 : settings.count;
+		settings.center = settings.center || [0, 0];
+/*
+		settings.a = settings.a === undefined ? 1 : settings.a;
+		const maxAngle = Math.PI * 2, fiStep = maxAngle / settings.count;
+		for ( var i = 0; i < settings.count; i++ ) {
+
+			const fi = i * fiStep, sqrtFi = Math.sqrt( fi ), r = settings.a * sqrtFi;
+			points[i] = new THREE.Vector3(
+
+				settings.center[0] + r * Math.cos( fi ),
+				settings.center[1] + r * Math.sin( fi )
+
+			);;
+
+		}
+*/
+		settings.c = settings.c === undefined ? 0.03 : settings.c;//constant scaling factor
+		settings.center = settings.center || [0, 0];
+		const golden_angle = 137.508;//140.2554;
 		function angleFermat( n ) { return n * golden_angle; }
-		function radiusFermat( n ) { return c * Math.sqrt( n ); }
+		function radiusFermat( n ) { return settings.c * Math.sqrt( n ); }
 		function describeFermatPoint( n ) { return polarToCartesian( radiusFermat( n ), angleFermat( n ) ); }
 		function createFermatPlot() {
 
-//			const set = [],
 			const l = settings.count === undefined ? 500 : settings.count;
-			for ( var i = 0; i <= l; i++ ) {
+			for ( var i = 0; i < l; i++ ) {
 
-//				set[i] = describeFermatPoint( i );
-				vertices[i] = describeFermatPoint( i );
+				points[i] = describeFermatPoint( i );
 
 			}
-//			return set;
 
 		}
 		function polarToCartesian( radius, angleInDegrees ) {
 
 			const angleInRadians = ( angleInDegrees - 90 ) * Math.PI / 180.0;
 
-			return new three.THREE.Vector3(
+			return new THREE.Vector3(
 				
-				center[0] + ( radius * Math.cos( angleInRadians ) ),
-				center[1] + ( radius * Math.sin( angleInRadians ) )
+				settings.center[0] + ( radius * Math.cos( angleInRadians ) ),
+				settings.center[1] + ( radius * Math.sin( angleInRadians ) )
 				
 			);
-/*			
-			return [
-
-				center[0] + ( radius * Math.cos( angleInRadians ) ),
-				center[1] + ( radius * Math.sin( angleInRadians ) )
-
-			];
-*/
-/*			
-			return {
-
-				x: centerX + ( radius * Math.cos( angleInRadians ) ),
-				y: centerY + ( radius * Math.sin( angleInRadians ) )
-
-			};
-*/			
 			
 		}
-		return createFermatPlot();
+		createFermatPlot();
 
 	}
 }
+
+FermatSpiral.gui = class {
+
+	/** @class
+	 * Custom controllers for implementation of Vogel's model of <a href="https://en.wikipedia.org/wiki/Fermat%27s_spiral" target="_blank">Fermat's spiral</a>.
+	 * @param {Options} options See <b>options</b> parameter of <a href="../../myThree/jsdoc/module-MyThree-MyThree.html" target="_blank">MyThree</a> class.
+	 * @param {GUI} dat [dat.GUI()]{@link https://github.com/dataarts/dat.gui}.
+	 * @param {GUI} fParent parent folder.
+	 * @example new FermatSpiral.gui( options, dat, fMesh );
+	 */
+	constructor( options, dat, fParent ) {
+
+		//Localization
+
+		const getLanguageCode = options.getLanguageCode;
+
+		const lang = {
+
+			fermatSpiral: "Fermat's Spiral",
+			fermatSpiralTitle: "Fermat's Spiral Vogel Model.",
+
+		};
+
+		const _languageCode = getLanguageCode();
+
+		switch ( _languageCode ) {
+
+			case 'ru'://Russian language
+
+				lang.fermatSpiral = 'Спираль Ферма';
+				lang.fermatSpiralTitle = 'Спираль Ферма. Модель Фогеля.';
+
+				break;
+			default://Custom language
+				if ( ( guiParams.lang === undefined ) || ( guiParams.lang.languageCode != _languageCode ) )
+					break;
+
+				Object.keys( guiParams.lang ).forEach( function ( key ) {
+
+					if ( lang[key] === undefined )
+						return;
+					lang[key] = guiParams.lang[key];
+
+				} );
+
+		}
+		const fFermatSpiral = fParent.addFolder( lang.fermatSpiral );
+		dat.folderNameAndTitle( fFermatSpiral, lang.fermatSpiral, lang.fermatSpiralTitle );
+
+		this.object = function ( object, dat, options ) {
+
+			var display = 'none';
+			if ( object && object.userData.fermatSpiral ) {
+
+				display = 'block';
+				object.userData.fermatSpiral( fFermatSpiral, dat, options );
+
+			}
+			fFermatSpiral.domElement.style.display = display;
+
+		}
+
+	}
+
+}
+
+//FermatSpiral.objectType = 'FermatSpiral';
+
 export default FermatSpiral;
 
