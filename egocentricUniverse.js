@@ -37,15 +37,15 @@ class EgocentricUniverse {
 			 * @description Distance between nearest vertices
 			 * @param {float} distance length of the edge
 			 */
-			constructor(distance){}
-			
+			constructor(distance) { }
+
 		}
 
-/*		
-		const vertice = new Vertice();
-		const length = vertice.length;
-		const vertices = [vertice];
-*/  
+		/*		
+				const vertice = new Vertice();
+				const length = vertice.length;
+				const vertices = [vertice];
+		*/
 		/**
 		 * @description array of edges.
 		 * */
@@ -53,128 +53,141 @@ class EgocentricUniverse {
 		/**
 		 * @description array of Vertices.
 		 * */
-		const vertices = new Proxy([], {
+		const vertices = new class {//сделал класс что бы не использовать const vertices внутри new Proxy
 
-			get: function (array, name, proxy, value) {
+			constructor() {
 
-				const i = parseInt(name);
-				if (!isNaN(i)) {
+				const _this = new Proxy([], {
 
-					if (i >= array.length)
-						console.error('EgocentricUniverse: vertices get. Invalid index = ' + i + ' vertices.length = ' + array.length);
-					return array[i];
+					get: function (vertices, name, proxy, value) {
 
-				}
-				switch (name) {
+						const i = parseInt(name);
+						if (!isNaN(i)) {
 
-					case 'push': return (value) => {
+							if (i >= vertices.length)
+								console.error('EgocentricUniverse: vertices get. Invalid index = ' + i + ' vertices.length = ' + vertices.length);
+							return vertices[i];
 
-						//array.push(new Vertice(value));//не хочу добавлять new Vertice(value) непосредственно в array потомучто хочу иметь одно место где создается new Vertice
+						}
+						switch (name) {
 
-						vertices[array.length] = value;
-					
-					};
+							case 'push': return (value) => {
 
-				}
+								//vertices.push(new Vertice(value));//не хочу добавлять new Vertice(value) непосредственно в vertices потомучто хочу иметь одно место где создается new Vertice
 
-				return array[name];
+								_this[vertices.length] = value;
 
-			},
-			set: function (array, name, value) {
-/*
-				switch (name) {
-				
-					case 'out':
-						this.out = value;
-						value.verticesArray = new Float32Array(value.out);
-						value.uint32Array = new Uint32Array(value.out);
-						return true;
-				
-				}
-*/
-				class Vertice {
+							};
 
-					/**
-					 * @description Universe point is array of edge indices to other nearest universe vertices.
-					 * @param {Array|Float} [edges=0] Array - array of edge indices to other nearest universe vertices.
-					 * <pre>
-					 * Float - distance between this vertice and first nearest vertice.
-					 * </pre>
-					 */
-					constructor(edges = []) {
+						}
 
-						if (!(edges instanceof Array)) edges = [edges];
-						return new Proxy(edges, {
+						return vertices[name];
 
-							get: function (edges, name) {
-
-								const i = parseInt(name);
-								if (!isNaN(i)) {
-
-									if (name >= points.length)
-										console.error('EgocentricUniverse: Vertice get. Invalid index = ' + name);
-									//						const j = i * this.out.lengthts.verticesRowlength;
-									const vertice = new VectorWebGPU(this.out, i);
-
-									return vertice;
-
-								}
-								switch (name) {
-
-									case 'length': console.error('EgocentricUniverse: Vertice get. Invalid ' + name); break;
-									case 'isVertice': return true;
-		/*								
-									case 'forEach': return (callback) => {
-									
-										for (let i = 0; i < points.length; i++)callback(points[i], i);
-									
-									}
-									case 'target': return;
-									case 'aNear': return {};
-									default: console.error('EgocentricUniverse: Vertice get. Invalid name: ' + name);
-		*/
-
-								}
-
-								return edges[name];
-
-							},
-							set: function (edges, name, value) {
+					},
+					set: function (vertices, name, value) {
 		/*
-								switch (name) {
-								
-									case 'out':
-										this.out = value;
-										value.verticesArray = new Float32Array(value.out);
-										value.uint32Array = new Uint32Array(value.out);
-										return true;
-								
-								}
-		*/
-								const i = parseInt(name);
-								if (!isNaN(i)) {
-
-									if (name >= points.length)
-										console.error('EgocentricUniverse: Vertice set. Invalid index = ' + name);
-
-								}
-								edges[name] = value;
+						switch (name) {
+										
+							case 'out':
+								this.out = value;
+								value.verticesArray = new Float32Array(value.out);
+								value.uint32Array = new Uint32Array(value.out);
 								return true;
+										
+						}
+		*/
+						class Vertice {
 
-							},
+							/**
+							 * @description Universe point is array of edge indices to other nearest universe vertices.
+							 * @param {Array|Float} [edges=0] Array - array of edge indices to other nearest universe vertices.
+							 * <pre>
+							 * Float - distance between this vertice and first nearest vertice.
+							 * </pre>
+							 */
+							constructor(edges = []) {
 
-						});
+								if (!(edges instanceof Array)) edges = [edges];
+								return new Proxy(edges, {
 
-					}
+									get: function (edges, name) {
 
-				}
-				if ( (value === undefined) || !value.isVertice ) value = new Vertice(value);
-				array[name] = value;
-				return true;
+										const i = parseInt(name);
+										if (!isNaN(i)) {
 
-			},
+											if (name >= points.length)
+												console.error('EgocentricUniverse: Vertice get. Invalid index = ' + name);
+											//						const j = i * this.out.lengthts.verticesRowlength;
+											const vertice = new VectorWebGPU(this.out, i);
 
-		});
+											return vertice;
+
+										}
+										switch (name) {
+
+											case 'length': console.error('EgocentricUniverse: Vertice get. Invalid ' + name); break;
+				/*								
+											case 'isVertice': return true;
+											case 'forEach': return (callback) => {
+											
+												for (let i = 0; i < points.length; i++)callback(points[i], i);
+											
+											}
+											case 'target': return;
+											case 'aNear': return {};
+											default: console.error('EgocentricUniverse: Vertice get. Invalid name: ' + name);
+				*/
+
+										}
+
+										return edges[name];
+
+									},
+									set: function (edges, name, value) {
+										/*
+																switch (name) {
+																
+																	case 'out':
+																		this.out = value;
+																		value.verticesArray = new Float32Array(value.out);
+																		value.uint32Array = new Uint32Array(value.out);
+																		return true;
+																
+																}
+										*/
+										const i = parseInt(name);
+										if (!isNaN(i)) {
+
+											if (name >= points.length)
+												console.error('EgocentricUniverse: Vertice set. Invalid index = ' + name);
+
+										}
+										edges[name] = value;
+										return true;
+
+									},
+
+								});
+
+							}
+
+						}
+/*						
+						if ((value === undefined) || !value.isVertice) value = new Vertice(value);
+						array[name] = value;
+*/						
+						vertices[name] = new Vertice(value);
+						return true;
+
+					},
+
+				});
+				return _this;
+
+			}
+
+		}
+
 		vertices.push(1.1);
 let vertice = vertices[0];
 		vertices.forEach((vertice, i) => console.log(vertices));
