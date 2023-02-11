@@ -59,151 +59,180 @@ class EgocentricUniverse {
 
 		const n = 1;//Universe dimension
 
-		class Edge {
-
-			/**
-			 * @description Distance between nearest vertices
-			 * @param {float} distance length of the edge
-			 */
-			constructor(distance){}
-			
-		}
-
-/*		
-		const vertice = new Vertice();
-		const length = vertice.length;
-		const vertices = [vertice];
-*/  
+		/**
+		 * @description Array of &lt;b>indices&lt;/b> of vertices of the n-dimensional universe.
+		 * &lt;pre>
+		 * &lt;b>Indices&lt;/b> is divided to segments:
+		 * 
+		 * &lt;b>indices[0]&lt;/b> is edges. Every edge is two indexes of the edge's vertices. Used in 1D universe and higher.
+		 * &lt;b>indices[1]&lt;/b> is faces. Every face is three indexes of the edges from &lt;b>indices[0]&lt;/b>. Used in 2D objects and higher.
+		 * &lt;b>indices[2]&lt;/b> is bodies. Every bodie is four face indexes from &lt;b>indices[1]&lt;/b>. Used in 3D objects and higher.
+		 * For example:
+		 * 
+		 * &lt;b>n&lt;/b> = 1 universe is line.
+		 * vertices = [
+		 *	0: Vertice {}//First vertice
+		 *	1: Vertice {}//Second vertice
+		 *	2: Vertice {}//third vertice
+		 * ]
+		 * indices[0] = [
+		 *	//3 edges
+		 *	0: {
+		 *		//First edge
+		 *		disatance: 1,
+		 *		vertices: [
+		 *			1,//index of the second vertice
+		 *			0,//index of the first vertice
+		 *		]
+		 *	},
+		 *	1: {
+		 *		//Second edge
+		 *		disatance: 1,
+		 *		vertices: [
+		 *			2,//index of the third vertice
+		 *			1,//index of the second vertice
+		 *		]
+		 *	},
+		 *	2: {
+		 *		//third edge
+		 *		disatance: 1,
+		 *		vertices: [
+		 *			2,//index of the third vertice
+		 *			0,//index of the first vertice
+		 *		]
+		 *	},
+		 * ]
+		 * &lt;/pre>
+		 */
+		const indices = [];
 		/**
 		 * @description array of edges.
 		 * */
 		const edges = [];
+
 		/**
 		 * @description array of Vertices.
 		 * */
 		const vertices = new Proxy([], {
 
-			get: function (array, name, proxy, value) {
+			get: function (_vertices, name, proxy, value) {
 
 				const i = parseInt(name);
 				if (!isNaN(i)) {
 
-					if (i >= array.length)
-						console.error('EgocentricUniverse: vertices get. Invalid index = ' + i + ' vertices.length = ' + array.length);
-					return array[i];
+					if (i >= _vertices.length)
+						console.error('EgocentricUniverse: vertices get. Invalid index = ' + i + ' vertices.length = ' + _vertices.length);
+					return _vertices[i];
 
 				}
 				switch (name) {
 
-					case 'push': return (value) => {
+					case 'push': return (verticeEdges) => {
 
-						//array.push(new Vertice(value));//не хочу добавлять new Vertice(value) непосредственно в array потомучто хочу иметь одно место где создается new Vertice
+						//vertices.push(new Vertice(verticeEdges);//не хочу добавлять new Vertice(value) непосредственно в vertices потомучто хочу иметь одно место где создается new Vertice
 
-						vertices[array.length] = value;
+//						vertices[_vertices.length] = verticeEdges;
+
+						class Vertice {
+
+
+							/**
+							* @description Universe point is array of edge indices to other nearest universe vertices.
+							* @param {Array|number} [verticeEdges=0] Array - array of edge indices to other nearest universe vertices.
+							* &lt;pre>
+							* number - distance between this vertice and first nearest vertice.
+							* &lt;/pre>
+							*/
+							constructor() {
+
+		//						if (!(verticeEdges instanceof Array)) verticeEdges = [verticeEdges];
+		/*						
+								const verticeEdgesCount = n === 1 ? 2 : undefined;
+								for ( let i = 0; i &lt; verticeEdgesCount; i++ ) {
+
+									let verticeEdge = verticeEdges[i];
+									verticeEdge = verticeEdge || {};
+									if ( verticeEdge.d === undefined ) verticeEdge.d = 1.0;
+							
+									edges.push( verticeEdge.d );
+							
+								}
+		*/
+		/*
+								return new Proxy(verticeEdges, {
+
+									get: function (verticeEdges, name) {
+
+										const i = parseInt(name);
+										if (!isNaN(i)) {
+
+											if (name >= points.length)
+												console.error('EgocentricUniverse: Vertice get. Invalid index = ' + name);
+											const vertice = new VectorWebGPU(this.out, i);
+
+											return vertice;
+
+										}
+										switch (name) {
+
+											case 'length': console.error('EgocentricUniverse: Vertice get. Invalid ' + name); break;
+
+										}
+
+										return verticeEdges[name];
+
+									},
+									set: function (verticeEdges, name, value) {
+										const i = parseInt(name);
+										if (!isNaN(i)) {
+
+											if (name >= points.length)
+												console.error('EgocentricUniverse: Vertice set. Invalid index = ' + name);
+
+										}
+										verticeEdges[name] = value;
+										return true;
+
+									},
+
+								});
+		*/
+
+							}
+
+						}
+		/*						
+						if ((value === undefined) || !value.isVertice) value = new Vertice(value);
+						array[name] = value;
+		*/						
+				
+						const verticeIndex = _vertices.push(new Vertice(value)) - 1;
+
+						//add edge
+						if (verticeIndex > 0) {
+
+							edges.push({
+
+								vertices: [verticeIndex, verticeIndex - 1],
+								disatance: 1.0,
+								
+							});
 					
+						}
+
 					};
 
 				}
 
-				return array[name];
-
-			},
-			set: function (array, name, value) {
-/*
-				switch (name) {
-				
-					case 'out':
-						this.out = value;
-						value.verticesArray = new Float32Array(value.out);
-						value.uint32Array = new Uint32Array(value.out);
-						return true;
-				
-				}
-*/
-				class Vertice {
-
-					/**
-					 * @description Universe point is array of edge indices to other nearest universe vertices.
-					 * @param {Array|Float} [edges=0] Array - array of edge indices to other nearest universe vertices.
-					 * &lt;pre>
-					 * Float - distance between this vertice and first nearest vertice.
-					 * &lt;/pre>
-					 */
-					constructor(edges = []) {
-
-						if (!(edges instanceof Array)) edges = [edges];
-						return new Proxy(edges, {
-
-							get: function (edges, name) {
-
-								const i = parseInt(name);
-								if (!isNaN(i)) {
-
-									if (name >= points.length)
-										console.error('EgocentricUniverse: Vertice get. Invalid index = ' + name);
-									//						const j = i * this.out.lengthts.verticesRowlength;
-									const vertice = new VectorWebGPU(this.out, i);
-
-									return vertice;
-
-								}
-								switch (name) {
-
-									case 'length': console.error('EgocentricUniverse: Vertice get. Invalid ' + name); break;
-									case 'isVertice': return true;
-		/*								
-									case 'forEach': return (callback) => {
-									
-										for (let i = 0; i &lt; points.length; i++)callback(points[i], i);
-									
-									}
-									case 'target': return;
-									case 'aNear': return {};
-									default: console.error('EgocentricUniverse: Vertice get. Invalid name: ' + name);
-		*/
-
-								}
-
-								return edges[name];
-
-							},
-							set: function (edges, name, value) {
-		/*
-								switch (name) {
-								
-									case 'out':
-										this.out = value;
-										value.verticesArray = new Float32Array(value.out);
-										value.uint32Array = new Uint32Array(value.out);
-										return true;
-								
-								}
-		*/
-								const i = parseInt(name);
-								if (!isNaN(i)) {
-
-									if (name >= points.length)
-										console.error('EgocentricUniverse: Vertice set. Invalid index = ' + name);
-
-								}
-								edges[name] = value;
-								return true;
-
-							},
-
-						});
-
-					}
-
-				}
-				if ( (value === undefined) || !value.isVertice ) value = new Vertice(value);
-				array[name] = value;
-				return true;
+				return _vertices[name];
 
 			},
 
 		});
-		vertices.push(1.1);
+
+		vertices.push();
+		vertices.push();
+		vertices.push();
 let vertice = vertices[0];
 		vertices.forEach((vertice, i) => console.log(vertices));
 		
@@ -223,13 +252,13 @@ export default EgocentricUniverse;
 </div>
 
 <nav>
-    <h2><a href="index.html">Home</a></h2><h3>Modules</h3><ul><li><a href="module-EgocentricUniverse.html">EgocentricUniverse</a></li></ul><h3>Classes</h3><ul><li><a href="module-EgocentricUniverse-Edge.html">Edge</a></li><li><a href="module-EgocentricUniverse-EgocentricUniverse.html">EgocentricUniverse</a></li><li><a href="module-EgocentricUniverse-Vertice.html">Vertice</a></li></ul>
+    <h2><a href="index.html">Home</a></h2><h3>Modules</h3><ul><li><a href="module-EgocentricUniverse.html">EgocentricUniverse</a></li></ul><h3>Classes</h3><ul><li><a href="module-EgocentricUniverse-EgocentricUniverse.html">EgocentricUniverse</a></li><li><a href="module-EgocentricUniverse-Vertice.html">Vertice</a></li></ul>
 </nav>
 
 <br class="clear">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 3.6.11</a> on Sat Jan 28 2023 03:04:56 GMT+0700 (Красноярск, стандартное время)
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 3.6.11</a> on Sun Feb 12 2023 05:25:06 GMT+0700 (Красноярск, стандартное время)
 </footer>
 
 <script> prettyPrint(); </script>
