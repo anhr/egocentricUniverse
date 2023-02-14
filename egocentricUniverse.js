@@ -76,22 +76,65 @@ class EgocentricUniverse {
 		 * ]
 		 * </pre>
 		 */
-		const indices = [];
+		const indices = new Proxy([], {
+
+			get: function (_indices, name) {
+
+/*
+				const i = parseInt(name);
+				if (!isNaN(i)) {
+
+					if (i >= _indices.length)
+						console.error('EgocentricUniverse: indices get. Invalid index = ' + i + ' indices.length = ' + _indices.length);
+					return _indices[i];
+
+				}
+*/
+				switch (name) {
+
+					case 'edges': return _indices[0];
+						
+				}
+				console.error('EgocentricUniverse: indices get: invalid name: ' + name);
+				return;// _indices[name];
+
+			},
+			set: function (_indices, name, value) {
+
+				switch (name){
+
+					case 'edges':
+						if (_indices[0] === undefined)
+							_indices[0] = value;
+						break;
+					default: console.error('EgocentricUniverse: indices set: invalid name: ' + name);
+					
+				}
+				return true;
+
+			}
+
+		});
+
 		/**
 		 * @description array of edges.
 		 * */
-		const edges = [];
+		//const edges = [];
 
 		/**
 		 * @description array of Vertices.
-		 * */
+		 **/
 		const vertices = new Proxy([], {
 
-			get: function (_vertices, name, proxy, value) {
+			get: function (_vertices, name) {
 
 				const i = parseInt(name);
 				if (!isNaN(i)) {
 
+/*					
+					console.error('EgocentricUniverse: vertices get. Hidden method: vertices[' + i + ']');
+					return;
+*/	 
 					if (i >= _vertices.length)
 						console.error('EgocentricUniverse: vertices get. Invalid index = ' + i + ' vertices.length = ' + _vertices.length);
 					return _vertices[i];
@@ -99,7 +142,7 @@ class EgocentricUniverse {
 				}
 				switch (name) {
 
-					case 'push': return (verticeEdges) => {
+					case 'push': return () => {
 
 						//vertices.push(new Vertice(verticeEdges);//не хочу добавлять new Vertice(value) непосредственно в vertices потомучто хочу иметь одно место где создается new Vertice
 
@@ -178,15 +221,123 @@ class EgocentricUniverse {
 						array[name] = value;
 		*/						
 				
-						const verticeIndex = _vertices.push(new Vertice(value)) - 1;
+						const verticeIndex = _vertices.push(new Vertice()) - 1;
 
 						//add edge
 						if (verticeIndex > 0) {
 
-							edges.push({
+							/**
+							 * @description array of edges.
+							 * */
+/*							
+indices[0] = [];
+							indices.edges = indices[0];
+*/
+							indices.edges = new Proxy([], {
+
+								get: function (_edges, name) {
+
+					/*
+									const i = parseInt(name);
+									if (!isNaN(i)) {
+									
+										if (i >= _edges.length)
+											console.error('EgocentricUniverse: indices.edges get. Invalid index = ' + i + ' indices.edges.length = ' + _edges.length);
+										return _edges[i];
+									
+									}
+					*/
+									switch (name) {
+
+										case 'push': return (edge) => {
+
+											console.log('EgocentricUniverse: indices.edges.push(' + edge + ')');
+											class Edge {
+
+												constructor(edge) {
+
+													console.log('EgocentricUniverse: indices.edges Edge: ');
+													console.log(edge);
+
+													return new Proxy(edge, {
+
+														get: function (edge, name) {
+
+															const i = parseInt(name);
+															if (!isNaN(i)) {
+
+																if (name >= edge.length)
+																	console.error('EgocentricUniverse: Edge get. Invalid index = ' + name);
+																return edge[name];
+
+															}
+/*
+															switch (name) {
+
+																case 'length': console.error('EgocentricUniverse: Vertice get. Invalid ' + name); break;
+
+															}
+*/
+															return edge[name];
+
+														},
+														set: function (edge, name, value) {
+/*
+															const i = parseInt(name);
+															if (!isNaN(i)) {
+
+																if (name >= edge.length)
+																	console.error('EgocentricUniverse: Edge set. Invalid index = ' + name);
+
+															}
+*/
+															console.error('EgocentricUniverse: Edge set. Hidden method: edges[' + name + '] = ' + value);
+															edge[name] = value;
+															return true;
+
+														},
+
+													});
+
+												}
+											}
+											_edges.push(new Edge(edge));
+											
+										};
+
+									}
+//									console.error('EgocentricUniverse: indices.edges get: invalid name: ' + name);
+									return _edges[name];
+
+								},
+								set: function (_edges, name, value) {
+
+									const i = parseInt(name);
+									if (!isNaN(i)) {
+					
+										console.error('EgocentricUniverse: indices.edges set. Hidden method: edges[' + i + '] = ' + value);
+										_edges[i] = value;
+					
+									}
+/*
+									switch (name) {
+
+										case 'edges':
+											break;
+										default: console.error('EgocentricUniverse: indices.edges set: invalid name: ' + name);
+
+									}
+*/
+									return true;
+
+								}
+
+							});
+//const edges = indices[0];
+							indices.edges.push({
 
 								vertices: [verticeIndex, verticeIndex - 1],
-								disatance: 1.0,
+//								disatance: 1.0,
 								
 							});
 					
@@ -194,19 +345,63 @@ class EgocentricUniverse {
 
 					};
 
-				}
+					//connect the first vertice to the last
+					case 'loop': return () => {
 
+						console.log('connect the first vertice to the last');
+
+					};
+
+				}
+//				console.error('EgocentricUniverse: Vertice get: invalid name: ' + name);
 				return _vertices[name];
 
 			},
+			set: function (_vertices, name, value) {
+
+				const i = parseInt(name);
+				if (!isNaN(i)) {
+
+					console.error('EgocentricUniverse: vertices set. Hidden method: vertices[' + i + '] = ' + value);
+					_vertices[i] = value;
+/*					
+					if (i >= _vertices.length)
+						console.error('EgocentricUniverse: vertices get. Invalid index = ' + i + ' vertices.length = ' + _vertices.length);
+					return _vertices[i];
+*/	 
+
+				}
+/*
+				switch (name) {
+
+					case 'edges':
+						if (_indices[0] === undefined)
+							_indices[0] = value;
+						break;
+					default: console.error('EgocentricUniverse: indices set: invalid name: ' + name);
+
+				}
+*/
+				return true;
+
+			}
 
 		});
 
 		vertices.push();
 		vertices.push();
 		vertices.push();
-let vertice = vertices[0];
-		vertices.forEach((vertice, i) => console.log(vertices));
+//let vertice = vertices[0];
+//vertices[0] = 5;
+		vertices.loop();
+		
+		console.log('\nvertices:');
+		vertices.forEach((vertice, i) => console.log(vertice));
+
+//indices.edges[0] = 67;
+//indices.edges[0].vertices = 35
+		console.log('\nindices.edges:');
+		indices.edges.forEach((edge, i) => console.log(edge));
 		
 	}
 
