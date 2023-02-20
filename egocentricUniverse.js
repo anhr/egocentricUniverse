@@ -160,7 +160,12 @@ class EgocentricUniverse {
 
 																let vertice = _vertices[i];
 //																if ( vertice === undefined ) vertice = 0;//default edge's vertice id is 0
-																if (debug && isNaN(parseInt(vertice))) console.error('EgocentricUniverse: Edge.vertices[' + i + '] get. Invalid vertice index = ' + vertice);
+																if ( debug ) {
+																	
+																	if ( isNaN(parseInt(vertice))) console.error('EgocentricUniverse: Edge.vertices[' + i + '] get. Invalid vertice index = ' + vertice);
+																	else if ( ( vertice < 0 ) || ( vertice >= vertices.length ) ) console.error('EgocentricUniverse: Edge.vertices[' + i + '] get. Vertice index = ' + vertice + ' is limit from 0 to ' + ( vertices.length - 1 ) );
+
+																}
 																return vertice;
 
 															}
