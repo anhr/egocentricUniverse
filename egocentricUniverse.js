@@ -125,108 +125,169 @@ class EgocentricUniverse {
 							}
 
 						}
+
+						function Edge(edge) {
+
+							edge = edge || {};
+							//									if ( !edge ) edge = {};
+							if (edge.isProxy) {
+
+								console.error('EgocentricUniverse: Edge get. Duplicate proxy');
+								return edge;
+
+							}
+							return new Proxy(edge, {
+
+								get: function (edge, name) {
+
+									const i = parseInt(name);
+									if (!isNaN(i)) {
+
+										if (name >= edge.length)
+											console.error('EgocentricUniverse: Edge get. Invalid index = ' + name);
+										return edge[name];
+
+									}
+									switch (name) {
+
+										case 'isProxy': return true;
+										case 'vertices':
+
+											edge.vertices = edge.vertices || [];
+											//													if ( edge.vertices[0] === undefined ) .vertices
+											//													if ( !edge.vertices.length != 2 ) edge.vertices.length = 2;
+											function VerticeIdDebug(i, verticeId) {
+
+												if (!debug) return true;
+
+												if ((i < 0) || (i > 1)) {
+
+													console.error('EgocentricUniverse: Edge.vertices. Vertices index = ' + i + ' is limit from 0 to 1');
+													return false;
+
+												}
+												if (isNaN(parseInt(verticeId))) {
+
+													console.error('EgocentricUniverse: Edge.vertices[' + i + ']. Invalid vertice index = ' + verticeId);
+													return false;
+
+												}
+												if ((verticeId < 0) || (verticeId >= vertices.length)) {
+
+													console.error('EgocentricUniverse: Edge.vertices[' + i + ']. Vertice index = ' + verticeId + ' is limit from 0 to ' + (vertices.length - 1));
+													return false;
+
+												}
+												for (let index = 0; index < 2; index++) {
+
+													if (index === i) return;//не надо сравнивать самого себя
+
+													if (verticeId === edge.vertices[index]) {
+
+														console.error('EgocentricUniverse: Edge.vertices[' + i + ']. Duplicate vertice index = ' + verticeId);
+														return false;
+
+													}
+
+												};
+
+											}
+											const edgeVertices = new Proxy(edge.vertices, {
+
+												get: function (_vertices, name) {
+
+													const i = parseInt(name);
+													if (!isNaN(i)) {
+
+														let vertice = _vertices[i];
+														//VerticeIdDebug( i, vertice );//не делаю проверку здесь потому что проверка уже была при установке значений, а проверка прикаждом обращении будет занимать много времен
+														/*																
+																														if ( debug ) {
+																															
+																															if ( ( i < 0 ) || ( i > 1 ) ) console.error('EgocentricUniverse: Edge.vertices get. Vertices index = ' + i + ' is limit from 0 to 1' );
+																															else if ( isNaN(parseInt(vertice))) console.error('EgocentricUniverse: Edge.vertices[' + i + '] get. Invalid vertice index = ' + vertice);
+																															else if ( ( vertice < 0 ) || ( vertice >= vertices.length ) ) console.error('EgocentricUniverse: Edge.vertices[' + i + '] get. Vertice index = ' + vertice + ' is limit from 0 to ' + ( vertices.length - 1 ) );
+														
+																														}
+														*/
+														return vertice;
+
+													}
+													switch (name) {
+
+														case 'length':
+
+															if (!debug) break;
+															if (_vertices.length > 2) console.error('EgocentricUniverse: Edge.vertices set. Invalid length = ' + _vertices.length);
+														//																	_vertices.length = 2;//each edge have two vertices
+
+													}
+													return _vertices[name];
+
+												},
+												set: function (_vertices, name, value) {
+
+													const i = parseInt(name);
+													if (!isNaN(i)) {
+
+														VerticeIdDebug(i, value);
+														/*																
+																														if ( debug ) {
+														
+																															if ( ( i < 0 ) || ( i > 1 ) ) console.error('EgocentricUniverse: Edge.vertices set. Vertices index = ' + i + ' is limit from 0 to 1' );
+																															else if ( typeof value != "number" ) console.error('EgocentricUniverse: Edge.vertices set. Invalid vertice id = ' + value );
+																															else if ( ( value < 0 ) || ( value > ( vertices.length - 1 ) ) ) console.error('EgocentricUniverse: Edge.vertices set. vertice id = ' + value + ' is limit from 0 to ' + (vertices.length - 1) );
+																															
+																														}
+														*/
+
+													}
+													_vertices[name] = value;
+													return true;
+
+												},
+
+											});
+											for (let i = 0; i < 2; i++) {
+
+												if (edge.vertices[i] === undefined) edgeVertices[i] = i;//default id of vertex.
+												VerticeIdDebug(i, edgeVertices[i]);
+
+											}
+											return edgeVertices;
+
+									}
+									return edge[name];
+
+								},
+								set: function (edge, name, value) {
+
+									//не понятно зачем вывел эту ошибку
+									//console.error('EgocentricUniverse: Edge set. Hidden method: edges[' + name + '] = ' + JSON.stringify(value) );
+
+									edge[name] = value;
+									return true;
+
+								},
+
+							});
+
+						}
+
+						//сразу заменяем все ребра на прокси, потому что в противном случае, когда мы создаем прокси ребра в get, каждый раз,
+						//когда вызывается get, в результате может получться бесконечная вложенная конструкция и появится сообщение об ошибке:
+						//EgocentricUniverse: Edge get. Duplicate proxy
+						for ( let i = 0; i < value.length; i ++ )
+							value[i] = Edge(value[i]);
 						
 						_indices[0] = new Proxy(value, {
 
 							get: function (_edges, name) {
 
-								function Edge(edge) {
-
-									return new Proxy(edge, {
-
-										get: function (edge, name) {
-
-											const i = parseInt(name);
-											if (!isNaN(i)) {
-
-												if (name >= edge.length)
-													console.error('EgocentricUniverse: Edge get. Invalid index = ' + name);
-												return edge[name];
-
-											}
-											switch (name) {
-
-												case 'vertices':
-
-													edge.vertices = edge.vertices || [];
-//													if ( edge.vertices[0] === undefined ) .vertices
-//													if ( !edge.vertices.length != 2 ) edge.vertices.length = 2;
-													const edgeVertices = new Proxy(edge.vertices, {
-
-														get: function (_vertices, name) {
-
-															const i = parseInt(name);
-															if (!isNaN(i)) {
-
-																let vertice = _vertices[i];
-//																if ( vertice === undefined ) vertice = 0;//default edge's vertice id is 0
-																if ( debug ) {
-																	
-																	if ( isNaN(parseInt(vertice))) console.error('EgocentricUniverse: Edge.vertices[' + i + '] get. Invalid vertice index = ' + vertice);
-																	else if ( ( vertice < 0 ) || ( vertice >= vertices.length ) ) console.error('EgocentricUniverse: Edge.vertices[' + i + '] get. Vertice index = ' + vertice + ' is limit from 0 to ' + ( vertices.length - 1 ) );
-
-																}
-																return vertice;
-
-															}
-															switch (name) {
-
-																case 'length':
-
-																	if (!debug) break;
-																	if (_vertices.length > 2) console.error('EgocentricUniverse: Edge.vertices set. Invalid length = ' + _vertices.length);
-//																	_vertices.length = 2;//each edge have two vertices
-
-															}
-															return _vertices[name];
-
-														},
-														set: function (_vertices, name, value) {
-
-															const i = parseInt(name);
-															if (!isNaN(i)) {
-
-																if ( debug ) {
-
-																	if ( ( i < 0 ) || ( i > 1 ) ) console.error('EgocentricUniverse: Edge.vertices set. Vertices index = ' + i + ' is limit from 0 to 1' );
-																	else if ( typeof value != "number" ) console.error('EgocentricUniverse: Edge.vertices set. Invalid vertice id = ' + value );
-																	else if ( ( value < 0 ) || ( value > ( vertices.length - 1 ) ) ) console.error('EgocentricUniverse: Edge.vertices set. vertice id = ' + value + ' is limit from 0 to ' + (vertices.length - 1) );
-																	
-																}
-
-															}
-															_vertices[name] = value;
-															return true;
-
-														},
-
-													});
-													for ( let i = 0; i < 2; i++ )
-														if ( edge.vertices[i] === undefined ) edgeVertices[i] = i;//default id of vertex.
-													return edgeVertices;
-
-											}
-											return edge[name];
-
-										},
-										set: function (edge, name, value) {
-
-											console.error('EgocentricUniverse: Edge set. Hidden method: edges[' + name + '] = ' + value);
-											edge[name] = value;
-											return true;
-
-										},
-
-									});
-
-								}
-
 								const i = parseInt(name);
-								if (!isNaN(i)) {
-
-									return Edge(_edges[i]);
-
-								}
+								if (!isNaN(i))
+									return _edges[i];
+									//return Edge(_edges[i]);//не надо в get создавать прокси, потомучто он будет создаваться каждый раз, когда вызывается get, в результате может получться бесконечная вложенная конструкция
 
 								switch (name) {
 
@@ -427,18 +488,29 @@ class EgocentricUniverse {
 			case 1://1D universe.
 				indices.edges = [
 					
-					{
+					{//0
 					
-						vertices: [5]
+						//vertices: [0,2]
 						
-					}
+					},
+					//{},//1
 								
 				];
+				indices.edges.push();
+
+				//debug
+				
 				//indices.edges = [];//test for duplicate edges array
-				const edge = indices.edges[0];
-				const edgeVertices = edge.vertices;
-				edgeVertices.forEach( ( vertice, i ) => console.log( 'indices.edges[0].vertices[' + i + '] = ' + vertice ) );
-				//edgeVertices[1] = 3;
+				indices.edges.forEach( ( edge, edgeIndex ) => {
+
+//					const edge = edges[0];
+					const edgeVertices = edge.vertices;
+					const edgeVerticeId = edgeVertices[0];
+					edgeVertices.forEach( ( vertice, i ) => console.log( 'indices.edges[' + edgeIndex + '].vertices[' + i + '] = ' + vertice ) );
+					//edgeVertices[1] = 2;
+					
+				} );
+				
 				break;
 			default: console.error('Invalid universe dimension n = ' + n);
 				return;
