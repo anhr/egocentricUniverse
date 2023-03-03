@@ -126,20 +126,35 @@ class EgocentricUniverse {
 
 						}
 
-						function Edge(edge) {
+						function Edge(edge, edges, edgeIndex) {
 
 							edge = edge || {};
-							//									if ( !edge ) edge = {};
-							if (edge.isProxy) {
-
-								console.error('EgocentricUniverse: Edge get. Duplicate proxy');
-								return edge;
-
-							}
 
 							//edge vertices
 							
 							edge.vertices = edge.vertices || [];
+							if ( debug ) {
+								
+								if (edge.isProxy) {
+	
+									console.error('EgocentricUniverse: Edge. Duplicate proxy');
+									return edge;
+	
+								}
+								if ( edge instanceof Array ) {
+
+									console.error('EgocentricUniverse: Edge. Invalid edge instance' );
+									return false;
+
+								}
+								if ( !( edge.vertices instanceof Array  ) ) {
+
+									console.error('EgocentricUniverse: Edge. Invalid edge.vertices instance' );
+									return false;
+
+								}
+
+							}
 							function IdDebug(i) {
 
 								if (!debug) return true;
@@ -165,8 +180,9 @@ class EgocentricUniverse {
 									return false;
 
 								}
-								if ((verticeId < 0) || (verticeId >= vertices.length)) {
+								if ( (verticeId < 0) || (verticeId >= vertices.length) ) {
 
+//									if ( verticeId === 0 )
 									console.error('EgocentricUniverse: Edge.vertices[' + i + ']. Vertice index = ' + verticeId + ' is limit from 0 to ' + (vertices.length - 1));
 									return false;
 
@@ -192,6 +208,24 @@ class EgocentricUniverse {
 								VerticeIdDebug(i, edge.vertices[i]);
 
 							}
+							edges = edges || indices.edges;
+							if ( debug )
+								//edges.forEach( ( edgeCur, edgeCurIndex ) =>
+								for ( let edgeCurIndex = ( edgeIndex === undefined ) ? 0 : edgeIndex; edgeCurIndex < edges.length; edgeCurIndex++ ) {
+
+									 //Не сравнивать одно и тоже ребро
+									if( ( edgeIndex === undefined ) || ( edgeIndex !== edgeCurIndex ) ) {
+
+										const edgeCur = edges[edgeCurIndex];
+										const vertices = edge.vertices, verticesCur = edgeCur.vertices;
+										if (
+											( vertices[0] === verticesCur[0] ) && ( vertices[1] === verticesCur[1] ) ||
+											( vertices[1] === verticesCur[0] ) && ( vertices[0] === verticesCur[1] )
+										)
+											console.error('EgocentricUniverse: Duplicate edge. Vertices = ' + vertices );
+									}
+										
+								}
 							edge.vertices = new Proxy(edge.vertices, {
 
 								get: function (_vertices, name) {
@@ -267,12 +301,12 @@ class EgocentricUniverse {
 							});
 
 						}
-
+						
 						//сразу заменяем все ребра на прокси, потому что в противном случае, когда мы создаем прокси ребра в get, каждый раз,
 						//когда вызывается get, в результате может получться бесконечная вложенная конструкция и появится сообщение об ошибке:
 						//EgocentricUniverse: Edge get. Duplicate proxy
 						for ( let i = 0; i < value.length; i ++ )
-							value[i] = Edge(value[i]);
+							value[i] = Edge(value[i], value, i);
 						
 						_indices[0] = new Proxy(value, {
 
@@ -312,6 +346,13 @@ class EgocentricUniverse {
 
 						});
 						//value.forEach( edge => indices.edges.push( edge ) )
+/*
+						//сразу заменяем все ребра на прокси, потому что в противном случае, когда мы создаем прокси ребра в get, каждый раз,
+						//когда вызывается get, в результате может получться бесконечная вложенная конструкция и появится сообщение об ошибке:
+						//EgocentricUniverse: Edge get. Duplicate proxy
+						for ( let i = 0; i < indices.edges.length; i ++ )
+							indices.edges[i] = Edge(indices.edges[i]);
+*/						
 						break;
 					default: console.error('EgocentricUniverse: indices set: invalid name: ' + name);
 					
@@ -475,34 +516,35 @@ class EgocentricUniverse {
 		//n = 1. Одномерная вселенная. Минимаьное количество вершин равно 3, фигура - треугольник, вписанный в окружность
 		//n = 2. Двумерная  вселенная. Минимаьное количество вершин равно 4, фигура - тетраэдр tetrahedron или пирамида, вписанная в сферу. https://en.wikipedia.org/wiki/Tetrahedron
 		//n = 3. Трехмерная вселенная. Минимаьное количество вершин равно 5, фигура - пятияче́йник 5-cell, или пентахор pentachoron, pentatope, pentahedroid, or tetrahedral pyramid https://en.wikipedia.org/wiki/5-cell, вписанный в трёхмерную сферу или 3-sphere https://en.wikipedia.org/wiki/3-sphere
-		for ( let i = 0; i < n + 3; i++ )
+		for ( let i = 0; i < n + 2; i++ )
 			vertices.push();
+		
 		switch( n ){
 
 			case 1://1D universe.
 				indices.edges = [
 					
-					{//0
-					
-						//vertices: [0,2]
-						
-					},
-					//{},//1
+					{ vertices: [0,1] },//0
+					{ vertices: [0,2] },//1
+					{ vertices: [2,1] },//2
 								
 				];
-				indices.edges.push();
 
 				//debug
 				
+				//indices.edges.push({});//Error: EgocentricUniverse: Duplicate edge. Vertices = 0,1
+				//indices.edges.push({ vertices: [1,0] });//Error: EgocentricUniverse: Duplicate edge. Vertices = 1,0
+				//indices.edges.push({ vertices: [1,2] });
 				//indices.edges = [];//test for duplicate edges array
 				indices.edges.forEach( ( edge, edgeIndex ) => {
 
-					//indices.edges[0] = edge;
+					//indices.edges[0] = edge;//Error: EgocentricUniverse: indices.edges set. Hidden method: edges[0] = {"vertices":[0,1]}
+					//indices.edges.push(edge);//Error: EgocentricUniverse: Edge. Duplicate proxy
 					const edgeVertices = edge.vertices;
 					//edge.vertices = edgeVertices;
 					const edgeVerticeId = edgeVertices[0];
 					edgeVertices.forEach( ( vertice, i ) => console.log( 'indices.edges[' + edgeIndex + '].vertices[' + i + '] = ' + vertice ) );
-					edgeVertices[1] = 2;
+					//edgeVertices[1] = 2;
 					
 				} );
 				
