@@ -182,9 +182,13 @@ class EgocentricUniverse {
 								}
 								if ( (verticeId < 0) || (verticeId >= vertices.length) ) {
 
-//									if ( verticeId === 0 )
-									console.error('EgocentricUniverse: Edge.vertices[' + i + ']. Vertice index = ' + verticeId + ' is limit from 0 to ' + (vertices.length - 1));
-									return false;
+									if ( verticeId === vertices.length ) vertices.push();
+									else {
+										
+										console.error('EgocentricUniverse: Edge.vertices[' + i + ']. Vertice index = ' + verticeId + ' is limit from 0 to ' + (vertices.length - 1));
+										return false;
+
+									}
 
 								}
 								for (let index = 0; index < 2; index++) {
@@ -516,9 +520,10 @@ class EgocentricUniverse {
 		//n = 1. Одномерная вселенная. Минимаьное количество вершин равно 3, фигура - треугольник, вписанный в окружность
 		//n = 2. Двумерная  вселенная. Минимаьное количество вершин равно 4, фигура - тетраэдр tetrahedron или пирамида, вписанная в сферу. https://en.wikipedia.org/wiki/Tetrahedron
 		//n = 3. Трехмерная вселенная. Минимаьное количество вершин равно 5, фигура - пятияче́йник 5-cell, или пентахор pentachoron, pentatope, pentahedroid, or tetrahedral pyramid https://en.wikipedia.org/wiki/5-cell, вписанный в трёхмерную сферу или 3-sphere https://en.wikipedia.org/wiki/3-sphere
+/*		
 		for ( let i = 0; i < n + 2; i++ )
 			vertices.push();
-		
+*/		
 		switch( n ){
 
 			case 1://1D universe.
@@ -542,7 +547,7 @@ class EgocentricUniverse {
 					//indices.edges.push(edge);//Error: EgocentricUniverse: Edge. Duplicate proxy
 					const edgeVertices = edge.vertices;
 					//edge.vertices = edgeVertices;
-					const edgeVerticeId = edgeVertices[0];
+//					const edgeVerticeId = edgeVertices[0];
 					edgeVertices.forEach( ( vertice, i ) => console.log( 'indices.edges[' + edgeIndex + '].vertices[' + i + '] = ' + vertice ) );
 					//edgeVertices[1] = 2;
 					
@@ -558,12 +563,12 @@ class EgocentricUniverse {
 //		vertices.loop();
 		
 		console.log('\nvertices:');
-		vertices.forEach((vertice, i) => console.log(vertice));
+		vertices.forEach((vertice, i) => console.log('vertice id = ' + i + '. ' + JSON.stringify( vertice )));
 
 //indices.edges[0] = 67;
 //indices.edges[0].vertices = 35
 		console.log('\nindices.edges:');
-		indices.edges.forEach((edge, i) => console.log(JSON.stringify( edge )));
+		indices.edges.forEach((edge, i) => console.log('Edge id = ' + i + '. ' + JSON.stringify( edge )));
 		
 	}
 
