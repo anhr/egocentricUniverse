@@ -31,8 +31,9 @@ class EgocentricUniverse {
 
 	/**
 	 * Egocentric universe.
-	 * */
-	constructor() {
+	 * @param {THREE.Scene} [settings.scene] [THREE.Scene]{@link https://threejs.org/docs/index.html?q=sce#api/en/scenes/Scene}.
+	 **/
+	constructor( scene ) {
 
 		const n = 1;//Universe dimension
 
