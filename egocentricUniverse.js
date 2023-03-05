@@ -31,7 +31,7 @@ class EgocentricUniverse {
 
 	/**
 	 * Egocentric universe.
-	 * @param {THREE.Scene} [settings.scene] [THREE.Scene]{@link https://threejs.org/docs/index.html?q=sce#api/en/scenes/Scene}.
+	 * @param {THREE.Scene} scene [THREE.Scene]{@link https://threejs.org/docs/index.html?q=sce#api/en/scenes/Scene}.
 	 **/
 	constructor( scene ) {
 
