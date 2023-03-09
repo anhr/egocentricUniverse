@@ -32,11 +32,45 @@ class EgocentricUniverse {
 	/**
 	 * Egocentric universe.
 	 * @param {THREE.Scene} scene [THREE.Scene]{@link https://threejs.org/docs/index.html?q=sce#api/en/scenes/Scene}.
+	 * @param {Options} options See <a href="../../../commonNodeJS/master/jsdoc/Options/Options.html" target="_blank">Options</a>.
 	 **/
 	constructor( scene, options ) {
 
 		const n = 1;//Universe dimension
 
+		//Localization
+
+		const getLanguageCode = options.getLanguageCode;
+
+		const lang = {
+
+			universe: "Universe",
+
+		};
+
+		const _languageCode = getLanguageCode();
+
+		switch (_languageCode) {
+
+			case 'ru'://Russian language
+
+				lang.universe = 'Вселенная';
+
+				break;
+			default://Custom language
+				if ((guiParams.lang === undefined) || (guiParams.lang.languageCode != _languageCode))
+					break;
+
+				Object.keys(guiParams.lang).forEach(function (key) {
+
+					if (lang[key] === undefined)
+						return;
+					lang[key] = guiParams.lang[key];
+
+				});
+
+		}
+		
 		/**
 		 * @description Array of <b>indices</b> of vertices of the n-dimensional universe.
 		 * <pre>
@@ -355,13 +389,14 @@ class EgocentricUniverse {
 											).getSpacedPoints(256) ), new THREE.LineBasicMaterial( { color: 'blue' } ) ) );
 											
 										}
+/*										
 										const points = new THREE.EllipseCurve(
 											center.x, center.y,// Center x, y
 											r, r,// x radius, y radius
 											0.0, 2.0 * Math.PI,// Start angle, stop angle
 										).getSpacedPoints( 3 );
-										scene.add( new THREE.LineLoop(new THREE.BufferGeometry().setFromPoints( points ), new THREE.LineBasicMaterial( { color: 'green' } ) ) );
-/*										
+										const universe3D = new THREE.LineLoop(new THREE.BufferGeometry().setFromPoints( points ), new THREE.LineBasicMaterial( { color: 'green' } ) );
+*/									
 										const point0 = new THREE.Vector3( 0, -r, 0 ),
 											axis = new THREE.Vector3( 0, 0, 1 ),
 											angle = 2 * Math.PI / 3,
@@ -370,10 +405,17 @@ class EgocentricUniverse {
 												new THREE.Vector3().copy( point0 ).applyAxisAngle( axis, angle ),//1
 												new THREE.Vector3().copy( point0 ).applyAxisAngle( axis, 2 * angle ),//2
 											];
-										scene.add( new THREE.LineSegments( new THREE.BufferGeometry().setFromPoints(points).setIndex( [0, 1, 1, 2, 2, 0] ),
-																		  new THREE.LineBasicMaterial( { color: 'green', } ) ) );
-*/					
-										
+										const universe3D = new THREE.LineSegments( new THREE.BufferGeometry().setFromPoints(points).setIndex( [0, 1, 1, 2, 2, 0] ),
+																		  new THREE.LineBasicMaterial( { color: 'green', } ) );
+					
+										scene.add( universe3D );
+
+										if ( options.guiSelectPoint ) {
+											
+											if ( universe3D.name === '' ) universe3D.name = lang.universe;
+											options.guiSelectPoint.addMesh( universe3D );
+
+										}
 
 									};
 									break;

@@ -53,8 +53,21 @@
 
 		}, {
 
-			axesHelper: false,
+			//axesHelper: false,
+			orbitControls: { enableRotate: false, },
+			camera: { position: new THREE.Vector3( 0, 0, 2 ) },
+			stereoEffect: false,
+			//canvasMenu: false,
+			scales: {
+
+				x: {},
+				y: {},
+				posAxesIntersection: new THREE.Vector3( -1, -1, 0 ),
+				text: { precision: 1, rect: { displayRect: false, }, }
+
+			},
 //			title: '<a href="https://github.com/anhr/egocentricUniverse" target="_blank" rel="noopener">Egocentric Universe</a>',
+			//dat: false,
 
 		});
 
