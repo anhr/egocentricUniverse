@@ -33,7 +33,7 @@ class EgocentricUniverse {
 	 * Egocentric universe.
 	 * @param {THREE.Scene} scene [THREE.Scene]{@link https://threejs.org/docs/index.html?q=sce#api/en/scenes/Scene}.
 	 **/
-	constructor( scene ) {
+	constructor( scene, options ) {
 
 		const n = 1;//Universe dimension
 
@@ -339,9 +339,40 @@ class EgocentricUniverse {
 
 										//Project universe into 3D space
 										
-										const r = 1;//universe circle radius
-										const THREE = three.THREE;
-										//vertices[_edges[0].vertices[0]].3D;
+										const THREE = three.THREE,
+											r = 1.0,
+											center = new THREE.Vector2( 0.0, 0.0 );
+
+										if ( debug ) {
+
+											//https://stackoverflow.com/questions/13756112/draw-a-circle-not-shaded-with-three-js
+
+											//https://stackoverflow.com/a/70466408/5175935
+											scene.add( new THREE.LineLoop(new THREE.BufferGeometry().setFromPoints( new THREE.EllipseCurve(
+												center.x, center.y,// Center x, y
+												r, r,// x radius, y radius
+												0.0, 2.0 * Math.PI,// Start angle, stop angle
+											).getSpacedPoints(256) ), new THREE.LineBasicMaterial( { color: 'blue' } ) ) );
+											
+										}
+										const points = new THREE.EllipseCurve(
+											center.x, center.y,// Center x, y
+											r, r,// x radius, y radius
+											0.0, 2.0 * Math.PI,// Start angle, stop angle
+										).getSpacedPoints( 3 );
+										scene.add( new THREE.LineLoop(new THREE.BufferGeometry().setFromPoints( points ), new THREE.LineBasicMaterial( { color: 'green' } ) ) );
+/*										
+										const point0 = new THREE.Vector3( 0, -r, 0 ),
+											axis = new THREE.Vector3( 0, 0, 1 ),
+											angle = 2 * Math.PI / 3,
+											points = [
+												point0,//0
+												new THREE.Vector3().copy( point0 ).applyAxisAngle( axis, angle ),//1
+												new THREE.Vector3().copy( point0 ).applyAxisAngle( axis, 2 * angle ),//2
+											];
+										scene.add( new THREE.LineSegments( new THREE.BufferGeometry().setFromPoints(points).setIndex( [0, 1, 1, 2, 2, 0] ),
+																		  new THREE.LineBasicMaterial( { color: 'green', } ) ) );
+*/					
 										
 
 									};

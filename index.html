@@ -28,6 +28,7 @@
 	<script type="module">
 
 		import * as THREE from '../../three.js/dev/build/three.module.js';
+		//import * as THREE from '../../three.js/dev/build/three.module.min.js';
 		//import * as THREE from 'https://threejs.org/build/three.module.js';
 		//import * as THREE from 'https://raw.githack.com/anhr/three.js/dev/build/three.module.js';
 
@@ -48,11 +49,12 @@
 			];
 			MyThree.MyPoints(arrayFuncs, scene, { options: options });
 */			
-			new EgocentricUniverse( scene );
+			new EgocentricUniverse( scene, options );
 
 		}, {
 
-			//			title: '<a href="https://github.com/anhr/egocentricUniverse" target="_blank" rel="noopener">Egocentric Universe</a>',
+			axesHelper: false,
+//			title: '<a href="https://github.com/anhr/egocentricUniverse" target="_blank" rel="noopener">Egocentric Universe</a>',
 
 		});
 
