@@ -307,7 +307,7 @@ class EgocentricUniverse {
 							});
 
 							//distance between edge vertices
-							if ( edge.distance === undefined ) edge.distance = 1.0;
+							if (edge.distance === undefined) edge.distance = 2 * Math.PI / edges.length;//1.0;//выбрал длинну ребра так, что бы радиус одномерной вселенной с был равен 1.0
 							
 							return new Proxy(edge, {
 
@@ -372,9 +372,20 @@ class EgocentricUniverse {
 									case 'project': return () => {
 
 										//Project universe into 3D space
+
+										//universe length
+										let l = 0;
+										indices.edges.forEach( edge => { l += edge.distance; } );
+
+/*										
+										//Угол поворота радиуса вселенной для текущей вершины
+										const angles = [ 0.0 ], delta = 2 * Math.PI / l;
+										for ( let i = 1; i < indices.edges.length; i++ )
+											angles.push( angles[ i - 1 ] + indices.edges[i].distance * delta );
+*/		   
 										
 										const THREE = three.THREE,
-											r = 1.0,
+											r = l / ( 2 * Math.PI ),
 											center = new THREE.Vector2( 0.0, 0.0 );
 
 										if ( debug ) {
@@ -399,13 +410,29 @@ class EgocentricUniverse {
 */									
 										const point0 = new THREE.Vector3( 0, -r, 0 ),
 											axis = new THREE.Vector3( 0, 0, 1 ),
-											angle = 2 * Math.PI / 3,
+//											angle = 2 * Math.PI / 3,
 											points = [
 												point0,//0
-												new THREE.Vector3().copy( point0 ).applyAxisAngle( axis, angle ),//1
-												new THREE.Vector3().copy( point0 ).applyAxisAngle( axis, 2 * angle ),//2
+//												new THREE.Vector3().copy( point0 ).applyAxisAngle( axis, angle ),//1
+//												new THREE.Vector3().copy( point0 ).applyAxisAngle( axis, 2 * angle ),//2
 											];
-										const universe3D = new THREE.LineSegments( new THREE.BufferGeometry().setFromPoints(points).setIndex( [0, 1, 1, 2, 2, 0] ),
+										let angle = 0.0;//Угол поворота радиуса вселенной до текущей вершины
+										const delta = 2 * Math.PI / l;
+										for ( let i = 1; i < indices.edges.length; i++ ) {
+
+											angle += indices.edges[i].distance * delta;
+											points.push( new THREE.Vector3().copy( point0 ).applyAxisAngle( axis, angle ) );
+//											points.push( new THREE.Vector3().copy( point0 ).applyAxisAngle( axis, angles[i] ) );
+
+										}
+										
+										const index = [];
+										indices.edges.forEach( edge => {
+
+											edge.vertices.forEach( ( vertice => index.push( vertice ) ) );
+											
+										} );
+										const universe3D = new THREE.LineSegments( new THREE.BufferGeometry().setFromPoints(points).setIndex( index ),
 																		  new THREE.LineBasicMaterial( { color: 'green', } ) );
 					
 										scene.add( universe3D );
@@ -542,10 +569,14 @@ class EgocentricUniverse {
 					
 					{
 						vertices: [0,1],
-						//distance: 0.5
+						//distance: 1.0,//0.5,
 					},//0
-					{ vertices: [0,2] },//1
-					{ vertices: [2,1] },//2
+					{ vertices: [1,2] },//1
+					{ vertices: [2,0] },//2
+					/*
+					{ vertices: [2,3] },//2
+					{ vertices: [3,0] },//3
+					*/
 								
 				];
 
