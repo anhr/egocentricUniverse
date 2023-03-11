@@ -61,11 +61,46 @@ class EgocentricUniverse {
 	 * Egocentric universe.
 	 * @param {THREE.Scene} scene [THREE.Scene]{@link https://threejs.org/docs/index.html?q=sce#api/en/scenes/Scene}.
 	 * @param {Options} options See &lt;a href="../../../commonNodeJS/master/jsdoc/Options/Options.html" target="_blank">Options&lt;/a>.
+	 * @param {object} [settings={}] The following settings are available
+	 * @param {number} [settings.n=3] dimension of the universe space.
 	 **/
-	constructor( scene, options ) {
+	constructor(scene, options, settings = {} ) {
 
 		const n = 1;//Universe dimension
 
+		//Localization
+
+		const getLanguageCode = options.getLanguageCode;
+
+		const lang = {
+
+			universe: "Universe",
+
+		};
+
+		const _languageCode = getLanguageCode();
+
+		switch (_languageCode) {
+
+			case 'ru'://Russian language
+
+				lang.universe = 'Вселенная';
+
+				break;
+			default://Custom language
+				if ((guiParams.lang === undefined) || (guiParams.lang.languageCode != _languageCode))
+					break;
+
+				Object.keys(guiParams.lang).forEach(function (key) {
+
+					if (lang[key] === undefined)
+						return;
+					lang[key] = guiParams.lang[key];
+
+				});
+
+		}
+		
 		/**
 		 * @description Array of &lt;b>indices&lt;/b> of vertices of the n-dimensional universe.
 		 * &lt;pre>
@@ -302,7 +337,7 @@ class EgocentricUniverse {
 							});
 
 							//distance between edge vertices
-							if ( edge.distance === undefined ) edge.distance = 1.0;
+							if (edge.distance === undefined) edge.distance = 2 * Math.PI / edges.length;//1.0;//выбрал длинну ребра так, что бы радиус одномерной вселенной с был равен 1.0
 							
 							return new Proxy(edge, {
 
@@ -367,9 +402,20 @@ class EgocentricUniverse {
 									case 'project': return () => {
 
 										//Project universe into 3D space
+
+										//universe length
+										let l = 0;
+										indices.edges.forEach( edge => { l += edge.distance; } );
+
+/*										
+										//Угол поворота радиуса вселенной для текущей вершины
+										const angles = [ 0.0 ], delta = 2 * Math.PI / l;
+										for ( let i = 1; i &lt; indices.edges.length; i++ )
+											angles.push( angles[ i - 1 ] + indices.edges[i].distance * delta );
+*/		   
 										
 										const THREE = three.THREE,
-											r = 1.0,
+											r = l / ( 2 * Math.PI ),
 											center = new THREE.Vector2( 0.0, 0.0 );
 
 										if ( debug ) {
@@ -384,25 +430,49 @@ class EgocentricUniverse {
 											).getSpacedPoints(256) ), new THREE.LineBasicMaterial( { color: 'blue' } ) ) );
 											
 										}
+/*										
 										const points = new THREE.EllipseCurve(
 											center.x, center.y,// Center x, y
 											r, r,// x radius, y radius
 											0.0, 2.0 * Math.PI,// Start angle, stop angle
 										).getSpacedPoints( 3 );
-										scene.add( new THREE.LineLoop(new THREE.BufferGeometry().setFromPoints( points ), new THREE.LineBasicMaterial( { color: 'green' } ) ) );
-/*										
+										const universe3D = new THREE.LineLoop(new THREE.BufferGeometry().setFromPoints( points ), new THREE.LineBasicMaterial( { color: 'green' } ) );
+*/									
 										const point0 = new THREE.Vector3( 0, -r, 0 ),
 											axis = new THREE.Vector3( 0, 0, 1 ),
-											angle = 2 * Math.PI / 3,
+//											angle = 2 * Math.PI / 3,
 											points = [
 												point0,//0
-												new THREE.Vector3().copy( point0 ).applyAxisAngle( axis, angle ),//1
-												new THREE.Vector3().copy( point0 ).applyAxisAngle( axis, 2 * angle ),//2
+//												new THREE.Vector3().copy( point0 ).applyAxisAngle( axis, angle ),//1
+//												new THREE.Vector3().copy( point0 ).applyAxisAngle( axis, 2 * angle ),//2
 											];
-										scene.add( new THREE.LineSegments( new THREE.BufferGeometry().setFromPoints(points).setIndex( [0, 1, 1, 2, 2, 0] ),
-																		  new THREE.LineBasicMaterial( { color: 'green', } ) ) );
-*/					
+										let angle = 0.0;//Угол поворота радиуса вселенной до текущей вершины
+										const delta = 2 * Math.PI / l;
+										for ( let i = 1; i &lt; indices.edges.length; i++ ) {
+
+											angle += indices.edges[i].distance * delta;
+											points.push( new THREE.Vector3().copy( point0 ).applyAxisAngle( axis, angle ) );
+//											points.push( new THREE.Vector3().copy( point0 ).applyAxisAngle( axis, angles[i] ) );
+
+										}
 										
+										const index = [];
+										indices.edges.forEach( edge => {
+
+											edge.vertices.forEach( ( vertice => index.push( vertice ) ) );
+											
+										} );
+										const universe3D = new THREE.LineSegments( new THREE.BufferGeometry().setFromPoints(points).setIndex( index ),
+																		  new THREE.LineBasicMaterial( { color: 'green', } ) );
+					
+										scene.add( universe3D );
+
+										if ( options.guiSelectPoint ) {
+											
+											if ( universe3D.name === '' ) universe3D.name = lang.universe;
+											options.guiSelectPoint.addMesh( universe3D );
+
+										}
 
 									};
 									break;
@@ -529,10 +599,14 @@ class EgocentricUniverse {
 					
 					{
 						vertices: [0,1],
-						//distance: 0.5
+						//distance: 1.0,//0.5,
 					},//0
-					{ vertices: [0,2] },//1
-					{ vertices: [2,1] },//2
+					{ vertices: [1,2] },//1
+					{ vertices: [2,0] },//2
+					/*
+					{ vertices: [2,3] },//2
+					{ vertices: [3,0] },//3
+					*/
 								
 				];
 
@@ -599,7 +673,7 @@ export default EgocentricUniverse;
 <br class="clear">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 3.6.11</a> on Thu Mar 09 2023 11:39:59 GMT+0700 (Красноярск, стандартное время)
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 3.6.11</a> on Sat Mar 11 2023 08:04:09 GMT+0700 (Красноярск, стандартное время)
 </footer>
 
 <script> prettyPrint(); </script>

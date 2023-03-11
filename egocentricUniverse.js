@@ -33,10 +33,13 @@ class EgocentricUniverse {
 	 * Egocentric universe.
 	 * @param {THREE.Scene} scene [THREE.Scene]{@link https://threejs.org/docs/index.html?q=sce#api/en/scenes/Scene}.
 	 * @param {Options} options See <a href="../../../commonNodeJS/master/jsdoc/Options/Options.html" target="_blank">Options</a>.
+	 * @param {object} [settings={}] The following settings are available
+	 * @param {number} [settings.n=3] dimension of the universe space.
 	 **/
-	constructor( scene, options ) {
+	constructor(scene, options, settings = {} ) {
 
-		const n = 1;//Universe dimension
+		settings.n = settings.n || 1;
+		//const n = 1;//Universe dimension
 
 		//Localization
 
@@ -562,7 +565,7 @@ class EgocentricUniverse {
 		for ( let i = 0; i < n + 2; i++ )
 			vertices.push();
 */		
-		switch( n ){
+		switch( settings.n ){
 
 			case 1://1D universe.
 				indices.edges = [
