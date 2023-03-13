@@ -326,6 +326,8 @@ class EgocentricUniverse {
 							if (debug) edge.vertices.forEach( verticeId => vertices[verticeId].edges.push( settings.edgeId === undefined ? 
 																										  settings.edges.length ://новое ребро добавляется с помощю push
 																										  settings.edgeId ) );
+//if (debug) edge.vertices.forEach( verticeId => vertices[verticeId].edges.push( settings.edgeId === undefined ? settings.edges.length : settings.edgeId ) );
+																										  
 							
 							return new Proxy(edge, {
 
@@ -566,7 +568,35 @@ class EgocentricUniverse {
 										return;
 										
 									}
-									vertice.edges = vertice.edges || [];
+									vertice.edges = vertice.edges || new Proxy( [], {
+
+										get: (edges, name) => {
+			
+											switch (name) {
+													
+												case 'push': return ( edgeId ) => {
+
+													//find for duplicate edgeId
+													for ( let j = 0; j < edges.length; j++ ) {
+														
+														if (edges[j] === edgeId) {
+
+															console.error(sEgocentricUniverse + ': Vertice.edges: duplicate edgeId: ' + edgeId);
+															return;
+															
+														}
+
+													}
+													
+													edges.push( edgeId );
+													
+												}
+	
+											}
+											return edges[name];
+												
+										}, 
+									} );
 									return vertice.edges;
 
 								}
@@ -674,6 +704,10 @@ class EgocentricUniverse {
 
 				if ( debug ) {
 				
+					//test for duplicate vertice.edges edgeId
+					//indices.edges[0].vertices[0] = 1;//error: EgocentricUniverse: Edge.vertices[0]. Duplicate vertice index = 1
+					//vertices[1].edges[0] = 1;//на данный момент в vertice.edges можно иметь несколько ссылок на одно ребро потому что это не влияет на результат
+					
 					vertices.test();
 					
 					//indices.edges.push({});//Error: EgocentricUniverse: Duplicate edge. Vertices = 0,1
