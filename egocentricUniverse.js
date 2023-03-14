@@ -152,7 +152,8 @@ class EgocentricUniverse {
 			},
 			set: function (_indices, name, value) {
 
-				switch (name){
+				const sIndicesEdgesSet = ': indices.edges set. ';
+				switch (name) {
 
 					case 'edges':
 
@@ -160,14 +161,14 @@ class EgocentricUniverse {
 							
 							if ( _indices[0]) {
 	
-								console.error(sEgocentricUniverse + ': indices.edges set. duplicate edges');
+								console.error(sEgocentricUniverse + sIndicesEdgesSet + 'duplicate edges');
 								return true;
 	
 							}
 	
 							if ( !( value instanceof Array ) ){
 	
-								console.error(sEgocentricUniverse + ': indices.edges set. Invalid edges array: ' + value);
+								console.error(sEgocentricUniverse + sIndicesEdgesSet + 'Invalid edges array: ' + value);
 								return true;
 	
 							}
@@ -496,7 +497,7 @@ class EgocentricUniverse {
 								const i = parseInt(name);
 								if (!isNaN(i)) {
 
-									console.error(sEgocentricUniverse + ': indices.edges set. Hidden method: edges[' + i + '] = ' + JSON.stringify(value));
+									console.error(sEgocentricUniverse + sIndicesEdgesSet + 'Hidden method: edges[' + i + '] = ' + JSON.stringify(value));
 									_edges[i] = value;
 
 								}
@@ -513,6 +514,37 @@ class EgocentricUniverse {
 						for ( let i = 0; i < indices.edges.length; i ++ )
 							indices.edges[i] = Edge(indices.edges[i]);
 */						
+						break;
+					case 'faces':
+						if ( debug ) {
+							
+							const sIndicesFacesSet = ': indices.faces set. ';
+							if ( _indices[1]) {
+	
+								console.error(sEgocentricUniverse + sIndicesFacesSet + 'duplicate faces');
+								return true;
+	
+							}
+	
+							if ( !( value instanceof Array ) ){
+	
+								console.error(sEgocentricUniverse + sIndicesFacesSet + 'Invalid faces array: ' + value);
+								return true;
+	
+							}
+
+						}
+						function Face(face, settings={}) {}
+						
+						//сразу заменяем все грани на прокси, потому что в противном случае, когда мы создаем прокси грани в get, каждый раз,
+						//когда вызывается get, в результате может получться бесконечная вложенная конструкция и появится сообщение об ошибке:
+						//EgocentricUniverse: Face get. Duplicate proxy
+						for ( let i = 0; i < value.length; i ++ ) {
+							
+							const face = value[i];
+							value[i] = Face(face, { faces: value, faceId: i });
+							
+						}
 						break;
 					default: console.error(sEgocentricUniverse + ': indices set: invalid name: ' + name);
 					
@@ -688,10 +720,12 @@ class EgocentricUniverse {
 		switch( settings.n ){
 
 			case 1://1D universe.
+				//indices.edges = 5;//Error: EgocentricUniverse: indices.edges set. Invalid edges array: 5
 				indices.edges = [
-					
+
+					//{},//0. Автоматически добавляется vertices = [0, 1] 
 					{
-						vertices: [0,1],
+						//vertices: [0,1],
 						//distance: 1.0,//0.5,
 					},//0
 					{ vertices: [1,2] },//1
@@ -713,7 +747,8 @@ class EgocentricUniverse {
 					//indices.edges.push({});//Error: EgocentricUniverse: Duplicate edge. Vertices = 0,1
 					//indices.edges.push({ vertices: [1,0] });//Error: EgocentricUniverse: Duplicate edge. Vertices = 1,0
 					//indices.edges.push({ vertices: [1,2] });
-					//indices.edges = [];//test for duplicate edges array
+					//indices.edges = [];//Error: EgocentricUniverse: indices.edges set. duplicate edges
+					//indices.edges[0] = {};//Error: EgocentricUniverse: indices.edges set. Hidden method: edges[0] = {}
 					indices.edges.forEach( ( edge, edgeIndex ) => {
 	
 						//indices.edges[0] = edge;//Error: EgocentricUniverse: indices.edges set. Hidden method: edges[0] = {"vertices":[0,1]}
@@ -728,6 +763,17 @@ class EgocentricUniverse {
 
 				}
 				
+				break;
+			case 2://2D universe.
+				//indices.faces = 6;//Error: EgocentricUniverse: indices.faces set. Invalid faces array: 6
+				indices.faces = [
+					{
+						edges: [0,1,2],
+						//distance: 1.0,//0.5,
+					},//0
+					
+				];
+				//indices.faces = [];//Error: EgocentricUniverse: indices.faces set. duplicate faces
 				break;
 			default: console.error(sEgocentricUniverse + ': Invalid universe dimension ' + settings.n);
 				return;
