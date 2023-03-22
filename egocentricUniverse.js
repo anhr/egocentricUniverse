@@ -347,41 +347,61 @@ class EgocentricUniverse {
 								},
 
 							});
+
+							
+							if (settings.edgeId === undefined) {
+
+								//если вставляем новое ребро с помощью edges.push()
+								//надо последнюю вершину последнего ребра заменить на новую вершину
+								indices.edges[indices.edges.length - 1].vertices[1] = vertices.length - 1;
+								
+							}
 							
 							//Добавляем индекс ребра в каждую вершину, которая используется в этом ребре.
 							//что бы потом проверить в vertices.test();
 							if (debug) {
 
 //								if (settings.edgeId === undefined) settings.edgeId = settings.edges.length;//новое ребро добавляется с помощю push
+								const newEdgeId = settings.edges.length;
 								edge.vertices.forEach( verticeId => {
 
-										const edges = vertices[verticeId].edges, newEdgeId = settings.edges.length;
-										if (settings.edgeId === undefined) {
-											
-											if (edges.length === 0)
-												//новое ребро добавляется с помощю push
-												edges.push( newEdgeId,
-													verticeId//for debug
-												);
-											 else {
+									const edges = vertices[verticeId].edges;
+									if (settings.edgeId === undefined) {
+										
+										//новое ребро добавляется с помощю push
+										if (verticeId === 0)
+											//в первой вершине заменяем последнее ребро на новое ребро
+											edges[1] = newEdgeId
+											//В последнюю вершину добавляем новое ребро
+										else edges.push( newEdgeId,
+												verticeId//for debug
+											);
+										
+/*											
+										if (edges.length === 0)
+											edges.push( newEdgeId,
+												verticeId//for debug
+											);
+										 else {
 
-												 //надо отредактировать первую и последнюю вершину, что бы между ними появилось новое ребро
-												 edges.forEach( ( edgeId, i) => {
+											 //надо отредактировать первую и последнюю вершину, что бы между ними появилось новое ребро
+											 edges.forEach( ( edgeId, i) => {
 
-													 if (verticeId === 0) {//редактируем первую вершину
-	
-														 if (edgeId != 0)//первое ребро первой вершины редактировать не надо
-															 edges[i] = newEdgeId;
-														 
-													 }
+												 if (verticeId === 0) {//редактируем первую вершину
+
+													 if (edgeId != 0)//первое ребро первой вершины редактировать не надо
+														 edges[i] = newEdgeId;
 													 
-												 });
+												 }
 												 
-											 }
-											
-										} else edges.push( settings.edgeId,
-											verticeId//for debug
-										);
+											 });
+											 
+										 }
+*/											
+										
+									} else edges.push( settings.edgeId,
+										verticeId//for debug
+									);
 										
 								} );
 
@@ -492,11 +512,12 @@ if (debug) edge.vertices.forEach( verticeId => vertices[verticeId].edges.push( s
 
 										//console.log(sEgocentricUniverse + ': indices.edges.push(' + JSON.stringify(edge) + ')');
 										_edges.push(Edge(edge));
-										
+/*										
 										//разомкнуть в конце старое кольцо ребер и вставить туда нове ребро.
 										//Для этого заменить последнюю вершину предпоследнего ребра на последнюю вершину
 										const edgeVertices = _edges[_edges.length - 2].vertices;
 										edgeVertices[edgeVertices.length - 1] = vertices.length - 1;
+*/		  
 
 									};
 									break;
@@ -942,11 +963,9 @@ if (debug) edge.vertices.forEach( verticeId => vertices[verticeId].edges.push( s
 								
 				];
 				*/
-/*				
 				indices.edges.push( {
 					//vertices: [3,0],
 				} );//3
-*/	
 					
 				vertices.test();
 
@@ -968,7 +987,7 @@ if (debug) edge.vertices.forEach( verticeId => vertices[verticeId].edges.push( s
 						const edgeVertices = edge.vertices;
 						//edge.vertices = edgeVertices;
 	//					const edgeVerticeId = edgeVertices[0];
-						edgeVertices.forEach( ( vertice, i ) => console.log( 'indices.edges[' + edgeIndex + '].vertices[' + i + '] = ' + vertice ) );
+						//edgeVertices.forEach( ( vertice, i ) => console.log( 'indices.edges[' + edgeIndex + '].vertices[' + i + '] = ' + vertice ) );
 						//edgeVertices[1] = 2;
 					
 					} );
@@ -994,13 +1013,11 @@ if (debug) edge.vertices.forEach( verticeId => vertices[verticeId].edges.push( s
 		
 		if ( debug ) {
 			
-			console.log('\nvertices:');
-			vertices.forEach((vertice, i) => console.log('vertice id = ' + i + '. ' + JSON.stringify( vertice )));
+//			console.log('\nvertices:');
+			vertices.forEach((vertice, i) => console.log('vertices[' + i + ']. ' + JSON.stringify( vertice )));
 	
-	//indices.edges[0] = 67;
-	//indices.edges[0].vertices = 35
-			console.log('\nindices.edges:');
-			indices.edges.forEach((edge, i) => console.log('Edge id = ' + i + '. ' + JSON.stringify( edge )));
+//			console.log('\nindices.edges:');
+			indices.edges.forEach((edge, i) => console.log('indices.edges[' + i + ']. ' + JSON.stringify( edge )));
 
 		}
 
