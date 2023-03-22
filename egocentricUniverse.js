@@ -24,8 +24,8 @@
 
 import three from '../../commonNodeJS/master/three.js'
 
-//const debug = true;
-const debug = false;
+const debug = true;
+//const debug = false;
 
 class EgocentricUniverse {
 
@@ -169,8 +169,18 @@ class EgocentricUniverse {
 	
 							if ( !( value instanceof Array ) ){
 	
-								console.error(sEgocentricUniverse + sIndicesEdgesSet + 'Invalid edges array: ' + value);
-								return true;
+								if (typeof value === "number") {
+
+									const edges = [];
+									for ( let i = 0; i < value; i++ ) edges.push({});
+									value = edges;
+									
+								} else {
+									
+									console.error(sEgocentricUniverse + sIndicesEdgesSet + 'Invalid edges array: ' + value);
+									return true;
+									
+								}
 	
 							}
 
@@ -910,7 +920,9 @@ if (debug) edge.vertices.forEach( verticeId => vertices[verticeId].edges.push( s
 		switch( settings.n ){
 
 			case 1://1D universe.
-				//indices.edges = 5;//Error: EgocentricUniverse: indices.edges set. Invalid edges array: 5
+				indices.edges = 3;
+				//indices.edges = '5';//Error: EgocentricUniverse: indices.edges set. Invalid edges array: 5
+				/*
 				indices.edges = [
 
 					{
@@ -924,16 +936,17 @@ if (debug) edge.vertices.forEach( verticeId => vertices[verticeId].edges.push( s
 						//vertices: [2,0]				
 						//vertices: [2,3]
 					},//2
-					/*
 					{
 						//vertices: [3,0]
 					},//3
-					 */
 								
 				];
+				*/
+/*				
 				indices.edges.push( {
 					//vertices: [3,0],
 				} );//3
+*/	
 					
 				vertices.test();
 
