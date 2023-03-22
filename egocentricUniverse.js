@@ -24,8 +24,8 @@
 
 import three from '../../commonNodeJS/master/three.js'
 
-const debug = true;
-//const debug = false;
+//const debug = true;
+const debug = false;
 
 class EgocentricUniverse {
 
@@ -275,12 +275,6 @@ class EgocentricUniverse {
 											i === 0 ? vertices.length : //первая вершина
 											0//Соеденить последнюю вершину нового ребра с первой першиной первого ребра
 										;
-/*									
-									let verticeId = i;//default id of vertex.
-									if (settings.edgeId != 0) verticeId = settings.edges[settings.edgeId - 1].vertices[1] + i;
-
-									edge.vertices[i] = verticeId;
-*/		 
 
 								}
 								VerticeIdDebug(i, edge.vertices[i]);
@@ -488,6 +482,11 @@ if (debug) edge.vertices.forEach( verticeId => vertices[verticeId].edges.push( s
 
 										//console.log(sEgocentricUniverse + ': indices.edges.push(' + JSON.stringify(edge) + ')');
 										_edges.push(Edge(edge));
+										
+										//разомкнуть в конце старое кольцо ребер и вставить туда нове ребро.
+										//Для этого заменить последнюю вершину предпоследнего ребра на последнюю вершину
+										const edgeVertices = _edges[_edges.length - 2].vertices;
+										edgeVertices[edgeVertices.length - 1] = vertices.length - 1;
 
 									};
 									break;
@@ -923,20 +922,18 @@ if (debug) edge.vertices.forEach( verticeId => vertices[verticeId].edges.push( s
 					},//1
 					{
 						//vertices: [2,0]				
-						//vertices: [2,3]//Error: EgocentricUniverse: edges[2].vertices[1]. Vertice index = 3 is limit from 0 to 2
+						//vertices: [2,3]
 					},//2
 					/*
 					{
 						//vertices: [3,0]
 					},//3
-					*/
+					 */
 								
 				];
-				/*
 				indices.edges.push( {
-					vertices: [3,0],
+					//vertices: [3,0],
 				} );//3
-				*/
 					
 				vertices.test();
 
