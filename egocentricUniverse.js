@@ -34,17 +34,17 @@ class EgocentricUniverse {
 	 * @param {THREE.Scene} scene [THREE.Scene]{@link https://threejs.org/docs/index.html?q=sce#api/en/scenes/Scene}.
 	 * @param {Options} options See <a href="../../../commonNodeJS/master/jsdoc/Options/Options.html" target="_blank">Options</a>.
 	 * @param {object} [settings={}] The following settings are available
-	 * @param {number} [settings.n=3] dimension of the universe space.
-	 * @param {number} [settings.edgesCount] edges count for 1D universe space.
+	 * @param {number} [settings.n=3] dimension of the universe space. 1, 2 and 3 dimension is available.
+	 * @param {number} [settings.сount] If <b>n = 1</b> then <b>сount</b> is edges count. Default is 3.
 	 * <pre>
-	 * Available only if <b>settings.n = 1</b> or <b>settings.n</b> is undefined.
-	 * If <b>settings.n = 1</b> then default <b>edgesCount = 3</b>.
+	 * If <b>n = 2</b> then under constraction.
+	 * If <b>n = 3</b> then under constraction.
 	 * </pre>
 	 **/
 	constructor(scene, options, settings = {} ) {
 
 		const sEgocentricUniverse = 'EgocentricUniverse';
-		
+/*		
 		if (settings.edgesCount !== undefined) {
 
 			//dimension of the universe space.
@@ -52,6 +52,7 @@ class EgocentricUniverse {
 			settings.n = 1;
 			
 		}
+*/
 		if (settings.n === undefined) settings.n = 3;
 		
 		if (debug && ( ( settings.n > 3 ) || ( settings.n < 1 ) )) {
@@ -954,7 +955,7 @@ if (debug) edge.vertices.forEach( verticeId => vertices[verticeId].edges.push( s
 		switch( settings.n ){
 
 			case 1://1D universe.
-				indices.edges = settings.edgesCount || 3;
+				indices.edges = settings.count || 3;
 				//indices.edges = '5';//Error: EgocentricUniverse: indices.edges set. Invalid edges array: 5
 				/*
 				indices.edges = [
