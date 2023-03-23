@@ -63,10 +63,31 @@ class EgocentricUniverse {
 	 * @param {Options} options See &lt;a href="../../../commonNodeJS/master/jsdoc/Options/Options.html" target="_blank">Options&lt;/a>.
 	 * @param {object} [settings={}] The following settings are available
 	 * @param {number} [settings.n=3] dimension of the universe space.
+	 * @param {number} [settings.edgesCount] edges count for 1D universe space.
+	 * &lt;pre>
+	 * Available only if &lt;b>settings.n = 1&lt;/b> or &lt;b>settings.n&lt;/b> is undefined.
+	 * If &lt;b>settings.n = 1&lt;/b> then default &lt;b>edgesCount = 3&lt;/b>.
+	 * &lt;/pre>
 	 **/
 	constructor(scene, options, settings = {} ) {
 
-		const n = 1;//Universe dimension
+		const sEgocentricUniverse = 'EgocentricUniverse';
+		
+		if (settings.edgesCount !== undefined) {
+
+			//dimension of the universe space.
+			if ((settings.n != undefined) &amp;&amp; (settings.n != 1)) console.error(sEgocentricUniverse + ': Invalid dimension of the universe space = ' + settings.n);
+			settings.n = 1;
+			
+		}
+		if (settings.n === undefined) settings.n = 3;
+		
+		if (debug &amp;&amp; ( ( settings.n > 3 ) || ( settings.n &lt; 1 ) )) {
+			
+			console.error(sEgocentricUniverse + ': Dimension of the universe space = ' + settings.n + ' is limited from 1 to 3.');
+			return;
+
+		}
 
 		//Localization
 
@@ -155,7 +176,7 @@ class EgocentricUniverse {
 				if (!isNaN(i)) {
 
 					if (i >= _indices.length)
-						console.error('EgocentricUniverse: indices get. Invalid index = ' + i + ' indices.length = ' + _indices.length);
+						console.error(sEgocentricUniverse + ': indices get. Invalid index = ' + i + ' indices.length = ' + _indices.length);
 					return _indices[i];
 
 				}
@@ -163,16 +184,18 @@ class EgocentricUniverse {
 				switch (name) {
 
 					case 'edges':
+						if (!_indices[0]) indices.edges = [];
 						return _indices[0];
 						
 				}
-//				console.error('EgocentricUniverse: indices get: invalid name: ' + name);
+//				console.error(sEgocentricUniverse + ': indices get: invalid name: ' + name);
 				return _indices[name];
 
 			},
 			set: function (_indices, name, value) {
 
-				switch (name){
+				const sIndicesEdgesSet = ': indices.edges set. ';
+				switch (name) {
 
 					case 'edges':
 
@@ -180,22 +203,34 @@ class EgocentricUniverse {
 							
 							if ( _indices[0]) {
 	
-								console.error('EgocentricUniverse: indices.edges set. duplicate edges');
+								console.error(sEgocentricUniverse + sIndicesEdgesSet + 'duplicate edges');
 								return true;
 	
 							}
 	
 							if ( !( value instanceof Array ) ){
 	
-								console.error('EgocentricUniverse: indices.edges set. Invalid edges array: ' + value);
-								return true;
+								if (typeof value === "number") {
+
+									const edges = [];
+									for ( let i = 0; i &lt; value; i++ ) edges.push({});
+									value = edges;
+									
+								} else {
+									
+									console.error(sEgocentricUniverse + sIndicesEdgesSet + 'Invalid edges array: ' + value);
+									return true;
+									
+								}
 	
 							}
 
 						}
 
-						function Edge(edge, edges, edgeIndex) {
+						function Edge(edge, settings={}) {
 
+							const sEdge = sEgocentricUniverse + ': ' + ( settings.edgeId === undefined ? 'Edge' : 'edges[' + settings.edgeId + ']' ),
+								svertices = sEdge + '.vertices';
 							edge = edge || {};
 
 							//edge vertices
@@ -205,19 +240,19 @@ class EgocentricUniverse {
 								
 								if (edge.isProxy) {
 	
-									console.error('EgocentricUniverse: Edge. Duplicate proxy');
+									console.error(sEdge + '. Duplicate proxy');
 									return edge;
 	
 								}
 								if ( edge instanceof Array ) {
 
-									console.error('EgocentricUniverse: Edge. Invalid edge instance' );
+									console.error(sEdge + '. Invalid edge instance' );
 									return false;
 
 								}
 								if ( !( edge.vertices instanceof Array  ) ) {
 
-									console.error('EgocentricUniverse: Edge. Invalid edge.vertices instance' );
+									console.error(sEdge + '. Invalid edge.vertices instance' );
 									return false;
 
 								}
@@ -229,7 +264,7 @@ class EgocentricUniverse {
 
 								if ((i &lt; 0) || (i > 1)) {
 
-									console.error('EgocentricUniverse: Edge.vertices. Vertices index = ' + i + ' is limit from 0 to 1');
+									console.error(svertices + '. Vertices index = ' + i + ' is limit from 0 to 1');
 									return false;
 
 								}
@@ -238,21 +273,26 @@ class EgocentricUniverse {
 							}
 							function VerticeIdDebug(i, verticeId) {
 
-								if ( verticeId === vertices.length ) vertices.push();
+								if ((verticeId === vertices.length) &amp;&amp; (//этой вершины нет списке вершин
+										(settings.edgeId === undefined) || //добавлять новую вершину потому что эта грань добавляется с помощью edges.push()
+										(settings.edgeId != (settings.edges.length - 1))//не добалять новую вершину если это последняя грань, потому что у последней грани последняя вершина совпадает с первой вершины первой грани
+									)
+								   )
+									vertices.push();//{edgeId: edgeIndex});
 								
 								if (!debug) return true;
 
-								if ( !IdDebug(i) ) return false;
+								if (!IdDebug(i)) return false;
 
 								if (isNaN(parseInt(verticeId))) {
 
-									console.error('EgocentricUniverse: Edge.vertices[' + i + ']. Invalid vertice index = ' + verticeId);
+									console.error(svertices + '[' + i + ']. Invalid vertice index = ' + verticeId);
 									return false;
 
 								}
 								if ( (verticeId &lt; 0) || (verticeId >= vertices.length) ) {
 
-									console.error('EgocentricUniverse: Edge.vertices[' + i + ']. Vertice index = ' + verticeId + ' is limit from 0 to ' + (vertices.length - 1));
+									console.error(svertices + '[' + i + ']. Vertice index = ' + verticeId + ' is limit from 0 to ' + (vertices.length - 1));
 									return false;
 
 								}
@@ -262,7 +302,7 @@ class EgocentricUniverse {
 
 									if (verticeId === edge.vertices[index]) {
 
-										console.error('EgocentricUniverse: Edge.vertices[' + i + ']. Duplicate vertice index = ' + verticeId);
+										console.error(svertices + '[' + i + ']. Duplicate vertice index = ' + verticeId);
 										return false;
 
 									}
@@ -273,26 +313,40 @@ class EgocentricUniverse {
 							}
 							for (let i = 0; i &lt; 2; i++) {
 
-								if (edge.vertices[i] === undefined) edge.vertices[i] = i;//default id of vertex.
+								if (edge.vertices[i] === undefined) {
+
+									edge.vertices[i] = (
+										vertices.length === 0) ||//первая вкршина первого ребра
+										((settings.edgeId != undefined) &amp;&amp;//ребро из массива ребер
+										 (i === 1) &amp;&amp; (settings.edgeId === settings.edges.length - 1)) ?//Это последняя вершина последнего ребра. Соеденить последнюю вершину последнего ребра с первой першиной первого ребра
+										0 : 
+											settings.edgeId != undefined ?
+											vertices.length + ( i === 0 ? -1 : 0) : //ребро из массива ребер
+											//Новое ребро добавляется при помощи edges.push()
+											i === 0 ? vertices.length : //первая вершина
+											0//Соеденить последнюю вершину нового ребра с первой першиной первого ребра
+										;
+
+								}
 								VerticeIdDebug(i, edge.vertices[i]);
 
 							}
-							edges = edges || indices.edges;
+							settings.edges = settings.edges || indices.edges;
 							if ( debug )
-								//edges.forEach( ( edgeCur, edgeCurIndex ) =>
-								for ( let edgeCurIndex = ( edgeIndex === undefined ) ? 0 : edgeIndex; edgeCurIndex &lt; edges.length; edgeCurIndex++ ) {
 
-									 //Не сравнивать одно и тоже ребро
-									if( ( edgeIndex === undefined ) || ( edgeIndex !== edgeCurIndex ) ) {
+								for ( let edgeCurId = ( settings.edgeId === undefined ) ? 0 : settings.edgeId; edgeCurId &lt; settings.edges.length; edgeCurId++ ) {
 
-										const edgeCur = edges[edgeCurIndex];
-										const vertices = edge.vertices, verticesCur = edgeCur.vertices;
-										if (
-											( vertices[0] === verticesCur[0] ) &amp;&amp; ( vertices[1] === verticesCur[1] ) ||
-											( vertices[1] === verticesCur[0] ) &amp;&amp; ( vertices[0] === verticesCur[1] )
-										)
-											console.error('EgocentricUniverse: Duplicate edge. Vertices = ' + vertices );
-									}
+									if( ( settings.edgeId != undefined ) &amp;&amp; ( settings.edgeId === edgeCurId ) ) continue;//Не сравнивать одно и тоже ребро
+//									if( ( settings.edgeId === undefined ) || ( settings.edgeId !== edgeCurId ) )
+
+									const edgeCur = settings.edges[edgeCurId], verticesCur = edgeCur.vertices;
+									if (!verticesCur) continue;//в данном ребре еще нет вершин
+									const vertices = edge.vertices;
+									if (
+										( vertices[0] === verticesCur[0] ) &amp;&amp; ( vertices[1] === verticesCur[1] ) ||
+										( vertices[1] === verticesCur[0] ) &amp;&amp; ( vertices[0] === verticesCur[1] )
+									)
+										console.error(sEgocentricUniverse + ': Duplicate edge. Vertices = ' + vertices );
 										
 								}
 							edge.vertices = new Proxy(edge.vertices, {
@@ -317,8 +371,7 @@ class EgocentricUniverse {
 										case 'length':
 
 											if (!debug) break;
-											if (_vertices.length > 2) console.error('EgocentricUniverse: Edge.vertices set. Invalid length = ' + _vertices.length);
-										//																	_vertices.length = 2;//each edge have two vertices
+											if (_vertices.length > 2) console.error(svertices + ' set. Invalid length = ' + _vertices.length);
 
 									}
 									return _vertices[name];
@@ -336,8 +389,69 @@ class EgocentricUniverse {
 
 							});
 
-							//distance between edge vertices
-							if (edge.distance === undefined) edge.distance = 2 * Math.PI / edges.length;//1.0;//выбрал длинну ребра так, что бы радиус одномерной вселенной с был равен 1.0
+							
+							if (settings.edgeId === undefined) {
+
+								//если вставляем новое ребро с помощью edges.push()
+								//надо последнюю вершину последнего ребра заменить на новую вершину
+								indices.edges[indices.edges.length - 1].vertices[1] = vertices.length - 1;
+								
+							}
+							
+							//Добавляем индекс ребра в каждую вершину, которая используется в этом ребре.
+							//что бы потом проверить в vertices.test();
+							if (debug) {
+
+//								if (settings.edgeId === undefined) settings.edgeId = settings.edges.length;//новое ребро добавляется с помощю push
+								const newEdgeId = settings.edges.length;
+								edge.vertices.forEach( verticeId => {
+
+									const edges = vertices[verticeId].edges;
+									if (settings.edgeId === undefined) {
+										
+										//новое ребро добавляется с помощю push
+										if (verticeId === 0)
+											//в первой вершине заменяем последнее ребро на новое ребро
+											edges[1] = newEdgeId
+											//В последнюю вершину добавляем новое ребро
+										else edges.push( newEdgeId,
+												verticeId//for debug
+											);
+										
+/*											
+										if (edges.length === 0)
+											edges.push( newEdgeId,
+												verticeId//for debug
+											);
+										 else {
+
+											 //надо отредактировать первую и последнюю вершину, что бы между ними появилось новое ребро
+											 edges.forEach( ( edgeId, i) => {
+
+												 if (verticeId === 0) {//редактируем первую вершину
+
+													 if (edgeId != 0)//первое ребро первой вершины редактировать не надо
+														 edges[i] = newEdgeId;
+													 
+												 }
+												 
+											 });
+											 
+										 }
+*/											
+										
+									} else edges.push( settings.edgeId,
+										verticeId//for debug
+									);
+										
+								} );
+
+							}
+/*
+							if (debug) edge.vertices.forEach( verticeId => vertices[verticeId].edges.push( settings.edgeId === undefined ? 
+																										  settings.edges.length ://новое ребро добавляется с помощю push
+																										  settings.edgeId ) );
+*/							
 							
 							return new Proxy(edge, {
 
@@ -347,14 +461,52 @@ class EgocentricUniverse {
 									if (!isNaN(i)) {
 
 										if (name >= edge.length)
-											console.error('EgocentricUniverse: Edge get. Invalid index = ' + name);
+											console.error(sEdge + ' get. Invalid index = ' + name);
 										return edge[name];
 
 									}
 									switch (name) {
 
 										case 'isProxy': return true;
-										case 'vertices': return edge.vertices;
+										case 'vertices': return new Proxy(edge.vertices, {
+
+//											get: (edgeVertices, name) => { return edgeVertices[name]; },
+											set: (edgeVertices, name, value) => {
+
+												if (debug) {
+													
+													vertices[value].edges.push( settings.edgeId,
+														   value//for debug
+													  );
+/*													
+													vertices[edgeVertices[name]].edges.pop();
+													vertices.pop();
+*/			 
+
+												}
+												edgeVertices[name] = value;
+/*
+												vertices[value].edges
+							
+//Добавляем индекс ребра в каждую вершину, которая используется в этом ребре.
+//что бы потом проверить в vertices.test();
+if (debug) edge.vertices.forEach( verticeId => vertices[verticeId].edges.push( settings.edgeId === undefined ? 
+																			  settings.edges.length ://новое ребро добавляется с помощю push
+																			  settings.edgeId ) );
+*/					 
+												
+												return true;
+												
+											}
+											
+										} );
+										case 'distance': {
+											
+											//distance between edge vertices
+											if (edge.distance === undefined) edge.distance = 2 * Math.PI / settings.edges.length;//1.0;//выбрал длинну ребра так, что бы радиус одномерной вселенной с был равен 1.0
+											return edge.distance;
+
+										}
 
 
 									}
@@ -364,7 +516,7 @@ class EgocentricUniverse {
 								set: function (edge, name, value) {
 
 									//не понятно зачем вывел эту ошибку
-									//console.error('EgocentricUniverse: Edge set. Hidden method: edges[' + name + '] = ' + JSON.stringify(value) );
+									//console.error(sEdge + ' set. Hidden method: edges[' + name + '] = ' + JSON.stringify(value) );
 
 									edge[name] = value;
 									return true;
@@ -378,8 +530,13 @@ class EgocentricUniverse {
 						//сразу заменяем все ребра на прокси, потому что в противном случае, когда мы создаем прокси ребра в get, каждый раз,
 						//когда вызывается get, в результате может получться бесконечная вложенная конструкция и появится сообщение об ошибке:
 						//EgocentricUniverse: Edge get. Duplicate proxy
-						for ( let i = 0; i &lt; value.length; i ++ )
-							value[i] = Edge(value[i], value, i);
+						for ( let i = 0; i &lt; value.length; i ++ ) {
+							
+							const edge = value[i];
+							value[i] = Edge(edge, { edges: value, edgeId: i });
+							//value[i] = Edge(value[i]);//Error: EgocentricUniverse: Edge. Duplicate proxy
+							
+						}
 						
 						_indices[0] = new Proxy(value, {
 
@@ -394,8 +551,14 @@ class EgocentricUniverse {
 
 									case 'push': return (edge) => {
 
-										//console.log('EgocentricUniverse: indices.edges.push(' + JSON.stringify(edge) + ')');
+										//console.log(sEgocentricUniverse + ': indices.edges.push(' + JSON.stringify(edge) + ')');
 										_edges.push(Edge(edge));
+/*										
+										//разомкнуть в конце старое кольцо ребер и вставить туда нове ребро.
+										//Для этого заменить последнюю вершину предпоследнего ребра на последнюю вершину
+										const edgeVertices = _edges[_edges.length - 2].vertices;
+										edgeVertices[edgeVertices.length - 1] = vertices.length - 1;
+*/		  
 
 									};
 									break;
@@ -478,7 +641,7 @@ class EgocentricUniverse {
 									break;
 
 								}
-								//									console.error('EgocentricUniverse: indices.edges get: invalid name: ' + name);
+								//									console.error(sEgocentricUniverse + ': indices.edges get: invalid name: ' + name);
 								return _edges[name];
 
 							},
@@ -487,7 +650,7 @@ class EgocentricUniverse {
 								const i = parseInt(name);
 								if (!isNaN(i)) {
 
-									console.error('EgocentricUniverse: indices.edges set. Hidden method: edges[' + i + '] = ' + JSON.stringify(value));
+									console.error(sEgocentricUniverse + sIndicesEdgesSet + 'Hidden method: edges[' + i + '] = ' + JSON.stringify(value));
 									_edges[i] = value;
 
 								}
@@ -505,7 +668,126 @@ class EgocentricUniverse {
 							indices.edges[i] = Edge(indices.edges[i]);
 */						
 						break;
-					default: console.error('EgocentricUniverse: indices set: invalid name: ' + name);
+					case 'faces':
+						if ( debug ) {
+							
+							const sIndicesFacesSet = ': indices.faces set. ';
+							if ( _indices[1]) {
+	
+								console.error(sEgocentricUniverse + sIndicesFacesSet + 'duplicate faces');
+								return true;
+	
+							}
+	
+							if ( !( value instanceof Array ) ){
+	
+								console.error(sEgocentricUniverse + sIndicesFacesSet + 'Invalid faces array: ' + value);
+								return true;
+	
+							}
+
+						}
+						function Face(face, settings={}) {
+
+							const sFace = sEgocentricUniverse + ': Face';
+							
+							//Face edges
+							
+							face.edges = face.edges || [];
+							if ( debug ) {
+								
+								if (face.isProxy) {
+	
+									console.error(sFace + '. Duplicate proxy');
+									return edge;
+	
+								}
+								if ( face instanceof Array ) {
+
+									console.error(sFace + '. Invalid face instance' );
+									return false;
+
+								}
+								if ( !( face.edges instanceof Array  ) ) {
+
+									console.error(sFace + '. Invalid face.edges instance' );
+									return false;
+
+								}
+
+							}
+							function IdDebug(i) {
+
+								if (!debug) return true;
+
+								if ((i &lt; 0) || (i > 3)) {
+
+									console.error(sEgocentricUniverse + '. indices.faces[' + settings.faceId + '].edges[index] index = ' + i + ' is limit from 0 to 3');
+									return false;
+
+								}
+								return true;
+
+							}
+							function EdgeIdDebug(i, edgeId) {
+
+								if ( edgeId === indices.edges.length ) indices.edges.push();
+								
+								if (!debug) return true;
+
+								if ( !IdDebug(i) ) return false;
+
+								if (isNaN(parseInt(edgeId))) {
+
+									console.error(sFace + '[' + i + ']. Invalid edge index = ' + edgeId);
+									return false;
+
+								}
+								if ( (edgeId &lt; 0) || (edgeId >= indices.edges.length) ) {
+
+									console.error(sFace + '[' + i + ']. edge index = ' + edgeId + ' is limit from 0 to ' + (indices.edges.length - 1));
+									return false;
+
+								}
+								for (let index = 0; index &lt; face.edges.length; index++) {
+
+									if (index === i) continue;//не надо сравнивать самого себя
+
+									if (edgeId === face.edges[index]) {
+
+//not tested
+										console.error(sFace + '[' + i + '].edges. Duplicate edge index = ' + edgeId);
+										return false;
+
+									}
+
+								};
+								return true;
+
+							}
+							//EdgeIdDebug(0, {});//error: EgocentricUniverse: Face[0]. Invalid edge index = [object Object]
+							//EdgeIdDebug(4, 0);//Error: EgocentricUniverse. indices.faces[0].edges[index] index = 4 is limit from 0 to 3
+							//EdgeIdDebug(0, 1);//Error: EgocentricUniverse: Face[0]. edge index = 1 is limit from 0 to -1
+							for (let i = 0; i &lt; 4; i++) {
+
+								if (face.edges[i] === undefined) face.edges[i] = i;//default id of edge.
+								EdgeIdDebug(i, face.edges[i]);
+
+							}
+							
+						}
+						
+						//сразу заменяем все грани на прокси, потому что в противном случае, когда мы создаем прокси грани в get, каждый раз,
+						//когда вызывается get, в результате может получться бесконечная вложенная конструкция и появится сообщение об ошибке:
+						//EgocentricUniverse: Face get. Duplicate proxy
+						for ( let i = 0; i &lt; value.length; i ++ ) {
+							
+							const face = value[i];
+							value[i] = Face(face, { faces: value, faceId: i });
+							
+						}
+						break;
+					default: console.error(sEgocentricUniverse + ': indices set: invalid name: ' + name);
 					
 				}
 				return true;
@@ -533,22 +815,127 @@ class EgocentricUniverse {
 				if (!isNaN(i)) {
 
 /*					
-					console.error('EgocentricUniverse: vertices get. Hidden method: vertices[' + i + ']');
+					console.error(sEgocentricUniverse + ': vertices get. Hidden method: vertices[' + i + ']');
 					return;
 */	 
 					if (i >= _vertices.length)
-						console.error('EgocentricUniverse: vertices get. Invalid index = ' + i + ' vertices.length = ' + _vertices.length);
+						console.error(sEgocentricUniverse + ': vertices get. Invalid index = ' + i + ' vertices.length = ' + _vertices.length);
 					return _vertices[i];
 
 				}
 				switch (name) {
 
-					case 'push': return ( vertice ) => {
+					case 'push': return ( vertice={} ) => {
 
-						vertice = vertice || {};
-						_vertices.push( vertice );
+						_vertices.push( new Proxy( vertice, {
+
+							get: (vertice, name) => {
+
+								switch (name) {
+										
+								case 'edges':
+										
+									if (!debug) {
+
+										console.error(sEgocentricUniverse + ': vertice.edges. Set debug = true first.');
+										return;
+										
+									}
+									vertice.edges = vertice.edges || new Proxy( [], {
+
+										get: (edges, name) => {
+			
+											switch (name) {
+													
+												case 'push': return ( edgeId, verticeId ) => {
+
+													if (debug) {
+
+														const sPush = sEgocentricUniverse + ': Vertice' + (verticeId === undefined ? '' : '[' + verticeId + ']') + '.edges.push(' + edgeId + '):';
+														
+														//нельзя добавлть новое ребро если у вершины уже два ребра
+														if (edges.length >= 2) {
+															
+															console.error(sPush + ' invalid edges.length = ' + edges.length);
+															return;
+															
+														}
+														//find for duplicate edgeId
+														for ( let j = 0; j &lt; edges.length; j++ ) {
+															
+															if (edges[j] === edgeId) {
+	
+																console.error(sPush + ' duplicate edgeId: ' + edgeId);
+																return;
+																
+															}
+	
+														}
+
+													}
+													
+													edges.push( edgeId );
+													
+												}
+	
+											}
+											return edges[name];
+												
+										}, 
+									} );
+									return vertice.edges;
+
+								}
+								
+							},
+												  
+						} ) );
+/*						
+						settings.vertice = settings.vertice || {};
+						if (debug) {
+
+							//Для отладки. Добавляем массив ребер, в которых используется эта вершина
+							if (settings.edgeId != undefined) {
+
+								settings.vertice.edges = settings.vertice.edges || [];
+								settings.vertice.edges.push( settings.edgeId );
+								
+							}
+								
+						}
+						_vertices.push( settings.vertice );
+*/	  
 
 					};
+					break;
+					//for debug
+					case 'test': return () => {
+
+							//соеденить конец последнего ребра с началом первого ребра
+							//indices.edges[indices.edges.length - 1].vertices[1] = indices.edges[0].vertices[0];
+
+							if (!debug) return;
+						
+							_vertices.forEach( ( vertice, verticeId ) => {
+	
+							const str1 = sEgocentricUniverse + ': vertices.test()', strVerticeId = 'vertices(' + verticeId + ')';
+							if (!debug) {
+	
+								console.error(str1 + '. Set debug = true first.');
+								return;
+								
+							}
+							if (vertice.edges.length !== ( settings.n === 1 ? 2 : 0 ))
+								console.error(str1 + '. Invalid ' + strVerticeId + '.edges.length = ' + vertice.edges.length);
+							vertice.edges.forEach( edgeId => {
+	
+								if (typeof edgeId !== "number") console.error(str1 + '. ' + strVerticeId + '. Invalid edgeId = ' + edgeId);
+								
+							} );
+							
+						} )
+					}
+					break;
 
 				}
 				return _vertices[name];
@@ -559,11 +946,11 @@ class EgocentricUniverse {
 				const i = parseInt(name);
 				if (!isNaN(i)) {
 
-					console.error('EgocentricUniverse: vertices set. Hidden method: vertices[' + i + '] = ' + value);
+					console.error(sEgocentricUniverse + ': vertices set. Hidden method: vertices[' + i + '] = ' + value);
 					_vertices[i] = value;
 /*					
 					if (i >= _vertices.length)
-						console.error('EgocentricUniverse: vertices get. Invalid index = ' + i + ' vertices.length = ' + _vertices.length);
+						console.error(sEgocentricUniverse + ': vertices get. Invalid index = ' + i + ' vertices.length = ' + _vertices.length);
 					return _vertices[i];
 */	 
 
@@ -575,7 +962,7 @@ class EgocentricUniverse {
 						if (_indices[0] === undefined)
 							_indices[0] = value;
 						break;
-					default: console.error('EgocentricUniverse: indices set: invalid name: ' + name);
+					default: console.error(sEgocentricUniverse + ': indices set: invalid name: ' + name);
 
 				}
 */
@@ -592,30 +979,50 @@ class EgocentricUniverse {
 		for ( let i = 0; i &lt; n + 2; i++ )
 			vertices.push();
 */		
-		switch( n ){
+		switch( settings.n ){
 
 			case 1://1D universe.
+				indices.edges = settings.edgesCount || 3;
+				//indices.edges = '5';//Error: EgocentricUniverse: indices.edges set. Invalid edges array: 5
+				/*
 				indices.edges = [
-					
+
 					{
-						vertices: [0,1],
+						//vertices: [0,1],
 						//distance: 1.0,//0.5,
 					},//0
-					{ vertices: [1,2] },//1
-					{ vertices: [2,0] },//2
-					/*
-					{ vertices: [2,3] },//2
-					{ vertices: [3,0] },//3
-					*/
+					{
+						//vertices: [1,2]
+					},//1
+					{
+						//vertices: [2,0]				
+						//vertices: [2,3]
+					},//2
+					{
+						//vertices: [3,0]
+					},//3
 								
 				];
+				*/
+				/*
+				indices.edges.push( {
+					//vertices: [3,0],
+				} );//3
+				*/
+					
+				vertices.test();
 
 				if ( debug ) {
 				
+					//test for duplicate vertice.edges edgeId
+					//indices.edges[0].vertices[0] = 1;//error: EgocentricUniverse: Edge.vertices[0]. Duplicate vertice index = 1
+					//vertices[1].edges[0] = 1;//на данный момент в vertice.edges можно иметь несколько ссылок на одно ребро потому что это не влияет на результат
+					
 					//indices.edges.push({});//Error: EgocentricUniverse: Duplicate edge. Vertices = 0,1
 					//indices.edges.push({ vertices: [1,0] });//Error: EgocentricUniverse: Duplicate edge. Vertices = 1,0
 					//indices.edges.push({ vertices: [1,2] });
-					//indices.edges = [];//test for duplicate edges array
+					//indices.edges = [];//Error: EgocentricUniverse: indices.edges set. duplicate edges
+					//indices.edges[0] = {};//Error: EgocentricUniverse: indices.edges set. Hidden method: edges[0] = {}
 					indices.edges.forEach( ( edge, edgeIndex ) => {
 	
 						//indices.edges[0] = edge;//Error: EgocentricUniverse: indices.edges set. Hidden method: edges[0] = {"vertices":[0,1]}
@@ -623,7 +1030,7 @@ class EgocentricUniverse {
 						const edgeVertices = edge.vertices;
 						//edge.vertices = edgeVertices;
 	//					const edgeVerticeId = edgeVertices[0];
-						edgeVertices.forEach( ( vertice, i ) => console.log( 'indices.edges[' + edgeIndex + '].vertices[' + i + '] = ' + vertice ) );
+						//edgeVertices.forEach( ( vertice, i ) => console.log( 'indices.edges[' + edgeIndex + '].vertices[' + i + '] = ' + vertice ) );
 						//edgeVertices[1] = 2;
 					
 					} );
@@ -631,20 +1038,29 @@ class EgocentricUniverse {
 				}
 				
 				break;
-			default: console.error('Invalid universe dimension n = ' + n);
+			case 2://2D universe.
+				//indices.faces = 6;//Error: EgocentricUniverse: indices.faces set. Invalid faces array: 6
+				indices.faces = [
+					{
+						//edges: [0,1,2],
+						//edges: 2,//Error EgocentricUniverse: Face. Invalid face.edges instance
+					},//0
+					
+				];
+				//indices.faces = [];//Error: EgocentricUniverse: indices.faces set. duplicate faces
+				break;
+			default: console.error(sEgocentricUniverse + ': Invalid universe dimension ' + settings.n);
 				return;
 				
 		}
 		
 		if ( debug ) {
 			
-			console.log('\nvertices:');
-			vertices.forEach((vertice, i) => console.log('vertice id = ' + i + '. ' + JSON.stringify( vertice )));
+//			console.log('\nvertices:');
+			vertices.forEach((vertice, i) => console.log('vertices[' + i + ']. ' + JSON.stringify( vertice )));
 	
-	//indices.edges[0] = 67;
-	//indices.edges[0].vertices = 35
-			console.log('\nindices.edges:');
-			indices.edges.forEach((edge, i) => console.log('Edge id = ' + i + '. ' + JSON.stringify( edge )));
+//			console.log('\nindices.edges:');
+			indices.edges.forEach((edge, i) => console.log('indices.edges[' + i + ']. ' + JSON.stringify( edge )));
 
 		}
 
@@ -673,7 +1089,7 @@ export default EgocentricUniverse;
 <br class="clear">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 3.6.11</a> on Sat Mar 11 2023 08:04:09 GMT+0700 (Красноярск, стандартное время)
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 3.6.11</a> on Thu Mar 23 2023 10:46:19 GMT+0700 (Красноярск, стандартное время)
 </footer>
 
 <script> prettyPrint(); </script>

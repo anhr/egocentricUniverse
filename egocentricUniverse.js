@@ -35,6 +35,11 @@ class EgocentricUniverse {
 	 * @param {Options} options See <a href="../../../commonNodeJS/master/jsdoc/Options/Options.html" target="_blank">Options</a>.
 	 * @param {object} [settings={}] The following settings are available
 	 * @param {number} [settings.n=3] dimension of the universe space.
+	 * @param {number} [settings.edgesCount] edges count for 1D universe space.
+	 * <pre>
+	 * Available only if <b>settings.n = 1</b> or <b>settings.n</b> is undefined.
+	 * If <b>settings.n = 1</b> then default <b>edgesCount = 3</b>.
+	 * </pre>
 	 **/
 	constructor(scene, options, settings = {} ) {
 
