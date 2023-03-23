@@ -40,7 +40,15 @@ class EgocentricUniverse {
 
 		const sEgocentricUniverse = 'EgocentricUniverse';
 		
+		if (settings.edgesCount !== undefined) {
+
+			//dimension of the universe space.
+			if ((settings.n != undefined) && (settings.n != 1)) console.error(sEgocentricUniverse + ': Invalid dimension of the universe space = ' + settings.n);
+			settings.n = 1;
+			
+		}
 		if (settings.n === undefined) settings.n = 3;
+		
 		if (debug && ( ( settings.n > 3 ) || ( settings.n < 1 ) )) {
 			
 			console.error(sEgocentricUniverse + ': Dimension of the universe space = ' + settings.n + ' is limited from 1 to 3.');
@@ -941,7 +949,7 @@ if (debug) edge.vertices.forEach( verticeId => vertices[verticeId].edges.push( s
 		switch( settings.n ){
 
 			case 1://1D universe.
-				indices.edges = 3;
+				indices.edges = settings.edgesCount || 3;
 				//indices.edges = '5';//Error: EgocentricUniverse: indices.edges set. Invalid edges array: 5
 				/*
 				indices.edges = [
@@ -963,9 +971,11 @@ if (debug) edge.vertices.forEach( verticeId => vertices[verticeId].edges.push( s
 								
 				];
 				*/
+				/*
 				indices.edges.push( {
 					//vertices: [3,0],
 				} );//3
+				*/
 					
 				vertices.test();
 
