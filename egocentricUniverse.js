@@ -980,13 +980,13 @@ if (debug) settings.edge.vertices.forEach( verticeId => vertices[verticeId].edge
 								
 				];
 				*/
+				/*
 				indices.edges.push(
-					/*
 					{
 					//vertices: [3,0],
 					}
-					 */
 				);//3
+				*/
 					
 				vertices.test();
 
