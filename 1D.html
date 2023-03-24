@@ -37,7 +37,8 @@
 		//import MyThree from '../../commonNodeJS/master/myThree/build/myThree.module.min.js';
 		MyThree.three.THREE = THREE;
 
-		import EgocentricUniverse from './egocentricUniverse.js';
+//		import EgocentricUniverse from './egocentricUniverse.js';
+		import EgocentricUniverse from './edges.js';
 
 
 		new MyThree(function (scene, options) {
@@ -49,10 +50,11 @@
 			];
 			MyThree.MyPoints(arrayFuncs, scene, { options: options });
 */			
-			new EgocentricUniverse( scene, options, {
-				n: 1,//dimension of the universe space.
-				//count: 10,//dimension of the universe space n = 1.
-			} );
+			new EgocentricUniverse( scene, options,
+				{
+					//count: 10,//dimension of the universe space n = 1.
+				}
+			);
 
 		}, {
 

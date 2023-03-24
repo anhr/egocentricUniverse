@@ -27,23 +27,28 @@ import three from '../../commonNodeJS/master/three.js'
 const debug = true;
 //const debug = false;
 
+const sEgocentricUniverse = 'EgocentricUniverse';
+
 class EgocentricUniverse {
 
+	Indices() { console.error(sEgocentricUniverse + ': Please override the Indices method in your child class.'); }
+	Test() { console.error(sEgocentricUniverse + ': Please override the Test method in your child class.'); }
+	
 	/**
 	 * Egocentric universe.
 	 * @param {THREE.Scene} scene [THREE.Scene]{@link https://threejs.org/docs/index.html?q=sce#api/en/scenes/Scene}.
 	 * @param {Options} options See <a href="../../../commonNodeJS/master/jsdoc/Options/Options.html" target="_blank">Options</a>.
 	 * @param {object} [settings={}] The following settings are available
 	 * @param {number} [settings.n=3] dimension of the universe space. 1, 2 and 3 dimension is available.
-	 * @param {number} [settings.сount] If <b>n = 1</b> then <b>сount</b> is edges count. Default is 3.
+	 * @param {number} [settings.сount] If dimension of the universe space is 1 then <b>сount</b> is edges count. Default is 3.
 	 * <pre>
-	 * If <b>n = 2</b> then under constraction.
-	 * If <b>n = 3</b> then under constraction.
+	 * If dimension of the universe space is 2 then under constraction.
+	 * If dimension of the universe space is 3 then under constraction.
 	 * </pre>
 	 **/
 	constructor(scene, options, settings = {} ) {
 
-		const sEgocentricUniverse = 'EgocentricUniverse';
+		const egocentricUniverse = this;
 /*		
 		if (settings.edgesCount !== undefined) {
 
@@ -53,6 +58,7 @@ class EgocentricUniverse {
 			
 		}
 */
+/*
 		if (settings.n === undefined) settings.n = 3;
 		
 		if (debug && ( ( settings.n > 3 ) || ( settings.n < 1 ) )) {
@@ -61,6 +67,7 @@ class EgocentricUniverse {
 			return;
 
 		}
+*/
 
 		//Localization
 
@@ -895,14 +902,19 @@ if (debug) settings.edge.vertices.forEach( verticeId => vertices[verticeId].edge
 							_vertices.forEach( ( vertice, verticeId ) => {
 	
 							const str1 = sEgocentricUniverse + ': vertices.test()', strVerticeId = 'vertices(' + verticeId + ')';
+/*
 							if (!debug) {
 	
 								console.error(str1 + '. Set debug = true first.');
 								return;
 								
 							}
+*/
+							egocentricUniverse.Test(vertice, str1, strVerticeId);
+/*
 							if (vertice.edges.length !== ( settings.n === 1 ? 2 : 0 ))
 								console.error(str1 + '. Invalid ' + strVerticeId + '.edges.length = ' + vertice.edges.length);
+*/
 							vertice.edges.forEach( edgeId => {
 	
 								if (typeof edgeId !== "number") console.error(str1 + '. ' + strVerticeId + '. Invalid edgeId = ' + edgeId);
@@ -955,66 +967,11 @@ if (debug) settings.edge.vertices.forEach( verticeId => vertices[verticeId].edge
 		for ( let i = 0; i < n + 2; i++ )
 			vertices.push();
 */		
+		this.Indices(indices, settings, debug);
+/*
 		switch( settings.n ){
 
 			case 1://1D universe.
-				indices.edges = settings.count || 3;
-				//indices.edges = '5';//Error: EgocentricUniverse: indices.edges set. Invalid edges array: 5
-				/*
-				indices.edges = [
-
-					{
-						//vertices: [0,1],
-						//distance: 1.0,//0.5,
-					},//0
-					{
-						//vertices: [1,2]
-					},//1
-					{
-						//vertices: [2,0]				
-						//vertices: [2,3]
-					},//2
-					{
-						//vertices: [3,0]
-					},//3
-								
-				];
-				*/
-				/*
-				indices.edges.push(
-					{
-					//vertices: [3,0],
-					}
-				);//3
-				*/
-					
-				vertices.test();
-
-				if ( debug ) {
-				
-					//test for duplicate vertice.edges edgeId
-					//indices.edges[0].vertices[0] = 1;//error: EgocentricUniverse: Edge.vertices[0]. Duplicate vertice index = 1
-					//vertices[1].edges[0] = 1;//на данный момент в vertice.edges можно иметь несколько ссылок на одно ребро потому что это не влияет на результат
-					
-					//indices.edges.push({});//Error: EgocentricUniverse: Duplicate edge. Vertices = 0,1
-					//indices.edges.push({ vertices: [1,0] });//Error: EgocentricUniverse: Duplicate edge. Vertices = 1,0
-					//indices.edges.push({ vertices: [1,2] });
-					//indices.edges = [];//Error: EgocentricUniverse: indices.edges set. duplicate edges
-					//indices.edges[0] = {};//Error: EgocentricUniverse: indices.edges set. Hidden method: edges[0] = {}
-					indices.edges.forEach( ( edge, edgeIndex ) => {
-	
-						//indices.edges[0] = edge;//Error: EgocentricUniverse: indices.edges set. Hidden method: edges[0] = {"vertices":[0,1]}
-						//indices.edges.push(edge);//Error: EgocentricUniverse: Edge. Duplicate proxy
-						const edgeVertices = edge.vertices;
-						//edge.vertices = edgeVertices;
-	//					const edgeVerticeId = edgeVertices[0];
-						//edgeVertices.forEach( ( vertice, i ) => console.log( 'indices.edges[' + edgeIndex + '].vertices[' + i + '] = ' + vertice ) );
-						//edgeVertices[1] = 2;
-					
-					} );
-
-				}
-				
 				break;
 			case 2://2D universe.
 				//indices.faces = 6;//Error: EgocentricUniverse: indices.faces set. Invalid faces array: 6
@@ -1031,6 +988,9 @@ if (debug) settings.edge.vertices.forEach( verticeId => vertices[verticeId].edge
 				return;
 				
 		}
+*/
+		
+		vertices.test();
 		
 		if ( debug ) {
 			
