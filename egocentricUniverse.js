@@ -175,6 +175,8 @@ class EgocentricUniverse {
 					case 'faces':
 						if (!_indices[1]) indices.faces = [];
 						return _indices[1];
+					case '_indices':
+						return _indices;
 						
 				}
 				if (isNaN( parseInt(name) )) console.error(sEgocentricUniverse + ': indices[' + name + ']: invalid name: ' + name);
@@ -183,7 +185,7 @@ class EgocentricUniverse {
 			},
 			set: function (_indices, name, value) {
 
-				const sIndicesEdgesSet = ': indices.edges set. ';
+//				const sIndicesEdgesSet = ': indices.edges set. ';
 				switch (name) {
 
 					case 'edges':
