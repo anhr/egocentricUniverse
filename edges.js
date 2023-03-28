@@ -502,7 +502,6 @@ if (debug) settings.edge.vertices.forEach( verticeId => vertices[verticeId].edge
 
 		});
 		
-		
 		//indices.edges = '5';//Error: EgocentricUniverse: indices.edges set. Invalid edges array: 5
 		/*
 		indices.edges = [
@@ -523,8 +522,6 @@ if (debug) settings.edge.vertices.forEach( verticeId => vertices[verticeId].edge
 			},//3
 						
 		];
-		*/
-		/*
 		indices.edges.push(
 			{
 			//vertices: [3,0],
