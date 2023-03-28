@@ -28,7 +28,7 @@
         <article>
             <pre class="prettyprint source linenums"><code>/**
  * @module EgocentricUniverse
- * @description Egocentric universe
+ * @description Base class for egocentric universe.
  *
  * @author [Andrej Hristoliubov]{@link https://github.com/anhr}
  *
@@ -55,23 +55,27 @@ import three from '../../commonNodeJS/master/three.js'
 const debug = true;
 //const debug = false;
 
+const sEgocentricUniverse = 'EgocentricUniverse';
+
 class EgocentricUniverse {
 
+	Indices() { console.error(sEgocentricUniverse + ': Please override the Indices method in your child class.'); }
+	Test() { console.error(sEgocentricUniverse + ': Please override the Test method in your child class.'); }
+	
 	/**
-	 * Egocentric universe.
+	 * Base class for egocentric universe.
 	 * @param {THREE.Scene} scene [THREE.Scene]{@link https://threejs.org/docs/index.html?q=sce#api/en/scenes/Scene}.
 	 * @param {Options} options See &lt;a href="../../../commonNodeJS/master/jsdoc/Options/Options.html" target="_blank">Options&lt;/a>.
 	 * @param {object} [settings={}] The following settings are available
-	 * @param {number} [settings.n=3] dimension of the universe space. 1, 2 and 3 dimension is available.
-	 * @param {number} [settings.сount] If &lt;b>n = 1&lt;/b> then &lt;b>сount&lt;/b> is edges count. Default is 3.
+	 * @param {number} [settings.сount] If dimension of the universe space is 1 then &lt;b>сount&lt;/b> is edges count. Default is 3.
 	 * &lt;pre>
-	 * If &lt;b>n = 2&lt;/b> then under constraction.
-	 * If &lt;b>n = 3&lt;/b> then under constraction.
+	 * If dimension of the universe space is 2 then under constraction.
+	 * If dimension of the universe space is 3 then under constraction.
 	 * &lt;/pre>
 	 **/
 	constructor(scene, options, settings = {} ) {
 
-		const sEgocentricUniverse = 'EgocentricUniverse';
+		const egocentricUniverse = this;
 /*		
 		if (settings.edgesCount !== undefined) {
 
@@ -81,6 +85,7 @@ class EgocentricUniverse {
 			
 		}
 */
+/*
 		if (settings.n === undefined) settings.n = 3;
 		
 		if (debug &amp;&amp; ( ( settings.n > 3 ) || ( settings.n &lt; 1 ) )) {
@@ -89,6 +94,7 @@ class EgocentricUniverse {
 			return;
 
 		}
+*/
 
 		//Localization
 
@@ -228,30 +234,33 @@ class EgocentricUniverse {
 
 						}
 
-						function Edge(edge, settings={}) {
+						function Edge(
+//							edge = {},
+							settings = {}
+						) {
 
 							const sEdge = sEgocentricUniverse + ': ' + ( settings.edgeId === undefined ? 'Edge' : 'edges[' + settings.edgeId + ']' ),
 								svertices = sEdge + '.vertices';
-							edge = edge || {};
+							settings.edge = settings.edge || {};
 
 							//edge vertices
 							
-							edge.vertices = edge.vertices || [];
+							settings.edge.vertices = settings.edge.vertices || [];
 							if ( debug ) {
 								
-								if (edge.isProxy) {
+								if (settings.edge.isProxy) {
 	
 									console.error(sEdge + '. Duplicate proxy');
-									return edge;
+									return settings.edge;
 	
 								}
-								if ( edge instanceof Array ) {
+								if ( settings.edge instanceof Array ) {
 
 									console.error(sEdge + '. Invalid edge instance' );
 									return false;
 
 								}
-								if ( !( edge.vertices instanceof Array  ) ) {
+								if ( !( settings.edge.vertices instanceof Array  ) ) {
 
 									console.error(sEdge + '. Invalid edge.vertices instance' );
 									return false;
@@ -301,7 +310,7 @@ class EgocentricUniverse {
 
 									if (index === i) continue;//не надо сравнивать самого себя
 
-									if (verticeId === edge.vertices[index]) {
+									if (verticeId === settings.edge.vertices[index]) {
 
 										console.error(svertices + '[' + i + ']. Duplicate vertice index = ' + verticeId);
 										return false;
@@ -314,9 +323,9 @@ class EgocentricUniverse {
 							}
 							for (let i = 0; i &lt; 2; i++) {
 
-								if (edge.vertices[i] === undefined) {
+								if (settings.edge.vertices[i] === undefined) {
 
-									edge.vertices[i] = (
+									settings.edge.vertices[i] = (
 										vertices.length === 0) ||//первая вкршина первого ребра
 										((settings.edgeId != undefined) &amp;&amp;//ребро из массива ребер
 										 (i === 1) &amp;&amp; (settings.edgeId === settings.edges.length - 1)) ?//Это последняя вершина последнего ребра. Соеденить последнюю вершину последнего ребра с первой першиной первого ребра
@@ -329,7 +338,7 @@ class EgocentricUniverse {
 										;
 
 								}
-								VerticeIdDebug(i, edge.vertices[i]);
+								VerticeIdDebug(i, settings.edge.vertices[i]);
 
 							}
 							settings.edges = settings.edges || indices.edges;
@@ -342,7 +351,7 @@ class EgocentricUniverse {
 
 									const edgeCur = settings.edges[edgeCurId], verticesCur = edgeCur.vertices;
 									if (!verticesCur) continue;//в данном ребре еще нет вершин
-									const vertices = edge.vertices;
+									const vertices = settings.edge.vertices;
 									if (
 										( vertices[0] === verticesCur[0] ) &amp;&amp; ( vertices[1] === verticesCur[1] ) ||
 										( vertices[1] === verticesCur[0] ) &amp;&amp; ( vertices[0] === verticesCur[1] )
@@ -350,7 +359,7 @@ class EgocentricUniverse {
 										console.error(sEgocentricUniverse + ': Duplicate edge. Vertices = ' + vertices );
 										
 								}
-							edge.vertices = new Proxy(edge.vertices, {
+							settings.edge.vertices = new Proxy(settings.edge.vertices, {
 
 								get: function (_vertices, name) {
 
@@ -405,7 +414,7 @@ class EgocentricUniverse {
 
 //								if (settings.edgeId === undefined) settings.edgeId = settings.edges.length;//новое ребро добавляется с помощю push
 								const newEdgeId = settings.edges.length;
-								edge.vertices.forEach( verticeId => {
+								settings.edge.vertices.forEach( verticeId => {
 
 									const edges = vertices[verticeId].edges;
 									if (settings.edgeId === undefined) {
@@ -449,12 +458,12 @@ class EgocentricUniverse {
 
 							}
 /*
-							if (debug) edge.vertices.forEach( verticeId => vertices[verticeId].edges.push( settings.edgeId === undefined ? 
+							if (debug) settings.edge.vertices.forEach( verticeId => vertices[verticeId].edges.push( settings.edgeId === undefined ? 
 																										  settings.edges.length ://новое ребро добавляется с помощю push
 																										  settings.edgeId ) );
 */							
 							
-							return new Proxy(edge, {
+							return new Proxy(settings.edge, {
 
 								get: function (edge, name) {
 
@@ -491,7 +500,7 @@ class EgocentricUniverse {
 							
 //Добавляем индекс ребра в каждую вершину, которая используется в этом ребре.
 //что бы потом проверить в vertices.test();
-if (debug) edge.vertices.forEach( verticeId => vertices[verticeId].edges.push( settings.edgeId === undefined ? 
+if (debug) settings.edge.vertices.forEach( verticeId => vertices[verticeId].edges.push( settings.edgeId === undefined ? 
 																			  settings.edges.length ://новое ребро добавляется с помощю push
 																			  settings.edgeId ) );
 */					 
@@ -534,8 +543,8 @@ if (debug) edge.vertices.forEach( verticeId => vertices[verticeId].edges.push( s
 						for ( let i = 0; i &lt; value.length; i ++ ) {
 							
 							const edge = value[i];
-							value[i] = Edge(edge, { edges: value, edgeId: i });
-							//value[i] = Edge(value[i]);//Error: EgocentricUniverse: Edge. Duplicate proxy
+//							value[i] = Edge(edge, { edges: value, edgeId: i });
+							value[i] = Edge({ edge: edge, edges: value, edgeId: i });
 							
 						}
 						
@@ -553,7 +562,7 @@ if (debug) edge.vertices.forEach( verticeId => vertices[verticeId].edges.push( s
 									case 'push': return (edge) => {
 
 										//console.log(sEgocentricUniverse + ': indices.edges.push(' + JSON.stringify(edge) + ')');
-										_edges.push(Edge(edge));
+										_edges.push(Edge({ edge: edge }));
 /*										
 										//разомкнуть в конце старое кольцо ребер и вставить туда нове ребро.
 										//Для этого заменить последнюю вершину предпоследнего ребра на последнюю вершину
@@ -920,14 +929,19 @@ if (debug) edge.vertices.forEach( verticeId => vertices[verticeId].edges.push( s
 							_vertices.forEach( ( vertice, verticeId ) => {
 	
 							const str1 = sEgocentricUniverse + ': vertices.test()', strVerticeId = 'vertices(' + verticeId + ')';
+/*
 							if (!debug) {
 	
 								console.error(str1 + '. Set debug = true first.');
 								return;
 								
 							}
+*/
+							egocentricUniverse.Test(vertice, str1, strVerticeId);
+/*
 							if (vertice.edges.length !== ( settings.n === 1 ? 2 : 0 ))
 								console.error(str1 + '. Invalid ' + strVerticeId + '.edges.length = ' + vertice.edges.length);
+*/
 							vertice.edges.forEach( edgeId => {
 	
 								if (typeof edgeId !== "number") console.error(str1 + '. ' + strVerticeId + '. Invalid edgeId = ' + edgeId);
@@ -980,64 +994,11 @@ if (debug) edge.vertices.forEach( verticeId => vertices[verticeId].edges.push( s
 		for ( let i = 0; i &lt; n + 2; i++ )
 			vertices.push();
 */		
+		this.Indices(indices, settings, debug);
+/*
 		switch( settings.n ){
 
 			case 1://1D universe.
-				indices.edges = settings.count || 3;
-				//indices.edges = '5';//Error: EgocentricUniverse: indices.edges set. Invalid edges array: 5
-				/*
-				indices.edges = [
-
-					{
-						//vertices: [0,1],
-						//distance: 1.0,//0.5,
-					},//0
-					{
-						//vertices: [1,2]
-					},//1
-					{
-						//vertices: [2,0]				
-						//vertices: [2,3]
-					},//2
-					{
-						//vertices: [3,0]
-					},//3
-								
-				];
-				*/
-				/*
-				indices.edges.push( {
-					//vertices: [3,0],
-				} );//3
-				*/
-					
-				vertices.test();
-
-				if ( debug ) {
-				
-					//test for duplicate vertice.edges edgeId
-					//indices.edges[0].vertices[0] = 1;//error: EgocentricUniverse: Edge.vertices[0]. Duplicate vertice index = 1
-					//vertices[1].edges[0] = 1;//на данный момент в vertice.edges можно иметь несколько ссылок на одно ребро потому что это не влияет на результат
-					
-					//indices.edges.push({});//Error: EgocentricUniverse: Duplicate edge. Vertices = 0,1
-					//indices.edges.push({ vertices: [1,0] });//Error: EgocentricUniverse: Duplicate edge. Vertices = 1,0
-					//indices.edges.push({ vertices: [1,2] });
-					//indices.edges = [];//Error: EgocentricUniverse: indices.edges set. duplicate edges
-					//indices.edges[0] = {};//Error: EgocentricUniverse: indices.edges set. Hidden method: edges[0] = {}
-					indices.edges.forEach( ( edge, edgeIndex ) => {
-	
-						//indices.edges[0] = edge;//Error: EgocentricUniverse: indices.edges set. Hidden method: edges[0] = {"vertices":[0,1]}
-						//indices.edges.push(edge);//Error: EgocentricUniverse: Edge. Duplicate proxy
-						const edgeVertices = edge.vertices;
-						//edge.vertices = edgeVertices;
-	//					const edgeVerticeId = edgeVertices[0];
-						//edgeVertices.forEach( ( vertice, i ) => console.log( 'indices.edges[' + edgeIndex + '].vertices[' + i + '] = ' + vertice ) );
-						//edgeVertices[1] = 2;
-					
-					} );
-
-				}
-				
 				break;
 			case 2://2D universe.
 				//indices.faces = 6;//Error: EgocentricUniverse: indices.faces set. Invalid faces array: 6
@@ -1054,6 +1015,9 @@ if (debug) edge.vertices.forEach( verticeId => vertices[verticeId].edges.push( s
 				return;
 				
 		}
+*/
+		
+		vertices.test();
 		
 		if ( debug ) {
 			
@@ -1084,13 +1048,13 @@ export default EgocentricUniverse;
 </div>
 
 <nav>
-    <h2><a href="index.html">Home</a></h2><h3>Modules</h3><ul><li><a href="module-EgocentricUniverse.html">EgocentricUniverse</a></li></ul><h3>Classes</h3><ul><li><a href="module-EgocentricUniverse-EgocentricUniverse.html">EgocentricUniverse</a></li></ul>
+    <h2><a href="index.html">Home</a></h2><h3>Modules</h3><ul><li><a href="module-Edges.html">Edges</a></li><li><a href="module-EgocentricUniverse.html">EgocentricUniverse</a></li></ul><h3>Classes</h3><ul><li><a href="module-Edges-Edges.html">Edges</a></li><li><a href="module-EgocentricUniverse-EgocentricUniverse.html">EgocentricUniverse</a></li></ul>
 </nav>
 
 <br class="clear">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 3.6.11</a> on Thu Mar 23 2023 21:45:07 GMT+0700 (Красноярск, стандартное время)
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 3.6.11</a> on Fri Mar 24 2023 13:11:03 GMT+0700 (Красноярск, стандартное время)
 </footer>
 
 <script> prettyPrint(); </script>

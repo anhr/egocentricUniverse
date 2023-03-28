@@ -1,4 +1,32 @@
-/**
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Source: edges.js</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Source: edges.js</h1>
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>/**
  * @module Edges
  * @description 1D universe or universe edges.
  *
@@ -18,97 +46,7 @@ import EgocentricUniverse from './egocentricUniverse.js';
 class Edges extends EgocentricUniverse {
 
 	//Overridden methods from base class
-
-	//Project universe into 3D space
-	project( indices, three, scene, options, debug ){
-
-		//Localization
-
-		const getLanguageCode = options.getLanguageCode;
-
-		const lang = {
-
-			universe: "Universe",
-
-		};
-
-		const _languageCode = getLanguageCode();
-
-		switch (_languageCode) {
-
-			case 'ru'://Russian language
-
-				lang.universe = 'Вселенная';
-
-				break;
-			default://Custom language
-				if ((guiParams.lang === undefined) || (guiParams.lang.languageCode != _languageCode))
-					break;
-
-				Object.keys(guiParams.lang).forEach(function (key) {
-
-					if (lang[key] === undefined)
-						return;
-					lang[key] = guiParams.lang[key];
-
-				});
-
-		}
-		
-		//universe length
-		let l = 0;
-		indices.edges.forEach( edge => { l += edge.distance; } );
-
-		const THREE = three.THREE,
-			r = l / ( 2 * Math.PI ),
-			center = new THREE.Vector2( 0.0, 0.0 );
-
-		if ( debug ) {
-
-			//https://stackoverflow.com/questions/13756112/draw-a-circle-not-shaded-with-three-js
-
-			//https://stackoverflow.com/a/70466408/5175935
-			scene.add( new THREE.LineLoop(new THREE.BufferGeometry().setFromPoints( new THREE.EllipseCurve(
-				center.x, center.y,// Center x, y
-				r, r,// x radius, y radius
-				0.0, 2.0 * Math.PI,// Start angle, stop angle
-			).getSpacedPoints(256) ), new THREE.LineBasicMaterial( { color: 'blue' } ) ) );
-			
-		}
-		const point0 = new THREE.Vector3( 0, -r, 0 ),
-			axis = new THREE.Vector3( 0, 0, 1 ),
-			points = [
-				point0,//0
-			];
-		let angle = 0.0;//Угол поворота радиуса вселенной до текущей вершины
-		const delta = 2 * Math.PI / l;
-		for ( let i = 1; i < indices.edges.length; i++ ) {
-
-			angle += indices.edges[i].distance * delta;
-			points.push( new THREE.Vector3().copy( point0 ).applyAxisAngle( axis, angle ) );
-
-		}
-		
-		const index = [];
-		indices.edges.forEach( edge => {
-
-			edge.vertices.forEach( ( vertice => index.push( vertice ) ) );
-			
-		} );
-		const universe3D = new THREE.LineSegments( new THREE.BufferGeometry().setFromPoints(points).setIndex( index ),
-										  new THREE.LineBasicMaterial( { color: 'green', } ) );
-
-		scene.add( universe3D );
-
-		if ( options.guiSelectPoint ) {
-			
-			if ( universe3D.name === '' ) universe3D.name = lang.universe;
-			options.guiSelectPoint.addMesh( universe3D );
-
-		}
-
-	}
-	get verticeEdgesLengthMax() { return 2; }//нельзя добавлть новое ребро если у вершины уже 3 ребра
+	
 	Test( vertice, str1, strVerticeId ){
 		
 		if (vertice.edges.length !== 2)
@@ -178,13 +116,12 @@ class Edges extends EgocentricUniverse {
 	/**
 	 * 1D universe or universe edges.
 	 * @param {THREE.Scene} scene [THREE.Scene]{@link https://threejs.org/docs/index.html?q=sce#api/en/scenes/Scene}.
-	 * @param {Options} options See <a href="../../../commonNodeJS/master/jsdoc/Options/Options.html" target="_blank">Options</a>.
-	 * @param {object} [settings] See <b>EgocentricUniverse <a href="./module-EgocentricUniverse-EgocentricUniverse.html" target="_blank">settings</a></b> parameter.
+	 * @param {Options} options See &lt;a href="../../../commonNodeJS/master/jsdoc/Options/Options.html" target="_blank">Options&lt;/a>.
+	 * @param {object} [settings] See &lt;b>EgocentricUniverse &lt;a href="./module-EgocentricUniverse-EgocentricUniverse.html" target="_blank">settings&lt;/a>&lt;/b> parameter.
 	 **/
 	constructor(scene, options, settings={}) {
 
 //		settings.n = 1;
-//		this.scene = scene;
 		super(scene, options, settings);
 
 	}
@@ -192,3 +129,26 @@ class Edges extends EgocentricUniverse {
 }
 
 export default Edges;
+</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Modules</h3><ul><li><a href="module-Edges.html">Edges</a></li><li><a href="module-EgocentricUniverse.html">EgocentricUniverse</a></li></ul><h3>Classes</h3><ul><li><a href="module-Edges-Edges.html">Edges</a></li><li><a href="module-EgocentricUniverse-EgocentricUniverse.html">EgocentricUniverse</a></li></ul>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 3.6.11</a> on Fri Mar 24 2023 13:11:03 GMT+0700 (Красноярск, стандартное время)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>

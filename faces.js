@@ -1,6 +1,6 @@
 /**
- * @module Edges
- * @description 1D universe or universe edges.
+ * @module Faces
+ * @description 2D universe or universe faces.
  *
  * @author [Andrej Hristoliubov]{@link https://github.com/anhr}
  *
@@ -14,11 +14,13 @@
 */
 
 import EgocentricUniverse from './egocentricUniverse.js';
+//import Intersections from '../../commonNodeJS/master/intersections/intersections.js';
+import FibonacciSphereGeometry from '../../commonNodeJS/master/FibonacciSphere/FibonacciSphereGeometry.js'
 
-class Edges extends EgocentricUniverse {
+class Faces extends EgocentricUniverse {
 
 	//Overridden methods from base class
-
+	
 	//Project universe into 3D space
 	project( indices, three, scene, options, debug ){
 
@@ -65,16 +67,61 @@ class Edges extends EgocentricUniverse {
 
 		if ( debug ) {
 
-			//https://stackoverflow.com/questions/13756112/draw-a-circle-not-shaded-with-three-js
+			const color = "lightgray",
+//				intersectColor = 'yellow',
+//				intersectMeshList = [],
+				opacity = 0.2;
+				
+			const sphere = new THREE.Mesh( new FibonacciSphereGeometry(),//new THREE.SphereGeometry( 1 ),
 
-			//https://stackoverflow.com/a/70466408/5175935
-			scene.add( new THREE.LineLoop(new THREE.BufferGeometry().setFromPoints( new THREE.EllipseCurve(
-				center.x, center.y,// Center x, y
-				r, r,// x radius, y radius
-				0.0, 2.0 * Math.PI,// Start angle, stop angle
-			).getSpacedPoints(256) ), new THREE.LineBasicMaterial( { color: 'blue' } ) ) );
+				new THREE.MeshLambertMaterial( {
+	
+					color: color,
+					opacity: opacity,
+					transparent: true,
+					side: THREE.DoubleSide//от этого ключа зависят точки пересечения объектов
+	
+				} )
+	
+			);			
+			scene.add( sphere );
+/*			
+			intersectMeshList.push( {
+				
+				mesh: sphere,
+				color: intersectColor
+				
+			} );
+*/   
+
+			const plane = new THREE.Mesh( new THREE.PlaneGeometry( 2.0, 2.0 ),
+
+				new THREE.MeshLambertMaterial( {
+
+					color: color,
+					opacity: opacity,
+					transparent: true,
+					side: THREE.DoubleSide//от этого ключа зависят точки пересечения объектов
+
+				} )
+
+			);
+			scene.add( plane );
+//			plane.name = name;
+/*			
+			intersectMeshList.push( {
+				
+				mesh: plane,
+				color: intersectColor
+				
+			} );
+*/   
+			
+			if (typeof Intersections != 'undefined') new Intersections( sphere, plane );//intersectMeshList );
 			
 		}
+const faces = indices.faces,//[1]
+	face = faces[0];
 		const point0 = new THREE.Vector3( 0, -r, 0 ),
 			axis = new THREE.Vector3( 0, 0, 1 ),
 			points = [
@@ -108,69 +155,49 @@ class Edges extends EgocentricUniverse {
 		}
 
 	}
-	get verticeEdgesLengthMax() { return 2; }//нельзя добавлть новое ребро если у вершины уже 3 ребра
+	get verticeEdgesLengthMax() { return 6 }//нельзя добавлть новое ребро если у вершины уже 6 ребер
 	Test( vertice, str1, strVerticeId ){
 		
-		if (vertice.edges.length !== 2)
+		if (vertice.edges.length !== 3)//пирамида
 			console.error(str1 + '. Invalid ' + strVerticeId + '.edges.length = ' + vertice.edges.length);
 		
 	}
 	Indices( indices, settings, debug ){
 
-		indices.edges = settings.count || 3;
-		//indices.edges = '5';//Error: EgocentricUniverse: indices.edges set. Invalid edges array: 5
-		/*
-		indices.edges = [
+		indices.edges = [//приамида
 
 			{
-				//vertices: [0,1],
+				vertices: [0, 1],
 				//distance: 1.0,//0.5,
 			},//0
 			{
-				//vertices: [1,2]
+				vertices: [1, 2]
 			},//1
 			{
-				//vertices: [2,0]				
+				vertices: [2, 0]
 				//vertices: [2,3]
 			},//2
 			{
-				//vertices: [3,0]
+				vertices: [0, 3]
 			},//3
-						
-		];
-		*/
-		/*
-		indices.edges.push(
 			{
-			//vertices: [3,0],
-			}
-		);//3
-		*/
-			
-//		vertices.test();
+				vertices: [1, 3]
+			},//4
+			{
+				vertices: [2, 3]
+			},//5
 
+		];
+		//indices.faces = settings.count || 4;//у пирамиды 4 грани
+		indices.faces = [
+
+			{
+				edges: [0, 1, 2],
+			},//0
+
+		];
 		if ( debug ) {
 		
-			//test for duplicate vertice.edges edgeId
-			//indices.edges[0].vertices[0] = 1;//error: EgocentricUniverse: Edge.vertices[0]. Duplicate vertice index = 1
-			//vertices[1].edges[0] = 1;//на данный момент в vertice.edges можно иметь несколько ссылок на одно ребро потому что это не влияет на результат
-			
-			//indices.edges.push({});//Error: EgocentricUniverse: Duplicate edge. Vertices = 0,1
-			//indices.edges.push({ vertices: [1,0] });//Error: EgocentricUniverse: Duplicate edge. Vertices = 1,0
-			//indices.edges.push({ vertices: [1,2] });
-			//indices.edges = [];//Error: EgocentricUniverse: indices.edges set. duplicate edges
-			//indices.edges[0] = {};//Error: EgocentricUniverse: indices.edges set. Hidden method: edges[0] = {}
-			indices.edges.forEach( ( edge, edgeIndex ) => {
-
-				//indices.edges[0] = edge;//Error: EgocentricUniverse: indices.edges set. Hidden method: edges[0] = {"vertices":[0,1]}
-				//indices.edges.push(edge);//Error: EgocentricUniverse: Edge. Duplicate proxy
-				const edgeVertices = edge.vertices;
-				//edge.vertices = edgeVertices;
-//					const edgeVerticeId = edgeVertices[0];
-				//edgeVertices.forEach( ( vertice, i ) => console.log( 'indices.edges[' + edgeIndex + '].vertices[' + i + '] = ' + vertice ) );
-				//edgeVertices[1] = 2;
-			
-			} );
 
 		}
 		
@@ -184,11 +211,10 @@ class Edges extends EgocentricUniverse {
 	constructor(scene, options, settings={}) {
 
 //		settings.n = 1;
-//		this.scene = scene;
 		super(scene, options, settings);
 
 	}
 
 }
 
-export default Edges;
+export default Faces;

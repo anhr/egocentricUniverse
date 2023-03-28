@@ -1,6 +1,6 @@
 /**
  * @module EgocentricUniverse
- * @description Egocentric universe
+ * @description Base class for egocentric universe.
  *
  * @author [Andrej Hristoliubov]{@link https://github.com/anhr}
  *
@@ -27,19 +27,25 @@ import three from '../../commonNodeJS/master/three.js'
 const debug = true;
 //const debug = false;
 
-const sEgocentricUniverse = 'EgocentricUniverse';
+const sEgocentricUniverse = 'EgocentricUniverse', sOverride = sEgocentricUniverse + ': Please override the %s method in your child class.';
 
 class EgocentricUniverse {
 
-	Indices() { console.error(sEgocentricUniverse + ': Please override the Indices method in your child class.'); }
-	Test() { console.error(sEgocentricUniverse + ': Please override the Test method in your child class.'); }
+	get verticeEdgesLengthMax() {
+		
+		console.error(sOverride.replace('%s', 'Indices'));
+//		return 0;
+	
+	}
+	project() { console.error(sOverride.replace('%s', 'project')); }
+	Indices() { console.error(sOverride.replace('%s', 'Indices')); }
+	Test() { console.error(sOverride.replace('%s', 'Test')); }
 	
 	/**
-	 * Egocentric universe.
+	 * Base class for egocentric universe.
 	 * @param {THREE.Scene} scene [THREE.Scene]{@link https://threejs.org/docs/index.html?q=sce#api/en/scenes/Scene}.
 	 * @param {Options} options See <a href="../../../commonNodeJS/master/jsdoc/Options/Options.html" target="_blank">Options</a>.
 	 * @param {object} [settings={}] The following settings are available
-	 * @param {number} [settings.n=3] dimension of the universe space. 1, 2 and 3 dimension is available.
 	 * @param {number} [settings.сount] If dimension of the universe space is 1 then <b>сount</b> is edges count. Default is 3.
 	 * <pre>
 	 * If dimension of the universe space is 2 then under constraction.
@@ -166,9 +172,12 @@ class EgocentricUniverse {
 					case 'edges':
 						if (!_indices[0]) indices.edges = [];
 						return _indices[0];
+					case 'faces':
+						if (!_indices[1]) indices.faces = [];
+						return _indices[1];
 						
 				}
-//				console.error(sEgocentricUniverse + ': indices get: invalid name: ' + name);
+				if (isNaN( parseInt(name) )) console.error(sEgocentricUniverse + ': indices[' + name + ']: invalid name: ' + name);
 				return _indices[name];
 
 			},
@@ -294,7 +303,7 @@ class EgocentricUniverse {
 								return true;
 
 							}
-							for (let i = 0; i < 2; i++) {
+							for (let i = 0; i < 2; i++) {//у каждого ребра 2 вершины
 
 								if (settings.edge.vertices[i] === undefined) {
 
@@ -536,95 +545,12 @@ if (debug) settings.edge.vertices.forEach( verticeId => vertices[verticeId].edge
 
 										//console.log(sEgocentricUniverse + ': indices.edges.push(' + JSON.stringify(edge) + ')');
 										_edges.push(Edge({ edge: edge }));
-/*										
-										//разомкнуть в конце старое кольцо ребер и вставить туда нове ребро.
-										//Для этого заменить последнюю вершину предпоследнего ребра на последнюю вершину
-										const edgeVertices = _edges[_edges.length - 2].vertices;
-										edgeVertices[edgeVertices.length - 1] = vertices.length - 1;
-*/		  
-
-									};
-									break;
-									case 'project': return () => {
-
-										//Project universe into 3D space
-
-										//universe length
-										let l = 0;
-										indices.edges.forEach( edge => { l += edge.distance; } );
-
-/*										
-										//Угол поворота радиуса вселенной для текущей вершины
-										const angles = [ 0.0 ], delta = 2 * Math.PI / l;
-										for ( let i = 1; i < indices.edges.length; i++ )
-											angles.push( angles[ i - 1 ] + indices.edges[i].distance * delta );
-*/		   
-										
-										const THREE = three.THREE,
-											r = l / ( 2 * Math.PI ),
-											center = new THREE.Vector2( 0.0, 0.0 );
-
-										if ( debug ) {
-
-											//https://stackoverflow.com/questions/13756112/draw-a-circle-not-shaded-with-three-js
-
-											//https://stackoverflow.com/a/70466408/5175935
-											scene.add( new THREE.LineLoop(new THREE.BufferGeometry().setFromPoints( new THREE.EllipseCurve(
-												center.x, center.y,// Center x, y
-												r, r,// x radius, y radius
-												0.0, 2.0 * Math.PI,// Start angle, stop angle
-											).getSpacedPoints(256) ), new THREE.LineBasicMaterial( { color: 'blue' } ) ) );
-											
-										}
-/*										
-										const points = new THREE.EllipseCurve(
-											center.x, center.y,// Center x, y
-											r, r,// x radius, y radius
-											0.0, 2.0 * Math.PI,// Start angle, stop angle
-										).getSpacedPoints( 3 );
-										const universe3D = new THREE.LineLoop(new THREE.BufferGeometry().setFromPoints( points ), new THREE.LineBasicMaterial( { color: 'green' } ) );
-*/									
-										const point0 = new THREE.Vector3( 0, -r, 0 ),
-											axis = new THREE.Vector3( 0, 0, 1 ),
-//											angle = 2 * Math.PI / 3,
-											points = [
-												point0,//0
-//												new THREE.Vector3().copy( point0 ).applyAxisAngle( axis, angle ),//1
-//												new THREE.Vector3().copy( point0 ).applyAxisAngle( axis, 2 * angle ),//2
-											];
-										let angle = 0.0;//Угол поворота радиуса вселенной до текущей вершины
-										const delta = 2 * Math.PI / l;
-										for ( let i = 1; i < indices.edges.length; i++ ) {
-
-											angle += indices.edges[i].distance * delta;
-											points.push( new THREE.Vector3().copy( point0 ).applyAxisAngle( axis, angle ) );
-//											points.push( new THREE.Vector3().copy( point0 ).applyAxisAngle( axis, angles[i] ) );
-
-										}
-										
-										const index = [];
-										indices.edges.forEach( edge => {
-
-											edge.vertices.forEach( ( vertice => index.push( vertice ) ) );
-											
-										} );
-										const universe3D = new THREE.LineSegments( new THREE.BufferGeometry().setFromPoints(points).setIndex( index ),
-																		  new THREE.LineBasicMaterial( { color: 'green', } ) );
-					
-										scene.add( universe3D );
-
-										if ( options.guiSelectPoint ) {
-											
-											if ( universe3D.name === '' ) universe3D.name = lang.universe;
-											options.guiSelectPoint.addMesh( universe3D );
-
-										}
 
 									};
 									break;
 
 								}
-								//									console.error(sEgocentricUniverse + ': indices.edges get: invalid name: ' + name);
+//									console.error(sEgocentricUniverse + ': indices.edges get: invalid name: ' + name);
 								return _edges[name];
 
 							},
@@ -642,14 +568,6 @@ if (debug) settings.edge.vertices.forEach( verticeId => vertices[verticeId].edge
 							}
 
 						});
-						//value.forEach( edge => indices.edges.push( edge ) )
-/*
-						//сразу заменяем все ребра на прокси, потому что в противном случае, когда мы создаем прокси ребра в get, каждый раз,
-						//когда вызывается get, в результате может получться бесконечная вложенная конструкция и появится сообщение об ошибке:
-						//EgocentricUniverse: Edge get. Duplicate proxy
-						for ( let i = 0; i < indices.edges.length; i ++ )
-							indices.edges[i] = Edge(indices.edges[i]);
-*/						
 						break;
 					case 'faces':
 						if ( debug ) {
@@ -670,28 +588,29 @@ if (debug) settings.edge.vertices.forEach( verticeId => vertices[verticeId].edge
 							}
 
 						}
-						function Face(face, settings={}) {
+						function Face( settings={} ) {
 
 							const sFace = sEgocentricUniverse + ': Face';
+							settings.face = settings.face || {};
 							
 							//Face edges
 							
-							face.edges = face.edges || [];
+							settings.face.edges = settings.face.edges || [];
 							if ( debug ) {
 								
-								if (face.isProxy) {
+								if (settings.face.isProxy) {
 	
 									console.error(sFace + '. Duplicate proxy');
 									return edge;
 	
 								}
-								if ( face instanceof Array ) {
+								if ( settings.face instanceof Array ) {
 
 									console.error(sFace + '. Invalid face instance' );
 									return false;
 
 								}
-								if ( !( face.edges instanceof Array  ) ) {
+								if ( !( settings.face.edges instanceof Array  ) ) {
 
 									console.error(sFace + '. Invalid face.edges instance' );
 									return false;
@@ -703,9 +622,9 @@ if (debug) settings.edge.vertices.forEach( verticeId => vertices[verticeId].edge
 
 								if (!debug) return true;
 
-								if ((i < 0) || (i > 3)) {
+								if ((i < 0) || (i > 2)) {
 
-									console.error(sEgocentricUniverse + '. indices.faces[' + settings.faceId + '].edges[index] index = ' + i + ' is limit from 0 to 3');
+									console.error(sEgocentricUniverse + '. indices.faces[' + settings.faceId + '].edges[index] index = ' + i + ' is limit from 0 to 2');
 									return false;
 
 								}
@@ -732,11 +651,11 @@ if (debug) settings.edge.vertices.forEach( verticeId => vertices[verticeId].edge
 									return false;
 
 								}
-								for (let index = 0; index < face.edges.length; index++) {
+								for (let index = 0; index < settings.face.edges.length; index++) {
 
 									if (index === i) continue;//не надо сравнивать самого себя
 
-									if (edgeId === face.edges[index]) {
+									if (edgeId === settings.face.edges[index]) {
 
 //not tested
 										console.error(sFace + '[' + i + '].edges. Duplicate edge index = ' + edgeId);
@@ -751,12 +670,41 @@ if (debug) settings.edge.vertices.forEach( verticeId => vertices[verticeId].edge
 							//EdgeIdDebug(0, {});//error: EgocentricUniverse: Face[0]. Invalid edge index = [object Object]
 							//EdgeIdDebug(4, 0);//Error: EgocentricUniverse. indices.faces[0].edges[index] index = 4 is limit from 0 to 3
 							//EdgeIdDebug(0, 1);//Error: EgocentricUniverse: Face[0]. edge index = 1 is limit from 0 to -1
-							for (let i = 0; i < 4; i++) {
+							for (let i = 0; i < 3; i++) {//У каждой грани 3 ребра
 
-								if (face.edges[i] === undefined) face.edges[i] = i;//default id of edge.
-								EdgeIdDebug(i, face.edges[i]);
+								if (settings.face.edges[i] === undefined) settings.face.edges[i] = i;//default id of edge.
+								EdgeIdDebug(i, settings.face.edges[i]);
 
 							}
+							
+							return new Proxy(settings.face, {
+
+								get: function (face, name) {
+
+									const i = parseInt(name);
+									if (!isNaN(i)) {
+
+										if (name >= face.length)
+											console.error(sFace + ' get. Invalid index = ' + name);
+										return face[name];
+
+									}
+									switch (name) {
+
+										case 'isProxy': return true;
+
+									}
+									return face[name];
+
+								},
+								set: function (face, name, value) {
+
+									face[name] = value;
+									return true;
+
+								},
+
+							});
 							
 						}
 						
@@ -766,9 +714,46 @@ if (debug) settings.edge.vertices.forEach( verticeId => vertices[verticeId].edge
 						for ( let i = 0; i < value.length; i ++ ) {
 							
 							const face = value[i];
-							value[i] = Face(face, { faces: value, faceId: i });
+							value[i] = Face({ face: face, faces: value, faceId: i });
 							
 						}
+						_indices[1] = new Proxy(value, {
+
+							get: function (_faces, name) {
+
+								const i = parseInt(name);
+								if (!isNaN(i))
+									return _faces[i];
+
+								switch (name) {
+
+									case 'push': return (face) => {
+
+											//console.log(sEgocentricUniverse + ': indices.faces.push(' + JSON.stringify(face) + ')');
+											_faces.push(Face({ face: face }));
+	
+										};
+										break;
+
+								}
+//									console.error(sEgocentricUniverse + ': indices.faces[' + name + '] get: invalid name: ' + name);
+								return _faces[name];
+
+							},
+							set: function (_faces, name, value) {
+
+								const i = parseInt(name);
+								if (!isNaN(i)) {
+
+									console.error(sEgocentricUniverse + sIndicesEdgesSet + 'Hidden method: faces[' + i + '] = ' + JSON.stringify(value));
+									_faces[i] = value;
+
+								}
+								return true;
+
+							}
+
+						});
 						break;
 					default: console.error(sEgocentricUniverse + ': indices set: invalid name: ' + name);
 					
@@ -835,9 +820,12 @@ if (debug) settings.edge.vertices.forEach( verticeId => vertices[verticeId].edge
 													if (debug) {
 
 														const sPush = sEgocentricUniverse + ': Vertice' + (verticeId === undefined ? '' : '[' + verticeId + ']') + '.edges.push(' + edgeId + '):';
-														
+
+/*														
 														//нельзя добавлть новое ребро если у вершины уже два ребра
-														if (edges.length >= 2) {
+														if (edges.length >= 2)
+*/			  
+														if (edges.length >= this.verticeEdgesLengthMax) {
 															
 															console.error(sPush + ' invalid edges.length = ' + edges.length);
 															return;
@@ -1003,7 +991,8 @@ if (debug) settings.edge.vertices.forEach( verticeId => vertices[verticeId].edge
 		}
 
 		//Project universe into 3D space
-		indices[indices.length - 1].project();
+		this.project( indices, three, scene, options, debug );
+//		indices[indices.length - 1].project();
 		
 	}
 

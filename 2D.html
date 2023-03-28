@@ -37,47 +37,56 @@
 		//import MyThree from '../../commonNodeJS/master/myThree/build/myThree.module.min.js';
 		MyThree.three.THREE = THREE;
 
-		import EgocentricUniverse from './egocentricUniverse.js';
+//		import EgocentricUniverse from './egocentricUniverse.js';
+		import EgocentricUniverse from './faces.js';
 
 
 		new MyThree(function (scene, options) {
 
-/*			
-			const arrayFuncs = [
-				[],//first point. Zero position. White color.
-				[-0.5, 0.5, 0.5],//second point. White color.
-			];
-			MyThree.MyPoints(arrayFuncs, scene, { options: options });
-*/			
-			new EgocentricUniverse( scene, options, { n: 2 } );
+			new EgocentricUniverse( scene, options,
+				{
+					//count: 10,//2D universe space. n = 2.
+				}
+			);
 
 		}, {
 
 			//axesHelper: false,
-			orbitControls: { enableRotate: false, },
+			//orbitControls: { enableRotate: false, },
 			camera: { position: new THREE.Vector3( 0, 0, 2 ) },
 			stereoEffect: false,
 			//canvasMenu: false,
 			scales: {
 
-				x: {},
-				y: {},
-				posAxesIntersection: new THREE.Vector3( -1, -1, 0 ),
+				//x: {},
+				//y: {},
+				posAxesIntersection: new THREE.Vector3( -1, -1, -1 ),
 				text: { precision: 1, rect: { displayRect: false, }, }
 
 			},
-//			title: '<a href="https://github.com/anhr/egocentricUniverse" target="_blank" rel="noopener">Egocentric Universe</a>',
 			//dat: false,
 			canvas: {
 
 				noButtonFullScreen: true,
-/*
-				fullScreen: false,
-				width: window.innerWidth / 2,
-				height: window.innerHeight / 2,
-*/				
 
 			},
+			pointLight: {
+
+				pointLight1: {
+
+					//position: new THREE.Vector3( 100, 10, 2 ),
+					position: new THREE.Vector3(0, 20, 20),
+
+				},
+				pointLight2: {
+
+					//position: new THREE.Vector3( -100, -2, -2 ),
+					position: new THREE.Vector3(0, 0, -20),
+
+				},
+
+			},
+			//pointLight: false,
 
 		});
 
