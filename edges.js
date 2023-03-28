@@ -115,13 +115,13 @@ class Edges extends EgocentricUniverse {
 			console.error(str1 + '. Invalid ' + strVerticeId + '.edges.length = ' + vertice.edges.length);
 		
 	}
-	Indices( indices, settings, debug ){
+	Indices( indices, settings, vertices, debug ){
 
 //		indices.edges = settings.count || 3;
 
-		const sEdges = 'sEdges', sIndicesEdgesSet = ': indices.edges set. ',
-			_indices = indices._indices,
-			value = settings.count || 3;
+		const sEdges = 'Edges', sIndicesEdgesSet = ': indices.edges set. ',
+			_indices = indices._indices;
+		let value = settings.count || 3;
 		if ( debug ) {
 			
 			if ( _indices[0]) {
@@ -131,21 +131,21 @@ class Edges extends EgocentricUniverse {
 
 			}
 
-			if ( !( value instanceof Array ) ){
+		}
+		
+		if ( !( value instanceof Array ) ){
 
-				if (typeof value === "number") {
+			if (typeof value === "number") {
 
-					const edges = [];
-					for ( let i = 0; i < value; i++ ) edges.push({});
-					value = edges;
-					
-				} else {
-					
-					console.error(sEdges + sIndicesEdgesSet + 'Invalid edges array: ' + value);
-					return true;
-					
-				}
-
+				const edges = [];
+				for ( let i = 0; i < value; i++ ) edges.push({});
+				value = edges;
+				
+			} else {
+				
+				console.error(sEdges + sIndicesEdgesSet + 'Invalid edges array: ' + value);
+				return true;
+				
 			}
 
 		}
@@ -459,7 +459,6 @@ if (debug) settings.edge.vertices.forEach( verticeId => vertices[verticeId].edge
 		for ( let i = 0; i < value.length; i ++ ) {
 			
 			const edge = value[i];
-//							value[i] = Edge(edge, { edges: value, edgeId: i });
 			value[i] = Edge({ edge: edge, edges: value, edgeId: i });
 			
 		}
@@ -546,17 +545,19 @@ if (debug) settings.edge.vertices.forEach( verticeId => vertices[verticeId].edge
 			//indices.edges.push({ vertices: [1,2] });
 			//indices.edges = [];//Error: EgocentricUniverse: indices.edges set. duplicate edges
 			//indices.edges[0] = {};//Error: EgocentricUniverse: indices.edges set. Hidden method: edges[0] = {}
+			/*
 			indices.edges.forEach( ( edge, edgeIndex ) => {
 
-				//indices.edges[0] = edge;//Error: EgocentricUniverse: indices.edges set. Hidden method: edges[0] = {"vertices":[0,1]}
-				//indices.edges.push(edge);//Error: EgocentricUniverse: Edge. Duplicate proxy
-				const edgeVertices = edge.vertices;
+				//indices.edges[0] = edge;//Error: Edges: indices.edges set. Hidden method: edges[0] = {"vertices":[0,1]}
+				//indices.edges.push(edge);//Error: Edges: Edge. Duplicate proxy
+				//const edgeVertices = edge.vertices;
 				//edge.vertices = edgeVertices;
 //					const edgeVerticeId = edgeVertices[0];
 				//edgeVertices.forEach( ( vertice, i ) => console.log( 'indices.edges[' + edgeIndex + '].vertices[' + i + '] = ' + vertice ) );
-				//edgeVertices[1] = 2;
+				//edgeVertices[1] = 0;//Error: Edges: edges[0].vertices[1]. Duplicate vertice index = 0
 			
 			} );
+		   */
 
 		}
 		
