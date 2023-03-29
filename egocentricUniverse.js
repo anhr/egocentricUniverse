@@ -169,192 +169,10 @@ class EgocentricUniverse {
 */
 				switch (name) {
 
+/*
 					case 'faces':
-						if ( debug ) {
-							
-							const sIndicesFacesSet = ': indices.faces set. ';
-							if ( _indices[1]) {
-	
-								console.error(sEgocentricUniverse + sIndicesFacesSet + 'duplicate faces');
-								return true;
-	
-							}
-	
-							if ( !( value instanceof Array ) ){
-	
-								console.error(sEgocentricUniverse + sIndicesFacesSet + 'Invalid faces array: ' + value);
-								return true;
-	
-							}
-
-						}
-						function Face( settings={} ) {
-
-							const sFace = sEgocentricUniverse + ': Face';
-							settings.face = settings.face || {};
-							
-							//Face edges
-							
-							settings.face.edges = settings.face.edges || [];
-							if ( debug ) {
-								
-								if (settings.face.isProxy) {
-	
-									console.error(sFace + '. Duplicate proxy');
-									return edge;
-	
-								}
-								if ( settings.face instanceof Array ) {
-
-									console.error(sFace + '. Invalid face instance' );
-									return false;
-
-								}
-								if ( !( settings.face.edges instanceof Array  ) ) {
-
-									console.error(sFace + '. Invalid face.edges instance' );
-									return false;
-
-								}
-
-							}
-							function IdDebug(i) {
-
-								if (!debug) return true;
-
-								if ((i < 0) || (i > 2)) {
-
-									console.error(sEgocentricUniverse + '. indices.faces[' + settings.faceId + '].edges[index] index = ' + i + ' is limit from 0 to 2');
-									return false;
-
-								}
-								return true;
-
-							}
-							function EdgeIdDebug(i, edgeId) {
-
-								if ( edgeId === indices.edges.length ) indices.edges.push();
-								
-								if (!debug) return true;
-
-								if ( !IdDebug(i) ) return false;
-
-								if (isNaN(parseInt(edgeId))) {
-
-									console.error(sFace + '[' + i + ']. Invalid edge index = ' + edgeId);
-									return false;
-
-								}
-								if ( (edgeId < 0) || (edgeId >= indices.edges.length) ) {
-
-									console.error(sFace + '[' + i + ']. edge index = ' + edgeId + ' is limit from 0 to ' + (indices.edges.length - 1));
-									return false;
-
-								}
-								for (let index = 0; index < settings.face.edges.length; index++) {
-
-									if (index === i) continue;//не надо сравнивать самого себя
-
-									if (edgeId === settings.face.edges[index]) {
-
-//not tested
-										console.error(sFace + '[' + i + '].edges. Duplicate edge index = ' + edgeId);
-										return false;
-
-									}
-
-								};
-								return true;
-
-							}
-							//EdgeIdDebug(0, {});//error: EgocentricUniverse: Face[0]. Invalid edge index = [object Object]
-							//EdgeIdDebug(4, 0);//Error: EgocentricUniverse. indices.faces[0].edges[index] index = 4 is limit from 0 to 3
-							//EdgeIdDebug(0, 1);//Error: EgocentricUniverse: Face[0]. edge index = 1 is limit from 0 to -1
-							for (let i = 0; i < 3; i++) {//У каждой грани 3 ребра
-
-								if (settings.face.edges[i] === undefined) settings.face.edges[i] = i;//default id of edge.
-								EdgeIdDebug(i, settings.face.edges[i]);
-
-							}
-							
-							return new Proxy(settings.face, {
-
-								get: function (face, name) {
-
-									const i = parseInt(name);
-									if (!isNaN(i)) {
-
-										if (name >= face.length)
-											console.error(sFace + ' get. Invalid index = ' + name);
-										return face[name];
-
-									}
-									switch (name) {
-
-										case 'isProxy': return true;
-
-									}
-									return face[name];
-
-								},
-								set: function (face, name, value) {
-
-									face[name] = value;
-									return true;
-
-								},
-
-							});
-							
-						}
-						
-						//сразу заменяем все грани на прокси, потому что в противном случае, когда мы создаем прокси грани в get, каждый раз,
-						//когда вызывается get, в результате может получться бесконечная вложенная конструкция и появится сообщение об ошибке:
-						//EgocentricUniverse: Face get. Duplicate proxy
-						for ( let i = 0; i < value.length; i ++ ) {
-							
-							const face = value[i];
-							value[i] = Face({ face: face, faces: value, faceId: i });
-							
-						}
-						_indices[1] = new Proxy(value, {
-
-							get: function (_faces, name) {
-
-								const i = parseInt(name);
-								if (!isNaN(i))
-									return _faces[i];
-
-								switch (name) {
-
-									case 'push': return (face) => {
-
-											//console.log(sEgocentricUniverse + ': indices.faces.push(' + JSON.stringify(face) + ')');
-											_faces.push(Face({ face: face }));
-	
-										};
-										break;
-
-								}
-//									console.error(sEgocentricUniverse + ': indices.faces[' + name + '] get: invalid name: ' + name);
-								return _faces[name];
-
-							},
-							set: function (_faces, name, value) {
-
-								const i = parseInt(name);
-								if (!isNaN(i)) {
-
-									console.error(sEgocentricUniverse + sIndicesEdgesSet + 'Hidden method: faces[' + i + '] = ' + JSON.stringify(value));
-									_faces[i] = value;
-
-								}
-								return true;
-
-							}
-
-						});
 						break;
+*/
 					case '_indices': return _indices;
 					case 'edges': return _indices[0];
 					default: console.error(sEgocentricUniverse + ': indices set: invalid name: ' + name);
@@ -557,9 +375,12 @@ class EgocentricUniverse {
 		for ( let i = 0; i < n + 2; i++ )
 			vertices.push();
 */		
-		//settings.count = 'count';//Error: edges.js:146 Edges: indices.edges set. Invalid edges array: count
+		//settings.count = 'count';//Error: Edges: indices.edges set. Invalid edges array: count
+		//settings.count = [{ isProxy: true }];//Error: Faces: faces[0]. Duplicate proxy
+		//settings.count = [{ edges: true }];//Error: Faces: faces[0]. Invalid face.edges instance: true
+		//settings.count = [[]];//Error: Faces: faces[0]. Invalid face instance
 		this.Indices(indices, settings, vertices, debug);
-		//this.Indices(indices, settings, vertices, debug);//Error: Edges: indices.edges set. duplicate edges
+		this.Indices(indices, settings, vertices, debug);//Error: Edges: indices.edges set. duplicate edges
 		
 		vertices.test();
 		
