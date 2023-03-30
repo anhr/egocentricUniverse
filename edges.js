@@ -565,11 +565,11 @@ if (debug) settings.edge.vertices.forEach( verticeId => vertices[verticeId].edge
 	 * @param {Options} options See <a href="../../../commonNodeJS/master/jsdoc/Options/Options.html" target="_blank">Options</a>.
 	 * @param {object} [settings] See <b>EgocentricUniverse <a href="./module-EgocentricUniverse-EgocentricUniverse.html" target="_blank">settings</a></b> parameter.
 	 **/
-	constructor(scene, options, settings={}) {
+	constructor( scene, options, settings={} ) {
 
 //		settings.n = 1;
 //		this.scene = scene;
-		super(scene, options, settings);
+		super( scene, options, settings );
 
 	}
 

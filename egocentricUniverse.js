@@ -28,6 +28,7 @@ const debug = true;
 //const debug = false;
 
 const sEgocentricUniverse = 'EgocentricUniverse', sOverride = sEgocentricUniverse + ': Please override the %s method in your child class.';
+let lang;
 
 class EgocentricUniverse {
 
@@ -37,6 +38,8 @@ class EgocentricUniverse {
 //		return 0;
 	
 	}
+//	get scene() { return this._scene; }
+//	set scene( scene ) { this._scene = scene; }
 	project() { console.error(sOverride.replace('%s', 'project')); }
 	Indices() { console.error(sOverride.replace('%s', 'Indices')); }
 	Test() { console.error(sOverride.replace('%s', 'Test')); }
@@ -55,6 +58,8 @@ class EgocentricUniverse {
 	constructor(scene, options, settings = {} ) {
 
 		const egocentricUniverse = this;
+		this.scene = scene;
+		this.options = options;
 /*		
 		if (settings.edgesCount !== undefined) {
 
@@ -75,36 +80,40 @@ class EgocentricUniverse {
 		}
 */
 
-		//Localization
-
-		const getLanguageCode = options.getLanguageCode;
-
-		const lang = {
-
-			universe: "Universe",
-
-		};
-
-		const _languageCode = getLanguageCode();
-
-		switch (_languageCode) {
-
-			case 'ru'://Russian language
-
-				lang.universe = 'Вселенная';
-
-				break;
-			default://Custom language
-				if ((guiParams.lang === undefined) || (guiParams.lang.languageCode != _languageCode))
+		if (!lang) {
+		
+			//Localization
+	
+			const getLanguageCode = options.getLanguageCode;
+	
+			lang = {
+	
+				universe: "Universe",
+	
+			};
+	
+			const _languageCode = getLanguageCode();
+	
+			switch (_languageCode) {
+	
+				case 'ru'://Russian language
+	
+					lang.universe = 'Вселенная';
+	
 					break;
-
-				Object.keys(guiParams.lang).forEach(function (key) {
-
-					if (lang[key] === undefined)
-						return;
-					lang[key] = guiParams.lang[key];
-
-				});
+				default://Custom language
+					if ((guiParams.lang === undefined) || (guiParams.lang.languageCode != _languageCode))
+						break;
+	
+					Object.keys(guiParams.lang).forEach(function (key) {
+	
+						if (lang[key] === undefined)
+							return;
+						lang[key] = guiParams.lang[key];
+	
+					});
+	
+			}
 
 		}
 		
@@ -380,7 +389,7 @@ class EgocentricUniverse {
 		//settings.count = [{ edges: true }];//Error: Faces: faces[0]. Invalid face.edges instance: true
 		//settings.count = [[]];//Error: Faces: faces[0]. Invalid face instance
 		this.Indices(indices, settings, vertices, debug);
-		this.Indices(indices, settings, vertices, debug);//Error: Edges: indices.edges set. duplicate edges
+		//this.Indices(indices, settings, vertices, debug);//Error: Edges: indices.edges set. duplicate edges
 		
 		vertices.test();
 		

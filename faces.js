@@ -14,6 +14,10 @@
 */
 
 import EgocentricUniverse from './egocentricUniverse.js';
+import Face from './edges.js';
+
+//debug
+
 //import Intersections from '../../commonNodeJS/master/intersections/intersections.js';
 import FibonacciSphereGeometry from '../../commonNodeJS/master/FibonacciSphere/FibonacciSphereGeometry.js'
 
@@ -194,7 +198,7 @@ const faces = indices.faces,//[1]
 			}
 
 		}
-		function Face(settings = {}) {
+		function Face2(settings = {}) {
 
 			const sFace = sFaces + ': ' + ( settings.faceId === undefined ? 'Face' : 'faces[' + settings.faceId + ']' );
 			settings.face = settings.face || {};
@@ -320,7 +324,8 @@ const faces = indices.faces,//[1]
 		for (let i = 0; i < value.length; i++) {
 
 			const face = value[i];
-			value[i] = Face({ face: face, faces: value, faceId: i });
+//			value[i] = Face({ face: face, faces: value, faceId: i });
+			value[i] = new Face( this.scene, this.options );
 
 		}
 		_indices[1] = new Proxy(value, {
