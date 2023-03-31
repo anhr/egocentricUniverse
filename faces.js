@@ -25,6 +25,16 @@ class Faces extends EgocentricUniverse {
 
 	//Overridden methods from base class
 	
+	get( name ) {
+		
+		switch (name) {
+
+			case 'faces2': return this.settings.indices._indices[1];
+			default: console.error(sEgocentricUniverse + ': indices get: invalid name: ' + name);
+			
+		}
+		
+	}
 	//Project universe into 3D space
 	project( indices, three, scene, options, debug ){
 
@@ -166,7 +176,7 @@ const faces = indices.faces,//[1]
 			console.error(str1 + '. Invalid ' + strVerticeId + '.edges.length = ' + vertice.edges.length);
 		
 	}
-	Indices( indices, settings, debug ){
+	Indices( indices, settings, vertices, debug ){
 
 		const sFaces = 'Faces', sIndicesFacesSet = ': indices.faces set. ',
 			_indices = indices._indices;
@@ -323,9 +333,9 @@ const faces = indices.faces,//[1]
 		//EgocentricUniverse: Face get. Duplicate proxy
 		for (let i = 0; i < value.length; i++) {
 
-			const face = value[i];
+//			const face = value[i];
 //			value[i] = Face({ face: face, faces: value, faceId: i });
-			value[i] = new Face( this.scene, this.options );
+			value[i] = new Face( this.scene, this.options, { indices: indices, vertices: vertices, noTest: true } );
 
 		}
 		_indices[1] = new Proxy(value, {
