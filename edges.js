@@ -122,7 +122,8 @@ class Edges extends EgocentricUniverse {
 		const sEdges = 'Edges', sIndicesEdgesSet = ': indices.edges set. ',
 			_indices = indices._indices;
 		settings.count = settings.count || 3;
-		let value = settings.edges || settings.count;
+//		let value = settings.edges || settings.count;
+		settings.edges = settings.edges || settings.count;
 		if ( debug ) {
 			
 			if ( _indices[0]) {
@@ -134,13 +135,13 @@ class Edges extends EgocentricUniverse {
 
 		}
 		
-		if ( !( value instanceof Array ) ){
+		if ( !( settings.edges instanceof Array ) ){
 
-			if (typeof value === "number") {
+			if (typeof settings.edges === "number") {
 
 				const edges = [];
-				for ( let i = 0; i < value; i++ ) edges.push({});
-				value = edges;
+				for ( let i = 0; i < settings.edges; i++ ) edges.push({});
+				settings.edges = edges;
 				
 			} else {
 				
@@ -455,20 +456,20 @@ if (debug) settings.edge.vertices.forEach( verticeId => vertices[verticeId].edge
 		}
 
 		//ребер не должно быть меньше 3
-		for ( let i = value.length; i < settings.count; i++ ) value.push({});
+		for ( let i = settings.edges.length; i < settings.count; i++ ) settings.edges.push({});
 
 		//сразу заменяем все ребра на прокси, потому что в противном случае, когда мы создаем прокси ребра в get, каждый раз,
 		//когда вызывается get, в результате может получться бесконечная вложенная конструкция и появится сообщение об ошибке:
 		//EgocentricUniverse: Edge get. Duplicate proxy
-//		const length = value.length < settings.count ? settings.count : value.length;
-		for ( let i = 0; i < value.length; i ++ ) {
+//		const length = settings.edges.length < settings.count ? settings.count : settings.edges.length;
+		for ( let i = 0; i < settings.edges.length; i ++ ) {
 			
-			const edge = value[i] || {};
-			value[i] = Edge({ edge: edge, edges: value, edgeId: i });
+			const edge = settings.edges[i] || {};
+			settings.edges[i] = Edge({ edge: edge, edges: settings.edges, edgeId: i });
 			
 		}
 		
-		_indices[0] = new Proxy(value, {
+		_indices[0] = new Proxy(settings.edges, {
 
 			get: function (_edges, name) {
 
