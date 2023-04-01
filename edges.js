@@ -574,7 +574,7 @@ if (debug) settings.edge.vertices.forEach( verticeId => vertices[verticeId].edge
 	 * @param {Array} [settings.edges] Edges array. Default edges count is <b>settings.count</b>.
 	 * @param {object} [settings.edges.edge] Edges array item is edge.
 	 * @param {Array} [settings.edges.edge.vertices] Array of edge vertices indices. Every edge have two vertices.
-	 * @param {object} [settings.edges.edge.distance] Edge length. Distance between edge vertices.
+	 * @param {float} [settings.edges.edge.distance] Edge length. Distance between edge vertices.
 	 **/
 	constructor( scene, options, settings={} ) {
 
