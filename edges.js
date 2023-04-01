@@ -121,7 +121,8 @@ class Edges extends EgocentricUniverse {
 
 		const sEdges = 'Edges', sIndicesEdgesSet = ': indices.edges set. ',
 			_indices = indices._indices;
-		let value = settings.count || 3;
+		settings.count = settings.count || 3;
+		let value = settings.edges || settings.count;
 		if ( debug ) {
 			
 			if ( _indices[0]) {
@@ -452,13 +453,17 @@ if (debug) settings.edge.vertices.forEach( verticeId => vertices[verticeId].edge
 			});
 
 		}
-		
+
+		//ребер не должно быть меньше 3
+		for ( let i = value.length; i < settings.count; i++ ) value.push({});
+
 		//сразу заменяем все ребра на прокси, потому что в противном случае, когда мы создаем прокси ребра в get, каждый раз,
 		//когда вызывается get, в результате может получться бесконечная вложенная конструкция и появится сообщение об ошибке:
 		//EgocentricUniverse: Edge get. Duplicate proxy
+//		const length = value.length < settings.count ? settings.count : value.length;
 		for ( let i = 0; i < value.length; i ++ ) {
 			
-			const edge = value[i];
+			const edge = value[i] || {};
 			value[i] = Edge({ edge: edge, edges: value, edgeId: i });
 			
 		}
