@@ -455,7 +455,7 @@ if (debug) settings.edge.vertices.forEach( verticeId => vertices[verticeId].edge
 
 		}
 
-		//ребер не должно быть меньше 3
+		//у треугольника ребер не должно быть меньше 3
 		for ( let i = settings.edges.length; i < settings.count; i++ ) settings.edges.push({});
 
 		//сразу заменяем все ребра на прокси, потому что в противном случае, когда мы создаем прокси ребра в get, каждый раз,
@@ -570,6 +570,8 @@ if (debug) settings.edge.vertices.forEach( verticeId => vertices[verticeId].edge
 	 * @param {THREE.Scene} scene [THREE.Scene]{@link https://threejs.org/docs/index.html?q=sce#api/en/scenes/Scene}.
 	 * @param {Options} options See <a href="../../../commonNodeJS/master/jsdoc/Options/Options.html" target="_blank">Options</a>.
 	 * @param {object} [settings] See <b>EgocentricUniverse <a href="./module-EgocentricUniverse-EgocentricUniverse.html" target="_blank">settings</a></b> parameter.
+	 * @param {number} [settings.count=3] 1D Universe edges count. Default universe is triangle with 3 edges.
+	 * @param {Array} [settings.edges] Edges array. Default edges count is <b>settings.count</b>.
 	 **/
 	constructor( scene, options, settings={} ) {
 
