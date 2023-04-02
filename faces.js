@@ -217,11 +217,19 @@ const faces = indices.faces,//[1]
 		//сразу заменяем все грани на прокси, потому что в противном случае, когда мы создаем прокси грани в get, каждый раз,
 		//когда вызывается get, в результате может получться бесконечная вложенная конструкция и появится сообщение об ошибке:
 		//EgocentricUniverse: Face get. Duplicate proxy
+//settings.faces[0] = new Face( this.scene, this.options, { indices: indices, vertices: vertices, noTest: true } );
+//settings.faces[1] = new Face( this.scene, this.options, { indices: indices, vertices: vertices, noTest: true } );
 		for (let i = 0; i < settings.faces.length; i++) {
 
-//			const face = settings.faces[i];
+			const face = settings.faces[i];
+			face.edges = face.edges || [];
+			face.edges.forEach( edgeId => {
+
+				if (edgeId < indices.edges.length) face.edges[edgeId] = indices.edges[edgeId];
+				
+			} )
 //			settings.faces[i] = Face({ face: face, faces: settings.faces, faceId: i });
-			settings.faces[i] = new Face( this.scene, this.options, { indices: indices, vertices: vertices, noTest: true } );
+			settings.faces[i] = new Face( this.scene, this.options, { indices: indices, vertices: vertices, noTest: true, edges2: settings.faces[i].edges } );
 
 		}
 		_indices[1] = new Proxy(settings.faces, {
