@@ -229,7 +229,13 @@ const faces = indices.faces,//[1]
 				
 			} )
 //			settings.faces[i] = Face({ face: face, faces: settings.faces, faceId: i });
-			settings.faces[i] = new Face( this.scene, this.options, { indices: indices, vertices: vertices, noTest: true, edges2: settings.faces[i].edges } );
+//			settings.faces[i] = new Face( this.scene, this.options, { indices: indices, vertices: vertices, noTest: true, edges: settings.faces[i].edges } );
+			settings.faces[i] = new Face( this.scene, this.options, {
+				indices: indices,
+				vertices: vertices,
+				noTest: true,
+				edges: settings.faces[i].edges
+			} );
 
 		}
 		_indices[1] = new Proxy(settings.faces, {
