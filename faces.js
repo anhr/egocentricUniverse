@@ -36,8 +36,11 @@ class Faces extends EgocentricUniverse {
 		
 	}
 	//Project universe into 3D space
-	project( indices, three, scene, options, debug ){
+	project( three, debug ){
 
+		const indices = this.settings.indices, scene = this.scene, options = this.options;
+
+/*		
 		//Localization
 
 		const getLanguageCode = options.getLanguageCode;
@@ -70,6 +73,7 @@ class Faces extends EgocentricUniverse {
 				});
 
 		}
+*/
 		
 		//universe length
 		let l = 0;
@@ -163,7 +167,7 @@ const faces = indices.faces,//[1]
 
 		if ( options.guiSelectPoint ) {
 			
-			if ( universe3D.name === '' ) universe3D.name = lang.universe;
+			if ( universe3D.name === '' ) universe3D.name = this.lang.universe;
 			options.guiSelectPoint.addMesh( universe3D );
 
 		}

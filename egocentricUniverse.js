@@ -61,7 +61,7 @@ class EgocentricUniverse {
 		const egocentricUniverse = this;
 		this.scene = scene;
 		this.options = options;
-//		this.settings = settings;
+		this.settings = settings;
 /*		
 		if (settings.edgesCount !== undefined) {
 
@@ -116,6 +116,7 @@ class EgocentricUniverse {
 					});
 	
 			}
+			this.lang = lang;
 
 		}
 		
@@ -389,7 +390,7 @@ class EgocentricUniverse {
 		}
 
 		//Project universe into 3D space
-		this.project( settings.indices, three, scene, options, debug );
+		this.project( three, debug );
 //		indices[indices.length - 1].project();
 		
 	}
