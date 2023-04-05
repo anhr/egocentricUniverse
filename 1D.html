@@ -43,7 +43,7 @@
 
 		new MyThree(function (scene, options) {
 
-			new EgocentricUniverse( scene, options,
+			const universe = new EgocentricUniverse( scene, options,
 				{
 					//count: 10,//1D universe space edges count.
 					/*
@@ -76,6 +76,7 @@
 					 */
 				}
 			);
+			universe.settings.indices.edges.push();
 
 		}, {
 
