@@ -25,10 +25,10 @@ class Edges extends EgocentricUniverse {
 	//Project universe into 3D space
 	project(
 //		three,
-		debug
+//		debug
 	) {
 
-		const indices = this.settings.indices, scene = this.scene, options = this.options;
+		const indices = this.settings.indices, scene = this.scene;//, options = this.options;
 
 		//remove previous universe
 		for (var i = scene.children.length - 1; i >= 0; i--) {
@@ -51,7 +51,7 @@ class Edges extends EgocentricUniverse {
 			r = l / ( 2 * Math.PI ),
 			center = new THREE.Vector2( 0.0, 0.0 );
 
-		if ( debug ) {
+		if ( this.debug ) {
 
 			//https://stackoverflow.com/questions/13756112/draw-a-circle-not-shaded-with-three-js
 
@@ -107,9 +107,9 @@ class Edges extends EgocentricUniverse {
 			console.error(str1 + '. Invalid ' + strVerticeId + '.edges.length = ' + vertice.edges.length);
 		
 	}
-	Indices(indices, settings, vertices, debug) {
+	Indices( indices, settings, vertices ) {
 
-		//		indices.edges = settings.count || 3;
+		const debug = this.debug;
 
 		const sIndicesEdgesSet = ': indices.edges set. ',
 			_indices = indices._indices;

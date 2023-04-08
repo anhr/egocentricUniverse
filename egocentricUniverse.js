@@ -59,7 +59,7 @@ class EgocentricUniverse {
 	constructor(scene, options, settings = {} ) {
 
 		const egocentricUniverse = this;
-		this.options = options;
+//		this.options = options;
 		this.settings = settings;
 		this.debug = debug;
 
@@ -391,8 +391,8 @@ class EgocentricUniverse {
 		//settings.count = [{ isProxy: true }];//Error: Faces: faces[0]. Duplicate proxy
 		//settings.count = [{ edges: true }];//Error: Faces: faces[0]. Invalid face.edges instance: true
 		//settings.count = [[]];//Error: Faces: faces[0]. Invalid face instance
-		this.Indices(settings.indices, settings, vertices, debug);
-		//this.Indices(indices, settings, vertices, debug);//Error: Edges: indices.edges set. duplicate edges
+		this.Indices( settings.indices, settings, vertices );//, debug);
+		//this.Indices(indices, settings, vertices);//Error: Edges: indices.edges set. duplicate edges
 		
 		if (!settings.noTest) vertices.test();
 		
