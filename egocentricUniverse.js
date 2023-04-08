@@ -131,7 +131,7 @@ class EgocentricUniverse {
 					});
 	
 			}
-			this.lang = lang;
+//			this.lang = lang;
 
 		}
 		

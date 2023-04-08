@@ -40,41 +40,6 @@ class Faces extends EgocentricUniverse {
 
 		const indices = this.settings.indices, scene = this.scene, options = this.options;
 
-/*		
-		//Localization
-
-		const getLanguageCode = options.getLanguageCode;
-
-		const lang = {
-
-			universe: "Universe",
-
-		};
-
-		const _languageCode = getLanguageCode();
-
-		switch (_languageCode) {
-
-			case 'ru'://Russian language
-
-				lang.universe = 'Вселенная';
-
-				break;
-			default://Custom language
-				if ((guiParams.lang === undefined) || (guiParams.lang.languageCode != _languageCode))
-					break;
-
-				Object.keys(guiParams.lang).forEach(function (key) {
-
-					if (lang[key] === undefined)
-						return;
-					lang[key] = guiParams.lang[key];
-
-				});
-
-		}
-*/
-		
 		//universe length
 		let l = 0;
 		indices.edges.forEach( edge => { l += edge.distance; } );
@@ -163,14 +128,7 @@ const faces = indices.faces,//[1]
 		const universe3D = new THREE.LineSegments( new THREE.BufferGeometry().setFromPoints(points).setIndex( index ),
 										  new THREE.LineBasicMaterial( { color: 'green', } ) );
 
-		scene.add( universe3D );
-
-		if ( options.guiSelectPoint ) {
-			
-			if ( universe3D.name === '' ) universe3D.name = this.lang.universe;
-			options.guiSelectPoint.addMesh( universe3D );
-
-		}
+		scene.lang.universe( universe3D );
 
 	}
 	get verticeEdgesLengthMax() { return 6 }//нельзя добавлть новое ребро если у вершины уже 6 ребер
