@@ -14,6 +14,7 @@
 */
 
 import EgocentricUniverse from './egocentricUniverse.js';
+import three from '../../commonNodeJS/master/three.js'
 
 const sEdges = 'Edges';
 
@@ -22,44 +23,17 @@ class Edges extends EgocentricUniverse {
 	//Overridden methods from base class
 
 	//Project universe into 3D space
-	project( three, debug ){
+	project(
+//		three,
+		debug
+	) {
 
 		const indices = this.settings.indices, scene = this.scene, options = this.options;
 
-/*
-		//Localization
-
-		const getLanguageCode = options.getLanguageCode;
-
-		const lang = {
-
-			universe: "Universe",
-
-		};
-
-		const _languageCode = getLanguageCode();
-
-		switch (_languageCode) {
-
-			case 'ru'://Russian language
-
-				lang.universe = 'Вселенная';
-
-				break;
-			default://Custom language
-				if ((guiParams.lang === undefined) || (guiParams.lang.languageCode != _languageCode))
-					break;
-
-				Object.keys(guiParams.lang).forEach(function (key) {
-
-					if (lang[key] === undefined)
-						return;
-					lang[key] = guiParams.lang[key];
-
-				});
-
+		//remove previous universe
+		for (var i = scene.children.length - 1; i >= 0; i--) {
+		    scene.remove(scene.children[i]);
 		}
-*/		
 
 		if (!this.settings.edgesId) {
 
@@ -114,14 +88,16 @@ class Edges extends EgocentricUniverse {
 		const universe3D = new THREE.LineSegments( new THREE.BufferGeometry().setFromPoints(points).setIndex( index ),
 										  new THREE.LineBasicMaterial( { color: 'green', } ) );
 
-		scene.add( universe3D );
+		scene.addUniverse( universe3D );
 
+/*		
 		if ( options.guiSelectPoint ) {
 			
 			if ( universe3D.name === '' ) universe3D.name = this.lang.universe;
 			options.guiSelectPoint.addMesh( universe3D );
 
 		}
+*/  
 
 	}
 	get verticeEdgesLengthMax() { return 2; }//нельзя добавлть новое ребро если у вершины уже 3 ребра
@@ -178,7 +154,7 @@ class Edges extends EgocentricUniverse {
 			const sEdge = sEdges + ': ' + (settings.edgeId === undefined ? 'Edge' : 'edges[' + settings.edgeId + ']'),
 				svertices = sEdge + '.vertices';
 			settings.edges = settings.edges || settings.this.settings.indices.edges;
-			settings.edge = settings.edge || settings.edges[settings.edgeId];//{};
+			settings.edge = settings.edge || settings.edges[settings.edgeId] || {};
 
 			//edge vertices
 
@@ -539,7 +515,7 @@ class Edges extends EgocentricUniverse {
 						case 'push': return (edge) => {
 
 							//console.log(sEdges + ': indices.edges.push(' + JSON.stringify(edge) + ')');
-							_edges.push(Edge({ edge: edge }));
+							settings.edgesId.push( _edges.push(Edge({ edge: edge, edges: indices.edges } ) ) - 1 );
 
 						};
 						case 'length': return settings.edgesId.length;
@@ -664,6 +640,13 @@ class Edges extends EgocentricUniverse {
 
 		}
 		super( scene, options, settings );
+
+		this.pushEdge = ( edge ) => {
+			
+			settings.indices.edges.push( edge );
+			this.project( this.debug );
+			
+		}
 
 	}
 

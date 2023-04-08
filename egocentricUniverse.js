@@ -59,28 +59,43 @@ class EgocentricUniverse {
 	constructor(scene, options, settings = {} ) {
 
 		const egocentricUniverse = this;
-		this.scene = scene;
 		this.options = options;
 		this.settings = settings;
-/*		
-		if (settings.edgesCount !== undefined) {
+		this.debug = debug;
 
-			//dimension of the universe space.
-			if ((settings.n != undefined) && (settings.n != 1)) console.error(sEgocentricUniverse + ': Invalid dimension of the universe space = ' + settings.n);
-			settings.n = 1;
-			
-		}
-*/
-/*
-		if (settings.n === undefined) settings.n = 3;
-		
-		if (debug && ( ( settings.n > 3 ) || ( settings.n < 1 ) )) {
-			
-			console.error(sEgocentricUniverse + ': Dimension of the universe space = ' + settings.n + ' is limited from 1 to 3.');
-			return;
+		scene = new Proxy( scene, {
 
-		}
-*/
+			get: function (scene, name) {
+
+				switch (name) {
+
+					case 'addUniverse': return ( universe3D ) => {
+
+						scene.add( universe3D );
+						
+						if ( options.guiSelectPoint ) {
+							
+							if ( universe3D.name === '' ) universe3D.name = lang.universe;
+							options.guiSelectPoint.addMesh( universe3D );
+				
+						}
+						
+					}
+					case 'remove': return ( child ) => {
+
+						scene.remove( child );
+						
+						if ( options.guiSelectPoint ) options.guiSelectPoint.removeMesh( child );
+						
+					}
+						
+				}
+				return scene[name];
+
+			}
+			
+		} );
+		this.scene = scene;
 
 		if (!lang) {
 		
@@ -390,7 +405,10 @@ class EgocentricUniverse {
 		}
 
 		//Project universe into 3D space
-		this.project( three, debug );
+		this.project(
+//			three,
+			debug
+		);
 //		indices[indices.length - 1].project();
 		
 	}

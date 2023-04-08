@@ -46,7 +46,6 @@
 			const universe = new EgocentricUniverse( scene, options,
 				{
 					//count: 10,//1D universe space edges count.
-					/*
 					edges: [
 						{
 							distance: 0.3,
@@ -65,18 +64,16 @@
 							//vertices: [2, 0],
 						},//3
 					],
-					*/
-					/*
 					edgesId: [
 						0,
-						1,
+						//1,
 						2,
 						3,
 					],
-					 */
 				}
 			);
-			universe.settings.indices.edges.push();
+//			universe.settings.indices.edges.push();
+			universe.pushEdge({});
 
 		}, {
 
