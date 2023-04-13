@@ -22,7 +22,7 @@
 //import ND from 'https://raw.githack.com/anhr/commonNodeJS/master/nD/build/nD.module.min.js';
 //if (ND.default) ND = ND.default;
 
-import three from '../../commonNodeJS/master/three.js'
+//import three from '../../commonNodeJS/master/three.js'
 
 const debug = true;
 //const debug = false;
