@@ -41,16 +41,13 @@
  * http://www.apache.org/licenses/LICENSE-2.0
 */
 
-
-//import ND from '../../commonNodeJS/master/nD/nD.js';
+import ND from '../../commonNodeJS/master/nD/nD.js';
 //import ND from '../../commonNodeJS/master/nD/build/nD.module.js';
 //import ND from '../../commonNodeJS/master/nD/build/nD.module.min.js';
 //import ND from 'https://raw.githack.com/anhr/commonNodeJS/master/nD/nD.js';
 //import ND from 'https://raw.githack.com/anhr/commonNodeJS/master/nD/build/nD.module.js';
 //import ND from 'https://raw.githack.com/anhr/commonNodeJS/master/nD/build/nD.module.min.js';
-//if (ND.default) ND = ND.default;
-
-import three from '../../commonNodeJS/master/three.js'
+if (ND.default) ND = ND.default;
 
 const debug = true;
 //const debug = false;
@@ -63,12 +60,8 @@ class EgocentricUniverse {
 	get verticeEdgesLengthMax() {
 		
 		console.error(sOverride.replace('%s', 'Indices'));
-//		return 0;
 	
 	}
-//	get() { console.error(sOverride.replace('%s', 'get')); }
-//	get scene() { return this._scene; }
-//	set scene( scene ) { this._scene = scene; }
 	project() { console.error(sOverride.replace('%s', 'project')); }
 	Indices() { console.error(sOverride.replace('%s', 'Indices')); }
 	Test() { console.error(sOverride.replace('%s', 'Test')); }
@@ -83,129 +76,132 @@ class EgocentricUniverse {
 	 * If dimension of the universe space is 2 then under constraction.
 	 * If dimension of the universe space is 3 then under constraction.
 	 * &lt;/pre>
+	 * @param {number} [settings.indices] Array of &lt;b>indices&lt;/b> of vertices of the n-dimensional universe.
+	 * &lt;pre>
+	 * &lt;b>Indices&lt;/b> is divided to segments:
+	 * 
+	 * &lt;b>indices[0]&lt;/b> is edges. Every edge is two indexes of the edge's vertices. Used in 1D universe and higher.
+	 * &lt;b>indices[1]&lt;/b> is faces. Every face is three indexes of the edges from &lt;b>indices[0]&lt;/b>. Used in 2D objects and higher.
+	 * &lt;b>indices[2]&lt;/b> is bodies. Every bodie is four face indexes from &lt;b>indices[1]&lt;/b>. Used in 3D objects and higher.
+	 * For example:
+	 * 
+	 * &lt;b>n&lt;/b> = 1 universe is line.
+	 * vertices = [
+	 *	0: Vertice {}//First vertice
+	 *	1: Vertice {}//Second vertice
+	 *	2: Vertice {}//third vertice
+	 * ]
+	 * indices[0] = [
+	 *	//3 edges
+	 *	0: {
+	 *		//First edge
+	 *		disatance: 1,
+	 *		vertices: [
+	 *			1,//index of the second vertice
+	 *			0,//index of the first vertice
+	 *		]
+	 *	},
+	 *	1: {
+	 *		//Second edge
+	 *		disatance: 1,
+	 *		vertices: [
+	 *			2,//index of the third vertice
+	 *			1,//index of the second vertice
+	 *		]
+	 *	},
+	 *	2: {
+	 *		//third edge
+	 *		disatance: 1,
+	 *		vertices: [
+	 *			2,//index of the third vertice
+	 *			0,//index of the first vertice
+	 *		]
+	 *	},
+	 * ]
+	 * &lt;/pre>
 	 **/
-	constructor(scene, options, settings = {} ) {
+	constructor(scene, options, settings = {}) {
 
 		const egocentricUniverse = this;
-		this.scene = scene;
 		this.options = options;
-//		this.settings = settings;
-/*		
-		if (settings.edgesCount !== undefined) {
-
-			//dimension of the universe space.
-			if ((settings.n != undefined) &amp;&amp; (settings.n != 1)) console.error(sEgocentricUniverse + ': Invalid dimension of the universe space = ' + settings.n);
-			settings.n = 1;
-			
-		}
-*/
-/*
-		if (settings.n === undefined) settings.n = 3;
-		
-		if (debug &amp;&amp; ( ( settings.n > 3 ) || ( settings.n &lt; 1 ) )) {
-			
-			console.error(sEgocentricUniverse + ': Dimension of the universe space = ' + settings.n + ' is limited from 1 to 3.');
-			return;
-
-		}
-*/
+		this.settings = settings;
+		this.debug = debug;
 
 		if (!lang) {
-		
+
 			//Localization
-	
+
 			const getLanguageCode = options.getLanguageCode;
-	
+
 			lang = {
-	
+
 				universe: "Universe",
-	
+
 			};
-	
+
 			const _languageCode = getLanguageCode();
-	
+
 			switch (_languageCode) {
-	
+
 				case 'ru'://Russian language
-	
+
 					lang.universe = 'Вселенная';
-	
+
 					break;
 				default://Custom language
 					if ((guiParams.lang === undefined) || (guiParams.lang.languageCode != _languageCode))
 						break;
-	
+
 					Object.keys(guiParams.lang).forEach(function (key) {
-	
+
 						if (lang[key] === undefined)
 							return;
 						lang[key] = guiParams.lang[key];
-	
+
 					});
-	
+
 			}
 
 		}
+
+		scene = new Proxy( scene, {
+
+			get: function (scene, name) {
+
+				switch (name) {
+
+					case 'addUniverse': return ( universe3D ) => {
+
+						scene.add( universe3D );
+						
+						if ( options.guiSelectPoint ) {
+							
+							if ( universe3D.name === '' ) universe3D.name = lang.universe;
+							options.guiSelectPoint.addMesh( universe3D );
+				
+						}
+						
+					}
+					case 'remove': return ( child ) => {
+
+						scene.remove( child );
+						
+						if ( options.guiSelectPoint ) options.guiSelectPoint.removeMesh( child );
+						
+					}
+						
+				}
+				return scene[name];
+
+			}
+			
+		} );
+		this.scene = scene;
 		
-		/**
-		 * @description Array of &lt;b>indices&lt;/b> of vertices of the n-dimensional universe.
-		 * &lt;pre>
-		 * &lt;b>Indices&lt;/b> is divided to segments:
-		 * 
-		 * &lt;b>indices[0]&lt;/b> is edges. Every edge is two indexes of the edge's vertices. Used in 1D universe and higher.
-		 * &lt;b>indices[1]&lt;/b> is faces. Every face is three indexes of the edges from &lt;b>indices[0]&lt;/b>. Used in 2D objects and higher.
-		 * &lt;b>indices[2]&lt;/b> is bodies. Every bodie is four face indexes from &lt;b>indices[1]&lt;/b>. Used in 3D objects and higher.
-		 * For example:
-		 * 
-		 * &lt;b>n&lt;/b> = 1 universe is line.
-		 * vertices = [
-		 *	0: Vertice {}//First vertice
-		 *	1: Vertice {}//Second vertice
-		 *	2: Vertice {}//third vertice
-		 * ]
-		 * indices[0] = [
-		 *	//3 edges
-		 *	0: {
-		 *		//First edge
-		 *		disatance: 1,
-		 *		vertices: [
-		 *			1,//index of the second vertice
-		 *			0,//index of the first vertice
-		 *		]
-		 *	},
-		 *	1: {
-		 *		//Second edge
-		 *		disatance: 1,
-		 *		vertices: [
-		 *			2,//index of the third vertice
-		 *			1,//index of the second vertice
-		 *		]
-		 *	},
-		 *	2: {
-		 *		//third edge
-		 *		disatance: 1,
-		 *		vertices: [
-		 *			2,//index of the third vertice
-		 *			0,//index of the first vertice
-		 *		]
-		 *	},
-		 * ]
-		 * &lt;/pre>
-		 */
 		settings.indices = settings.indices || new Proxy([], {
 
 			get: function (_indices, name) {
 
-/*
-				const i = parseInt(name);
-				if (!isNaN(i)) {
-
-					if (i >= _indices.length)
-						console.error(sEgocentricUniverse + ': indices get. Invalid index = ' + i + ' indices.length = ' + _indices.length);
-					return _indices[i];
-
-				}
-*/
 				switch (name) {
 
 					case '_indices': return _indices;
@@ -219,14 +215,6 @@ class EgocentricUniverse {
 			}
 
 		});
-/*
-		//n = 1. Одномерная вселенная. Минимаьное количество вершин равно 3, фигура - треугольник, вписанный в окружность
-		//n = 2. Двумерная  вселенная. Минимаьное количество вершин равно 4, фигура - тетраэдр tetrahedron или пирамида, вписанная в сферу. https://en.wikipedia.org/wiki/Tetrahedron
-		//n = 3. Трехмерная вселенная. Минимаьное количество вершин равно 5, фигура - пятияче́йник 5-cell, или пентахор pentachoron, pentatope, pentahedroid, or tetrahedral pyramid https://en.wikipedia.org/wiki/5-cell, вписанный в трёхмерную сферу или 3-sphere https://en.wikipedia.org/wiki/3-sphere
-		let vertices = [];
-		for (let i = 0; i &lt; n + 2; i++)
-			vertices.push({});
-*/   
 
 		/**
 		 * @description array of Vertices.
@@ -238,10 +226,6 @@ class EgocentricUniverse {
 				const i = parseInt(name);
 				if (!isNaN(i)) {
 
-/*					
-					console.error(sEgocentricUniverse + ': vertices get. Hidden method: vertices[' + i + ']');
-					return;
-*/	 
 					if (i >= _vertices.length)
 						console.error(sEgocentricUniverse + ': vertices get. Invalid index = ' + i + ' vertices.length = ' + _vertices.length);
 					return _vertices[i];
@@ -249,7 +233,7 @@ class EgocentricUniverse {
 				}
 				switch (name) {
 
-					case 'push': return ( vertice={} ) => {
+					case 'push': return ( vertice=[] ) => {
 
 						_vertices.push( new Proxy( vertice, {
 
@@ -277,10 +261,6 @@ class EgocentricUniverse {
 
 														const sPush = sEgocentricUniverse + ': Vertice' + (verticeId === undefined ? '' : '[' + verticeId + ']') + '.edges.push(' + edgeId + '):';
 
-/*														
-														//нельзя добавлть новое ребро если у вершины уже два ребра
-														if (edges.length >= 2)
-*/			  
 														if (edges.length >= this.verticeEdgesLengthMax) {
 															
 															console.error(sPush + ' invalid edges.length = ' + edges.length);
@@ -317,21 +297,6 @@ class EgocentricUniverse {
 							},
 												  
 						} ) );
-/*						
-						settings.vertice = settings.vertice || {};
-						if (debug) {
-
-							//Для отладки. Добавляем массив ребер, в которых используется эта вершина
-							if (settings.edgeId != undefined) {
-
-								settings.vertice.edges = settings.vertice.edges || [];
-								settings.vertice.edges.push( settings.edgeId );
-								
-							}
-								
-						}
-						_vertices.push( settings.vertice );
-*/	  
 
 					};
 					break;
@@ -368,43 +333,20 @@ class EgocentricUniverse {
 
 					console.error(sEgocentricUniverse + ': vertices set. Hidden method: vertices[' + i + '] = ' + value);
 					_vertices[i] = value;
-/*					
-					if (i >= _vertices.length)
-						console.error(sEgocentricUniverse + ': vertices get. Invalid index = ' + i + ' vertices.length = ' + _vertices.length);
-					return _vertices[i];
-*/	 
 
 				}
-/*
-				switch (name) {
-
-					case 'edges':
-						if (_indices[0] === undefined)
-							_indices[0] = value;
-						break;
-					default: console.error(sEgocentricUniverse + ': indices set: invalid name: ' + name);
-
-				}
-*/
 				return true;
 
 			}
 
 		});
 
-/*		
-		//n = 1. Одномерная вселенная. Минимаьное количество вершин равно 3, фигура - треугольник, вписанный в окружность
-		//n = 2. Двумерная  вселенная. Минимаьное количество вершин равно 4, фигура - тетраэдр tetrahedron или пирамида, вписанная в сферу. https://en.wikipedia.org/wiki/Tetrahedron
-		//n = 3. Трехмерная вселенная. Минимаьное количество вершин равно 5, фигура - пятияче́йник 5-cell, или пентахор pentachoron, pentatope, pentahedroid, or tetrahedral pyramid https://en.wikipedia.org/wiki/5-cell, вписанный в трёхмерную сферу или 3-sphere https://en.wikipedia.org/wiki/3-sphere
-		for ( let i = 0; i &lt; n + 2; i++ )
-			vertices.push();
-*/		
 		//settings.count = 'count';//Error: Edges: indices.edges set. Invalid edges array: count
 		//settings.count = [{ isProxy: true }];//Error: Faces: faces[0]. Duplicate proxy
 		//settings.count = [{ edges: true }];//Error: Faces: faces[0]. Invalid face.edges instance: true
 		//settings.count = [[]];//Error: Faces: faces[0]. Invalid face instance
-		this.Indices(settings.indices, settings, vertices, debug);
-		//this.Indices(indices, settings, vertices, debug);//Error: Edges: indices.edges set. duplicate edges
+		this.Indices( settings.indices, settings, vertices );//, debug);
+		//this.Indices(indices, settings, vertices);//Error: Edges: indices.edges set. duplicate edges
 		
 		if (!settings.noTest) vertices.test();
 		
@@ -417,12 +359,13 @@ class EgocentricUniverse {
 		}
 
 		//Project universe into 3D space
-		this.project( settings.indices, three, scene, options, debug );
-//		indices[indices.length - 1].project();
+		this.project();
 		
 	}
 
 }
+
+EgocentricUniverse.ND = ND;
 
 export default EgocentricUniverse;
 
@@ -442,7 +385,7 @@ export default EgocentricUniverse;
 <br class="clear">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 3.6.11</a> on Sat Apr 01 2023 14:57:38 GMT+0700 (Красноярск, стандартное время)
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 3.6.11</a> on Fri Apr 14 2023 11:16:44 GMT+0700 (Красноярск, стандартное время)
 </footer>
 
 <script> prettyPrint(); </script>

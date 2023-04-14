@@ -28,9 +28,8 @@ class Edges extends EgocentricUniverse {
 		const indices = this.settings.indices, scene = this.scene;//, options = this.options;
 
 		//remove previous universe
-		for (var i = scene.children.length - 1; i >= 0; i--) {
+		for (var i = scene.children.length - 1; i >= 0; i--)
 		    scene.remove(scene.children[i]);
-		}
 
 		if (!this.settings.edgesId) {
 

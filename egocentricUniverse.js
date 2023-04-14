@@ -48,8 +48,51 @@ class EgocentricUniverse {
 	 * If dimension of the universe space is 2 then under constraction.
 	 * If dimension of the universe space is 3 then under constraction.
 	 * </pre>
+	 * @param {number} [settings.indices] Array of <b>indices</b> of vertices of the n-dimensional universe.
+	 * <pre>
+	 * <b>Indices</b> is divided to segments:
+	 * 
+	 * <b>indices[0]</b> is edges. Every edge is two indexes of the edge's vertices. Used in 1D universe and higher.
+	 * <b>indices[1]</b> is faces. Every face is three indexes of the edges from <b>indices[0]</b>. Used in 2D objects and higher.
+	 * <b>indices[2]</b> is bodies. Every bodie is four face indexes from <b>indices[1]</b>. Used in 3D objects and higher.
+	 * For example:
+	 * 
+	 * <b>n</b> = 1 universe is line.
+	 * vertices = [
+	 *	0: Vertice {}//First vertice
+	 *	1: Vertice {}//Second vertice
+	 *	2: Vertice {}//third vertice
+	 * ]
+	 * indices[0] = [
+	 *	//3 edges
+	 *	0: {
+	 *		//First edge
+	 *		disatance: 1,
+	 *		vertices: [
+	 *			1,//index of the second vertice
+	 *			0,//index of the first vertice
+	 *		]
+	 *	},
+	 *	1: {
+	 *		//Second edge
+	 *		disatance: 1,
+	 *		vertices: [
+	 *			2,//index of the third vertice
+	 *			1,//index of the second vertice
+	 *		]
+	 *	},
+	 *	2: {
+	 *		//third edge
+	 *		disatance: 1,
+	 *		vertices: [
+	 *			2,//index of the third vertice
+	 *			0,//index of the first vertice
+	 *		]
+	 *	},
+	 * ]
+	 * </pre>
 	 **/
-	constructor(scene, options, settings = {} ) {
+	constructor(scene, options, settings = {}) {
 
 		const egocentricUniverse = this;
 		this.options = options;
@@ -127,51 +170,6 @@ class EgocentricUniverse {
 		} );
 		this.scene = scene;
 		
-		/**
-		 * @description Array of <b>indices</b> of vertices of the n-dimensional universe.
-		 * <pre>
-		 * <b>Indices</b> is divided to segments:
-		 * 
-		 * <b>indices[0]</b> is edges. Every edge is two indexes of the edge's vertices. Used in 1D universe and higher.
-		 * <b>indices[1]</b> is faces. Every face is three indexes of the edges from <b>indices[0]</b>. Used in 2D objects and higher.
-		 * <b>indices[2]</b> is bodies. Every bodie is four face indexes from <b>indices[1]</b>. Used in 3D objects and higher.
-		 * For example:
-		 * 
-		 * <b>n</b> = 1 universe is line.
-		 * vertices = [
-		 *	0: Vertice {}//First vertice
-		 *	1: Vertice {}//Second vertice
-		 *	2: Vertice {}//third vertice
-		 * ]
-		 * indices[0] = [
-		 *	//3 edges
-		 *	0: {
-		 *		//First edge
-		 *		disatance: 1,
-		 *		vertices: [
-		 *			1,//index of the second vertice
-		 *			0,//index of the first vertice
-		 *		]
-		 *	},
-		 *	1: {
-		 *		//Second edge
-		 *		disatance: 1,
-		 *		vertices: [
-		 *			2,//index of the third vertice
-		 *			1,//index of the second vertice
-		 *		]
-		 *	},
-		 *	2: {
-		 *		//third edge
-		 *		disatance: 1,
-		 *		vertices: [
-		 *			2,//index of the third vertice
-		 *			0,//index of the first vertice
-		 *		]
-		 *	},
-		 * ]
-		 * </pre>
-		 */
 		settings.indices = settings.indices || new Proxy([], {
 
 			get: function (_indices, name) {
