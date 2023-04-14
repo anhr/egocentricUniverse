@@ -109,7 +109,7 @@ class Edges extends EgocentricUniverse {
 */			
 		
 		points.forEach( point => settings.object.geometry.position.push( point.toArray() ) );
-		new this.ND( 2, settings );
+		new EgocentricUniverse.ND( 2, settings );
 
 
 /*		

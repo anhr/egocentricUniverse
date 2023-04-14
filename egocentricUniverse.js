@@ -61,7 +61,7 @@ class EgocentricUniverse {
 		this.options = options;
 		this.settings = settings;
 		this.debug = debug;
-		this.ND = ND;
+//		this.ND = ND;
 
 		scene = new Proxy( scene, {
 
@@ -414,6 +414,8 @@ class EgocentricUniverse {
 	}
 
 }
+
+EgocentricUniverse.ND = ND;
 
 export default EgocentricUniverse;
 
