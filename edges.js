@@ -23,10 +23,7 @@ class Edges extends EgocentricUniverse {
 	//Overridden methods from base class
 
 	//Project universe into 3D space
-	project(
-//		three,
-//		debug
-	) {
+	project() {
 
 		const indices = this.settings.indices, scene = this.scene;//, options = this.options;
 
@@ -44,7 +41,6 @@ class Edges extends EgocentricUniverse {
 		
 		//universe length
 		let l = 0;
-//		this.settings.edgesId.forEach( edgeId => { l += indices.edges[edgeId].distance; } );
 		indices.edges.forEach( edge => { l += edge.distance; } );
 
 		const THREE = three.THREE,
@@ -86,11 +82,9 @@ class Edges extends EgocentricUniverse {
 			];
 		let angle = 0.0;//Угол поворота радиуса вселенной до текущей вершины
 		const delta = 2 * Math.PI / l;
-//		for ( let i = 1; i < this.settings.edgesId.length; i++ )
 		for ( let i = 1; i < indices.edges.length; i++ ) {
 
 			angle += indices.edges[i].distance * delta;
-//			angle += indices.edges[this.settings.edgesId[i]].distance * delta;
 			points.push( new THREE.Vector3().copy( point0 ).applyAxisAngle( axis, angle ) );
 
 		}
@@ -106,13 +100,6 @@ class Edges extends EgocentricUniverse {
 		const universe3D = new THREE.LineSegments( new THREE.BufferGeometry().setFromPoints(points).setIndex( index ),
 										  new THREE.LineBasicMaterial( { color: 'green', } ) );
 		scene.addUniverse( universe3D );
-*/			
-		
-		points.forEach( point => settings.object.geometry.position.push( point.toArray() ) );
-		new EgocentricUniverse.ND( 2, settings );
-
-
-/*		
 		if ( options.guiSelectPoint ) {
 			
 			if ( universe3D.name === '' ) universe3D.name = this.lang.universe;
@@ -120,6 +107,9 @@ class Edges extends EgocentricUniverse {
 
 		}
 */  
+
+		points.forEach(point => settings.object.geometry.position.push(point.toArray()));
+		new EgocentricUniverse.ND(2, settings);
 
 	}
 	get verticeEdgesLengthMax() { return 2; }//нельзя добавлть новое ребро если у вершины уже 3 ребра
@@ -140,14 +130,14 @@ class Edges extends EgocentricUniverse {
 		settings.edges = settings.edges || settings.count;
 		if (debug) {
 
-			/*			
-						if ( _indices[0]) {
+/*			
+			if ( _indices[0]) {
 			
-							console.error(sEdges + sIndicesEdgesSet + 'duplicate edges');
-							return true;
+				console.error(sEdges + sIndicesEdgesSet + 'duplicate edges');
+				return true;
 			
-						}
-			*/
+			}
+*/
 
 		}
 
@@ -168,10 +158,7 @@ class Edges extends EgocentricUniverse {
 
 		}
 
-		function Edge(
-			//							edge = {},
-			settings = {}
-		) {
+		function Edge( settings = {} ) {
 
 			const sEdge = sEdges + ': ' + (settings.edgeId === undefined ? 'Edge' : 'edges[' + settings.edgeId + ']'),
 				svertices = sEdge + '.vertices';
@@ -293,22 +280,6 @@ class Edges extends EgocentricUniverse {
 						console.error(sEdges + ': Duplicate edge. Vertices = ' + vertices);
 
 				}
-/*
-				for (let edgeCurId = (settings.edgeId === undefined) ? 0 : settings.edgeId; edgeCurId < settings.edges.length; edgeCurId++) {
-
-					if ((settings.edgeId != undefined) && (settings.edgeId === edgeCurId)) continue;//Не сравнивать одно и тоже ребро
-
-					const edgeCur = settings.edges[edgeCurId], verticesCur = edgeCur.vertices;
-					if (!verticesCur) continue;//в данном ребре еще нет вершин
-					const vertices = settings.edge.vertices;
-					if (
-						(vertices[0] === verticesCur[0]) && (vertices[1] === verticesCur[1]) ||
-						(vertices[1] === verticesCur[0]) && (vertices[0] === verticesCur[1])
-					)
-						console.error(sEdges + ': Duplicate edge. Vertices = ' + vertices);
-
-				}
-*/
 			settings.edge.vertices = new Proxy(settings.edge.vertices, {
 
 				get: function (_vertices, name) {
@@ -319,11 +290,6 @@ class Edges extends EgocentricUniverse {
 						IdDebug(i);
 
 						return _vertices[i];
-						/*										
-												let vertice = _vertices[i];
-												//VerticeIdDebug( i, vertice );//не делаю проверку здесь потому что проверка уже была при установке значений, а проверка прикаждом обращении будет занимать много времен
-												return vertice;
-						*/
 
 					}
 					switch (name) {
@@ -362,7 +328,6 @@ class Edges extends EgocentricUniverse {
 			//что бы потом проверить в vertices.test();
 			if (debug) {
 
-				//								if (settings.edgeId === undefined) settings.edgeId = settings.edges.length;//новое ребро добавляется с помощю push
 				const newEdgeId = settings.edges.length;
 				settings.edge.vertices.forEach(verticeId => {
 
@@ -378,28 +343,6 @@ class Edges extends EgocentricUniverse {
 							verticeId//for debug
 						);
 
-						/*											
-												if (edges.length === 0)
-													edges.push( newEdgeId,
-														verticeId//for debug
-													);
-												 else {
-						
-													 //надо отредактировать первую и последнюю вершину, что бы между ними появилось новое ребро
-													 edges.forEach( ( edgeId, i) => {
-						
-														 if (verticeId === 0) {//редактируем первую вершину
-						
-															 if (edgeId != 0)//первое ребро первой вершины редактировать не надо
-																 edges[i] = newEdgeId;
-															 
-														 }
-														 
-													 });
-													 
-												 }
-						*/
-
 					} else edges.push(settings.edgeId,
 						verticeId//for debug
 					);
@@ -407,11 +350,6 @@ class Edges extends EgocentricUniverse {
 				});
 
 			}
-			/*
-						if (debug) settings.edge.vertices.forEach( verticeId => vertices[verticeId].edges.push( settings.edgeId === undefined ? 
-																									  settings.edges.length ://новое ребро добавляется с помощю push
-																									  settings.edgeId ) );
-			*/
 
 			return new Proxy(settings.edge, {
 
@@ -430,7 +368,6 @@ class Edges extends EgocentricUniverse {
 						case 'isProxy': return true;
 						case 'vertices': return new Proxy(edge.vertices, {
 
-							//											get: (edgeVertices, name) => { return edgeVertices[name]; },
 							set: (edgeVertices, name, value) => {
 
 								if (debug) {
@@ -438,10 +375,6 @@ class Edges extends EgocentricUniverse {
 									vertices[value].edges.push(settings.edgeId,
 										value//for debug
 									);
-									/*													
-																		vertices[edgeVertices[name]].edges.pop();
-																		vertices.pop();
-									*/
 
 								}
 								edgeVertices[name] = value;
@@ -497,27 +430,13 @@ class Edges extends EgocentricUniverse {
 
 				const edge = settings.edges[i] || {};
 				if (!edge.isProxy) settings.indices.edges.push( Edge({
-//					edge: edge,
 					edges: settings.indices.edges,
 					edgeId: i
 				}) );
-//				settings.edges[i] = Edge({ edge: edge, edges: settings.edges, edgeId: i });
 
 			}
 			
 		} else {
-
-/*
-			//сразу заменяем все ребра на прокси, потому что в противном случае, когда мы создаем прокси ребра в get, каждый раз,
-			//когда вызывается get, в результате может получться бесконечная вложенная конструкция и появится сообщение об ошибке:
-			//EgocentricUniverse: Edge get. Duplicate proxy
-			for (let i = 0; i < settings.edges.length; i++) {
-
-				const edge = settings.edges[i] || {};
-				settings.edges[i] = Edge({ edge: edge, edges: settings.edges, edgeId: i });
-
-			}
-*/   
 
 			_indices[0] = new Proxy(settings.edges, {
 
@@ -527,10 +446,8 @@ class Edges extends EgocentricUniverse {
 					if (!isNaN(i)) {
 
 						return _edges[settings.edgesId[i]];
-//						return _edges[i];
 
 					}
-					//return Edge(_edges[i]);//не надо в get создавать прокси, потомучто он будет создаваться каждый раз, когда вызывается get, в результате может получться бесконечная вложенная конструкция
 
 					switch (name) {
 
@@ -541,16 +458,8 @@ class Edges extends EgocentricUniverse {
 
 						};
 						case 'length': return settings.edgesId.length;
-/*							
-						case 'forEach': return (edge) => {
-
-							return _edges[name];
-
-						};
-*/	  
 
 					}
-//					console.error(sEdges + ': indices.edges get: invalid name: ' + name);
 					return _edges[name];
 
 				},
@@ -560,10 +469,6 @@ class Edges extends EgocentricUniverse {
 					if (!isNaN(i)) {
 
 						_edges[settings.edgesId[i]] = value;
-/*						
-						console.error(sEdges + sIndicesEdgesSet + 'Hidden method: edges[' + i + '] = ' + JSON.stringify(value));
-						_edges[i] = value;
-*/	  
 
 					}
 					return true;
@@ -572,34 +477,11 @@ class Edges extends EgocentricUniverse {
 
 			});
 
-			//сразу заменяем все ребра на прокси, потому что в противном случае, когда мы создаем прокси ребра в get, каждый раз,
-			//когда вызывается get, в результате может получться бесконечная вложенная конструкция и появится сообщение об ошибке:
-			//EgocentricUniverse: Edge get. Duplicate proxy
-/*
-			for (let i = 0; i < settings.edges.length; i++) {
-
-				const edge = settings.edges[i] || {};
-				settings.edges[i] = Edge({ edge: edge, edges: settings.edges, edgeId: i });
-
-			}
-*/
 			indices.edges.forEach( ( edge, i ) => {
 
-//				const edge = settings.edges[i] || {};
-//console.log(this)				
-//				indices.edges[i] = Edge({ edge: edge, edges: settings.edges, edgeId: i });
 				indices.edges[i] = Edge({ this: this, edgeId: i });
 				
 			} );
-/*			
-			for (let j = 0; j < settings.edgesId.length; j++) {
-			
-				const i = settings.edgesId[j];
-				const edge = settings.edges[i] || {};
-				settings.edges[i] = Edge({ edge: edge, edges: settings.edges, edgeId: i });
-			
-			}
-*/   
 
 		}
 

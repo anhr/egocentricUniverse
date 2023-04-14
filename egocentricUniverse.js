@@ -21,8 +21,6 @@ import ND from '../../commonNodeJS/master/nD/nD.js';
 //import ND from 'https://raw.githack.com/anhr/commonNodeJS/master/nD/build/nD.module.min.js';
 if (ND.default) ND = ND.default;
 
-//import three from '../../commonNodeJS/master/three.js'
-
 const debug = true;
 //const debug = false;
 
@@ -34,12 +32,8 @@ class EgocentricUniverse {
 	get verticeEdgesLengthMax() {
 		
 		console.error(sOverride.replace('%s', 'Indices'));
-//		return 0;
 	
 	}
-//	get() { console.error(sOverride.replace('%s', 'get')); }
-//	get scene() { return this._scene; }
-//	set scene( scene ) { this._scene = scene; }
 	project() { console.error(sOverride.replace('%s', 'project')); }
 	Indices() { console.error(sOverride.replace('%s', 'Indices')); }
 	Test() { console.error(sOverride.replace('%s', 'Test')); }
@@ -61,7 +55,43 @@ class EgocentricUniverse {
 		this.options = options;
 		this.settings = settings;
 		this.debug = debug;
-//		this.ND = ND;
+
+		if (!lang) {
+
+			//Localization
+
+			const getLanguageCode = options.getLanguageCode;
+
+			lang = {
+
+				universe: "Universe",
+
+			};
+
+			const _languageCode = getLanguageCode();
+
+			switch (_languageCode) {
+
+				case 'ru'://Russian language
+
+					lang.universe = 'Вселенная';
+
+					break;
+				default://Custom language
+					if ((guiParams.lang === undefined) || (guiParams.lang.languageCode != _languageCode))
+						break;
+
+					Object.keys(guiParams.lang).forEach(function (key) {
+
+						if (lang[key] === undefined)
+							return;
+						lang[key] = guiParams.lang[key];
+
+					});
+
+			}
+
+		}
 
 		scene = new Proxy( scene, {
 
@@ -96,44 +126,6 @@ class EgocentricUniverse {
 			
 		} );
 		this.scene = scene;
-
-		if (!lang) {
-		
-			//Localization
-	
-			const getLanguageCode = options.getLanguageCode;
-	
-			lang = {
-	
-				universe: "Universe",
-	
-			};
-	
-			const _languageCode = getLanguageCode();
-	
-			switch (_languageCode) {
-	
-				case 'ru'://Russian language
-	
-					lang.universe = 'Вселенная';
-	
-					break;
-				default://Custom language
-					if ((guiParams.lang === undefined) || (guiParams.lang.languageCode != _languageCode))
-						break;
-	
-					Object.keys(guiParams.lang).forEach(function (key) {
-	
-						if (lang[key] === undefined)
-							return;
-						lang[key] = guiParams.lang[key];
-	
-					});
-	
-			}
-//			this.lang = lang;
-
-		}
 		
 		/**
 		 * @description Array of <b>indices</b> of vertices of the n-dimensional universe.
@@ -184,16 +176,6 @@ class EgocentricUniverse {
 
 			get: function (_indices, name) {
 
-/*
-				const i = parseInt(name);
-				if (!isNaN(i)) {
-
-					if (i >= _indices.length)
-						console.error(sEgocentricUniverse + ': indices get. Invalid index = ' + i + ' indices.length = ' + _indices.length);
-					return _indices[i];
-
-				}
-*/
 				switch (name) {
 
 					case '_indices': return _indices;
@@ -207,14 +189,6 @@ class EgocentricUniverse {
 			}
 
 		});
-/*
-		//n = 1. Одномерная вселенная. Минимаьное количество вершин равно 3, фигура - треугольник, вписанный в окружность
-		//n = 2. Двумерная  вселенная. Минимаьное количество вершин равно 4, фигура - тетраэдр tetrahedron или пирамида, вписанная в сферу. https://en.wikipedia.org/wiki/Tetrahedron
-		//n = 3. Трехмерная вселенная. Минимаьное количество вершин равно 5, фигура - пятияче́йник 5-cell, или пентахор pentachoron, pentatope, pentahedroid, or tetrahedral pyramid https://en.wikipedia.org/wiki/5-cell, вписанный в трёхмерную сферу или 3-sphere https://en.wikipedia.org/wiki/3-sphere
-		let vertices = [];
-		for (let i = 0; i < n + 2; i++)
-			vertices.push({});
-*/   
 
 		/**
 		 * @description array of Vertices.
@@ -226,10 +200,6 @@ class EgocentricUniverse {
 				const i = parseInt(name);
 				if (!isNaN(i)) {
 
-/*					
-					console.error(sEgocentricUniverse + ': vertices get. Hidden method: vertices[' + i + ']');
-					return;
-*/	 
 					if (i >= _vertices.length)
 						console.error(sEgocentricUniverse + ': vertices get. Invalid index = ' + i + ' vertices.length = ' + _vertices.length);
 					return _vertices[i];
@@ -237,7 +207,7 @@ class EgocentricUniverse {
 				}
 				switch (name) {
 
-					case 'push': return ( vertice={} ) => {
+					case 'push': return ( vertice=[] ) => {
 
 						_vertices.push( new Proxy( vertice, {
 
@@ -265,10 +235,6 @@ class EgocentricUniverse {
 
 														const sPush = sEgocentricUniverse + ': Vertice' + (verticeId === undefined ? '' : '[' + verticeId + ']') + '.edges.push(' + edgeId + '):';
 
-/*														
-														//нельзя добавлть новое ребро если у вершины уже два ребра
-														if (edges.length >= 2)
-*/			  
 														if (edges.length >= this.verticeEdgesLengthMax) {
 															
 															console.error(sPush + ' invalid edges.length = ' + edges.length);
@@ -305,21 +271,6 @@ class EgocentricUniverse {
 							},
 												  
 						} ) );
-/*						
-						settings.vertice = settings.vertice || {};
-						if (debug) {
-
-							//Для отладки. Добавляем массив ребер, в которых используется эта вершина
-							if (settings.edgeId != undefined) {
-
-								settings.vertice.edges = settings.vertice.edges || [];
-								settings.vertice.edges.push( settings.edgeId );
-								
-							}
-								
-						}
-						_vertices.push( settings.vertice );
-*/	  
 
 					};
 					break;
@@ -356,37 +307,14 @@ class EgocentricUniverse {
 
 					console.error(sEgocentricUniverse + ': vertices set. Hidden method: vertices[' + i + '] = ' + value);
 					_vertices[i] = value;
-/*					
-					if (i >= _vertices.length)
-						console.error(sEgocentricUniverse + ': vertices get. Invalid index = ' + i + ' vertices.length = ' + _vertices.length);
-					return _vertices[i];
-*/	 
 
 				}
-/*
-				switch (name) {
-
-					case 'edges':
-						if (_indices[0] === undefined)
-							_indices[0] = value;
-						break;
-					default: console.error(sEgocentricUniverse + ': indices set: invalid name: ' + name);
-
-				}
-*/
 				return true;
 
 			}
 
 		});
 
-/*		
-		//n = 1. Одномерная вселенная. Минимаьное количество вершин равно 3, фигура - треугольник, вписанный в окружность
-		//n = 2. Двумерная  вселенная. Минимаьное количество вершин равно 4, фигура - тетраэдр tetrahedron или пирамида, вписанная в сферу. https://en.wikipedia.org/wiki/Tetrahedron
-		//n = 3. Трехмерная вселенная. Минимаьное количество вершин равно 5, фигура - пятияче́йник 5-cell, или пентахор pentachoron, pentatope, pentahedroid, or tetrahedral pyramid https://en.wikipedia.org/wiki/5-cell, вписанный в трёхмерную сферу или 3-sphere https://en.wikipedia.org/wiki/3-sphere
-		for ( let i = 0; i < n + 2; i++ )
-			vertices.push();
-*/		
 		//settings.count = 'count';//Error: Edges: indices.edges set. Invalid edges array: count
 		//settings.count = [{ isProxy: true }];//Error: Faces: faces[0]. Duplicate proxy
 		//settings.count = [{ edges: true }];//Error: Faces: faces[0]. Invalid face.edges instance: true
@@ -405,11 +333,7 @@ class EgocentricUniverse {
 		}
 
 		//Project universe into 3D space
-		this.project(
-//			three,
-			debug
-		);
-//		indices[indices.length - 1].project();
+		this.project();
 		
 	}
 
