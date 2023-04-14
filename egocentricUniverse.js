@@ -13,14 +13,13 @@
  * http://www.apache.org/licenses/LICENSE-2.0
 */
 
-
-//import ND from '../../commonNodeJS/master/nD/nD.js';
+import ND from '../../commonNodeJS/master/nD/nD.js';
 //import ND from '../../commonNodeJS/master/nD/build/nD.module.js';
 //import ND from '../../commonNodeJS/master/nD/build/nD.module.min.js';
 //import ND from 'https://raw.githack.com/anhr/commonNodeJS/master/nD/nD.js';
 //import ND from 'https://raw.githack.com/anhr/commonNodeJS/master/nD/build/nD.module.js';
 //import ND from 'https://raw.githack.com/anhr/commonNodeJS/master/nD/build/nD.module.min.js';
-//if (ND.default) ND = ND.default;
+if (ND.default) ND = ND.default;
 
 //import three from '../../commonNodeJS/master/three.js'
 
@@ -59,9 +58,10 @@ class EgocentricUniverse {
 	constructor(scene, options, settings = {} ) {
 
 		const egocentricUniverse = this;
-//		this.options = options;
+		this.options = options;
 		this.settings = settings;
 		this.debug = debug;
+		this.ND = ND;
 
 		scene = new Proxy( scene, {
 

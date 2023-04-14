@@ -63,6 +63,22 @@ class Edges extends EgocentricUniverse {
 			).getSpacedPoints(256) ), new THREE.LineBasicMaterial( { color: 'blue' } ) ) );
 			
 		}
+		const settings = {
+
+			object: {
+
+				geometry: {
+
+					position: [],
+					indices: [[]],
+					
+				}
+
+			},
+			scene: scene,
+			options: this.options,
+			
+		}
 		const point0 = new THREE.Vector3( 0, -r, 0 ),
 			axis = new THREE.Vector3( 0, 0, 1 ),
 			points = [
@@ -83,12 +99,18 @@ class Edges extends EgocentricUniverse {
 		indices.edges.forEach( edge => {
 
 			edge.vertices.forEach( ( vertice => index.push( vertice ) ) );
+			settings.object.geometry.indices[0].push( [edge.vertices[0], edge.vertices[1]] );
 			
 		} );
+/*		
 		const universe3D = new THREE.LineSegments( new THREE.BufferGeometry().setFromPoints(points).setIndex( index ),
 										  new THREE.LineBasicMaterial( { color: 'green', } ) );
-
 		scene.addUniverse( universe3D );
+*/			
+		
+		points.forEach( point => settings.object.geometry.position.push( point.toArray() ) );
+		new this.ND( 2, settings );
+
 
 /*		
 		if ( options.guiSelectPoint ) {
