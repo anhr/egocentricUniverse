@@ -79,7 +79,7 @@ class Edges extends EgocentricUniverse {
 //		this.settings.vertices[0] = [0, -r, 0];
 		points.forEach( ( point, i ) => {
 			
-			this.settings.vertices[i].positionWorld = undefined;//если не удалять positionWorld то вместо новых координат вершин будут браться старые
+			//this.settings.vertices[i].positionWorld = undefined;//если не удалять positionWorld то вместо новых координат вершин будут браться старые
 																//Это не позволяет добавлять новые вершины в объект
 																//Никак не могу придумать как удалять positionWorld внутри ND когда у вершины устанвливаются новые координаты
 			this.settings.vertices[i] = point.toArray();
@@ -92,7 +92,8 @@ class Edges extends EgocentricUniverse {
 
 				geometry: {
 
-					position: this.settings.vertices,//[],
+					position: this.settings.vertices,
+					boRememberPosition: false,//Не запоминать позицию вершины в settings.object.geometry.position[i].positionWorld чтобы при добавлении нового ребра заново вычислялись позицию вершин в 3D
 					indices: [[]],
 					
 				}
@@ -130,6 +131,7 @@ class Edges extends EgocentricUniverse {
 */  
 		
 		new EgocentricUniverse.ND(2, settings);
+//		settings.object.geometry.position.reset();//удалить settings.object.geometry.position[i].positionWorld чтобы при добавлении нового ребра заново вычислялись координаты вершин в 3D
 
 	}
 	get verticeEdgesLengthMax() { return 2; }//нельзя добавлть новое ребро если у вершины уже 3 ребра
