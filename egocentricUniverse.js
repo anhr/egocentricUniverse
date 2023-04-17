@@ -13,8 +13,8 @@
  * http://www.apache.org/licenses/LICENSE-2.0
 */
 
-import ND from '../../commonNodeJS/master/nD/nD.js';
-//import ND from '../../commonNodeJS/master/nD/build/nD.module.js';
+//import ND from '../../commonNodeJS/master/nD/nD.js';
+import ND from '../../commonNodeJS/master/nD/build/nD.module.js';
 //import ND from '../../commonNodeJS/master/nD/build/nD.module.min.js';
 //import ND from 'https://raw.githack.com/anhr/commonNodeJS/master/nD/nD.js';
 //import ND from 'https://raw.githack.com/anhr/commonNodeJS/master/nD/build/nD.module.js';
@@ -191,7 +191,7 @@ class EgocentricUniverse {
 		/**
 		 * @description array of Vertices.
 		 **/
-		const vertices = settings.vertices || new Proxy( [], {
+		settings.vertices = settings.vertices || new Proxy( [], {
 
 			get: function (_vertices, name) {
 
@@ -265,6 +265,7 @@ class EgocentricUniverse {
 									return vertice.edges;
 
 								}
+								return vertice[name];
 								
 							},
 												  
@@ -303,8 +304,14 @@ class EgocentricUniverse {
 				const i = parseInt(name);
 				if (!isNaN(i)) {
 
-					console.error(sEgocentricUniverse + ': vertices set. Hidden method: vertices[' + i + '] = ' + value);
-					_vertices[i] = value;
+//					console.error(sEgocentricUniverse + ': vertices set. Hidden method: vertices[' + i + '] = ' + value);
+					value.forEach( ( axis, j ) => {
+						
+						if (( _vertices[i].push(axis) - 1 ) != j)
+							console.error(sEgocentricUniverse + ': vertices set. vertices[' + i + '][' + j + '] = ' + axis + ' Invalid new axis index = ' + j );
+						
+					} );
+//					_vertices[i] = value;
 
 				}
 				return true;
@@ -317,14 +324,14 @@ class EgocentricUniverse {
 		//settings.count = [{ isProxy: true }];//Error: Faces: faces[0]. Duplicate proxy
 		//settings.count = [{ edges: true }];//Error: Faces: faces[0]. Invalid face.edges instance: true
 		//settings.count = [[]];//Error: Faces: faces[0]. Invalid face instance
-		this.Indices( settings.indices, settings, vertices );//, debug);
+		this.Indices( settings.indices, settings, settings.vertices );
 		//this.Indices(indices, settings, vertices);//Error: Edges: indices.edges set. duplicate edges
 		
-		if (!settings.noTest) vertices.test();
+		if (!settings.noTest) settings.vertices.test();
 		
 		if ( debug ) {
 			
-			vertices.forEach((vertice, i) => console.log('vertices[' + i + ']. ' + JSON.stringify( vertice )));
+			settings.vertices.forEach((vertice, i) => console.log('vertices[' + i + ']. ' + JSON.stringify( vertice )));
 	
 			settings.indices.edges.forEach((edge, i) => console.log('indices.edges[' + i + ']. ' + JSON.stringify( edge )));
 

@@ -30,6 +30,8 @@ class Edges extends EgocentricUniverse {
 		//remove previous universe
 		for (var i = scene.children.length - 1; i >= 0; i--)
 		    scene.remove(scene.children[i]);
+		//remove previous vertices position
+		this.settings.vertices.forEach( vertice => vertice.length = 0 );
 
 		if (!this.settings.edgesId) {
 
@@ -58,13 +60,39 @@ class Edges extends EgocentricUniverse {
 			).getSpacedPoints(256) ), new THREE.LineBasicMaterial( { color: 'blue' } ) ) );
 			
 		}
+		const //point0 = new THREE.Vector3( 0, -r, 0 ),
+			axis = new THREE.Vector3( 0, 0, 1 ),
+			points = [
+				new THREE.Vector3( 0, -r, 0 ),//point0,//0
+			];
+		let angle = 0.0;//Угол поворота радиуса вселенной до текущей вершины
+		const delta = 2 * Math.PI / l;
+		for ( let i = 1; i < indices.edges.length; i++ ) {
+
+			angle += indices.edges[i].distance * delta;
+			points.push( new THREE.Vector3().copy( points[0]
+//												  point0
+												 ).applyAxisAngle( axis, angle ) );
+
+		}
+
+//		this.settings.vertices[0] = [0, -r, 0];
+		points.forEach( ( point, i ) => {
+			
+			this.settings.vertices[i].positionWorld = undefined;//если не удалять positionWorld то вместо новых координат вершин будут браться старые
+																//Это не позволяет добавлять новые вершины в объект
+																//Никак не могу придумать как удалять positionWorld внутри ND когда у вершины устанвливаются новые координаты
+			this.settings.vertices[i] = point.toArray();
+			
+		} );
+		
 		const settings = {
 
 			object: {
 
 				geometry: {
 
-					position: [],
+					position: this.settings.vertices,//[],
 					indices: [[]],
 					
 				}
@@ -74,24 +102,10 @@ class Edges extends EgocentricUniverse {
 			options: this.options,
 			
 		}
-		const point0 = new THREE.Vector3( 0, -r, 0 ),
-			axis = new THREE.Vector3( 0, 0, 1 ),
-			points = [
-				point0,//0
-			];
-		let angle = 0.0;//Угол поворота радиуса вселенной до текущей вершины
-		const delta = 2 * Math.PI / l;
-		for ( let i = 1; i < indices.edges.length; i++ ) {
-
-			angle += indices.edges[i].distance * delta;
-			points.push( new THREE.Vector3().copy( point0 ).applyAxisAngle( axis, angle ) );
-
-		}
-		
-		const index = [];
+//		const index = [];
 		indices.edges.forEach( edge => {
 
-			edge.vertices.forEach( ( vertice => index.push( vertice ) ) );
+//			edge.vertices.forEach( ( vertice => index.push( vertice ) ) );
 			settings.object.geometry.indices[0].push( [edge.vertices[0], edge.vertices[1]] );
 			
 		} );
@@ -107,7 +121,14 @@ class Edges extends EgocentricUniverse {
 		}
 */  
 
-		points.forEach(point => settings.object.geometry.position.push(point.toArray()));
+//		points.forEach(point => settings.object.geometry.position.push(point.toArray()));
+
+/*		
+		//debug
+		const position = [];
+		points.forEach(point => position.push(point.toArray()));
+*/  
+		
 		new EgocentricUniverse.ND(2, settings);
 
 	}
