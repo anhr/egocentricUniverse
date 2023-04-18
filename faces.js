@@ -138,8 +138,10 @@ const faces = indices.faces,//[1]
 			console.error(str1 + '. Invalid ' + strVerticeId + '.edges.length = ' + vertice.edges.length);
 		
 	}
-	Indices( indices, settings, vertices, debug ){
+	Indices( /*indices, settings, vertices, debug*/ ){
 
+		const settings = this.settings, indices = settings.indices, vertices = settings.vertices;
+		const debug = this.debug;
 		const sFaces = 'Faces', sIndicesFacesSet = ': indices.faces set. ',
 			_indices = indices._indices;
 		settings.count = settings.count || 4;//По умолчанию это пирамида с 4 гранями

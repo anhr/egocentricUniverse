@@ -324,7 +324,7 @@ class EgocentricUniverse {
 		//settings.count = [{ isProxy: true }];//Error: Faces: faces[0]. Duplicate proxy
 		//settings.count = [{ edges: true }];//Error: Faces: faces[0]. Invalid face.edges instance: true
 		//settings.count = [[]];//Error: Faces: faces[0]. Invalid face instance
-		this.Indices( settings.indices, settings, settings.vertices );
+		this.Indices();// settings.indices, settings, settings.vertices );
 		//this.Indices(indices, settings, vertices);//Error: Edges: indices.edges set. duplicate edges
 		
 		if (!settings.noTest) settings.vertices.test();

@@ -141,8 +141,9 @@ class Edges extends EgocentricUniverse {
 			console.error(str1 + '. Invalid ' + strVerticeId + '.edges.length = ' + vertice.edges.length);
 		
 	}
-	Indices( indices, settings, vertices ) {
+	Indices() {
 
+		const settings = this.settings, indices = settings.indices, vertices = settings.vertices;
 		const debug = this.debug;
 
 		const sIndicesEdgesSet = ': indices.edges set. ',
