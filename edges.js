@@ -67,12 +67,12 @@ class Edges extends EgocentricUniverse {
 			];
 		let angle = 0.0;//Угол поворота радиуса вселенной до текущей вершины
 		const delta = 2 * Math.PI / l;
+//		this.settings.indices.edges.forEach( edge =>
 		for ( let i = 1; i < this.settings.indices.edges.length; i++ ) {
 
 			angle += this.settings.indices.edges[i].distance * delta;
-			points.push( new THREE.Vector3().copy( points[0]
-//												  point0
-												 ).applyAxisAngle( axis, angle ) );
+//			angle += edge.distance * delta;
+			points.push( new THREE.Vector3().copy( points[0] ).applyAxisAngle( axis, angle ) );
 
 		}
 
