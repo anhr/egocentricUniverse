@@ -25,11 +25,11 @@ class Edges extends EgocentricUniverse {
 	//Project universe into 3D space
 	project() {
 
-		const indices = this.settings.indices, scene = this.scene;//, options = this.options;
+//		const indices = this.settings.indices, scene = this.scene;//, options = this.options;
 
 		//remove previous universe
-		for (var i = scene.children.length - 1; i >= 0; i--)
-		    scene.remove(scene.children[i]);
+		for (var i = this.scene.children.length - 1; i >= 0; i--)
+			this.scene.remove(this.scene.children[i]);
 		//remove previous vertices position
 		this.settings.vertices.forEach( vertice => vertice.length = 0 );
 
@@ -42,7 +42,7 @@ class Edges extends EgocentricUniverse {
 		
 		//universe length
 		let l = 0;
-		indices.edges.forEach( edge => { l += edge.distance; } );
+		this.settings.indices.edges.forEach( edge => { l += edge.distance; } );
 
 		const THREE = three.THREE,
 			r = l / ( 2 * Math.PI ),
@@ -53,7 +53,7 @@ class Edges extends EgocentricUniverse {
 			//https://stackoverflow.com/questions/13756112/draw-a-circle-not-shaded-with-three-js
 
 			//https://stackoverflow.com/a/70466408/5175935
-			scene.add( new THREE.LineLoop(new THREE.BufferGeometry().setFromPoints( new THREE.EllipseCurve(
+			this.scene.add( new THREE.LineLoop(new THREE.BufferGeometry().setFromPoints( new THREE.EllipseCurve(
 				center.x, center.y,// Center x, y
 				r, r,// x radius, y radius
 				0.0, 2.0 * Math.PI,// Start angle, stop angle
@@ -67,9 +67,9 @@ class Edges extends EgocentricUniverse {
 			];
 		let angle = 0.0;//Угол поворота радиуса вселенной до текущей вершины
 		const delta = 2 * Math.PI / l;
-		for ( let i = 1; i < indices.edges.length; i++ ) {
+		for ( let i = 1; i < this.settings.indices.edges.length; i++ ) {
 
-			angle += indices.edges[i].distance * delta;
+			angle += this.settings.indices.edges[i].distance * delta;
 			points.push( new THREE.Vector3().copy( points[0]
 //												  point0
 												 ).applyAxisAngle( axis, angle ) );
@@ -99,12 +99,12 @@ class Edges extends EgocentricUniverse {
 				}
 
 			},
-			scene: scene,
+			scene: this.scene,
 			options: this.options,
 			
 		}
 //		const index = [];
-		indices.edges.forEach( edge => {
+		this.settings.indices.edges.forEach( edge => {
 
 //			edge.vertices.forEach( ( vertice => index.push( vertice ) ) );
 			settings.object.geometry.indices[0].push( [edge.vertices[0], edge.vertices[1]] );
@@ -113,7 +113,7 @@ class Edges extends EgocentricUniverse {
 /*		
 		const universe3D = new THREE.LineSegments( new THREE.BufferGeometry().setFromPoints(points).setIndex( index ),
 										  new THREE.LineBasicMaterial( { color: 'green', } ) );
-		scene.addUniverse( universe3D );
+		this.scene.addUniverse( universe3D );
 		if ( options.guiSelectPoint ) {
 			
 			if ( universe3D.name === '' ) universe3D.name = this.lang.universe;
