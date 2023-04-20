@@ -28,10 +28,13 @@ class Edges extends EgocentricUniverse {
 //		const indices = this.settings.indices, scene = this.scene;//, options = this.options;
 
 		//remove previous universe
+		this.remove();
+/*		
 		for (var i = this.scene.children.length - 1; i >= 0; i--)
 			this.scene.remove(this.scene.children[i]);
 		//remove previous vertices position
 		this.settings.vertices.forEach( vertice => vertice.length = 0 );
+*/  
 
 		if (!this.settings.edgesId) {
 
@@ -48,18 +51,6 @@ class Edges extends EgocentricUniverse {
 			r = l / ( 2 * Math.PI ),
 			center = new THREE.Vector2( 0.0, 0.0 );
 
-		if ( this.debug ) {
-
-			//https://stackoverflow.com/questions/13756112/draw-a-circle-not-shaded-with-three-js
-
-			//https://stackoverflow.com/a/70466408/5175935
-			this.scene.add( new THREE.LineLoop(new THREE.BufferGeometry().setFromPoints( new THREE.EllipseCurve(
-				center.x, center.y,// Center x, y
-				r, r,// x radius, y radius
-				0.0, 2.0 * Math.PI,// Start angle, stop angle
-			).getSpacedPoints(256) ), new THREE.LineBasicMaterial( { color: 'blue' } ) ) );
-			
-		}
 		const //point0 = new THREE.Vector3( 0, -r, 0 ),
 			axis = new THREE.Vector3( 0, 0, 1 ),
 			points = [
@@ -99,8 +90,8 @@ class Edges extends EgocentricUniverse {
 				}
 
 			},
-			scene: this.scene,
-			options: this.options,
+//			scene: this.scene,
+//			options: this.options,
 			
 		}
 		settings.object.geometry.indices[0] = this.settings.indices.edges;
@@ -132,7 +123,15 @@ class Edges extends EgocentricUniverse {
 		points.forEach(point => position.push(point.toArray()));
 */  
 		
-		new EgocentricUniverse.ND(2, settings);
+//		new EgocentricUniverse.ND(2, settings);
+		this.display( 2, settings, this.debug ?
+			new THREE.LineLoop(new THREE.BufferGeometry().setFromPoints(new THREE.EllipseCurve(
+				center.x, center.y,// Center x, y
+				r, r,// x radius, y radius
+				0.0, 2.0 * Math.PI,// Start angle, stop angle
+			).getSpacedPoints(256)), new THREE.LineBasicMaterial({ color: 'blue' }))
+			: undefined
+		);
 //		settings.object.geometry.position.reset();//удалить settings.object.geometry.position[i].positionWorld чтобы при добавлении нового ребра заново вычислялись координаты вершин в 3D
 
 	}
@@ -619,7 +618,7 @@ class Edges extends EgocentricUniverse {
 		this.pushEdge = ( edge={} ) => {
 			
 			settings.indices.edges.push( edge );
-			this.project( this.debug );
+			this.project();// this.debug );
 			
 		}
 

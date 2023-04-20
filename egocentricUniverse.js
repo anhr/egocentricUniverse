@@ -95,7 +95,7 @@ class EgocentricUniverse {
 	constructor(scene, options, settings = {}) {
 
 		const egocentricUniverse = this;
-		this.options = options;
+//		this.options = options;
 		this.settings = settings;
 		this.debug = debug;
 
@@ -136,6 +136,7 @@ class EgocentricUniverse {
 
 		}
 
+		/*не нужно если вселенную отображать с помощью ND
 		scene = new Proxy( scene, {
 
 			get: function (scene, name) {
@@ -168,7 +169,9 @@ class EgocentricUniverse {
 			}
 			
 		} );
-		this.scene = scene;
+*/		
+		
+//		this.scene = scene;
 		
 		settings.indices = settings.indices || new Proxy([], {
 
@@ -338,6 +341,28 @@ class EgocentricUniverse {
 		}
 
 		//Project universe into 3D space
+		this.display = ( n, settings, debugObject ) => { 
+			
+			settings.scene = scene;
+			settings.options = options;
+			new ND( n, settings );
+
+			if (debugObject) scene.add( debugObject );
+		
+		}
+		this.remove = () => {
+
+			for (var i = scene.children.length - 1; i >= 0; i--) {
+				
+				const child  = scene.children[i];
+				scene.remove( child );
+				if ( options.guiSelectPoint ) options.guiSelectPoint.removeMesh( child );
+
+			}
+			//remove previous vertices position
+			this.settings.vertices.forEach( vertice => vertice.length = 0 );
+			
+		}
 		this.project();
 		
 	}
