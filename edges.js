@@ -522,7 +522,7 @@ class Edges extends EgocentricUniverse {
 
 					switch (name) {
 
-						case 'push': return (edge) => {
+						case 'push': return (edge={}) => {
 
 							//console.log(sEdges + ': indices.edges.push(' + JSON.stringify(edge) + ')');
 							settings.edgesId.push( _edges.push(Edge({ edge: edge, edges: indices.edges } ) ) - 1 );
@@ -616,7 +616,7 @@ class Edges extends EgocentricUniverse {
 		}
 		super( scene, options, settings );
 
-		this.pushEdge = ( edge ) => {
+		this.pushEdge = ( edge={} ) => {
 			
 			settings.indices.edges.push( edge );
 			this.project( this.debug );
