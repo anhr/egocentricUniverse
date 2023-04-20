@@ -103,13 +103,15 @@ class Edges extends EgocentricUniverse {
 			options: this.options,
 			
 		}
-//		const index = [];
+		settings.object.geometry.indices[0] = this.settings.indices.edges;
+/*		
 		this.settings.indices.edges.forEach( edge => {
 
 //			edge.vertices.forEach( ( vertice => index.push( vertice ) ) );
 			settings.object.geometry.indices[0].push( [edge.vertices[0], edge.vertices[1]] );
 			
 		} );
+*/  
 /*		
 		const universe3D = new THREE.LineSegments( new THREE.BufferGeometry().setFromPoints(points).setIndex( index ),
 										  new THREE.LineBasicMaterial( { color: 'green', } ) );
@@ -321,6 +323,8 @@ class Edges extends EgocentricUniverse {
 
 							if (!debug) break;
 							if (_vertices.length > 2) console.error(svertices + ' set. Invalid length = ' + _vertices.length);
+							break;
+//						case 'vertices': return _vertices;
 
 					}
 					return _vertices[name];
@@ -343,7 +347,8 @@ class Edges extends EgocentricUniverse {
 
 				//если вставляем новое ребро с помощью edges.push()
 				//надо последнюю вершину последнего ребра заменить на новую вершину
-				indices.edges[indices.edges.length - 1].vertices[1] = vertices.length - 1;
+				indices.edges[indices.edges.length - 1][1] = vertices.length - 1;
+//				indices.edges[indices.edges.length - 1].vertices[1] = vertices.length - 1;
 
 			}
 
@@ -374,6 +379,61 @@ class Edges extends EgocentricUniverse {
 
 			}
 
+			//заменяем объект settings.edge на массив settings.edge.vertices для совместимости с ND
+			//Сразу делать settings.edge как массив вершин не стал, потомучто будет неудобно делать settings.edges аргумент в конструкторе Edges
+//			settings.edge.vertices.distance = settings.edge.distance;
+			Object.keys( settings.edge ).forEach( key => {
+
+				if ( key !== 'vertices' ) {
+					
+					settings.edge.vertices[key] = settings.edge[key];
+					delete settings.edge[key];
+
+				}
+
+			} );
+//			return settings.edge.vertices;
+			return new Proxy(settings.edge.vertices, {
+
+				get: function (edge, name) {
+
+					const i = parseInt(name);
+					if (!isNaN(i)) {
+
+						if (name >= edge.length)
+							console.error(sEdge + ' get. Invalid index = ' + name);
+						return edge[name];
+
+					}
+					switch (name) {
+
+						case 'isProxy': return true;
+//						case 'vertices': break;
+						case 'distance': {
+
+							//distance between edge vertices
+							if (edge.distance === undefined) edge.distance = 2 * Math.PI / settings.edges.length;//1.0;//выбрал длинну ребра так, что бы радиус одномерной вселенной с был равен 1.0
+							return edge.distance;
+
+						}
+
+
+					}
+					return edge[name];
+
+				},
+				set: function (edge, name, value) {
+
+					//не понятно зачем вывел эту ошибку
+					//console.error(sEdge + ' set. Hidden method: edges[' + name + '] = ' + JSON.stringify(value) );
+
+					edge[name] = value;
+					return true;
+
+				},
+
+			});
+/*
 			return new Proxy(settings.edge, {
 
 				get: function (edge, name) {
@@ -401,15 +461,6 @@ class Edges extends EgocentricUniverse {
 
 								}
 								edgeVertices[name] = value;
-								/*
-																vertices[value].edges
-											
-								//Добавляем индекс ребра в каждую вершину, которая используется в этом ребре.
-								//что бы потом проверить в vertices.test();
-								if (debug) settings.edge.vertices.forEach( verticeId => vertices[verticeId].edges.push( settings.edgeId === undefined ? 
-																							  settings.edges.length ://новое ребро добавляется с помощю push
-																							  settings.edgeId ) );
-								*/
 
 								return true;
 
@@ -440,6 +491,7 @@ class Edges extends EgocentricUniverse {
 				},
 
 			});
+*/			
 
 		}
 
@@ -466,11 +518,7 @@ class Edges extends EgocentricUniverse {
 				get: function (_edges, name) {
 
 					const i = parseInt(name);
-					if (!isNaN(i)) {
-
-						return _edges[settings.edgesId[i]];
-
-					}
+					if (!isNaN(i)) return _edges[settings.edgesId[i]];
 
 					switch (name) {
 
