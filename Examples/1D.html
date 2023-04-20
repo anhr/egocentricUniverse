@@ -36,11 +36,12 @@
 		//import MyThree from '../../../commonNodeJS/master/myThree/build/myThree.module.min.js';
 		MyThree.three.THREE = THREE;
 
-		import EgocentricUniverse from '../edges.js';
+//		import EgocentricUniverse from '../edges.js';
+		import Edges from '../edges.js';
 
 		new MyThree(function (scene, options) {
 
-			const universe = new EgocentricUniverse( scene, options,
+			const universe = new Edges( scene, options,
 				/*
 				{
 					//count: 10,//1D universe space edges count.
@@ -78,7 +79,7 @@
 
 			//axesHelper: false,
 			orbitControls: { enableRotate: false, },
-            dat: { guiSelectPoint: { point: function (options, dat, fMesh) { return new EgocentricUniverse.ND.gui(options, dat, fMesh); }, }, },
+            dat: { guiSelectPoint: { point: function (options, dat, fMesh) { return new Edges.ND.gui(options, dat, fMesh); }, }, },
 			camera: { position: new THREE.Vector3( 0, 0, 2 ) },
 			stereoEffect: false,
 			//canvasMenu: false,
