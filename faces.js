@@ -51,6 +51,8 @@ class Faces extends EgocentricUniverse {
 			r = l / ( 2 * Math.PI ),
 			center = new THREE.Vector2( 0.0, 0.0 );
 
+		this.settings.indices.faces.forEach( face => face.project() );
+		
 		if ( this.debug ) {
 
 			const color = "lightgray",
@@ -106,6 +108,7 @@ class Faces extends EgocentricUniverse {
 			if (typeof Intersections != 'undefined') new Intersections( sphere, plane );//intersectMeshList );
 			
 		}
+/*		
 		const faces = this.settings.indices.faces,//[1]
 			face = faces[0];
 		const point0 = new THREE.Vector3( 0, -r, 0 ),
@@ -121,16 +124,17 @@ class Faces extends EgocentricUniverse {
 			points.push( new THREE.Vector3().copy( point0 ).applyAxisAngle( axis, angle ) );
 
 		}
-		
+*/  
+/*		
 		const index = [];
 //		indices.edges.forEach( edge => edge.vertices.forEach( ( vertice => index.push( vertice ) ) ) );
 		this.settings.indices.edges.forEach( edge => edge.forEach( ( vertice => index.push( vertice ) ) ) );
 		const universe3D = new THREE.LineSegments( new THREE.BufferGeometry().setFromPoints(points).setIndex( index ),
 										  new THREE.LineBasicMaterial( { color: 'green', } ) );
-
-		this.scene.add( universe3D );
-		/*
-		this.display( 3, settings, this.debug ?
+		//this.scene.add( universe3D );
+*/  
+/*		
+		this.display( 3, this.settings, this.debug ?
 			new THREE.LineLoop(new THREE.BufferGeometry().setFromPoints(new THREE.EllipseCurve(
 				center.x, center.y,// Center x, y
 				r, r,// x radius, y radius
@@ -138,7 +142,7 @@ class Faces extends EgocentricUniverse {
 			).getSpacedPoints(256)), new THREE.LineBasicMaterial({ color: 'blue' }))
 			: undefined
 		);
-		*/
+*/  
 
 	}
 	get verticeEdgesLengthMax() { return 6 }//нельзя добавлть новое ребро если у вершины уже 6 ребер

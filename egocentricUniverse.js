@@ -363,7 +363,7 @@ class EgocentricUniverse {
 			this.settings.vertices.forEach( vertice => vertice.length = 0 );
 			
 		}
-		this.project();
+//		if (!settings.noTest) this.project();
 		
 	}
 
