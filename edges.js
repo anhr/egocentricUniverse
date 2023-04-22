@@ -73,6 +73,7 @@ class Edges extends EgocentricUniverse {
 			//this.settings.vertices[i].positionWorld = undefined;//если не удалять positionWorld то вместо новых координат вершин будут браться старые
 																//Это не позволяет добавлять новые вершины в объект
 																//Никак не могу придумать как удалять positionWorld внутри ND когда у вершины устанвливаются новые координаты
+																//Сейчас вместо этого использую settings.object.geometry.boRememberPosition: false,//Не запоминать позицию вершины в settings.object.geometry.position[i].positionWorld чтобы при добавлении нового ребра заново вычислялись позицию вершин в 3D
 			this.settings.vertices[i] = point.toArray();
 			
 		} );
@@ -90,8 +91,6 @@ class Edges extends EgocentricUniverse {
 				}
 
 			},
-//			scene: this.scene,
-//			options: this.options,
 			
 		}
 		settings.object.geometry.indices[0] = this.settings.indices.edges;
@@ -188,18 +187,22 @@ class Edges extends EgocentricUniverse {
 				svertices = sEdge + '.vertices';
 			settings.edges = settings.edges || settings.this.settings.indices.edges;
 			settings.edge = settings.edge || settings.edges[settings.edgeId] || {};
+			
+			if (settings.edge.isProxy) return settings.edge;
 
 			//edge vertices
 
 			settings.edge.vertices = settings.edge.vertices || [];
 			if (debug) {
 
+/*				
 				if (settings.edge.isProxy) {
 
 					console.error(sEdge + '. Duplicate proxy');
 					return settings.edge;
 
 				}
+*/	
 				if (settings.edge instanceof Array) {
 
 					console.error(sEdge + '. Invalid edge instance');

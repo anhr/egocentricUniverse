@@ -95,7 +95,7 @@ class EgocentricUniverse {
 	constructor(scene, options, settings = {}) {
 
 		const egocentricUniverse = this;
-//		this.options = options;
+		this.options = options;
 		this.settings = settings;
 		this.debug = debug;
 
@@ -171,7 +171,7 @@ class EgocentricUniverse {
 		} );
 */		
 		
-//		this.scene = scene;
+		this.scene = scene;
 		
 		settings.indices = settings.indices || new Proxy([], {
 

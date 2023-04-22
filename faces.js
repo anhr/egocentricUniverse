@@ -20,6 +20,7 @@ import Face from './edges.js';
 
 //import Intersections from '../../commonNodeJS/master/intersections/intersections.js';
 import FibonacciSphereGeometry from '../../commonNodeJS/master/FibonacciSphere/FibonacciSphereGeometry.js'
+import three from '../../commonNodeJS/master/three.js'
 
 class Faces extends EgocentricUniverse {
 
@@ -36,19 +37,21 @@ class Faces extends EgocentricUniverse {
 		
 	}
 	//Project universe into 3D space
-	project( three, debug ){
+	project(){
 
-		const indices = this.settings.indices, scene = this.scene, options = this.options;
+//		const indices = this.settings.indices, scene = this.scene, options = this.options;
 
-		//universe length
+		//remove previous universe
+		this.remove();		//universe length
+		
 		let l = 0;
-		indices.edges.forEach( edge => { l += edge.distance; } );
+		this.settings.indices.edges.forEach( edge => { l += edge.distance; } );
 
 		const THREE = three.THREE,
 			r = l / ( 2 * Math.PI ),
 			center = new THREE.Vector2( 0.0, 0.0 );
 
-		if ( debug ) {
+		if ( this.debug ) {
 
 			const color = "lightgray",
 //				intersectColor = 'yellow',
@@ -67,7 +70,7 @@ class Faces extends EgocentricUniverse {
 				} )
 	
 			);			
-			scene.add( sphere );
+			this.scene.add( sphere );
 /*			
 			intersectMeshList.push( {
 				
@@ -89,7 +92,7 @@ class Faces extends EgocentricUniverse {
 				} )
 
 			);
-			scene.add( plane );
+			this.scene.add( plane );
 //			plane.name = name;
 /*			
 			intersectMeshList.push( {
@@ -103,8 +106,8 @@ class Faces extends EgocentricUniverse {
 			if (typeof Intersections != 'undefined') new Intersections( sphere, plane );//intersectMeshList );
 			
 		}
-const faces = indices.faces,//[1]
-	face = faces[0];
+		const faces = this.settings.indices.faces,//[1]
+			face = faces[0];
 		const point0 = new THREE.Vector3( 0, -r, 0 ),
 			axis = new THREE.Vector3( 0, 0, 1 ),
 			points = [
@@ -112,23 +115,30 @@ const faces = indices.faces,//[1]
 			];
 		let angle = 0.0;//Угол поворота радиуса вселенной до текущей вершины
 		const delta = 2 * Math.PI / l;
-		for ( let i = 1; i < indices.edges.length; i++ ) {
+		for ( let i = 1; i < this.settings.indices.edges.length; i++ ) {
 
-			angle += indices.edges[i].distance * delta;
+			angle += this.settings.indices.edges[i].distance * delta;
 			points.push( new THREE.Vector3().copy( point0 ).applyAxisAngle( axis, angle ) );
 
 		}
 		
 		const index = [];
-		indices.edges.forEach( edge => {
-
-			edge.vertices.forEach( ( vertice => index.push( vertice ) ) );
-			
-		} );
+//		indices.edges.forEach( edge => edge.vertices.forEach( ( vertice => index.push( vertice ) ) ) );
+		this.settings.indices.edges.forEach( edge => edge.forEach( ( vertice => index.push( vertice ) ) ) );
 		const universe3D = new THREE.LineSegments( new THREE.BufferGeometry().setFromPoints(points).setIndex( index ),
 										  new THREE.LineBasicMaterial( { color: 'green', } ) );
 
-		scene.lang.universe( universe3D );
+		this.scene.add( universe3D );
+		/*
+		this.display( 3, settings, this.debug ?
+			new THREE.LineLoop(new THREE.BufferGeometry().setFromPoints(new THREE.EllipseCurve(
+				center.x, center.y,// Center x, y
+				r, r,// x radius, y radius
+				0.0, 2.0 * Math.PI,// Start angle, stop angle
+			).getSpacedPoints(256)), new THREE.LineBasicMaterial({ color: 'blue' }))
+			: undefined
+		);
+		*/
 
 	}
 	get verticeEdgesLengthMax() { return 6 }//нельзя добавлть новое ребро если у вершины уже 6 ребер
@@ -138,7 +148,7 @@ const faces = indices.faces,//[1]
 			console.error(str1 + '. Invalid ' + strVerticeId + '.edges.length = ' + vertice.edges.length);
 		
 	}
-	Indices( /*indices, settings, vertices, debug*/ ){
+	Indices(){
 
 		const settings = this.settings, indices = settings.indices, vertices = settings.vertices;
 		const debug = this.debug;
@@ -176,7 +186,7 @@ const faces = indices.faces,//[1]
 		}
 
 		//у пирамиды граней не должно быть меньше 4
-		for ( let i = settings.faces.length; i < settings.count; i++ ) settings.faces.push({});
+		//for ( let i = settings.faces.length; i < settings.count; i++ ) settings.faces.push({});
 
 		//сразу заменяем все грани на прокси, потому что в противном случае, когда мы создаем прокси грани в get, каждый раз,
 		//когда вызывается get, в результате может получться бесконечная вложенная конструкция и появится сообщение об ошибке:
