@@ -206,12 +206,10 @@ class Faces extends EgocentricUniverse {
 				if (edgeId < indices.edges.length) face.edges[edgeId] = indices.edges[edgeId];
 				
 			} )
-//			settings.faces[i] = Face({ face: face, faces: settings.faces, faceId: i });
-//			settings.faces[i] = new Face( this.scene, this.options, { indices: indices, vertices: vertices, noTest: true, edges: settings.faces[i].edges } );
 			settings.faces[i] = new Face( this.scene, this.options, {
 				indices: indices,
 				vertices: vertices,
-				noTest: true,
+//				noTest: true,
 				edges: settings.faces[i].edges
 			} );
 

@@ -330,7 +330,7 @@ class EgocentricUniverse {
 		this.Indices();// settings.indices, settings, settings.vertices );
 		//this.Indices(indices, settings, vertices);//Error: Edges: indices.edges set. duplicate edges
 		
-		if (!settings.noTest) settings.vertices.test();
+//		if (!settings.noTest) settings.vertices.test();
 		
 		if ( debug ) {
 			
