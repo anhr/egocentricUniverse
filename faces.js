@@ -44,13 +44,14 @@ class Faces extends EgocentricUniverse {
 		//remove previous universe
 		this.remove();		//universe length
 		
+		const THREE = three.THREE;
+/*		
 		let l = 0;
 		this.settings.indices.edges.forEach( edge => { l += edge.distance; } );
 
-		const THREE = three.THREE,
-			r = l / ( 2 * Math.PI ),
+		const r = l / ( 2 * Math.PI ),
 			center = new THREE.Vector2( 0.0, 0.0 );
-
+*/
 		this.settings.indices.faces.forEach( face => face.project() );
 		
 		if ( this.debug ) {
