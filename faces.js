@@ -22,10 +22,12 @@ import Face from './edges.js';
 import FibonacciSphereGeometry from '../../commonNodeJS/master/FibonacciSphere/FibonacciSphereGeometry.js'
 import three from '../../commonNodeJS/master/three.js'
 
+const sFaces = 'Faces';
+
 class Faces extends EgocentricUniverse {
 
 	//Overridden methods from base class
-	
+/*	
 	get( name ) {
 		
 		switch (name) {
@@ -36,6 +38,7 @@ class Faces extends EgocentricUniverse {
 		}
 		
 	}
+ */
 	//Project universe into 3D space
 	project(){
 
@@ -147,17 +150,17 @@ class Faces extends EgocentricUniverse {
 
 	}
 	get verticeEdgesLengthMax() { return 6 }//нельзя добавлть новое ребро если у вершины уже 6 ребер
-	Test( vertice, str1, strVerticeId ){
+	Test( vertice, strVerticeId ){
 		
 		if (vertice.edges.length !== 3)//пирамида
-			console.error(str1 + '. Invalid ' + strVerticeId + '.edges.length = ' + vertice.edges.length);
+			console.error(sFaces + '. Invalid ' + strVerticeId + '.edges.length = ' + vertice.edges.length);
 		
 	}
 	Indices(){
 
 		const settings = this.settings, indices = settings.indices, vertices = settings.vertices;
 		const debug = this.debug;
-		const sFaces = 'Faces', sIndicesFacesSet = ': indices.faces set. ',
+		const sIndicesFacesSet = ': indices.faces set. ',
 			_indices = indices._indices;
 		settings.count = settings.count || 4;//По умолчанию это пирамида с 4 гранями
 //		let value = settings.count || 4;//По умолчанию это пирамида с 4 гранями

@@ -287,7 +287,7 @@ class EgocentricUniverse {
 						_vertices.forEach( ( vertice, verticeId ) => {
 	
 							const str1 = sEgocentricUniverse + ': vertices.test()', strVerticeId = 'vertices(' + verticeId + ')';
-							egocentricUniverse.Test(vertice, str1, strVerticeId);
+							egocentricUniverse.Test(vertice, strVerticeId);
 							vertice.edges.forEach( edgeId => {
 	
 								if (typeof edgeId !== "number") console.error(str1 + '. ' + strVerticeId + '. Invalid edgeId = ' + edgeId);

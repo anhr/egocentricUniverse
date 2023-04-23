@@ -135,10 +135,10 @@ class Edges extends EgocentricUniverse {
 
 	}
 	get verticeEdgesLengthMax() { return 2; }//нельзя добавлть новое ребро если у вершины уже 3 ребра
-	Test( vertice, str1, strVerticeId ){
+	Test( vertice, strVerticeId ){
 		
 		if (vertice.edges.length !== 2)
-			console.error(str1 + '. Invalid ' + strVerticeId + '.edges.length = ' + vertice.edges.length);
+			console.error(sEdges + ': Test(). Invalid ' + strVerticeId + '.edges.length = ' + vertice.edges.length);
 		
 	}
 	Indices() {
