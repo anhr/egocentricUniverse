@@ -13,8 +13,9 @@
  * http://www.apache.org/licenses/LICENSE-2.0
 */
 
-import EgocentricUniverse from './egocentricUniverse.js';
-import Face from './edges.js';
+//import EgocentricUniverse from './egocentricUniverse.js';
+//import Face from './edges.js';
+import Edges from './edges.js';
 
 //debug
 
@@ -24,7 +25,8 @@ import three from '../../commonNodeJS/master/three.js'
 
 const sFaces = 'Faces';
 
-class Faces extends EgocentricUniverse {
+class Faces extends Edges//EgocentricUniverse
+{
 
 	//Overridden methods from base class
 /*	
@@ -158,6 +160,7 @@ class Faces extends EgocentricUniverse {
 	}
 	Indices(){
 
+		super.Indices();
 		const settings = this.settings,
 //			indices = settings.indices,
 			vertices = settings.vertices;
@@ -239,7 +242,7 @@ class Faces extends EgocentricUniverse {
 				if (edgeId < indices.edges.length) face.edges[edgeId] = indices.edges[edgeId];
 				
 			} )
-			settings.faces[i] = new Face( this.scene, this.options, {
+			settings.faces[i] = new Edges/*Face*/( this.scene, this.options, {
 				indices: settings.indices,
 				vertices: vertices,
 //				noTest: true,
