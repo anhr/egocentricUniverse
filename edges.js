@@ -160,13 +160,24 @@ class Edges extends EgocentricUniverse {
 				}
 				return _indices[name];
 
-			}
+			},
+			set: function (_indices, name, value) {
+
+				_indices[name] = value;
+				switch (name) {
+
+					case 'edges': _indices[0] = value; break;
+					
+				}
+				return true;
+
+			},
 
 		});
 //const indi = settings.indices.edges;
 
-		const sIndicesEdgesSet = ': indices.edges set. ',
-			_indices = settings.indices._indices;
+		const sIndicesEdgesSet = ': indices.edges set. ';
+//			_indices = settings.indices._indices;
 		settings.count = settings.count || 3;
 		//		let value = settings.edges || settings.count;
 		settings.edges = settings.edges || settings.count;
@@ -452,7 +463,9 @@ class Edges extends EgocentricUniverse {
 		//у треугольника ребер не должно быть меньше 3
 		for (let i = settings.edges.length; i < settings.count; i++) settings.edges.push({});
 
-		if (_indices[0]) {
+//		if (_indices[0])
+		if (settings.indices.edges)
+		{
 
 
 			for (let i = 0; i < settings.edges.length; i++) {
@@ -467,7 +480,9 @@ class Edges extends EgocentricUniverse {
 			
 		} else {
 
-			_indices[0] = new Proxy(settings.edges, {
+//			_indices[0] =
+			settings.indices.edges =
+				new Proxy(settings.edges, {
 
 				get: function (_edges, name) {
 
