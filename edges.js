@@ -163,12 +163,12 @@ class Edges extends EgocentricUniverse {
 			},
 			set: function (_indices, name, value) {
 
-				_indices[name] = value;
 				switch (name) {
 
-					case 'edges': _indices[0] = value; break;
+					case 'edges': _indices[0] = value; return true;
 					
 				}
+				_indices[name] = value;
 				return true;
 
 			},
@@ -183,14 +183,14 @@ class Edges extends EgocentricUniverse {
 		settings.edges = settings.edges || settings.count;
 		if (debug) {
 
-/*			
-			if ( _indices[0]) {
+//			if ( _indices[0])
+			if (settings.indices.edges)
+			{
 			
 				console.error(sEdges + sIndicesEdgesSet + 'duplicate edges');
 				return true;
 			
 			}
-*/
 
 		}
 
