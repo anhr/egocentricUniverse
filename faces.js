@@ -304,6 +304,24 @@ class Faces extends EgocentricUniverse {
 
 //		settings.n = 1;
 		super(scene, options, settings);
+		settings.indices = new Proxy( settings.indices, {
+
+			get: function (_indices, name) {
+
+				switch (name) {
+
+					case 'faces': return _indices[1];
+					
+				}
+				return _indices[name];
+
+			}
+
+		});
+/*		
+const indice = settings.indices[0];
+console.log(indice);
+*/
 
 	}
 

@@ -177,15 +177,18 @@ class EgocentricUniverse {
 
 			get: function (_indices, name) {
 
+				const i = parseInt(name);
+				if (!isNaN(i)) return _indices[i];
+
 				switch (name) {
 
 					case '_indices': return _indices;
-					case 'edges': return _indices[0];
-					case 'faces': return _indices[1];
+//					case 'edges': return _indices[0];
+//					case 'faces': return _indices[1];
 					default: console.error(sEgocentricUniverse + ': indices get: invalid name: ' + name);
 					
 				}
-				return true;
+				return _indices[name];
 
 			}
 

@@ -142,12 +142,31 @@ class Edges extends EgocentricUniverse {
 		
 	}
 	Indices() {
-
-		const settings = this.settings, indices = settings.indices, vertices = settings.vertices;
+		
+		const settings = this.settings,
+//			indices = settings.indices,
+			vertices = settings.vertices;
 		const debug = this.debug;
+//const r = indices.edges;
+
+		settings.indices = new Proxy( settings.indices, {
+
+			get: function (_indices, name) {
+
+				switch (name) {
+
+					case 'edges': return _indices[0];
+					
+				}
+				return _indices[name];
+
+			}
+
+		});
+//const indi = settings.indices.edges;
 
 		const sIndicesEdgesSet = ': indices.edges set. ',
-			_indices = indices._indices;
+			_indices = settings.indices._indices;
 		settings.count = settings.count || 3;
 		//		let value = settings.edges || settings.count;
 		settings.edges = settings.edges || settings.count;
@@ -349,8 +368,8 @@ class Edges extends EgocentricUniverse {
 
 				//если вставляем новое ребро с помощью edges.push()
 				//надо последнюю вершину последнего ребра заменить на новую вершину
-				indices.edges[indices.edges.length - 1][1] = vertices.length - 1;
-//				indices.edges[indices.edges.length - 1].vertices[1] = vertices.length - 1;
+				settings.indices.edges[indices.edges.length - 1][1] = vertices.length - 1;
+//				settings.indices.edges[indices.edges.length - 1].vertices[1] = vertices.length - 1;
 
 			}
 
@@ -527,7 +546,7 @@ class Edges extends EgocentricUniverse {
 						case 'push': return (edge) => {
 
 							if (!edge) console.error(sEdges + ': push edge. Invalid edge = ' + edge);
-							else settings.edgesId.push( _edges.push(Edge({ edge: edge, edges: indices.edges } ) ) - 1 );
+							else settings.edgesId.push( _edges.push(Edge({ edge: edge, edges: settings.indices.edges } ) ) - 1 );
 
 						};
 						case 'length': return settings.edgesId.length;
@@ -550,9 +569,9 @@ class Edges extends EgocentricUniverse {
 
 			});
 
-			indices.edges.forEach( ( edge, i ) => {
+			settings.indices.edges.forEach( ( edge, i ) => {
 
-				indices.edges[i] = Edge({ this: this, edgeId: i });
+				settings.indices.edges[i] = Edge({ this: this, edgeId: i });
 				
 			} );
 
