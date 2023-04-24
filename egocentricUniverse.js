@@ -171,7 +171,7 @@ class EgocentricUniverse {
 		} );
 */		
 		
-		this.scene = scene;
+//		this.scene = scene;
 		
 		settings.indices = settings.indices || new Proxy([], {
 

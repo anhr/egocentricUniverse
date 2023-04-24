@@ -158,17 +158,46 @@ class Faces extends EgocentricUniverse {
 	}
 	Indices(){
 
-		const settings = this.settings, indices = settings.indices, vertices = settings.vertices;
+		const settings = this.settings,
+//			indices = settings.indices,
+			vertices = settings.vertices;
 		const debug = this.debug;
-		const sIndicesFacesSet = ': indices.faces set. ',
-			_indices = indices._indices;
+		const sIndicesFacesSet = ': indices.faces set. ';
+//			_indices = indices._indices;
+		settings.indices = new Proxy(settings.indices, {
+
+			get: function (_indices, name) {
+
+				switch (name) {
+
+					case 'faces': return _indices[1];
+
+				}
+				return _indices[name];
+
+			},
+			set: function (_indices, name, value) {
+
+				switch (name) {
+
+					case 'faces': _indices[1] = value; return true;
+
+				}
+				_indices[name] = value;
+				return true;
+
+			},
+
+		});
 		settings.count = settings.count || 4;//По умолчанию это пирамида с 4 гранями
 //		let value = settings.count || 4;//По умолчанию это пирамида с 4 гранями
 		settings.faces = settings.faces || settings.count;
 
 		if (debug) {
 
-			if (_indices[1]) {
+//			if (_indices[1])
+			if (settings.indices.faces)
+			{
 
 				console.error(sFaces + sIndicesFacesSet + 'duplicate faces');
 				return true;
@@ -211,14 +240,16 @@ class Faces extends EgocentricUniverse {
 				
 			} )
 			settings.faces[i] = new Face( this.scene, this.options, {
-				indices: indices,
+				indices: settings.indices,
 				vertices: vertices,
 //				noTest: true,
 				edges: settings.faces[i].edges
 			} );
 
 		}
-		_indices[1] = new Proxy(settings.faces, {
+//		_indices[1] =
+		settings.indices.faces =
+			new Proxy(settings.faces, {
 
 			get: function (_faces, name) {
 
@@ -256,7 +287,7 @@ class Faces extends EgocentricUniverse {
 
 		});
 
-		indices.edges = [//приамида
+		settings.indices.edges = [//приамида
 
 			{
 				vertices: [0, 1],
@@ -281,7 +312,7 @@ class Faces extends EgocentricUniverse {
 
 		];
 		//indices.faces = settings.count || 4;//у пирамиды 4 грани
-		indices.faces = [
+		settings.indices.faces = [
 
 			{
 				edges: [0, 1, 2],
@@ -304,6 +335,7 @@ class Faces extends EgocentricUniverse {
 
 //		settings.n = 1;
 		super(scene, options, settings);
+/*
 		settings.indices = new Proxy( settings.indices, {
 
 			get: function (_indices, name) {
@@ -318,6 +350,7 @@ class Faces extends EgocentricUniverse {
 			}
 
 		});
+*/
 /*		
 const indice = settings.indices[0];
 console.log(indice);
