@@ -57,7 +57,8 @@ class Faces extends Edges//EgocentricUniverse
 		const r = l / ( 2 * Math.PI ),
 			center = new THREE.Vector2( 0.0, 0.0 );
 */
-		this.settings.indices.faces.forEach( face => face.project() );
+//		this.settings.indices.faces.forEach( face => face.project() );
+		this.settings.faces.forEach( face => face.project() );
 		
 		if ( this.debug ) {
 
@@ -289,7 +290,7 @@ class Faces extends Edges//EgocentricUniverse
 			}
 
 		});
-
+/*
 		settings.indices.edges = [//приамида
 
 			{
@@ -314,6 +315,7 @@ class Faces extends Edges//EgocentricUniverse
 			},//5
 
 		];
+*/		
 		//indices.faces = settings.count || 4;//у пирамиды 4 грани
 		settings.indices.faces = [
 

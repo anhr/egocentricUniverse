@@ -149,13 +149,14 @@ class Edges extends EgocentricUniverse {
 		const debug = this.debug;
 //const r = indices.edges;
 
-		settings.indices = new Proxy( settings.indices, {
+		if (settings.indices.isUniversyProxy) settings.indices = new Proxy( settings.indices, {
 
 			get: function (_indices, name) {
 
 				switch (name) {
 
 					case 'edges': return _indices[0];
+					case 'isUniversyProxy': return false;
 					
 				}
 				return _indices[name];
@@ -176,11 +177,13 @@ class Edges extends EgocentricUniverse {
 		});
 //const indi = settings.indices.edges;
 
+		if (settings.indices.edges) return;
 		const sIndicesEdgesSet = ': indices.edges set. ';
 //			_indices = settings.indices._indices;
 		settings.count = settings.count || 3;
 		//		let value = settings.edges || settings.count;
 		settings.edges = settings.edges || settings.count;
+/*		
 		if (debug) {
 
 //			if ( _indices[0])
@@ -193,6 +196,7 @@ class Edges extends EgocentricUniverse {
 			}
 
 		}
+  */
 
 		if (!(settings.edges instanceof Array)) {
 

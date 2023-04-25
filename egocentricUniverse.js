@@ -171,7 +171,7 @@ class EgocentricUniverse {
 		} );
 */		
 		
-//		this.scene = scene;
+		this.scene = scene;
 		
 		settings.indices = settings.indices || new Proxy([], {
 
@@ -185,6 +185,7 @@ class EgocentricUniverse {
 //					case '_indices': return _indices;
 //					case 'edges': return _indices[0];
 //					case 'faces': return _indices[1];
+					case 'isUniversyProxy': return true;
 					default: console.error(sEgocentricUniverse + ': indices get: invalid name: ' + name);
 					
 				}
@@ -313,7 +314,8 @@ class EgocentricUniverse {
 //					console.error(sEgocentricUniverse + ': vertices set. Hidden method: vertices[' + i + '] = ' + value);
 					value.forEach( ( axis, j ) => {
 						
-						if (( _vertices[i].push(axis) - 1 ) != j)
+						if (isNaN( axis )) console.error(sEgocentricUniverse + ': vertices set. vertices[' + i + '][' + j + '] = ' + axis );
+						else if (( _vertices[i].push(axis) - 1 ) != j)
 							console.error(sEgocentricUniverse + ': vertices set. vertices[' + i + '][' + j + '] = ' + axis + ' Invalid new axis index = ' + j );
 						
 					} );
