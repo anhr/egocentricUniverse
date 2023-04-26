@@ -58,7 +58,7 @@ class Faces extends Edges//EgocentricUniverse
 			center = new THREE.Vector2( 0.0, 0.0 );
 */
 //		this.settings.indices.faces.forEach( face => face.project() );
-		this.settings.faces.forEach( face => face.project() );
+		this.settings.faces.forEach( face => face.project( 3 ) );//Если размерность вселенной задать меньше 3 то исчезнут оси коодинат
 		
 		if ( this.debug ) {
 

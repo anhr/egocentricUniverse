@@ -23,7 +23,9 @@ class Edges extends EgocentricUniverse {
 	//Overridden methods from base class
 
 	//Project universe into 3D space
-	project() {
+	project(
+		n//universe dimension
+	) {
 
 //		const indices = this.settings.indices, scene = this.scene;//, options = this.options;
 
@@ -123,7 +125,7 @@ class Edges extends EgocentricUniverse {
 */  
 		
 //		new EgocentricUniverse.ND(2, settings);
-		this.display( 2, settings, this.debug ?
+		this.display( n, settings, this.debug ?
 			new THREE.LineLoop(new THREE.BufferGeometry().setFromPoints(new THREE.EllipseCurve(
 				center.x, center.y,// Center x, y
 				r, r,// x radius, y radius

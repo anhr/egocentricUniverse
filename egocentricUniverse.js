@@ -346,7 +346,8 @@ class EgocentricUniverse {
 		}
 
 		//Project universe into 3D space
-		this.display = ( n, settings, debugObject ) => { 
+		this.display = ( n,//universe dimension
+						settings, debugObject ) => { 
 			
 			settings.scene = scene;
 			settings.options = options;
