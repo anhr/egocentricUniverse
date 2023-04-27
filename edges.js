@@ -24,7 +24,8 @@ class Edges extends EgocentricUniverse {
 
 	//Project universe into 3D space
 	project(
-		n//universe dimension
+		n = 2,//universe dimension
+		faceId = 0
 	) {
 
 //		const indices = this.settings.indices, scene = this.scene;//, options = this.options;
@@ -47,7 +48,8 @@ class Edges extends EgocentricUniverse {
 		
 		//universe length
 		let l = 0;
-		this.settings.indices.edges.forEach( edge => { l += edge.distance; } );
+		const face = this.settings.indices.faces[faceId].forEach( edgeId => l += this.settings.indices.edges[edgeId].distance );
+//		this.settings.indices.edges.forEach( edge => { l += edge.distance; } );
 
 		const THREE = three.THREE,
 			r = l / ( 2 * Math.PI ),
@@ -159,6 +161,9 @@ class Edges extends EgocentricUniverse {
 
 					case 'edges': return _indices[0];
 					case 'isUniversyProxy': return false;
+					case 'faces':
+						if (!_indices[1]) _indices[1] = [[0, 1, 2]];
+						return _indices[1];
 					
 				}
 				return _indices[name];
@@ -497,10 +502,13 @@ class Edges extends EgocentricUniverse {
 
 					switch (name) {
 
-						case 'push': return (edge) => {
+						case 'push': return (edge={}) => {
 
+/*							
 							if (!edge) console.error(sEdges + ': push edge. Invalid edge = ' + edge);
-							else settings.edgesId.push( _edges.push(Edge({ edge: edge, edges: settings.indices.edges } ) ) - 1 );
+							else
+*/	   
+							settings.edgesId.push( _edges.push(Edge({ edge: edge, edges: settings.indices.edges } ) ) - 1 );
 
 						};
 						case 'length': return settings.edgesId.length;
@@ -591,10 +599,10 @@ class Edges extends EgocentricUniverse {
 		}
 		super( scene, options, settings );
 
-		this.pushEdge = ( edge={} ) => {
+		this.pushEdge = ( edge ) => {
 			
 			settings.indices.edges.push( edge );
-			this.project();// this.debug );
+			this.project();
 			
 		}
 

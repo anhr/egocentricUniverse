@@ -238,11 +238,13 @@ class Faces extends Edges//EgocentricUniverse
 
 			const face = settings.faces[i];
 			face.edges = face.edges || [];
+/*			
 			face.edges.forEach( edgeId => {
 
-				if (edgeId < indices.edges.length) face.edges[edgeId] = indices.edges[edgeId];
+				if (edgeId < settings.indices.edges.length) face.edges[edgeId] = settings.indices.edges[edgeId];
 				
-			} )
+			} );
+*/   
 			settings.faces[i] = new Edges/*Face*/( this.scene, this.options, {
 				indices: settings.indices,
 				vertices: vertices,
@@ -317,6 +319,7 @@ class Faces extends Edges//EgocentricUniverse
 		];
 */		
 		//indices.faces = settings.count || 4;//у пирамиды 4 грани
+/*		
 		settings.indices.faces = [
 
 			{
@@ -324,6 +327,7 @@ class Faces extends Edges//EgocentricUniverse
 			},//0
 
 		];
+*/  
 		if ( debug ) {
 		
 
