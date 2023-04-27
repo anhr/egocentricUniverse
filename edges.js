@@ -31,12 +31,14 @@ class Edges extends EgocentricUniverse {
 		//remove previous universe
 		this.remove();
 
+/*
 		if (!this.settings.edgesId) {
 
 			this.settings.edgesId = [];
 			this.settings.edges.forEach( ( edge, i ) => this.settings.edgesId.push( i ) );
 
 		}
+*/
 		//universe length
 		let l = 0;
 		this.settings.indices.faces[faceId].forEach( edgeId => l += this.settings.indices.edges[edgeId].distance );
