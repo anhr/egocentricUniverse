@@ -169,7 +169,7 @@ class EgocentricUniverse {
 			}
 			
 		} );
-*/		
+		*/		
 		
 		this.scene = scene;
 		
@@ -319,7 +319,6 @@ class EgocentricUniverse {
 							console.error(sEgocentricUniverse + ': vertices set. vertices[' + i + '][' + j + '] = ' + axis + ' Invalid new axis index = ' + j );
 						
 					} );
-//					_vertices[i] = value;
 
 				}
 				return true;
