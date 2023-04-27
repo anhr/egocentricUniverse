@@ -25,7 +25,7 @@ class Edges extends EgocentricUniverse {
 	//Project universe into 3D space
 	project(
 		n = 2,//universe dimension
-		faceId = 0
+//		faceId = 0
 	) {
 
 		//remove previous universe
@@ -41,7 +41,7 @@ class Edges extends EgocentricUniverse {
 */
 		//universe length
 		let l = 0;
-		this.settings.indices.faces[faceId].forEach( edgeId => l += this.settings.indices.edges[edgeId].distance );
+		this.settings.indices.faces[this.settings.faceId].forEach( edgeId => l += this.settings.indices.edges[edgeId].distance );
 
 		const THREE = three.THREE,
 			r = l / ( 2 * Math.PI ),
@@ -433,16 +433,17 @@ class Edges extends EgocentricUniverse {
 				get: function (_edges, name) {
 
 					const i = parseInt(name);
-					if (!isNaN(i)) return _edges[settings.edgesId[i]];
+					if (!isNaN(i)) return _edges[settings.indices.faces[settings.faceId][i]];//_edges[settings.edgesId[i]];
 
 					switch (name) {
 
 						case 'push': return (edge={}) => {
 
-							settings.edgesId.push( _edges.push(Edge({ edge: edge, edges: settings.indices.edges } ) ) - 1 );
+							settings.indices.faces[settings.faceId].push( _edges.push(Edge({ edge: edge, edges: settings.indices.edges } ) ) - 1 );
+//							settings.edgesId.push( _edges.push(Edge({ edge: edge, edges: settings.indices.edges } ) ) - 1 );
 
 						};
-						case 'length': return settings.edgesId.length;
+						case 'length': return settings.indices.faces[settings.faceId].length;//settings.edgesId.length;
 
 					}
 					return _edges[name];
@@ -451,11 +452,8 @@ class Edges extends EgocentricUniverse {
 				set: function (_edges, name, value) {
 
 					const i = parseInt(name);
-					if (!isNaN(i)) {
+					if (!isNaN(i)) _edges[settings.indices.faces[settings.faceId][i]] = value;//_edges[settings.edgesId[i]] = value;
 
-						_edges[settings.edgesId[i]] = value;
-
-					}
 					return true;
 
 				}
@@ -508,9 +506,11 @@ class Edges extends EgocentricUniverse {
 	 * @param {object} [settings.edges.edge] Edges array item is edge.
 	 * @param {Array} [settings.edges.edge.vertices] Array of edge vertices indices. Every edge have two vertices.
 	 * @param {float} [settings.edges.edge.distance] Edge length. Distance between edge vertices.
+	 * @param {number} [settings.faceId=0] Identifier of the array of the edges ids in the settings.indices.faces array.
 	 **/
 	constructor( scene, options, settings={} ) {
 
+		if (settings.faceId === undefined) settings.faceId = 0;
 		settings.edges = settings.edges || [];
 		let edgesCount = settings.count != undefined  ? settings.count : 3;//default is triangle
 		if (edgesCount < 3) {
@@ -520,7 +520,7 @@ class Edges extends EgocentricUniverse {
 			
 		}
 		for ( let i = settings.edges.length; i < edgesCount; i++ ) settings.edges.push( {} );
-		
+/*		
 		if (settings.edgesId === undefined) {
 			
 			//По умолчанию использую все ребра
@@ -528,6 +528,7 @@ class Edges extends EgocentricUniverse {
 			settings.edges.forEach( ( edge, i ) => settings.edgesId.push( i ) );
 
 		}
+*/
 		super( scene, options, settings );
 
 		this.pushEdge = ( edge ) => {
