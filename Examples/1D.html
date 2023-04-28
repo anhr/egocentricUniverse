@@ -42,12 +42,11 @@
 		new MyThree( (scene, options) => {
 
 			const universe = new Edges( scene, options,
-				/*
 				{
 					//count: 10,//1D universe space edges count.
 					edges: [
 						{
-							//distance : 0.3,
+							distance : 0.3,
 							//vertices: [0, 1],
 							//vertices: [0, 3],//Errors: Edges: edges[0].vertices[1]. Vertice index = 3 is limit from 0 to 0
 											//EgocentricUniverse: vertices get. Invalid index = 3 vertices.length = 1
@@ -63,18 +62,17 @@
 							//vertices: [2, 0],
 						},//3
 					],
-					edgesId: [
-						0,
+					faces: [[
+						//0,
 						//1,
 						2,
 						3,
-					],
+					]],
 				}
-				 */
 			);
 			//universe.settings.indices.edges.push();//Error: Edges: push edge. Invalid edge = undefined
 			universe.settings.vertices.test();
-			universe.project();
+			//universe.project();
 			universe.pushEdge();
 
 		}, {

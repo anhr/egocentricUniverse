@@ -41,7 +41,8 @@ class Edges extends EgocentricUniverse {
 */
 		//universe length
 		let l = 0;
-		this.settings.indices.faces[this.settings.faceId].forEach( edgeId => l += this.settings.indices.edges[edgeId].distance );
+		this.settings.indices.edges.forEach( edge => l += edge.distance );
+//		this.settings.indices.faces[this.settings.faceId].forEach( edgeId => l += this.settings.indices.edges[edgeId].distance );
 
 		const THREE = three.THREE,
 			r = l / ( 2 * Math.PI ),
@@ -120,7 +121,7 @@ class Edges extends EgocentricUniverse {
 					case 'edges': return _indices[0];
 					case 'isUniversyProxy': return false;
 					case 'faces':
-						if (!_indices[1]) _indices[1] = [[0, 1, 2]];
+						_indices[1] = _indices[1] || settings.faces || [[0, 1, 2]];
 						return _indices[1];
 					
 				}
@@ -506,7 +507,7 @@ class Edges extends EgocentricUniverse {
 	 * @param {object} [settings.edges.edge] Edges array item is edge.
 	 * @param {Array} [settings.edges.edge.vertices] Array of edge vertices indices. Every edge have two vertices.
 	 * @param {float} [settings.edges.edge.distance] Edge length. Distance between edge vertices.
-	 * @param {number} [settings.faceId=0] Identifier of the array of the edges ids in the settings.indices.faces array.
+	 * @param {number} [settings.faceId=0] Identifier of the array of the edges ids in the <b>settings.indices.faces array</b>.
 	 **/
 	constructor( scene, options, settings={} ) {
 
