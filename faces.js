@@ -57,8 +57,8 @@ class Faces extends Edges//EgocentricUniverse
 		const r = l / ( 2 * Math.PI ),
 			center = new THREE.Vector2( 0.0, 0.0 );
 */
-//		this.settings.indices.faces.forEach( face => face.project() );
-		this.settings.faces.forEach( face => face.project( 3 ) );//Если размерность вселенной задать меньше 3 то исчезнут оси коодинат
+		this.settings.indices.faces.forEach( face => face.face.project() );
+//		this.settings.faces.forEach( face => face.project( 3 ) );//Если размерность вселенной задать меньше 3 то исчезнут оси коодинат
 		
 		if ( this.debug ) {
 
@@ -197,9 +197,9 @@ class Faces extends Edges//EgocentricUniverse
 //		let value = settings.count || 4;//По умолчанию это пирамида с 4 гранями
 		settings.faces = settings.faces || settings.count;
 
+/*		
 		if (debug) {
 
-//			if (_indices[1])
 			if (settings.indices.faces)
 			{
 
@@ -209,6 +209,7 @@ class Faces extends Edges//EgocentricUniverse
 			}
 
 		}
+*/  
 		if ( !( settings.faces instanceof Array ) ){
 			
 			if (typeof settings.faces === "number") {
@@ -234,18 +235,12 @@ class Faces extends Edges//EgocentricUniverse
 		//EgocentricUniverse: Face get. Duplicate proxy
 //settings.faces[0] = new Face( this.scene, this.options, { indices: indices, vertices: vertices, noTest: true } );
 //settings.faces[1] = new Face( this.scene, this.options, { indices: indices, vertices: vertices, noTest: true } );
+/*		
 		for (let i = 0; i < settings.faces.length; i++) {
 
 			const face = settings.faces[i];
 			face.edges = face.edges || [];
-/*			
-			face.edges.forEach( edgeId => {
-
-				if (edgeId < settings.indices.edges.length) face.edges[edgeId] = settings.indices.edges[edgeId];
-				
-			} );
-*/   
-			settings.faces[i] = new Edges/*Face*/( this.scene, this.options, {
+			settings.faces[i] = new Edges( this.scene, this.options, {
 				indices: settings.indices,
 				vertices: vertices,
 //				noTest: true,
@@ -253,6 +248,13 @@ class Faces extends Edges//EgocentricUniverse
 			} );
 
 		}
+*/
+		settings.indices.faces.forEach( face => face.face = new Edges( this.scene, this.options, {
+				indices: settings.indices,
+				vertices: vertices,
+//				edges: settings.faces[i].edges
+			} ) );
+/*		
 //		_indices[1] =
 		settings.indices.faces =
 			new Proxy(settings.faces, {
@@ -292,42 +294,7 @@ class Faces extends Edges//EgocentricUniverse
 			}
 
 		});
-/*
-		settings.indices.edges = [//приамида
-
-			{
-				vertices: [0, 1],
-				//distance: 1.0,//0.5,
-			},//0
-			{
-				vertices: [1, 2]
-			},//1
-			{
-				vertices: [2, 0]
-				//vertices: [2,3]
-			},//2
-			{
-				vertices: [0, 3]
-			},//3
-			{
-				vertices: [1, 3]
-			},//4
-			{
-				vertices: [2, 3]
-			},//5
-
-		];
 */		
-		//indices.faces = settings.count || 4;//у пирамиды 4 грани
-/*		
-		settings.indices.faces = [
-
-			{
-				edges: [0, 1, 2],
-			},//0
-
-		];
-*/  
 		if ( debug ) {
 		
 

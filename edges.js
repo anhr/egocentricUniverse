@@ -121,7 +121,10 @@ class Edges extends EgocentricUniverse {
 					case 'edges': return _indices[0];
 					case 'isUniversyProxy': return false;
 					case 'faces':
-						_indices[1] = _indices[1] || settings.faces || [[0, 1, 2]];
+/*						
+						_indices[1] = _indices[1] || settings.faces || [];
+						if (_indices[1].length === 0) _indices[1].push( [0, 1, 2] );
+*/	  
 						return _indices[1];
 					
 				}
@@ -143,6 +146,10 @@ class Edges extends EgocentricUniverse {
 		});
 
 		if (settings.indices.edges) return;
+		
+		settings.indices[1] = settings.indices[1] || settings.faces || [];
+		if (settings.indices[1].length === 0) settings.indices[1].push( [0, 1, 2] );
+		
 		const sIndicesEdgesSet = ': indices.edges set. ';
 		settings.count = settings.count || 3;
 		settings.edges = settings.edges || settings.count;
