@@ -64,11 +64,11 @@ class Edges extends EgocentricUniverse {
 
 		points.forEach( ( point, i ) => {
 			
-			//this.settings.vertices[i].positionWorld = undefined;//если не удалять positionWorld то вместо новых координат вершин будут браться старые
+			//this.settings.position[i].positionWorld = undefined;//если не удалять positionWorld то вместо новых координат вершин будут браться старые
 																//Это не позволяет добавлять новые вершины в объект
 																//Никак не могу придумать как удалять positionWorld внутри ND когда у вершины устанвливаются новые координаты
 																//Сейчас вместо этого использую settings.object.geometry.boRememberPosition: false,//Не запоминать позицию вершины в settings.object.geometry.position[i].positionWorld чтобы при добавлении нового ребра заново вычислялись позицию вершин в 3D
-			this.settings.vertices[i] = point.toArray();
+			this.settings.position[i] = point.toArray();
 			
 		} );
 		
@@ -78,7 +78,7 @@ class Edges extends EgocentricUniverse {
 
 				geometry: {
 
-					position: this.settings.vertices,
+					position: this.settings.position,
 					boRememberPosition: false,//Не запоминать позицию вершины в settings.object.geometry.position[i].positionWorld чтобы при добавлении нового ребра заново вычислялись позицию вершин в 3D
 					indices: [[]],
 					
@@ -109,7 +109,8 @@ class Edges extends EgocentricUniverse {
 	Indices() {
 		
 		const settings = this.settings,
-			vertices = settings.vertices;
+//			vertices = settings.vertices;
+			position = settings.position;
 		const debug = this.debug;
 
 		if (settings.indices.isUniversyProxy) settings.indices = new Proxy( settings.indices, {
@@ -214,12 +215,12 @@ class Edges extends EgocentricUniverse {
 			}
 			function VerticeIdDebug(i, verticeId) {
 
-				if ((verticeId === vertices.length) && (//этой вершины нет списке вершин
+				if ((verticeId === position.length) && (//этой вершины нет списке вершин
 					(edgeSettings.edgeId === undefined) || //добавлять новую вершину потому что эта грань добавляется с помощью edges.push()
 					(edgeSettings.edgeId != (edgeSettings.edges.length - 1))//не добалять новую вершину если это последняя грань, потому что у последней грани последняя вершина совпадает с первой вершины первой грани
 				)
 				)
-					vertices.push();//{edgeId: edgeIndex});
+					position.push();//{edgeId: edgeIndex});
 
 				if (!debug) return true;
 
@@ -231,9 +232,9 @@ class Edges extends EgocentricUniverse {
 					return false;
 
 				}
-				if ((verticeId < 0) || (verticeId >= vertices.length)) {
+				if ((verticeId < 0) || (verticeId >= position.length)) {
 
-					console.error(svertices + '[' + i + ']. Vertice index = ' + verticeId + ' is limit from 0 to ' + (vertices.length - 1));
+					console.error(svertices + '[' + i + ']. Vertice index = ' + verticeId + ' is limit from 0 to ' + (position.length - 1));
 					return false;
 
 				}
@@ -257,14 +258,14 @@ class Edges extends EgocentricUniverse {
 				if (edgeSettings.edge.vertices[i] === undefined) {
 
 					edgeSettings.edge.vertices[i] = (
-						vertices.length === 0) ||//первая вкршина первого ребра
+						position.length === 0) ||//первая вершина первого ребра
 						((edgeSettings.edgeId != undefined) &&//ребро из массива ребер
 							(i === 1) && (edgeSettings.edgeId === edgeSettings.edges.length - 1)) ?//Это последняя вершина последнего ребра. Соеденить последнюю вершину последнего ребра с первой першиной первого ребра
 						0 :
 						edgeSettings.edgeId != undefined ?
-							vertices.length + (i === 0 ? -1 : 0) : //ребро из массива ребер
+							position.length + (i === 0 ? -1 : 0) : //ребро из массива ребер
 							//Новое ребро добавляется при помощи edges.push()
-							i === 0 ? vertices.length : //первая вершина
+							i === 0 ? position.length : //первая вершина
 								0//Соеденить последнюю вершину нового ребра с первой першиной первого ребра
 						;
 
@@ -330,7 +331,7 @@ class Edges extends EgocentricUniverse {
 
 				//если вставляем новое ребро с помощью edges.push()
 				//надо последнюю вершину последнего ребра заменить на новую вершину
-				settings.indices.edges[settings.indices.edges.length - 1][1] = vertices.length - 1;
+				settings.indices.edges[settings.indices.edges.length - 1][1] = position.length - 1;
 
 			}
 
@@ -341,7 +342,7 @@ class Edges extends EgocentricUniverse {
 				const newEdgeId = edgeSettings.edges.length;
 				edgeSettings.edge.vertices.forEach(verticeId => {
 
-					const edges = vertices[verticeId].edges;
+					const edges = position[verticeId].edges;
 					if (edgeSettings.edgeId === undefined) {
 
 						//новое ребро добавляется с помощю push
@@ -468,11 +469,7 @@ class Edges extends EgocentricUniverse {
 
 			});
 
-			settings.indices.edges.forEach( ( edge, i ) => {
-
-				settings.indices.edges[i] = Edge({ this: this, edgeId: i });
-				
-			} );
+			settings.indices.edges.forEach( ( edge, i ) => settings.indices.edges[i] = Edge( { this: this, edgeId: i } ) );
 
 		}
 
