@@ -164,7 +164,7 @@ class Faces extends Edges//EgocentricUniverse
 		super.Indices();
 		const settings = this.settings,
 //			indices = settings.indices,
-			vertices = settings.vertices;
+			vertices = settings.position;
 		const debug = this.debug;
 		const sIndicesFacesSet = ': indices.faces set. ';
 //			_indices = indices._indices;
