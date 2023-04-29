@@ -251,7 +251,7 @@ class Faces extends Edges//EgocentricUniverse
 */
 		settings.indices.faces.forEach( face => face.face = new Edges( this.scene, this.options, {
 				indices: settings.indices,
-				vertices: vertices,
+				position: vertices,
 //				edges: settings.faces[i].edges
 			} ) );
 /*		
