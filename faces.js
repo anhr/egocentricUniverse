@@ -163,11 +163,9 @@ class Faces extends Edges//EgocentricUniverse
 
 		super.Indices();
 		const settings = this.settings,
-//			indices = settings.indices,
-			vertices = settings.position;
+			position = settings.position;
 		const debug = this.debug;
 		const sIndicesFacesSet = ': indices.faces set. ';
-//			_indices = indices._indices;
 		settings.indices = new Proxy(settings.indices, {
 
 			get: function (_indices, name) {
@@ -233,25 +231,9 @@ class Faces extends Edges//EgocentricUniverse
 		//сразу заменяем все грани на прокси, потому что в противном случае, когда мы создаем прокси грани в get, каждый раз,
 		//когда вызывается get, в результате может получться бесконечная вложенная конструкция и появится сообщение об ошибке:
 		//EgocentricUniverse: Face get. Duplicate proxy
-//settings.faces[0] = new Face( this.scene, this.options, { indices: indices, vertices: vertices, noTest: true } );
-//settings.faces[1] = new Face( this.scene, this.options, { indices: indices, vertices: vertices, noTest: true } );
-/*		
-		for (let i = 0; i < settings.faces.length; i++) {
-
-			const face = settings.faces[i];
-			face.edges = face.edges || [];
-			settings.faces[i] = new Edges( this.scene, this.options, {
-				indices: settings.indices,
-				vertices: vertices,
-//				noTest: true,
-				edges: settings.faces[i].edges
-			} );
-
-		}
-*/
 		settings.indices.faces.forEach( face => face.face = new Edges( this.scene, this.options, {
 				indices: settings.indices,
-				position: vertices,
+				position: position,
 //				edges: settings.faces[i].edges
 			} ) );
 /*		

@@ -200,21 +200,21 @@ class EgocentricUniverse {
 		 **/
 		settings.position = settings.position || new Proxy( [], {
 
-			get: function (_vertices, name) {
+			get: function (_position, name) {
 
 				const i = parseInt(name);
 				if (!isNaN(i)) {
 
-					if (i >= _vertices.length)
-						console.error(sEgocentricUniverse + ': position get. Invalid index = ' + i + ' position.length = ' + _vertices.length);
-					return _vertices[i];
+					if (i >= _position.length)
+						console.error(sEgocentricUniverse + ': position get. Invalid index = ' + i + ' position.length = ' + _position.length);
+					return _position[i];
 
 				}
 				switch (name) {
 
 					case 'push': return ( vertice=[] ) => {
 
-						_vertices.push( new Proxy( vertice, {
+						_position.push( new Proxy( vertice, {
 
 							get: (vertice, name) => {
 
@@ -288,7 +288,7 @@ class EgocentricUniverse {
 
 						if (!debug) return;
 
-						_vertices.forEach( ( vertice, verticeId ) => {
+						_position.forEach( ( vertice, verticeId ) => {
 	
 							const str1 = sEgocentricUniverse + ': position.test()', strVerticeId = 'position(' + verticeId + ')';
 							egocentricUniverse.Test(vertice, strVerticeId);
@@ -303,10 +303,10 @@ class EgocentricUniverse {
 					break;
 
 				}
-				return _vertices[name];
+				return _position[name];
 
 			},
-			set: function (_vertices, name, value) {
+			set: function (_position, name, value) {
 
 				const i = parseInt(name);
 				if (!isNaN(i)) {
@@ -315,7 +315,7 @@ class EgocentricUniverse {
 					value.forEach( ( axis, j ) => {
 						
 						if (isNaN( axis )) console.error(sEgocentricUniverse + ': position set. position[' + i + '][' + j + '] = ' + axis );
-						else if (( _vertices[i].push(axis) - 1 ) != j)
+						else if (( _position[i].push(axis) - 1 ) != j)
 							console.error(sEgocentricUniverse + ': position set. position[' + i + '][' + j + '] = ' + axis + ' Invalid new axis index = ' + j );
 						
 					} );

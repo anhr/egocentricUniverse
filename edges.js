@@ -175,7 +175,7 @@ class Edges extends EgocentricUniverse {
 		function Edge( edgeSettings = {} ) {
 
 			const sEdge = sEdges + ': ' + (edgeSettings.edgeId === undefined ? 'Edge' : 'edges[' + edgeSettings.edgeId + ']'),
-				svertices = sEdge + '.vertices';
+				sVertices = sEdge + '.vertices';
 			edgeSettings.edges = edgeSettings.edges || edgeSettings.this.settings.indices.edges;
 			edgeSettings.edge = edgeSettings.edge || edgeSettings.edges[edgeSettings.edgeId] || {};
 			
@@ -206,7 +206,7 @@ class Edges extends EgocentricUniverse {
 
 				if ((i < 0) || (i > 1)) {
 
-					console.error(svertices + '. Vertices index = ' + i + ' is limit from 0 to 1');
+					console.error(sVertices + '. Vertices index = ' + i + ' is limit from 0 to 1');
 					return false;
 
 				}
@@ -228,13 +228,13 @@ class Edges extends EgocentricUniverse {
 
 				if (isNaN(parseInt(verticeId))) {
 
-					console.error(svertices + '[' + i + ']. Invalid vertice index = ' + verticeId);
+					console.error(sVertices + '[' + i + ']. Invalid vertice index = ' + verticeId);
 					return false;
 
 				}
 				if ((verticeId < 0) || (verticeId >= position.length)) {
 
-					console.error(svertices + '[' + i + ']. Vertice index = ' + verticeId + ' is limit from 0 to ' + (position.length - 1));
+					console.error(sVertices + '[' + i + ']. Vertice index = ' + verticeId + ' is limit from 0 to ' + (position.length - 1));
 					return false;
 
 				}
@@ -244,7 +244,7 @@ class Edges extends EgocentricUniverse {
 
 					if (verticeId === edgeSettings.edge.vertices[index]) {
 
-						console.error(svertices + '[' + i + ']. Duplicate vertice index = ' + verticeId);
+						console.error(sVertices + '[' + i + ']. Duplicate vertice index = ' + verticeId);
 						return false;
 
 					}
@@ -307,7 +307,7 @@ class Edges extends EgocentricUniverse {
 						case 'length':
 
 							if (!debug) break;
-							if (_vertices.length > 2) console.error(svertices + ' set. Invalid length = ' + _vertices.length);
+							if (_vertices.length > 2) console.error(sVertices + ' set. Invalid length = ' + _vertices.length);
 							break;
 
 					}
