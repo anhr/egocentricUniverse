@@ -29,43 +29,22 @@ class Faces extends Edges//EgocentricUniverse
 {
 
 	//Overridden methods from base class
-/*	
-	get( name ) {
-		
-		switch (name) {
 
-			case 'faces2': return this.settings.indices._indices[1];
-			default: console.error(sEgocentricUniverse + ': indices get: invalid name: ' + name);
-			
-		}
-		
-	}
- */
 	//Project universe into 3D space
 	project(){
 
-//		const indices = this.settings.indices, scene = this.scene, options = this.options;
+//		const indices = this.settings.object.geometry.indices, scene = this.scene, options = this.options;
 
 		//remove previous universe
 		this.remove();		//universe length
 		
 		const THREE = three.THREE;
-/*		
-		let l = 0;
-		this.settings.indices.edges.forEach( edge => { l += edge.distance; } );
 
-		const r = l / ( 2 * Math.PI ),
-			center = new THREE.Vector2( 0.0, 0.0 );
-*/
-		this.settings.indices.faces.forEach( face => face.face.project() );
-//		this.settings.faces.forEach( face => face.project( 3 ) );//Если размерность вселенной задать меньше 3 то исчезнут оси коодинат
+		this.settings.object.geometry.indices.faces.forEach( face => face.face.project( 3 ) );//Если размерность вселенной задать меньше 3 то исчезнут оси коодинат
 		
 		if ( this.debug ) {
 
-			const color = "lightgray",
-//				intersectColor = 'yellow',
-//				intersectMeshList = [],
-				opacity = 0.2;
+			const color = "lightgray", opacity = 0.2;
 				
 			const sphere = new THREE.Mesh( new FibonacciSphereGeometry(),//new THREE.SphereGeometry( 1 ),
 
@@ -80,14 +59,6 @@ class Faces extends Edges//EgocentricUniverse
 	
 			);			
 			this.scene.add( sphere );
-/*			
-			intersectMeshList.push( {
-				
-				mesh: sphere,
-				color: intersectColor
-				
-			} );
-*/   
 
 			const plane = new THREE.Mesh( new THREE.PlaneGeometry( 2.0, 2.0 ),
 
@@ -103,56 +74,13 @@ class Faces extends Edges//EgocentricUniverse
 			);
 			this.scene.add( plane );
 //			plane.name = name;
-/*			
-			intersectMeshList.push( {
-				
-				mesh: plane,
-				color: intersectColor
-				
-			} );
-*/   
 			
-			if (typeof Intersections != 'undefined') new Intersections( sphere, plane );//intersectMeshList );
+			if (typeof Intersections != 'undefined') new Intersections( sphere, plane );
 			
 		}
-/*		
-		const faces = this.settings.indices.faces,//[1]
-			face = faces[0];
-		const point0 = new THREE.Vector3( 0, -r, 0 ),
-			axis = new THREE.Vector3( 0, 0, 1 ),
-			points = [
-				point0,//0
-			];
-		let angle = 0.0;//Угол поворота радиуса вселенной до текущей вершины
-		const delta = 2 * Math.PI / l;
-		for ( let i = 1; i < this.settings.indices.edges.length; i++ ) {
-
-			angle += this.settings.indices.edges[i].distance * delta;
-			points.push( new THREE.Vector3().copy( point0 ).applyAxisAngle( axis, angle ) );
-
-		}
-*/  
-/*		
-		const index = [];
-//		indices.edges.forEach( edge => edge.vertices.forEach( ( vertice => index.push( vertice ) ) ) );
-		this.settings.indices.edges.forEach( edge => edge.forEach( ( vertice => index.push( vertice ) ) ) );
-		const universe3D = new THREE.LineSegments( new THREE.BufferGeometry().setFromPoints(points).setIndex( index ),
-										  new THREE.LineBasicMaterial( { color: 'green', } ) );
-		//this.scene.add( universe3D );
-*/  
-/*		
-		this.display( 3, this.settings, this.debug ?
-			new THREE.LineLoop(new THREE.BufferGeometry().setFromPoints(new THREE.EllipseCurve(
-				center.x, center.y,// Center x, y
-				r, r,// x radius, y radius
-				0.0, 2.0 * Math.PI,// Start angle, stop angle
-			).getSpacedPoints(256)), new THREE.LineBasicMaterial({ color: 'blue' }))
-			: undefined
-		);
-*/  
 
 	}
-	get verticeEdgesLengthMax() { return 6 }//нельзя добавлть новое ребро если у вершины уже 6 ребер
+	get verticeEdgesLengthMax() { return 6 }//нельзя добавлять новое ребро если у вершины уже 6 ребер
 	Test( vertice, strVerticeId ){
 		
 		if (vertice.edges.length !== 3)//пирамида
@@ -166,7 +94,7 @@ class Faces extends Edges//EgocentricUniverse
 			position = settings.position;
 		const debug = this.debug;
 		const sIndicesFacesSet = ': indices.faces set. ';
-		settings.indices = new Proxy(settings.indices, {
+		settings.object.geometry.indices = new Proxy(settings.object.geometry.indices, {
 
 			get: function (_indices, name) {
 
@@ -192,13 +120,12 @@ class Faces extends Edges//EgocentricUniverse
 
 		});
 		settings.count = settings.count || 4;//По умолчанию это пирамида с 4 гранями
-//		let value = settings.count || 4;//По умолчанию это пирамида с 4 гранями
 		settings.faces = settings.faces || settings.count;
 
 /*		
 		if (debug) {
 
-			if (settings.indices.faces)
+			if (settings.object.geometry.indices.faces)
 			{
 
 				console.error(sFaces + sIndicesFacesSet + 'duplicate faces');
@@ -231,52 +158,11 @@ class Faces extends Edges//EgocentricUniverse
 		//сразу заменяем все грани на прокси, потому что в противном случае, когда мы создаем прокси грани в get, каждый раз,
 		//когда вызывается get, в результате может получться бесконечная вложенная конструкция и появится сообщение об ошибке:
 		//EgocentricUniverse: Face get. Duplicate proxy
-		settings.indices.faces.forEach( face => face.face = new Edges( this.scene, this.options, {
-				indices: settings.indices,
-				position: position,
-//				edges: settings.faces[i].edges
-			} ) );
-/*		
-//		_indices[1] =
-		settings.indices.faces =
-			new Proxy(settings.faces, {
+		settings.object.geometry.indices.faces.forEach( face => face.face = new Edges( this.scene, this.options, {
+			indices: settings.object.geometry.indices,
+			position: position,
+		}));
 
-			get: function (_faces, name) {
-
-				const i = parseInt(name);
-				if (!isNaN(i))
-					return _faces[i];
-
-				switch (name) {
-
-					case 'push': return (face) => {
-
-						//console.log(sEgocentricUniverse + ': indices.faces.push(' + JSON.stringify(face) + ')');
-						_faces.push(Face({ face: face }));
-
-					};
-						break;
-
-				}
-				//									console.error(sEgocentricUniverse + ': indices.faces[' + name + '] get: invalid name: ' + name);
-				return _faces[name];
-
-			},
-			set: function (_faces, name, value) {
-
-				const i = parseInt(name);
-				if (!isNaN(i)) {
-
-					console.error(sEgocentricUniverse + sIndicesEdgesSet + 'Hidden method: faces[' + i + '] = ' + JSON.stringify(value));
-					_faces[i] = value;
-
-				}
-				return true;
-
-			}
-
-		});
-*/		
 		if ( debug ) {
 		
 
@@ -291,28 +177,7 @@ class Faces extends Edges//EgocentricUniverse
 	 **/
 	constructor(scene, options, settings={}) {
 
-//		settings.n = 1;
 		super(scene, options, settings);
-/*
-		settings.indices = new Proxy( settings.indices, {
-
-			get: function (_indices, name) {
-
-				switch (name) {
-
-					case 'faces': return _indices[1];
-					
-				}
-				return _indices[name];
-
-			}
-
-		});
-*/
-/*		
-const indice = settings.indices[0];
-console.log(indice);
-*/
 
 	}
 

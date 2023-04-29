@@ -48,7 +48,7 @@ class EgocentricUniverse {
 	 * If dimension of the universe space is 2 then under constraction.
 	 * If dimension of the universe space is 3 then under constraction.
 	 * </pre>
-	 * @param {number} [settings.indices] Array of <b>indices</b> of vertices of the n-dimensional universe.
+	 * @param {number} [settings.object.geometry.indices] Array of <b>indices</b> of vertices of the n-dimensional universe.
 	 * <pre>
 	 * <b>Indices</b> is divided to segments:
 	 * 
@@ -173,7 +173,9 @@ class EgocentricUniverse {
 		
 		this.scene = scene;
 		
-		settings.indices = settings.indices || new Proxy([], {
+		settings.object = settings.object || {};
+		settings.object.geometry = settings.object.geometry || {};
+		settings.object.geometry.indices = settings.object.geometry.indices || new Proxy([], {
 
 			get: function (_indices, name) {
 
@@ -337,7 +339,7 @@ class EgocentricUniverse {
 			
 			settings.position.forEach((vertice, i) => console.log('position[' + i + ']. ' + JSON.stringify( vertice )));
 	
-			settings.indices.edges.forEach((edge, i) => console.log('indices.edges[' + i + ']. ' + JSON.stringify( edge )));
+			settings.object.geometry.indices.edges.forEach((edge, i) => console.log('indices.edges[' + i + ']. ' + JSON.stringify( edge )));
 
 		}
 

@@ -24,8 +24,7 @@ class Edges extends EgocentricUniverse {
 
 	//Project universe into 3D space
 	project(
-		n = 2,//universe dimension
-//		faceId = 0
+		n = 2//universe dimension
 	) {
 
 		//remove previous universe
@@ -41,8 +40,8 @@ class Edges extends EgocentricUniverse {
 */
 		//universe length
 		let l = 0;
-		this.settings.indices.edges.forEach( edge => l += edge.distance );
-//		this.settings.indices.faces[this.settings.faceId].forEach( edgeId => l += this.settings.indices.edges[edgeId].distance );
+		this.settings.object.geometry.indices.edges.forEach( edge => l += edge.distance );
+//		this.settings.object.geometry.indices.faces[this.settings.faceId].forEach( edgeId => l += this.settings.object.geometry.indices.edges[edgeId].distance );
 
 		const THREE = three.THREE,
 			r = l / ( 2 * Math.PI ),
@@ -55,9 +54,9 @@ class Edges extends EgocentricUniverse {
 			];
 		let angle = 0.0;//Угол поворота радиуса вселенной до текущей вершины
 		const delta = 2 * Math.PI / l;
-		for ( let i = 1; i < this.settings.indices.edges.length; i++ ) {
+		for ( let i = 1; i < this.settings.object.geometry.indices.edges.length; i++ ) {
 
-			angle += this.settings.indices.edges[i].distance * delta;
+			angle += this.settings.object.geometry.indices.edges[i].distance * delta;
 			points.push( new THREE.Vector3().copy( points[0] ).applyAxisAngle( axis, angle ) );
 
 		}
@@ -87,7 +86,7 @@ class Edges extends EgocentricUniverse {
 			},
 			
 		}
-		settings.object.geometry.indices[0] = this.settings.indices.edges;
+		settings.object.geometry.indices[0] = this.settings.object.geometry.indices.edges;
 		
 		this.display( n, settings, this.debug ?
 			new THREE.LineLoop(new THREE.BufferGeometry().setFromPoints(new THREE.EllipseCurve(
@@ -113,7 +112,7 @@ class Edges extends EgocentricUniverse {
 			position = settings.position;
 		const debug = this.debug;
 
-		if (settings.indices.isUniversyProxy) settings.indices = new Proxy( settings.indices, {
+		if (settings.object.geometry.indices.isUniversyProxy) settings.object.geometry.indices = new Proxy( settings.object.geometry.indices, {
 
 			get: function (_indices, name) {
 
@@ -146,10 +145,10 @@ class Edges extends EgocentricUniverse {
 
 		});
 
-		if (settings.indices.edges) return;
+		if (settings.object.geometry.indices.edges) return;
 		
-		settings.indices[1] = settings.indices[1] || settings.faces || [];
-		if (settings.indices[1].length === 0) settings.indices[1].push( [0, 1, 2] );
+		settings.object.geometry.indices[1] = settings.object.geometry.indices[1] || settings.faces || [];
+		if (settings.object.geometry.indices[1].length === 0) settings.object.geometry.indices[1].push( [0, 1, 2] );
 		
 		const sIndicesEdgesSet = ': indices.edges set. ';
 		settings.count = settings.count || 3;
@@ -176,7 +175,7 @@ class Edges extends EgocentricUniverse {
 
 			const sEdge = sEdges + ': ' + (edgeSettings.edgeId === undefined ? 'Edge' : 'edges[' + edgeSettings.edgeId + ']'),
 				sVertices = sEdge + '.vertices';
-			edgeSettings.edges = edgeSettings.edges || edgeSettings.this.settings.indices.edges;
+			edgeSettings.edges = edgeSettings.edges || edgeSettings.this.settings.object.geometry.indices.edges;
 			edgeSettings.edge = edgeSettings.edge || edgeSettings.edges[edgeSettings.edgeId] || {};
 			
 			if (edgeSettings.edge.isProxy) return edgeSettings.edge;
@@ -331,7 +330,7 @@ class Edges extends EgocentricUniverse {
 
 				//если вставляем новое ребро с помощью edges.push()
 				//надо последнюю вершину последнего ребра заменить на новую вершину
-				settings.indices.edges[settings.indices.edges.length - 1][1] = position.length - 1;
+				settings.object.geometry.indices.edges[settings.object.geometry.indices.edges.length - 1][1] = position.length - 1;
 
 			}
 
@@ -420,15 +419,15 @@ class Edges extends EgocentricUniverse {
 		//у треугольника ребер не должно быть меньше 3
 		for (let i = settings.edges.length; i < settings.count; i++) settings.edges.push({});
 
-		if (settings.indices.edges)
+		if (settings.object.geometry.indices.edges)
 		{
 
 
 			for (let i = 0; i < settings.edges.length; i++) {
 
 				const edge = settings.edges[i] || {};
-				if (!edge.isProxy) settings.indices.edges.push( Edge({
-					edges: settings.indices.edges,
+				if (!edge.isProxy) settings.object.geometry.indices.edges.push( Edge({
+					edges: settings.object.geometry.indices.edges,
 					edgeId: i
 				}) );
 
@@ -436,23 +435,23 @@ class Edges extends EgocentricUniverse {
 			
 		} else {
 
-			settings.indices.edges =
+			settings.object.geometry.indices.edges =
 				new Proxy(settings.edges, {
 
 				get: function (_edges, name) {
 
 					const i = parseInt(name);
-					if (!isNaN(i)) return _edges[settings.indices.faces[settings.faceId][i]];//_edges[settings.edgesId[i]];
+					if (!isNaN(i)) return _edges[settings.object.geometry.indices.faces[settings.faceId][i]];//_edges[settings.edgesId[i]];
 
 					switch (name) {
 
 						case 'push': return (edge={}) => {
 
-							settings.indices.faces[settings.faceId].push( _edges.push(Edge({ edge: edge, edges: settings.indices.edges } ) ) - 1 );
-//							settings.edgesId.push( _edges.push(Edge({ edge: edge, edges: settings.indices.edges } ) ) - 1 );
+							settings.object.geometry.indices.faces[settings.faceId].push( _edges.push(Edge({ edge: edge, edges: settings.object.geometry.indices.edges } ) ) - 1 );
+//							settings.edgesId.push( _edges.push(Edge({ edge: edge, edges: settings.object.geometry.indices.edges } ) ) - 1 );
 
 						};
-						case 'length': return settings.indices.faces[settings.faceId].length;//settings.edgesId.length;
+						case 'length': return settings.object.geometry.indices.faces[settings.faceId].length;//settings.edgesId.length;
 
 					}
 					return _edges[name];
@@ -461,7 +460,7 @@ class Edges extends EgocentricUniverse {
 				set: function (_edges, name, value) {
 
 					const i = parseInt(name);
-					if (!isNaN(i)) _edges[settings.indices.faces[settings.faceId][i]] = value;//_edges[settings.edgesId[i]] = value;
+					if (!isNaN(i)) _edges[settings.object.geometry.indices.faces[settings.faceId][i]] = value;//_edges[settings.edgesId[i]] = value;
 
 					return true;
 
@@ -469,7 +468,7 @@ class Edges extends EgocentricUniverse {
 
 			});
 
-			settings.indices.edges.forEach( ( edge, i ) => settings.indices.edges[i] = Edge( { this: this, edgeId: i } ) );
+			settings.object.geometry.indices.edges.forEach( ( edge, i ) => settings.object.geometry.indices.edges[i] = Edge( { this: this, edgeId: i } ) );
 
 		}
 
@@ -511,7 +510,7 @@ class Edges extends EgocentricUniverse {
 	 * @param {object} [settings.edges.edge] Edges array item is edge.
 	 * @param {Array} [settings.edges.edge.vertices] Array of edge vertices indices. Every edge have two vertices.
 	 * @param {float} [settings.edges.edge.distance] Edge length. Distance between edge vertices.
-	 * @param {number} [settings.faceId=0] Identifier of the array of the edges ids in the <b>settings.indices.faces array</b>.
+	 * @param {number} [settings.faceId=0] Identifier of the array of the edges ids in the <b>settings.object.geometry.indices.faces array</b>.
 	 **/
 	constructor( scene, options, settings={} ) {
 
@@ -538,7 +537,7 @@ class Edges extends EgocentricUniverse {
 
 		this.pushEdge = ( edge ) => {
 			
-			settings.indices.edges.push( edge );
+			settings.object.geometry.indices.edges.push( edge );
 			this.project();
 			
 		}
