@@ -200,7 +200,7 @@ class EgocentricUniverse {
 		/**
 		 * @description array of Vertices.
 		 **/
-		settings.position = settings.position || new Proxy( [], {
+		settings.object.geometry.position = settings.object.geometry.position || new Proxy( [], {
 
 			get: function (_position, name) {
 
@@ -337,7 +337,7 @@ class EgocentricUniverse {
 		
 		if ( debug ) {
 			
-			settings.position.forEach((vertice, i) => console.log('position[' + i + ']. ' + JSON.stringify( vertice )));
+			settings.object.geometry.position.forEach((vertice, i) => console.log('position[' + i + ']. ' + JSON.stringify( vertice )));
 	
 			settings.object.geometry.indices.edges.forEach((edge, i) => console.log('indices.edges[' + i + ']. ' + JSON.stringify( edge )));
 
@@ -364,7 +364,7 @@ class EgocentricUniverse {
 
 			}
 			//remove previous position
-			this.settings.position.forEach( vertice => vertice.length = 0 );
+			this.settings.object.geometry.position.forEach( vertice => vertice.length = 0 );
 			
 		}
 //		if (!settings.noTest) this.project();

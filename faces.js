@@ -91,7 +91,7 @@ class Faces extends Edges//EgocentricUniverse
 
 		super.Indices();
 		const settings = this.settings,
-			position = settings.position;
+			position = settings.object.geometry.position;
 		const debug = this.debug;
 		const sIndicesFacesSet = ': indices.faces set. ';
 		settings.object.geometry.indices = new Proxy(settings.object.geometry.indices, {
