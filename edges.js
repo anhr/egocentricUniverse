@@ -148,6 +148,7 @@ class Edges extends EgocentricUniverse {
 		if (settings.object.geometry.indices.edges) return;
 		
 		settings.object.geometry.indices[1] = settings.object.geometry.indices[1] || settings.faces || [];
+		delete settings.faces;
 		if (settings.object.geometry.indices[1].length === 0) settings.object.geometry.indices[1].push( [0, 1, 2] );
 		
 		const sIndicesEdgesSet = ': indices.edges set. ';
@@ -471,6 +472,7 @@ class Edges extends EgocentricUniverse {
 			settings.object.geometry.indices.edges.forEach( ( edge, i ) => settings.object.geometry.indices.edges[i] = Edge( { this: this, edgeId: i } ) );
 
 		}
+		delete settings.edges;
 
 		if ( debug ) {
 		
