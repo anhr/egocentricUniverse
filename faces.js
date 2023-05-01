@@ -158,10 +158,13 @@ class Faces extends Edges//EgocentricUniverse
 		//сразу заменяем все грани на прокси, потому что в противном случае, когда мы создаем прокси грани в get, каждый раз,
 		//когда вызывается get, в результате может получться бесконечная вложенная конструкция и появится сообщение об ошибке:
 		//EgocentricUniverse: Face get. Duplicate proxy
+		settings.object.geometry.indices.faces.forEach( face => face.face = new Edges( this.scene, this.options, settings ));
+/*		
 		settings.object.geometry.indices.faces.forEach( face => face.face = new Edges( this.scene, this.options, {
 			indices: settings.object.geometry.indices,
 			position: position,
 		}));
+*/  
 
 		if ( debug ) {
 		
