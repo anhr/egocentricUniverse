@@ -112,6 +112,16 @@ class Edges extends EgocentricUniverse {
 			position = settings.object.geometry.position;
 		const debug = this.debug;
 
+		settings.edges = settings.edges || [];
+		let edgesCount = settings.count != undefined  ? settings.count : 3;//default is triangle
+		if (edgesCount < 3) {
+
+			console.error( sEdges + ': Minimal edges count is 3' );
+			edgesCount = 3;
+			
+		}
+		for ( let i = settings.edges.length; i < edgesCount; i++ ) settings.edges.push( {} );
+
 		if (settings.object.geometry.indices.isUniversyProxy) settings.object.geometry.indices = new Proxy( settings.object.geometry.indices, {
 
 			get: function (_indices, name) {
@@ -517,24 +527,7 @@ class Edges extends EgocentricUniverse {
 	constructor( scene, options, settings={} ) {
 
 		if (settings.faceId === undefined) settings.faceId = 0;
-		settings.edges = settings.edges || [];
-		let edgesCount = settings.count != undefined  ? settings.count : 3;//default is triangle
-		if (edgesCount < 3) {
-
-			console.error( sEdges + ': Minimal edges count is 3' );
-			edgesCount = 3;
-			
-		}
-		for ( let i = settings.edges.length; i < edgesCount; i++ ) settings.edges.push( {} );
-/*		
-		if (settings.edgesId === undefined) {
-			
-			//По умолчанию использую все ребра
-			settings.edgesId = [];
-			settings.edges.forEach( ( edge, i ) => settings.edgesId.push( i ) );
-
-		}
-*/
+		
 		super( scene, options, settings );
 
 		this.pushEdge = ( edge ) => {
