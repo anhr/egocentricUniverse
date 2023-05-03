@@ -94,6 +94,7 @@ class Faces extends Edges//EgocentricUniverse
 			position = settings.object.geometry.position;
 		const debug = this.debug;
 		const sIndicesFacesSet = ': indices.faces set. ';
+/*
 		settings.object.geometry.indices = new Proxy(settings.object.geometry.indices, {
 
 			get: function (_indices, name) {
@@ -119,6 +120,7 @@ class Faces extends Edges//EgocentricUniverse
 			},
 
 		});
+*/
 		settings.count = settings.count || 4;//По умолчанию это пирамида с 4 гранями
 		settings.faces = settings.faces || settings.count;
 
