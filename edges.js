@@ -74,6 +74,7 @@ class Edges extends EgocentricUniverse {
 
 			object: {
 
+				name: this.settings.object.name,
 				geometry: {
 
 					position: this.settings.object.geometry.position,
@@ -86,6 +87,8 @@ class Edges extends EgocentricUniverse {
 			
 		}
 		settings.object.geometry.indices[0] = this.settings.object.geometry.indices.edges;
+		settings.object.geometry.indices[1] = this.settings.object.geometry.indices.faces;
+const edge1 = this.settings.object.geometry.indices.edges[1];
 		
 		this.display( n, settings, this.debug ?
 			new THREE.LineLoop(new THREE.BufferGeometry().setFromPoints(new THREE.EllipseCurve(
@@ -305,7 +308,8 @@ class Edges extends EgocentricUniverse {
 
 					if ((edgeSettings.edgeId != undefined) && (edgeSettings.edgeId === edgeCurId)) continue;//Не сравнивать одно и тоже ребро
 
-					const edgeCur = edgeSettings.edges[edgeCurId], verticesCur = edgeCur.vertices;
+					const edgeCur = edgeSettings.edges[edgeCurId],
+						verticesCur = edgeCur.vertices;
 					if (!verticesCur) continue;//в данном ребре еще нет вершин
 					const vertices = edgeSettings.edge.vertices;
 					if (
@@ -469,7 +473,9 @@ class Edges extends EgocentricUniverse {
 					if (!isNaN(i)) {
 
 //						const edge = _edges[settings.object.geometry.indices.faces[settings.faceId][i]];
-						const edgeId = indices.faces[settings.faceId][i];
+						
+//						const edgeId = indices.faces[settings.faceId][i];//uncompatible with ND
+						const edgeId = i;
 						let edge = _edges[edgeId];
 						if (!edge) {
 

@@ -349,6 +349,7 @@ class EgocentricUniverse {
 			
 			settings.scene = scene;
 			settings.options = options;
+			if (!settings.object.name) settings.object.name = lang.universe;
 			new ND( n, settings );
 
 			if (debugObject) scene.add( debugObject );
