@@ -505,7 +505,6 @@ const edge1 = this.settings.object.geometry.indices.edges[1];
 						return edge;
 
 					}
-
 					switch (name) {
 
 						case 'isEdgesProxy': return true;
@@ -515,7 +514,7 @@ const edge1 = this.settings.object.geometry.indices.edges[1];
 //							settings.object.geometry.indices.faces[settings.faceId].push( _edges.push(Edge({ edge: edge, edges: settings.object.geometry.indices.edges } ) ) - 1 );
 
 						};
-						case 'length': return indices.faces[settings.faceId].length;
+//						case 'length': return indices.faces[settings.faceId].length;
 
 					}
 					return _edges[name];
@@ -559,7 +558,11 @@ const edge1 = this.settings.object.geometry.indices.edges[1];
 						return edge;
 
 					}
+					switch (name) {
 
+						case 'length': return indices.faces[settings.faceId].length;
+
+					}
 					return _edges[name];
 
 				},
