@@ -73,7 +73,7 @@ class Edges extends EgocentricUniverse {
 			this.settings.object.geometry.position[i] = point.toArray();
 			
 		} );
-		
+/*		
 		const settings = {
 
 			object: {
@@ -93,9 +93,11 @@ class Edges extends EgocentricUniverse {
 		settings.object.geometry.indices[0] = this.settings.object.geometry.indices.edges;
 		settings.object.geometry.indices[1] = this.settings.object.geometry.indices.faces;
 		settings.scene = scene;
+*/		
+		this.settings.scene = scene;
 //const edge1 = this.settings.object.geometry.indices.edges[1];
 		
-		this.display( n, settings, this.debug ?
+		this.display( n, this.settings, this.debug ?
 			new THREE.LineLoop(new THREE.BufferGeometry().setFromPoints(new THREE.EllipseCurve(
 				center.x, center.y,// Center x, y
 				r, r,// x radius, y radius
