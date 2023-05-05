@@ -68,7 +68,6 @@ class EgocentricUniverse {
 	
 	/**
 	 * Base class for egocentric universe.
-	 * @param {THREE.Scene} scene [THREE.Scene]{@link https://threejs.org/docs/index.html?q=sce#api/en/scenes/Scene}.
 	 * @param {Options} options See &lt;a href="../../../commonNodeJS/master/jsdoc/Options/Options.html" target="_blank">Options&lt;/a>.
 	 * @param {object} [settings={}] The following settings are available
 	 * @param {number} [settings.сount] If dimension of the universe space is 1 then &lt;b>сount&lt;/b> is edges count. Default is 3.
@@ -76,7 +75,7 @@ class EgocentricUniverse {
 	 * If dimension of the universe space is 2 then under constraction.
 	 * If dimension of the universe space is 3 then under constraction.
 	 * &lt;/pre>
-	 * @param {number} [settings.indices] Array of &lt;b>indices&lt;/b> of vertices of the n-dimensional universe.
+	 * @param {number} [settings.object.geometry.indices] Array of &lt;b>indices&lt;/b> of vertices of the n-dimensional universe.
 	 * &lt;pre>
 	 * &lt;b>Indices&lt;/b> is divided to segments:
 	 * 
@@ -86,7 +85,7 @@ class EgocentricUniverse {
 	 * For example:
 	 * 
 	 * &lt;b>n&lt;/b> = 1 universe is line.
-	 * vertices = [
+	 * position = [
 	 *	0: Vertice {}//First vertice
 	 *	1: Vertice {}//Second vertice
 	 *	2: Vertice {}//third vertice
@@ -120,7 +119,7 @@ class EgocentricUniverse {
 	 * ]
 	 * &lt;/pre>
 	 **/
-	constructor(scene, options, settings = {}) {
+	constructor( options, settings = {} ) {
 
 		const egocentricUniverse = this;
 		this.options = options;
@@ -199,9 +198,11 @@ class EgocentricUniverse {
 		} );
 		*/		
 		
-		this.scene = scene;
+//		this.scene = scene;
 		
-		settings.indices = settings.indices || new Proxy([], {
+		settings.object = settings.object || {};
+		settings.object.geometry = settings.object.geometry || {};
+		settings.object.geometry.indices = settings.object.geometry.indices || new Proxy([], {
 
 			get: function (_indices, name) {
 
@@ -226,23 +227,23 @@ class EgocentricUniverse {
 		/**
 		 * @description array of Vertices.
 		 **/
-		settings.vertices = settings.vertices || new Proxy( [], {
+		settings.object.geometry.position = settings.object.geometry.position || new Proxy( [], {
 
-			get: function (_vertices, name) {
+			get: function (_position, name) {
 
 				const i = parseInt(name);
 				if (!isNaN(i)) {
 
-					if (i >= _vertices.length)
-						console.error(sEgocentricUniverse + ': vertices get. Invalid index = ' + i + ' vertices.length = ' + _vertices.length);
-					return _vertices[i];
+					if (i >= _position.length)
+						console.error(sEgocentricUniverse + ': position get. Invalid index = ' + i + ' position.length = ' + _position.length);
+					return _position[i];
 
 				}
 				switch (name) {
 
 					case 'push': return ( vertice=[] ) => {
 
-						_vertices.push( new Proxy( vertice, {
+						_position.push( new Proxy( vertice, {
 
 							get: (vertice, name) => {
 
@@ -316,9 +317,9 @@ class EgocentricUniverse {
 
 						if (!debug) return;
 
-						_vertices.forEach( ( vertice, verticeId ) => {
+						_position.forEach( ( vertice, verticeId ) => {
 	
-							const str1 = sEgocentricUniverse + ': vertices.test()', strVerticeId = 'vertices(' + verticeId + ')';
+							const str1 = sEgocentricUniverse + ': position.test()', strVerticeId = 'position(' + verticeId + ')';
 							egocentricUniverse.Test(vertice, strVerticeId);
 							vertice.edges.forEach( edgeId => {
 	
@@ -331,20 +332,20 @@ class EgocentricUniverse {
 					break;
 
 				}
-				return _vertices[name];
+				return _position[name];
 
 			},
-			set: function (_vertices, name, value) {
+			set: function (_position, name, value) {
 
 				const i = parseInt(name);
 				if (!isNaN(i)) {
 
-//					console.error(sEgocentricUniverse + ': vertices set. Hidden method: vertices[' + i + '] = ' + value);
+//					console.error(sEgocentricUniverse + ': position set. Hidden method: position[' + i + '] = ' + value);
 					value.forEach( ( axis, j ) => {
 						
-						if (isNaN( axis )) console.error(sEgocentricUniverse + ': vertices set. vertices[' + i + '][' + j + '] = ' + axis );
-						else if (( _vertices[i].push(axis) - 1 ) != j)
-							console.error(sEgocentricUniverse + ': vertices set. vertices[' + i + '][' + j + '] = ' + axis + ' Invalid new axis index = ' + j );
+						if (isNaN( axis )) console.error(sEgocentricUniverse + ': position set. position[' + i + '][' + j + '] = ' + axis );
+						else if (( _position[i].push(axis) - 1 ) != j)
+							console.error(sEgocentricUniverse + ': position set. position[' + i + '][' + j + '] = ' + axis + ' Invalid new axis index = ' + j );
 						
 					} );
 
@@ -359,16 +360,13 @@ class EgocentricUniverse {
 		//settings.count = [{ isProxy: true }];//Error: Faces: faces[0]. Duplicate proxy
 		//settings.count = [{ edges: true }];//Error: Faces: faces[0]. Invalid face.edges instance: true
 		//settings.count = [[]];//Error: Faces: faces[0]. Invalid face instance
-		this.Indices();// settings.indices, settings, settings.vertices );
-		//this.Indices(indices, settings, vertices);//Error: Edges: indices.edges set. duplicate edges
-		
-//		if (!settings.noTest) settings.vertices.test();
+		this.Indices();
 		
 		if ( debug ) {
 			
-			settings.vertices.forEach((vertice, i) => console.log('vertices[' + i + ']. ' + JSON.stringify( vertice )));
+			settings.object.geometry.position.forEach((vertice, i) => console.log('position[' + i + ']. ' + JSON.stringify( vertice )));
 	
-			settings.indices.edges.forEach((edge, i) => console.log('indices.edges[' + i + ']. ' + JSON.stringify( edge )));
+			settings.object.geometry.indices.edges.forEach((edge, i) => console.log('indices.edges[' + i + ']. ' + JSON.stringify( edge )));
 
 		}
 
@@ -376,14 +374,27 @@ class EgocentricUniverse {
 		this.display = ( n,//universe dimension
 						settings, debugObject ) => { 
 			
-			settings.scene = scene;
+//			settings.scene = scene;
 			settings.options = options;
+			if (!settings.object.name) settings.object.name = lang.universe;
+
+			//for compability with ND
+			//fixing of the
+			//ND.geometry.D3.get indices: invalid edge.length = undefined
+			//error
+			const edges = settings.object.geometry.indices[0];
+			edges.forEach( ( edge, i ) => {
+
+				if (!( edge instanceof Array )) edges[i] = [0, 1];
+				
+			} );
+							
 			new ND( n, settings );
 
-			if (debugObject) scene.add( debugObject );
+			if (debugObject) settings.scene.add( debugObject );
 		
 		}
-		this.remove = () => {
+		this.remove = ( scene ) => {
 
 			for (var i = scene.children.length - 1; i >= 0; i--) {
 				
@@ -392,8 +403,8 @@ class EgocentricUniverse {
 				if ( options.guiSelectPoint ) options.guiSelectPoint.removeMesh( child );
 
 			}
-			//remove previous vertices position
-			this.settings.vertices.forEach( vertice => vertice.length = 0 );
+			//remove previous position
+			this.settings.object.geometry.position.forEach( vertice => vertice.length = 0 );
 			
 		}
 //		if (!settings.noTest) this.project();
@@ -422,7 +433,7 @@ export default EgocentricUniverse;
 <br class="clear">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 3.6.11</a> on Fri Apr 28 2023 09:37:41 GMT+0700 (Красноярск, стандартное время)
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 3.6.11</a> on Fri May 05 2023 11:30:38 GMT+0700 (Красноярск, стандартное время)
 </footer>
 
 <script> prettyPrint(); </script>
