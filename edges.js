@@ -24,11 +24,12 @@ class Edges extends EgocentricUniverse {
 
 	//Project universe into 3D space
 	project(
+		scene,
 		n = 2//universe dimension
 	) {
 
 		//remove previous universe
-		this.remove();
+		this.remove( scene );
 
 /*
 		if (!this.settings.edgesId) {
@@ -91,7 +92,8 @@ class Edges extends EgocentricUniverse {
 		}
 		settings.object.geometry.indices[0] = this.settings.object.geometry.indices.edges;
 		settings.object.geometry.indices[1] = this.settings.object.geometry.indices.faces;
-const edge1 = this.settings.object.geometry.indices.edges[1];
+		settings.scene = scene;
+//const edge1 = this.settings.object.geometry.indices.edges[1];
 		
 		this.display( n, settings, this.debug ?
 			new THREE.LineLoop(new THREE.BufferGeometry().setFromPoints(new THREE.EllipseCurve(
@@ -613,7 +615,6 @@ const edge1 = this.settings.object.geometry.indices.edges[1];
 	}
 	/**
 	 * 1D universe or universe edges.
-	 * @param {THREE.Scene} scene [THREE.Scene]{@link https://threejs.org/docs/index.html?q=sce#api/en/scenes/Scene}.
 	 * @param {Options} options See <a href="../../../commonNodeJS/master/jsdoc/Options/Options.html" target="_blank">Options</a>.
 	 * @param {object} [settings] See <b>EgocentricUniverse <a href="./module-EgocentricUniverse-EgocentricUniverse.html" target="_blank">settings</a></b> parameter.
 	 * @param {number} [settings.count=3] 1D Universe edges count. Default universe is triangle with 3 edges.
@@ -623,11 +624,12 @@ const edge1 = this.settings.object.geometry.indices.edges[1];
 	 * @param {float} [settings.edges.edge.distance] Edge length. Distance between edge vertices.
 	 * @param {number} [settings.faceId=0] Identifier of the array of the edges ids in the <b>settings.object.geometry.indices.faces array</b>.
 	 **/
-	constructor( scene, options, settings={} ) {
+	constructor( options, settings={} ) {
 
 		if (settings.faceId === undefined) settings.faceId = 0;
 		
-		super( scene, options, settings );
+//		super( scene, options, settings );
+		super( options, settings );
 
 		this.pushEdge = ( edge ) => {
 			

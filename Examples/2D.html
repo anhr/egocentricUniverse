@@ -42,7 +42,7 @@
 
 		new MyThree( (scene, options) => {
 
-			const universe = new Faces( scene, options,
+			const universe = new Faces( options,
 				{
 					//count: 10,//2D universe space faces count.
 					faces: [
@@ -56,7 +56,7 @@
 				}
 			);
 			universe.settings.object.geometry.position.test();
-			universe.project();
+			universe.project( scene );
 
 		}, {
 

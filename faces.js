@@ -31,16 +31,16 @@ class Faces extends Edges//EgocentricUniverse
 	//Overridden methods from base class
 
 	//Project universe into 3D space
-	project(){
+	project( scene ){
 
 //		const indices = this.settings.object.geometry.indices, scene = this.scene, options = this.options;
 
 		//remove previous universe
-		this.remove();		//universe length
+		this.remove( scene );
 		
 		const THREE = three.THREE;
 
-		this.settings.object.geometry.indices.faces.forEach( face => face.face.project( 3 ) );//Если размерность вселенной задать меньше 3 то исчезнут оси коодинат
+		this.settings.object.geometry.indices.faces.forEach( face => face.face.project( scene, 3 ) );//Если размерность вселенной задать меньше 3 то исчезнут оси коодинат
 		
 		if ( this.debug ) {
 
@@ -58,7 +58,7 @@ class Faces extends Edges//EgocentricUniverse
 				} )
 	
 			);			
-			this.scene.add( sphere );
+			scene.add( sphere );
 
 			const plane = new THREE.Mesh( new THREE.PlaneGeometry( 2.0, 2.0 ),
 
@@ -72,7 +72,7 @@ class Faces extends Edges//EgocentricUniverse
 				} )
 
 			);
-			this.scene.add( plane );
+			scene.add( plane );
 //			plane.name = name;
 			
 			if (typeof Intersections != 'undefined') new Intersections( sphere, plane );
@@ -160,7 +160,7 @@ class Faces extends Edges//EgocentricUniverse
 		//сразу заменяем все грани на прокси, потому что в противном случае, когда мы создаем прокси грани в get, каждый раз,
 		//когда вызывается get, в результате может получться бесконечная вложенная конструкция и появится сообщение об ошибке:
 		//EgocentricUniverse: Face get. Duplicate proxy
-		settings.object.geometry.indices.faces.forEach( face => face.face = new Edges( this.scene, this.options, settings ));
+		settings.object.geometry.indices.faces.forEach( face => face.face = new Edges( this.options, settings ));
 /*		
 		settings.object.geometry.indices.faces.forEach( face => face.face = new Edges( this.scene, this.options, {
 			indices: settings.object.geometry.indices,
@@ -176,13 +176,12 @@ class Faces extends Edges//EgocentricUniverse
 	}
 	/**
 	 * 1D universe or universe edges.
-	 * @param {THREE.Scene} scene [THREE.Scene]{@link https://threejs.org/docs/index.html?q=sce#api/en/scenes/Scene}.
 	 * @param {Options} options See <a href="../../../commonNodeJS/master/jsdoc/Options/Options.html" target="_blank">Options</a>.
 	 * @param {object} [settings] See <b>EgocentricUniverse <a href="./module-EgocentricUniverse-EgocentricUniverse.html" target="_blank">settings</a></b> parameter.
 	 **/
-	constructor(scene, options, settings={}) {
+	constructor( options, settings={} ) {
 
-		super(scene, options, settings);
+		super( options, settings );
 
 	}
 

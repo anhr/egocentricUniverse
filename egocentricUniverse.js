@@ -40,7 +40,6 @@ class EgocentricUniverse {
 	
 	/**
 	 * Base class for egocentric universe.
-	 * @param {THREE.Scene} scene [THREE.Scene]{@link https://threejs.org/docs/index.html?q=sce#api/en/scenes/Scene}.
 	 * @param {Options} options See <a href="../../../commonNodeJS/master/jsdoc/Options/Options.html" target="_blank">Options</a>.
 	 * @param {object} [settings={}] The following settings are available
 	 * @param {number} [settings.сount] If dimension of the universe space is 1 then <b>сount</b> is edges count. Default is 3.
@@ -92,7 +91,7 @@ class EgocentricUniverse {
 	 * ]
 	 * </pre>
 	 **/
-	constructor(scene, options, settings = {}) {
+	constructor( options, settings = {} ) {
 
 		const egocentricUniverse = this;
 		this.options = options;
@@ -171,7 +170,7 @@ class EgocentricUniverse {
 		} );
 		*/		
 		
-		this.scene = scene;
+//		this.scene = scene;
 		
 		settings.object = settings.object || {};
 		settings.object.geometry = settings.object.geometry || {};
@@ -347,7 +346,7 @@ class EgocentricUniverse {
 		this.display = ( n,//universe dimension
 						settings, debugObject ) => { 
 			
-			settings.scene = scene;
+//			settings.scene = scene;
 			settings.options = options;
 			if (!settings.object.name) settings.object.name = lang.universe;
 
@@ -364,10 +363,10 @@ class EgocentricUniverse {
 							
 			new ND( n, settings );
 
-			if (debugObject) scene.add( debugObject );
+			if (debugObject) settings.scene.add( debugObject );
 		
 		}
-		this.remove = () => {
+		this.remove = ( scene ) => {
 
 			for (var i = scene.children.length - 1; i >= 0; i--) {
 				
