@@ -174,6 +174,13 @@ class EgocentricUniverse {
 		
 		settings.object = settings.object || {};
 		settings.object.geometry = settings.object.geometry || {};
+		if (settings.object.geometry.indices) {
+
+			const indices = [];
+			Object.keys( settings.object.geometry.indices ).forEach( key => indices[key] = settings.object.geometry.indices[key] );
+			settings.object.geometry.indices = indices;
+			
+		}
 		settings.object.geometry.indices = settings.object.geometry.indices || new Proxy([], {
 
 			get: function (_indices, name) {
