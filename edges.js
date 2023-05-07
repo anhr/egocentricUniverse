@@ -17,6 +17,7 @@ import EgocentricUniverse from './egocentricUniverse.js';
 import three from '../../commonNodeJS/master/three.js'
 
 const sEdges = 'Edges';
+let isEdgesIndicesProxy = false;
 
 class Edges extends EgocentricUniverse {
 
@@ -121,8 +122,92 @@ class Edges extends EgocentricUniverse {
 			position = settings.object.geometry.position;
 		const debug = this.debug;
 
-//		settings.edges = settings.edges || [];
-//		let edgesCount = settings.count != undefined  ? settings.count : 3;//default is triangle
+		if (!isEdgesIndicesProxy) {
+			
+			settings.object.geometry.indices = new Proxy( settings.object.geometry.indices, {
+
+				get: function (_indices, name) {
+	
+					switch (name) {
+	
+						case 'edges': 
+//							_indices[0] = _indices[0] || _indices.edges || [];
+							_indices[0] = _indices[0] || [];
+							delete _indices.edges;
+							return _indices[0];
+
+						case 'faceEdges': return new Proxy(_indices[0], {
+			
+							get: function (_edges, name) {
+			
+								const i = parseInt(name);
+								if (!isNaN(i)) {
+			
+									const edgeId = indices.faces[settings.faceId][i];
+									let edge = _edges[edgeId];
+									return edge;
+			
+								}
+								switch (name) {
+			
+									case 'length': return indices.faces[settings.faceId].length;
+			
+								}
+								return _edges[name];
+			
+							},
+							set: function (_edges, name, value) {
+			
+								const i = parseInt(name);
+								if (!isNaN(i)) _edges[indices.faces[settings.faceId][i]] = value;
+			
+								return true;
+			
+							}
+			
+						});
+
+							
+						case 'faces':
+							_indices[1] = _indices[1] || [];
+							if (_indices[1].length === 0) _indices[1].push( [0, 1, 2] );
+							return _indices[1];
+						case 'count': return _indices.count( sEdges + ': Minimal edges count is ' );
+/*							
+							const edgesCount = 3;
+							if (_indices.count === undefined) _indices.count = edgesCount;
+							if (_indices.count < edgesCount) {
+					
+								console.error( sEdges + ': Minimal edges count is ' + edgesCount );
+								_indices.count = edgesCount;
+								
+							}
+							return _indices.count;
+*/	   
+						
+					}
+					return _indices[name];
+	
+				},
+				set: function (_indices, name, value) {
+	
+					switch (name) {
+	
+						case 'edges': _indices[0] = value; return true;
+						
+					}
+					_indices[name] = value;
+					return true;
+	
+				},
+	
+			});
+			isEdgesIndicesProxy = true;
+
+		}
+		
+		let edgesCount = settings.object.geometry.indices.count;//default is triangle
+/*		
 		let edgesCount = settings.object.geometry.indices.count != undefined  ? settings.object.geometry.indices.count : 3;//default is triangle
 		if (edgesCount < 3) {
 
@@ -130,45 +215,11 @@ class Edges extends EgocentricUniverse {
 			edgesCount = 3;
 			
 		}
+*/
 //		for ( let i = settings.edges.length; i < edgesCount; i++ ) settings.edges.push( {} );
+		
 		settings.object.geometry.indices[1] = settings.object.geometry.indices[1] || settings.object.geometry.indices.faces || [];
 		delete settings.object.geometry.indices.faces;
-
-		if (!settings.object.geometry.indices.isEdgesIndicesProxy) settings.object.geometry.indices = new Proxy( settings.object.geometry.indices, {
-
-			get: function (_indices, name) {
-
-				switch (name) {
-
-					case 'edges': 
-						_indices[0] = _indices[0] || _indices.edges || [];
-						delete _indices.edges;
-						return _indices[0];
-					case 'isEdgesIndicesProxy': return true;
-					case 'faces':
-/*						
-						_indices[1] = _indices[1] || settings.faces || [];
-*/	  
-						if (_indices[1].length === 0) _indices[1].push( [0, 1, 2] );
-						return _indices[1];
-					
-				}
-				return _indices[name];
-
-			},
-			set: function (_indices, name, value) {
-
-				switch (name) {
-
-					case 'edges': _indices[0] = value; return true;
-					
-				}
-				_indices[name] = value;
-				return true;
-
-			},
-
-		});
 
 //		if (settings.object.geometry.indices.edges) return;
 		
@@ -464,23 +515,7 @@ class Edges extends EgocentricUniverse {
 
 		}
 
-/*		
-		if (settings.object.geometry.indices.edges)
-		{
-
-
-			for (let i = 0; i < settings.edges.length; i++) {
-
-				const edge = settings.edges[i] || {};
-				if (!edge.isProxy) settings.object.geometry.indices.edges.push( Edge({
-					edges: settings.object.geometry.indices.edges,
-					edgeId: i
-				}) );
-
-			}
-			
-		} else */
-		if (!indices.edges.isEdgesProxy){
+		if (!indices.edges.isEdgesProxy) {
 
 			indices.edges =
 				new Proxy(indices.edges, {
@@ -524,18 +559,9 @@ class Edges extends EgocentricUniverse {
 					return _edges[name];
 
 				},
-				/*
-				set: function (_edges, name, value) {
-
-					const i = parseInt(name);
-					if (!isNaN(i)) _edges[i] = value;
-
-					return true;
-
-				}
-				*/
 
 			});
+/*			
 			indices.faceEdges =
 				new Proxy(indices.edges, {
 
@@ -546,19 +572,6 @@ class Edges extends EgocentricUniverse {
 
 						const edgeId = indices.faces[settings.faceId][i];
 						let edge = _edges[edgeId];
-/*						
-						if (!edge) {
-
-							if (edgeId != _edges.length) console.error( sEdges + ': get indices.faceEdges: invalid edgeId = ' + edgeId );//добавлять только то ребро, индекс которого в конце массива _edges
-							else {
-								
-								edge = {};
-								_edges.push( edge );
-
-							}
-
-						}
-*/	  
 						return edge;
 
 					}
@@ -580,6 +593,7 @@ class Edges extends EgocentricUniverse {
 				}
 
 			});
+*/			
 
 //			indices.edges.forEach( ( edge, i ) => indices.edges[i] = Edge( { this: this, edgeId: i } ) );
 			indices.faceEdges.forEach( ( edge, i ) => indices.faceEdges[i] = Edge( { this: this, edgeId: i } ) );

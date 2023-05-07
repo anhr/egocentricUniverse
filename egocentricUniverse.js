@@ -193,7 +193,18 @@ class EgocentricUniverse {
 //					case '_indices': return _indices;
 //					case 'edges': return _indices[0];
 //					case 'faces': return _indices[1];
-					case 'isUniversyProxy': return true;
+//					case 'isUniversyProxy': return true;
+					case 'count': return ( error, minCount = 3 ) => {
+						if (_indices.count === undefined) _indices.count = minCount;
+						if (_indices.count < minCount) {
+				
+							console.error( error + minCount );
+							_indices.count = minCount;
+							
+						}
+						return _indices.count;
+					}
+					case 'boAddIndices': return _indices[name];//for compatibility with ND
 					default: console.error(sEgocentricUniverse + ': indices get: invalid name: ' + name);
 					
 				}
