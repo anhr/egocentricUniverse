@@ -210,7 +210,9 @@ class EgocentricUniverse {
 							}
 							return _indices.count;
 						}
-						case 'boAddIndices': return _indices[name];//for compatibility with ND
+						case 'boAddIndices':
+						case 'length': 
+						case 'forEach': return _indices[name];//for compatibility with ND
 						default: console.error(sEgocentricUniverse + ': indices get: invalid name: ' + name);
 						
 					}

@@ -117,7 +117,7 @@ class Edges extends EgocentricUniverse {
 	}
 	Indices() {
 		
-		const settings = this.settings,
+		const _this = this, settings = this.settings,
 //			vertices = settings.vertices;
 			position = settings.object.geometry.position;
 		const debug = this.debug;
@@ -132,42 +132,127 @@ class Edges extends EgocentricUniverse {
 	
 						case 'edges': 
 //							_indices[0] = _indices[0] || _indices.edges || [];
-							_indices[0] = _indices[0] || [];
-							delete _indices.edges;
-							return _indices[0];
+//							delete _indices.edges;
+//							_indices[0] = _indices[0] || [];
+//							return _indices[0];
+							if (!_indices[0].isEdgesProxy) {
+								
+								_indices[0] = new Proxy(_indices[0] || [], {
+			
+									get: function (_edges, name) {
+					
+										const i = parseInt(name);
+										if (!isNaN(i)) {
+					
+					//						const edge = _edges[settings.object.geometry.indices.faces[settings.faceId][i]];
+											
+					//						const edgeId = indices.faces[settings.faceId][i];//uncompatible with ND
+											const edgeId = i;
+											let edge = _edges[edgeId];
+											if (!edge) {
+					
+												if (edgeId != _edges.length) console.error( sEdges + ': get indices.edges: invalid edgeId = ' + edgeId );//добавлять только то ребро, индекс которого в конце массива _edges
+												else {
+													
+													edge = {};
+													_edges.push( edge );
+					
+												}
+					
+											}
+											return edge;
+					
+										}
+										switch (name) {
+					
+											case 'isEdgesProxy': return true;
+											case 'push': return (edge={}) => {
+					
+												indices.faces[settings.faceId].push( _edges.push(Edge({ edge: edge, edges: settings.object.geometry.indices.edges } ) ) - 1 );
+					//							settings.object.geometry.indices.faces[settings.faceId].push( _edges.push(Edge({ edge: edge, edges: settings.object.geometry.indices.edges } ) ) - 1 );
+					
+											};
+					//						case 'length': return indices.faces[settings.faceId].length;
+					
+										}
+										return _edges[name];
+					
+									},
+					
+								});
+								indices.faceEdges.forEach( ( edge, i ) => indices.faceEdges[i] = Edge( { this: _this, edgeId: i } ) );
 
+							}
+							return _indices[0];
 						case 'faceEdges': return new Proxy(_indices[0], {
 			
-							get: function (_edges, name) {
-			
-								const i = parseInt(name);
-								if (!isNaN(i)) {
-			
-									const edgeId = indices.faces[settings.faceId][i];
-									let edge = _edges[edgeId];
-									return edge;
-			
+								get: function (_edges, name) {
+				
+									const i = parseInt(name);
+									if (!isNaN(i)) {
+				
+										const edgeId = indices.faces[settings.faceId][i];
+										let edge = _edges[edgeId];
+										return edge;
+				
+									}
+									switch (name) {
+				
+										case 'isFaceEdgesProxy': return true;
+										case 'length': return indices.faces[settings.faceId].length;
+				
+									}
+									return _edges[name];
+				
+								},
+								set: function (_edges, name, value) {
+				
+									const i = parseInt(name);
+									if (!isNaN(i)) _edges[indices.faces[settings.faceId][i]] = value;
+				
+									return true;
+				
 								}
-								switch (name) {
-			
-									case 'length': return indices.faces[settings.faceId].length;
-			
-								}
-								return _edges[name];
-			
-							},
-							set: function (_edges, name, value) {
-			
-								const i = parseInt(name);
-								if (!isNaN(i)) _edges[indices.faces[settings.faceId][i]] = value;
-			
-								return true;
-			
-							}
-			
-						});
-
+				
+							});
+							/*
+							   //Error: ND: createIndices. Invalid itemIndices.length = undefined
+							   //if user has clicked mouse over universe
+							if (!_indices[0].isFaceEdgesProxy)
 							
+								_indices[0] = new Proxy(_indices[0], {
+			
+								get: function (_edges, name) {
+				
+									const i = parseInt(name);
+									if (!isNaN(i)) {
+				
+										const edgeId = indices.faces[settings.faceId][i];
+										let edge = _edges[edgeId];
+										return edge;
+				
+									}
+									switch (name) {
+				
+										case 'isFaceEdgesProxy': return true;
+										case 'length': return indices.faces[settings.faceId].length;
+				
+									}
+									return _edges[name];
+				
+								},
+								set: function (_edges, name, value) {
+				
+									const i = parseInt(name);
+									if (!isNaN(i)) _edges[indices.faces[settings.faceId][i]] = value;
+				
+									return true;
+				
+								}
+				
+							});
+							return _indices[0];
+						   */
 						case 'faces':
 							_indices[1] = _indices[1] || [];
 							if (_indices[1].length === 0) _indices[1].push( [0, 1, 2] );
@@ -515,8 +600,9 @@ class Edges extends EgocentricUniverse {
 
 		}
 
-		if (!indices.edges.isEdgesProxy) {
+//		if (!indices.edges.isEdgesProxy) {
 
+/*			
 			indices.edges =
 				new Proxy(indices.edges, {
 
@@ -561,6 +647,7 @@ class Edges extends EgocentricUniverse {
 				},
 
 			});
+*/   
 /*			
 			indices.faceEdges =
 				new Proxy(indices.edges, {
@@ -596,9 +683,9 @@ class Edges extends EgocentricUniverse {
 */			
 
 //			indices.edges.forEach( ( edge, i ) => indices.edges[i] = Edge( { this: this, edgeId: i } ) );
-			indices.faceEdges.forEach( ( edge, i ) => indices.faceEdges[i] = Edge( { this: this, edgeId: i } ) );
+//			indices.faceEdges.forEach( ( edge, i ) => indices.faceEdges[i] = Edge( { this: this, edgeId: i } ) );
 
-		}
+//		}
 //		delete settings.edges;
 
 		if ( debug ) {
