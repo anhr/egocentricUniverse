@@ -180,39 +180,47 @@ class EgocentricUniverse {
 			Object.keys( settings.object.geometry.indices ).forEach( key => indices[key] = settings.object.geometry.indices[key] );
 			settings.object.geometry.indices = indices;
 			
-		}
-		settings.object.geometry.indices = settings.object.geometry.indices || new Proxy([], {
-
-			get: function (_indices, name) {
-
-				const i = parseInt(name);
-				if (!isNaN(i)) return _indices[i];
-
-				switch (name) {
-
-//					case '_indices': return _indices;
-//					case 'edges': return _indices[0];
-//					case 'faces': return _indices[1];
-//					case 'isUniversyProxy': return true;
-					case 'count': return ( error, minCount = 3 ) => {
-						if (_indices.count === undefined) _indices.count = minCount;
-						if (_indices.count < minCount) {
-				
-							console.error( error + minCount );
-							_indices.count = minCount;
-							
-						}
-						return _indices.count;
-					}
-					case 'boAddIndices': return _indices[name];//for compatibility with ND
-					default: console.error(sEgocentricUniverse + ': indices get: invalid name: ' + name);
+		} else settings.object.geometry.indices = [];
+		if (!settings.object.geometry.indices.isUniversyProxy) {
+			
+			settings.object.geometry.indices[0] = settings.object.geometry.indices[0] || settings.object.geometry.indices.edges;
+			delete settings.object.geometry.indices.edges;
+			settings.object.geometry.indices[1] = settings.object.geometry.indices[1] || settings.object.geometry.indices.faces;
+			delete settings.object.geometry.indices.faces;
+			settings.object.geometry.indices = new Proxy(settings.object.geometry.indices ? settings.object.geometry.indices : [], {
+	
+				get: function (_indices, name) {
+	
+					const i = parseInt(name);
+					if (!isNaN(i)) return _indices[i];
+	
+					switch (name) {
+	
+	//					case '_indices': return _indices;
+	//					case 'edges': return _indices[0];
+	//					case 'faces': return _indices[1];
+						case 'isUniversyProxy': return true;
+						case 'count': return ( error, minCount = 3 ) => {
+							if (_indices.count === undefined) _indices.count = minCount;
+							if (_indices.count < minCount) {
 					
+								console.error( error + minCount );
+								_indices.count = minCount;
+								
+							}
+							return _indices.count;
+						}
+						case 'boAddIndices': return _indices[name];//for compatibility with ND
+						default: console.error(sEgocentricUniverse + ': indices get: invalid name: ' + name);
+						
+					}
+					return _indices[name];
+	
 				}
-				return _indices[name];
-
-			}
-
-		});
+	
+			});
+	
+		}
 
 		/**
 		 * @description array of Vertices.
