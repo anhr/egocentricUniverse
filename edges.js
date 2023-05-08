@@ -216,8 +216,8 @@ class Edges extends EgocentricUniverse {
 				
 							});
 							/*
-							   //Error: ND: createIndices. Invalid itemIndices.length = undefined
-							   //if user has clicked mouse over universe
+							//Error: ND: createIndices. Invalid itemIndices.length = undefined
+							//if user has clicked mouse over universe
 							if (!_indices[0].isFaceEdgesProxy)
 							
 								_indices[0] = new Proxy(_indices[0], {
