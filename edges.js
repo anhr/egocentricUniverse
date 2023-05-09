@@ -254,8 +254,69 @@ class Edges extends EgocentricUniverse {
 							return _indices[0];
 						   */
 						case 'faces':
+/*							
 							_indices[1] = _indices[1] || [];
 							if (_indices[1].length === 0) _indices[1].push( [0, 1, 2] );
+*/	   
+							if (!_indices[1].isFacesProxy) {
+								
+								_indices[1] = new Proxy(_indices[1] || [], {
+			
+									get: function (_faces, name) {
+
+										const i = parseInt(name);
+										if (!isNaN(i)) {
+					
+											_faces[i] = _faces[i] || [];
+											if (!_faces[i].isFaceProxy){
+
+												_faces[i] = new Proxy( _faces[i], {
+
+													get: (_face, name) => {
+
+														switch (name) {
+									
+															case 'isFaceProxy': return true;
+															case 'push': return ( edgeId ) => {
+
+																_face.push( edgeId );
+																const edges = _indices[0];
+																if(edges[edgeId] === undefined) edges[edgeId] = {};
+																	
+															}
+									
+														}
+														return _face[name];
+														
+													},
+													
+												} );
+												
+											}
+											return _faces[i];
+					
+										}
+										switch (name) {
+					
+											case 'isFacesProxy': return true;
+/*												
+											case 'push': return (edge={}) => {
+					
+					
+											};
+*/		   
+					
+										}
+										return _faces[name];
+					
+									},
+					
+								});
+								const edges = _indices[0];
+								_indices[1].forEach( face => face.forEach( edgeId => edges[edgeId] = edges[edgeId] || {} ) );
+								for ( let i = 0; i < edges.length; i++ ) edges[i] = edges[i] || {};
+
+							}
 							return _indices[1];
 						case 'count': return _indices.count( sEdges + ': Minimal edges count is ' );
 /*							
@@ -311,10 +372,10 @@ class Edges extends EgocentricUniverse {
 		const indices = settings.object.geometry.indices;//, edges = indices.edges;
 
 		const face = indices.faces[settings.faceId];
-		for ( let i = face.length; i < edgesCount; i++ ) face.push( i + 1 );
+		for ( let i = face.length; i < edgesCount; i++ ) face.push( i );//+ 1 );
 		
 		//у треугольника ребер не должно быть меньше 3
-		for ( let i = indices.edges.length; i < edgesCount; i++ ) indices.edges.push({});
+		for ( let i = indices.edges.length; i < edgesCount; i++ ) indices.edges.push();
 //		for ( let i = settings.edges.length; i < settings.count; i++ ) settings.edges.push({});
 		
 //		const faces = indices[1];
@@ -436,7 +497,6 @@ class Edges extends EgocentricUniverse {
 					edgeSettings.edge.vertices[i] = (
 						position.length === 0) ||//первая вершина первого ребра
 						((edgeSettings.edgeId != undefined) &&//ребро из массива ребер
-//							(i === 1) && (edgeSettings.edgeId === edgeSettings.edges.length - 1)) ?//Это последняя вершина последнего ребра. Соеденить последнюю вершину последнего ребра с первой першиной первого ребра
 							(i === 1) && (edgeSettings.edgeId === edgeSettings.faceEdges.length - 1)) ?//Это последняя вершина последнего ребра. Соеденить последнюю вершину последнего ребра с первой першиной первого ребра
 						0 :
 						edgeSettings.edgeId != undefined ?

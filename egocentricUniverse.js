@@ -180,12 +180,12 @@ class EgocentricUniverse {
 			Object.keys( settings.object.geometry.indices ).forEach( key => indices[key] = settings.object.geometry.indices[key] );
 			settings.object.geometry.indices = indices;
 			
-		} else settings.object.geometry.indices = [];
+		} else settings.object.geometry.indices = {};
 		if (!settings.object.geometry.indices.isUniversyProxy) {
 			
-			settings.object.geometry.indices[0] = settings.object.geometry.indices[0] || settings.object.geometry.indices.edges;
+			settings.object.geometry.indices[0] = settings.object.geometry.indices[0] || settings.object.geometry.indices.edges || [];
 			delete settings.object.geometry.indices.edges;
-			settings.object.geometry.indices[1] = settings.object.geometry.indices[1] || settings.object.geometry.indices.faces;
+			settings.object.geometry.indices[1] = settings.object.geometry.indices[1] || settings.object.geometry.indices.faces || [];
 			delete settings.object.geometry.indices.faces;
 			settings.object.geometry.indices = new Proxy(settings.object.geometry.indices ? settings.object.geometry.indices : [], {
 	
