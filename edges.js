@@ -279,6 +279,16 @@ class Edges extends EgocentricUniverse {
 															case 'isFaceProxy': return true;
 															case 'push': return ( edgeId ) => {
 
+																if (debug) for ( let i = 0; i < _face.length; i++ ) {
+
+																	if (_face[i] === edgeId ) {
+																		
+																		console.error( sEdges + ': Duplicate face edgeId = ' + edgeId );
+																		return;
+
+																	}
+																	
+																}
 																_face.push( edgeId );
 																const edges = _indices[0];
 																if(edges[edgeId] === undefined) edges[edgeId] = {};
@@ -371,8 +381,16 @@ class Edges extends EgocentricUniverse {
 		
 		const indices = settings.object.geometry.indices;//, edges = indices.edges;
 
-		const face = indices.faces[settings.faceId];
-		for ( let i = face.length; i < edgesCount; i++ ) face.push( i );//+ 1 );
+		const face = indices.faces[settings.faceId],
+
+			//Тут какая то странная логическая ошибка.
+			//Если надо добавлять в пустой массив face, то индекс ребра равен i
+			//Если массив face не пустой то индекс ребра на 1 больше
+			//Для проверки settings.object.geometry.indices.count = 10
+			//settings.object.geometry.indices.faces сделать пустым а потом добавить несколько индексов ребер
+			a = face.length === 0 ? 0 : 1;
+		
+		for ( let i = face.length; i < edgesCount; i++ ) face.push( i + a );
 		
 		//у треугольника ребер не должно быть меньше 3
 		for ( let i = indices.edges.length; i < edgesCount; i++ ) indices.edges.push();
