@@ -126,7 +126,7 @@ class Edges extends EgocentricUniverse {
 			
 			settings.object.geometry.indices = new Proxy( settings.object.geometry.indices, {
 
-				get: function (_indices, name) {
+				get: function ( _indices, name ) {
 	
 					switch (name) {
 	

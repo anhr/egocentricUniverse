@@ -41,7 +41,7 @@
 
 		new MyThree( (scene, options) => {
 
-			const universe = new Edges( options, {
+			const universe = new Edges( options, /*{
 
 				object: {
 
@@ -84,7 +84,7 @@
 
 				}
 
-			} );
+			}*/ );
 			//universe.settings.indices.edges.push();//Error: Edges: push edge. Invalid edge = undefined
 			universe.settings.object.geometry.position.test();
 			universe.pushEdge();
