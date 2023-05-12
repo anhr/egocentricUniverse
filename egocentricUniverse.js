@@ -44,7 +44,7 @@ class EgocentricUniverse {
 	 * @param {object} [classSettings] Class settings.
 	 * @param {object} [classSettings.settings] The following settings are available
 	 * @param {object} [classSettings.settings.object] universe object.
-	 * @param {String} [classSettings.settings.object.name] name of universe.
+	 * @param {String} [classSettings.settings.object.name='Universe'] name of universe.
 	 * @param {String} [classSettings.settings.object.color='lime'] color of edges.
 	 * @param {object} [classSettings.settings.object.geometry] Universe geometry.
 	 * @param {object} [classSettings.settings.object.geometry.indices] Array of <b>indices</b> of vertices, edges, faces and bodies of universe.

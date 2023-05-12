@@ -793,7 +793,7 @@ class Edges extends EgocentricUniverse {
 	 * @param {number} [classSettings.faceId=0] Identifier of the array of the edges ids in the <b>classSettings.settings.object.geometry.indices.faces</b> array.
 	 * @param {object} [classSettings.settings] See <b>EgocentricUniverse <a href="./module-EgocentricUniverse-EgocentricUniverse.html" target="_blank">settings</a></b> parameter.
 	 * @param {object} [classSettings.settings.object] edges object.
-	 * @param {String} [classSettings.settings.object.name] name of universe.
+	 * @param {String} [classSettings.settings.object.name='Universe'] name of universe.
 	 * @param {String} [classSettings.settings.object.color='lime'] color of edges.
 	 * @param {object} [classSettings.settings.object.geometry] Universe geometry.
 	 * @param {object} [classSettings.settings.object.geometry.indices] Array of <b>indices</b> of vertices, edges and faces of universe.
