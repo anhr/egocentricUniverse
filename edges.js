@@ -21,6 +21,8 @@ let isEdgesIndicesProxy = false;
 
 class Edges extends EgocentricUniverse {
 
+	_edgesSettings;
+	
 	//Overridden methods from base class
 
 	//Project universe into 3D space
@@ -175,7 +177,7 @@ class Edges extends EgocentricUniverse {
 											case 'isEdgesProxy': return true;
 											case 'push': return (edge={}) => {
 					
-												indices.faces[settings.faceId].push( _edges.push(Edge({ edge: edge, edges: settings.object.geometry.indices.edges } ) ) - 1 );
+												indices.faces[_this.classSettings.faceId].push( _edges.push(Edge({ edge: edge, edges: settings.object.geometry.indices.edges } ) ) - 1 );
 					//							settings.object.geometry.indices.faces[settings.faceId].push( _edges.push(Edge({ edge: edge, edges: settings.object.geometry.indices.edges } ) ) - 1 );
 					
 											};
@@ -198,7 +200,7 @@ class Edges extends EgocentricUniverse {
 									const i = parseInt(name);
 									if (!isNaN(i)) {
 				
-										const edgeId = indices.faces[settings.faceId][i];
+										const edgeId = indices.faces[_this.classSettings.faceId][i];
 										let edge = _edges[edgeId];
 										return edge;
 				
@@ -206,7 +208,7 @@ class Edges extends EgocentricUniverse {
 									switch (name) {
 				
 										case 'isFaceEdgesProxy': return true;
-										case 'length': return indices.faces[settings.faceId].length;
+										case 'length': return indices.faces[_this.classSettings.faceId].length;
 				
 									}
 									return _edges[name];
@@ -215,7 +217,7 @@ class Edges extends EgocentricUniverse {
 								set: function (_edges, name, value) {
 				
 									const i = parseInt(name);
-									if (!isNaN(i)) _edges[indices.faces[settings.faceId][i]] = value;
+									if (!isNaN(i)) _edges[indices.faces[_this.classSettings.faceId][i]] = value;
 				
 									return true;
 				
@@ -370,25 +372,8 @@ class Edges extends EgocentricUniverse {
 		}
 		
 		let edgesCount = settings.object.geometry.indices[0].count || 3;//default is triangle
-/*		
-		let edgesCount = settings.object.geometry.indices.count != undefined  ? settings.object.geometry.indices.count : 3;//default is triangle
-		if (edgesCount < 3) {
-
-			console.error( sEdges + ': Minimal edges count is 3' );
-			edgesCount = 3;
-			
-		}
-*/
-//		for ( let i = settings.edges.length; i < edgesCount; i++ ) settings.edges.push( {} );
-/*
-		settings.object.geometry.indices[1] = settings.object.geometry.indices[1] || settings.object.geometry.indices.faces || [];
-		delete settings.object.geometry.indices.faces;
-*/
-//		if (settings.object.geometry.indices.edges) return;
 		
-		const indices = settings.object.geometry.indices;//, edges = indices.edges;
-
-		const face = indices.faces[settings.faceId],
+		const indices = settings.object.geometry.indices, face = indices.faces[this.classSettings.faceId],
 
 			//Тут какая то странная логическая ошибка.
 			//Если надо добавлять в пустой массив face, то индекс ребра равен i
@@ -812,12 +797,13 @@ class Edges extends EgocentricUniverse {
 	 * @param {float} [settings.edges.edge.distance] Edge length. Distance between edge vertices.
 	 * @param {number} [settings.faceId=0] Identifier of the array of the edges ids in the <b>settings.object.geometry.indices.faces array</b>.
 	 **/
-	constructor( options, settings={} ) {
+	constructor( options, classSettings={} ) {
 
-		if (settings.faceId === undefined) settings.faceId = 0;
+		const settings = classSettings.settings || {};
+		if (classSettings.faceId === undefined) classSettings.faceId = 0;
 		
 //		super( scene, options, settings );
-		super( options, settings );
+		super( options, classSettings );
 
 		this.pushEdge = ( edge ) => {
 			

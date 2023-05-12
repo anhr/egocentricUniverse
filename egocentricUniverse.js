@@ -91,11 +91,12 @@ class EgocentricUniverse {
 	 * ]
 	 * </pre>
 	 **/
-	constructor( options, settings = {} ) {
+	constructor( options, classSettings ) {
 
-		const egocentricUniverse = this;
+		const egocentricUniverse = this, settings = classSettings.settings;
 		this.options = options;
 		this.settings = settings;
+		this.classSettings = classSettings;
 		this.debug = debug;
 
 		if (!lang) {
