@@ -41,54 +41,33 @@ class EgocentricUniverse {
 	/**
 	 * Base class for egocentric universe.
 	 * @param {Options} options See <a href="../../../commonNodeJS/master/jsdoc/Options/Options.html" target="_blank">Options</a>.
-	 * @param {object} [settings={}] The following settings are available
-	 * @param {number} [settings.сount] If dimension of the universe space is 1 then <b>сount</b> is edges count. Default is 3.
+	 * @param {object} [classSettings] Class settings.
+	 * @param {object} [classSettings.settings] The following settings are available
+	 * @param {object} [classSettings.settings.object] universe object.
+	 * @param {String} [classSettings.settings.object.name] name of universe.
+	 * @param {String} [classSettings.settings.object.color='lime'] color of edges.
+	 * @param {object} [classSettings.settings.object.geometry] Universe geometry.
+	 * @param {object} [classSettings.settings.object.geometry.indices] Array of <b>indices</b> of vertices, edges, faces and bodies of universe.
+	 * @param {number} [classSettings.settings.object.geometry.indices.сount] If dimension of the universe space is 1 then <b>сount</b> is edges count. Default is 3.
 	 * <pre>
 	 * If dimension of the universe space is 2 then under constraction.
 	 * If dimension of the universe space is 3 then under constraction.
 	 * </pre>
-	 * @param {number} [settings.object.geometry.indices] Array of <b>indices</b> of vertices of the n-dimensional universe.
+	 * @param {Array} [classSettings.settings.object.geometry.indices.edges] Edges array.
+	 * @param {object} [classSettings.settings.object.geometry.indices.edges.edge] Edges array item is edge.
+	 * @param {Array} [classSettings.settings.object.geometry.indices.edges.edge.vertices] Array of edge vertices indices. Every edge have two vertices.
+	 * @param {float} [classSettings.settings.object.geometry.indices.edges.edge.distance=1.0] Edge length. Distance between edge vertices.
+	 * @param {Array} [classSettings.settings.object.geometry.indices.faces] Faces array. Every item of the <b>faces</b> array is array of edges indices for current face.
 	 * <pre>
-	 * <b>Indices</b> is divided to segments:
-	 * 
-	 * <b>indices[0]</b> is edges. Every edge is two indexes of the edge's vertices. Used in 1D universe and higher.
-	 * <b>indices[1]</b> is faces. Every face is three indexes of the edges from <b>indices[0]</b>. Used in 2D objects and higher.
-	 * <b>indices[2]</b> is bodies. Every bodie is four face indexes from <b>indices[1]</b>. Used in 3D objects and higher.
-	 * For example:
-	 * 
-	 * <b>n</b> = 1 universe is line.
-	 * position = [
-	 *	0: Vertice {}//First vertice
-	 *	1: Vertice {}//Second vertice
-	 *	2: Vertice {}//third vertice
+	 * Example:
+	 * [
+	 *	[0, 2, 3]
+	 *	[0, 4, 5]
 	 * ]
-	 * indices[0] = [
-	 *	//3 edges
-	 *	0: {
-	 *		//First edge
-	 *		disatance: 1,
-	 *		vertices: [
-	 *			1,//index of the second vertice
-	 *			0,//index of the first vertice
-	 *		]
-	 *	},
-	 *	1: {
-	 *		//Second edge
-	 *		disatance: 1,
-	 *		vertices: [
-	 *			2,//index of the third vertice
-	 *			1,//index of the second vertice
-	 *		]
-	 *	},
-	 *	2: {
-	 *		//third edge
-	 *		disatance: 1,
-	 *		vertices: [
-	 *			2,//index of the third vertice
-	 *			0,//index of the first vertice
-	 *		]
-	 *	},
-	 * ]
+	 * universe contains two faces.
+	 * First face is triangle and have three edges with 0, 2 and 3 indice.
+	 * Second face is triangle and have three edges with 0, 4 and 5 indice.
+	 * First and second faces have same edge with 0 indice.
 	 * </pre>
 	 **/
 	constructor( options, classSettings ) {
