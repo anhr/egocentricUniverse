@@ -41,7 +41,7 @@
 
 		new MyThree( (scene, options) => {
 
-			const universe = new Edges( options, /*{
+			const universe = new Edges( options, {
 
 				object: {
 
@@ -50,6 +50,7 @@
 
 						indices: {
 							//count: 10,//1D universe space edges count.
+							/*
 							edges: [
 								{
 									distance: 0.3,
@@ -77,6 +78,7 @@
 									3,
 								]
 							],
+	   */
 
 						}
 
@@ -84,7 +86,7 @@
 
 				}
 
-			}*/ );
+			} );
 			//universe.settings.indices.edges.push();//Error: Edges: push edge. Invalid edge = undefined
 			universe.settings.object.geometry.position.test();
 			universe.pushEdge();

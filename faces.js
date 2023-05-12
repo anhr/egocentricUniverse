@@ -24,7 +24,7 @@ import FibonacciSphereGeometry from '../../commonNodeJS/master/FibonacciSphere/F
 import three from '../../commonNodeJS/master/three.js'
 
 const sFaces = 'Faces';
-let isFacesIndicesProxy = false;
+//let isFacesIndicesProxy = false;
 
 class Faces extends Edges//EgocentricUniverse
 {
@@ -90,12 +90,18 @@ class Faces extends Edges//EgocentricUniverse
 	}
 	Indices(){
 
+		const settings = this.settings;
+		if (settings.object.geometry.indices.count != undefined) {
+
+			settings.object.geometry.indices[1].count = settings.object.geometry.indices.count;
+			delete settings.object.geometry.indices.count;
+			
+		}
 		super.Indices();
-		const settings = this.settings,
-			position = settings.object.geometry.position;
+		const position = settings.object.geometry.position;
 		const debug = this.debug;
 		const sIndicesFacesSet = ': indices.faces set. ';
-
+/*
 		if (!isFacesIndicesProxy) {
 
 			settings.object.geometry.indices = new Proxy(settings.object.geometry.indices, {
@@ -110,25 +116,13 @@ class Faces extends Edges//EgocentricUniverse
 					return _indices[name];
 
 				},
-/*
-				set: function (_indices, name, value) {
-
-					switch (name) {
-
-						case 'edges': _indices[0] = value; return true;
-
-					}
-					_indices[name] = value;
-					return true;
-
-				},
-*/
 
 			});
 			isFacesIndicesProxy = true;
 
 		}
-		let facesCount = settings.object.geometry.indices.count;//default is triangle
+*/		
+		let facesCount = settings.object.geometry.indices[1].count || 4;//default is pyramid
 /*
 		settings.count = settings.count || 4;//По умолчанию это пирамида с 4 гранями
 		settings.faces = settings.faces || settings.count;

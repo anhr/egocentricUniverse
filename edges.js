@@ -122,6 +122,13 @@ class Edges extends EgocentricUniverse {
 			position = settings.object.geometry.position;
 		const debug = this.debug;
 
+		if (settings.object.geometry.indices.count != undefined) {
+
+			settings.object.geometry.indices[0].count = settings.object.geometry.indices.count;
+			delete settings.object.geometry.indices.count;
+			
+		}
+
 		if (!isEdgesIndicesProxy) {
 			
 			settings.object.geometry.indices = new Proxy( settings.object.geometry.indices, {
@@ -362,7 +369,7 @@ class Edges extends EgocentricUniverse {
 
 		}
 		
-		let edgesCount = settings.object.geometry.indices.count;//default is triangle
+		let edgesCount = settings.object.geometry.indices[0].count || 3;//default is triangle
 /*		
 		let edgesCount = settings.object.geometry.indices.count != undefined  ? settings.object.geometry.indices.count : 3;//default is triangle
 		if (edgesCount < 3) {
@@ -373,10 +380,10 @@ class Edges extends EgocentricUniverse {
 		}
 */
 //		for ( let i = settings.edges.length; i < edgesCount; i++ ) settings.edges.push( {} );
-		
+/*
 		settings.object.geometry.indices[1] = settings.object.geometry.indices[1] || settings.object.geometry.indices.faces || [];
 		delete settings.object.geometry.indices.faces;
-
+*/
 //		if (settings.object.geometry.indices.edges) return;
 		
 		const indices = settings.object.geometry.indices;//, edges = indices.edges;

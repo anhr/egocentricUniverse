@@ -200,7 +200,9 @@ class EgocentricUniverse {
 	//					case 'edges': return _indices[0];
 	//					case 'faces': return _indices[1];
 						case 'isUniversyProxy': return true;
-						case 'count': return ( error, minCount = 3 ) => {
+						case 'count': return _indices.count;
+/*							
+							return ( error, minCount = 3 ) => {
 							if (_indices.count === undefined) _indices.count = minCount;
 							if (_indices.count < minCount) {
 					
@@ -210,6 +212,7 @@ class EgocentricUniverse {
 							}
 							return _indices.count;
 						}
+*/	  
 						case 'boAddIndices':
 						case 'length': 
 						case 'forEach': return _indices[name];//for compatibility with ND
