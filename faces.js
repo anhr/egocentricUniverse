@@ -24,15 +24,27 @@ import FibonacciSphereGeometry from '../../commonNodeJS/master/FibonacciSphere/F
 import three from '../../commonNodeJS/master/three.js'
 
 const sFaces = 'Faces';
-//let isFacesIndicesProxy = false;
+let isFacesIndicesProxy = false;
 
 class Faces extends Edges//EgocentricUniverse
 {
 
 	//Overridden methods from base class
 
+	log() {
+
+		if (!this.debug) return;
+		this.settings.object.geometry.position.forEach((vertice, i) => console.log('position[' + i + ']. ' + JSON.stringify( vertice )));
+		this.settings.object.geometry.indices.edges.forEach((edge, i) => console.log('indices.edges[' + i + ']. ' + JSON.stringify( edge )));
+		this.settings.object.geometry.indices.faces.forEach((face, i) => console.log('indices.faces[' + i + ']. ' + JSON.stringify( face )));
+		
+	}
+	
 	//Project universe into 3D space
-	project( scene ){
+	project(
+		scene,
+		bLog = true//log positions and indices to cnosole 
+	){
 
 //		const indices = this.settings.object.geometry.indices, scene = this.scene, options = this.options;
 
@@ -41,10 +53,14 @@ class Faces extends Edges//EgocentricUniverse
 		
 		const THREE = three.THREE;
 
-		this.settings.object.geometry.indices.faces.forEach( face => face.face.project( scene, 3 ) );//Если размерность вселенной задать меньше 3 то исчезнут оси коодинат
+		this.settings.object.geometry.indices.faces.forEach( face => face.face.project( scene, 3,//Если размерность вселенной задать меньше 3 то исчезнут оси коодинат
+		   //false
+		) );
 		
 		if ( this.debug ) {
 
+//			if (bLog) this.log();
+			
 			const color = "lightgray", opacity = 0.2;
 				
 			const sphere = new THREE.Mesh( new FibonacciSphereGeometry(),//new THREE.SphereGeometry( 1 ),
@@ -101,16 +117,118 @@ class Faces extends Edges//EgocentricUniverse
 		const position = settings.object.geometry.position;
 		const debug = this.debug;
 		const sIndicesFacesSet = ': indices.faces set. ';
-/*
+		
 		if (!isFacesIndicesProxy) {
 
 			settings.object.geometry.indices = new Proxy(settings.object.geometry.indices, {
 
-				get: function (_indices, name) {
+				get: (_indices, name) => {
 
 					switch (name) {
 
-						case 'count': return _indices.count(sFaces + ': Minimal faces count is ');
+						case 'bodies':
+							
+							if (!_indices[2] || !_indices[2].isBodiesProxy) {
+								
+								_indices[2] = new Proxy(_indices[2] || [], {
+			
+									get: function (_bodies, name) {
+
+										const i = parseInt(name);
+										if (!isNaN(i)) {
+					
+											_bodies[i] = _bodies[i] || [];
+											if (!_bodies[i].isBodyProxy){
+
+												_bodies[i] = new Proxy( _bodies[i], {
+
+													get: (_body, name) => {
+
+														switch (name) {
+									
+															case 'isBodyProxy': return true;
+															case 'push': return ( faceId ) => {
+
+																if (debug) for ( let i = 0; i < _body.length; i++ ) {
+
+																	if (_body[i] === faceId ) {
+																		
+																		console.error( sFaces + ': Duplicate body faceId = ' + faceId );
+																		return;
+
+																	}
+																	
+																}
+																_body.push( faceId );
+																const faces = _indices[1];
+																if(faces[faceId] === undefined) faces[faceId] = {};
+																	
+															}
+									
+														}
+														return _body[name];
+														
+													},
+													
+												} );
+												
+											}
+											return _bodies[i];
+					
+										}
+										switch (name) {
+					
+											case 'isBodiesProxy': return true;
+					
+										}
+										return _bodies[name];
+					
+									},
+					
+								});
+								const faces = _indices[1];
+								_indices[2].forEach( body => body.forEach( faceId => faces[faceId] = faces[faceId] || {} ) );
+								for ( let i = 0; i < faces.length; i++ ) faces[i] = faces[i] || {};
+
+							}
+							return _indices[2];
+						case 'faces':
+/*							
+							const bodyfaces = settings.object.geometry.indices.bodies[this.classSettings.bodyId];
+							return bodyfaces;
+*/
+							return new Proxy(settings.object.geometry.indices.bodies[this.classSettings.bodyId], {
+		
+								get: (_faces, name) => {
+				
+									const i = parseInt(name);
+									if (!isNaN(i)) {
+				
+										return indices[1][_faces[i]];
+				
+									}
+/*									
+									switch (name) {
+				
+										case 'isBodyFacesProxy': return true;
+				
+									}
+*/		 
+									return _faces[name];
+				
+								},
+/*								
+								set: (_faces, name, value) => {
+				
+									const i = parseInt(name);
+									if (!isNaN(i)) _faces[indices.faces[_this.classSettings.faceId][i]] = value;
+				
+									return true;
+				
+								}
+*/		
+				
+							});							
 
 					}
 					return _indices[name];
@@ -121,56 +239,25 @@ class Faces extends Edges//EgocentricUniverse
 			isFacesIndicesProxy = true;
 
 		}
-*/		
-		let facesCount = settings.object.geometry.indices[1].count || 4;//default is pyramid
-/*
-		settings.count = settings.count || 4;//По умолчанию это пирамида с 4 гранями
-		settings.faces = settings.faces || settings.count;
-*/
 
-/*		
-		if (debug) {
-
-			if (settings.object.geometry.indices.faces)
-			{
-
-				console.error(sFaces + sIndicesFacesSet + 'duplicate faces');
-				return true;
-
-			}
-
-		}
-*/  
-		if ( !( settings.faces instanceof Array ) ){
-			
-			if (typeof settings.faces === "number") {
-	
-				const faces = [];
-				for ( let i = 0; i < settings.faces; i++ ) faces.push({});
-				settings.faces = faces;
-				
-			} else {
-				
-				console.error(sFaces + sIndicesFacesSet + 'Invalid faces array: ' + value);
-				return true;
-				
-			}
-
-		}
-
+		const facesCount = settings.object.geometry.indices[1].count || 4,//default is pyramid
+			indices = settings.object.geometry.indices,
+			body = indices.bodies[this.classSettings.bodyId];
+		
 		//у пирамиды граней не должно быть меньше 4
+		//for ( let i = body.length; i < facesCount; i++ ) body.push( i );
+
 		//for ( let i = settings.faces.length; i < settings.count; i++ ) settings.faces.push({});
 
 		//сразу заменяем все грани на прокси, потому что в противном случае, когда мы создаем прокси грани в get, каждый раз,
 		//когда вызывается get, в результате может получться бесконечная вложенная конструкция и появится сообщение об ошибке:
 		//EgocentricUniverse: Face get. Duplicate proxy
-		settings.object.geometry.indices.faces.forEach( face => face.face = new Edges( this.options, settings ));
-/*		
-		settings.object.geometry.indices.faces.forEach( face => face.face = new Edges( this.scene, this.options, {
-			indices: settings.object.geometry.indices,
-			position: position,
-		}));
-*/  
+		settings.object.geometry.indices.faces.forEach( ( face, faceId ) => face.face = new Edges( this.options, {
+			
+			faceId: faceId,
+			settings: settings,
+		
+		} ));
 
 		if ( debug ) {
 		
@@ -181,11 +268,12 @@ class Faces extends Edges//EgocentricUniverse
 	/**
 	 * 1D universe or universe edges.
 	 * @param {Options} options See <a href="../../../commonNodeJS/master/jsdoc/Options/Options.html" target="_blank">Options</a>.
-	 * @param {object} [settings] See <b>EgocentricUniverse <a href="./module-EgocentricUniverse-EgocentricUniverse.html" target="_blank">settings</a></b> parameter.
+	 * @param {object} [classSettings] Faces class settings.
 	 **/
-	constructor( options, settings={} ) {
+	constructor( options, classSettings={} ) {
 
-		super( options, settings );
+		if (classSettings.bodyId === undefined) classSettings.bodyId = 0;
+		super( options, classSettings );
 
 	}
 

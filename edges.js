@@ -25,30 +25,36 @@ class Edges extends EgocentricUniverse {
 	
 	//Overridden methods from base class
 
+	log() {
+
+		if (!this.debug) return;
+		this.settings.object.geometry.position.forEach((vertice, i) => console.log('position[' + i + ']. ' + JSON.stringify( vertice )));
+		this.settings.object.geometry.indices.edges.forEach((edge, i) => console.log('indices.edges[' + i + ']. ' + JSON.stringify( edge )));
+		this.settings.object.geometry.indices.faces.forEach((face, i) => console.log('indices.faces[' + i + ']. ' + JSON.stringify( face )));
+		
+	}
+
 	//Project universe into 3D space
 	project(
 		scene,
-		n = 2//universe dimension
+		n = 2,//universe dimension
+		bLog = true//log positions and indices to cnosole 
 	) {
 
 		//remove previous universe
 		this.remove( scene );
 
-/*
-		if (!this.settings.edgesId) {
-
-			this.settings.edgesId = [];
-			this.settings.edges.forEach( ( edge, i ) => this.settings.edgesId.push( i ) );
-
-		}
-*/
 		const THREE = three.THREE, indices = this.settings.object.geometry.indices;
 			
 		//universe length
 		let l = 0;
 		indices.faceEdges.forEach( edge => l += edge.distance );
-//		indices.edges.forEach( edge => l += edge.distance );
-//		this.settings.object.geometry.indices.faces[this.settings.faceId].forEach( edgeId => l += this.settings.object.geometry.indices.edges[edgeId].distance );
+		if (isNaN( l )){
+
+			console.error( sEdges + ': project(...). Invalid universe length = ' + l );
+			return;
+			
+		}
 
 		const r = l / ( 2 * Math.PI ),
 			center = new THREE.Vector2( 0.0, 0.0 ),
@@ -76,29 +82,9 @@ class Edges extends EgocentricUniverse {
 			this.settings.object.geometry.position[i] = point.toArray();
 			
 		} );
-/*		
-		const settings = {
-
-			object: {
-
-				name: this.settings.object.name,
-				geometry: {
-
-					position: this.settings.object.geometry.position,
-					boRememberPosition: false,//Не запоминать позицию вершины в settings.object.geometry.position[i].positionWorld чтобы при добавлении нового ребра заново вычислялись позицию вершин в 3D
-					indices: [[]],
-					
-				}
-
-			},
-			
-		}
-		settings.object.geometry.indices[0] = this.settings.object.geometry.indices.edges;
-		settings.object.geometry.indices[1] = this.settings.object.geometry.indices.faces;
-		settings.scene = scene;
-*/		
 		this.settings.scene = scene;
-//const edge1 = this.settings.object.geometry.indices.edges[1];
+		
+		if (bLog) this.log();
 		
 		this.display( n, this.settings, this.debug ?
 			new THREE.LineLoop(new THREE.BufferGeometry().setFromPoints(new THREE.EllipseCurve(
@@ -337,18 +323,7 @@ class Edges extends EgocentricUniverse {
 
 							}
 							return _indices[1];
-						case 'count': return _indices.count( sEdges + ': Minimal edges count is ' );
-/*							
-							const edgesCount = 3;
-							if (_indices.count === undefined) _indices.count = edgesCount;
-							if (_indices.count < edgesCount) {
-					
-								console.error( sEdges + ': Minimal edges count is ' + edgesCount );
-								_indices.count = edgesCount;
-								
-							}
-							return _indices.count;
-*/	   
+//						case 'count': return _indices.count( sEdges + ': Minimal edges count is ' );
 						
 					}
 					return _indices[name];
@@ -371,9 +346,9 @@ class Edges extends EgocentricUniverse {
 
 		}
 		
-		let edgesCount = settings.object.geometry.indices[0].count || 3;//default is triangle
-		
-		const indices = settings.object.geometry.indices, face = indices.faces[this.classSettings.faceId],
+		const edgesCount = settings.object.geometry.indices[0].count || 3,//default is triangle
+			indices = settings.object.geometry.indices,
+			face = indices.faces[this.classSettings.faceId],
 
 			//Тут какая то странная логическая ошибка.
 			//Если надо добавлять в пустой массив face, то индекс ребра равен i
@@ -384,36 +359,12 @@ class Edges extends EgocentricUniverse {
 		
 		for ( let i = face.length; i < edgesCount; i++ ) face.push( i + a );
 		
+		indices.edges;//Convert edges items to Proxy
+		
 		//у треугольника ребер не должно быть меньше 3
-		for ( let i = indices.edges.length; i < edgesCount; i++ ) indices.edges.push();
-//		for ( let i = settings.edges.length; i < settings.count; i++ ) settings.edges.push({});
+//		for ( let i = indices.edges.length; i < edgesCount; i++ ) indices.edges.push();
 		
-//		const faces = indices[1];
-//		const faces = indices.faces;
-//		if (faces.length === 0) faces.push( [0, 1, 2] );
-		
-		const sIndicesEdgesSet = ': indices.edges set. ';
-/*		
-		settings.count = settings.count || 3;
-		settings.edges = settings.edges || settings.count;
-
-		if (!(settings.edges instanceof Array)) {
-
-			if (typeof settings.edges === "number") {
-
-				const edges = [];
-				for (let i = 0; i < settings.edges; i++) edges.push({});
-				settings.edges = edges;
-
-			} else {
-
-				console.error(sEdges + sIndicesEdgesSet + 'Invalid edges array: ' + value);
-				return true;
-
-			}
-
-		}
-*/
+		//const sIndicesEdgesSet = ': indices.edges set. ';
 		function Edge( edgeSettings = {} ) {
 
 			const sEdge = sEdges + ': ' + (edgeSettings.edgeId === undefined ? 'Edge' : 'edges[' + edgeSettings.edgeId + ']'),

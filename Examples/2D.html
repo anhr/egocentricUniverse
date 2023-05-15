@@ -45,27 +45,49 @@
 			const universe = new Faces( options,
 				{
 					
-					object: {
-	
-						name: 'sphere',
-						geometry: {
-	
-							indices: {
-								
-								//count: 10,//2D universe space faces count.
-								faces: [
-									[],
-									[0, 3, 4],
-									[],
-									[],
-								],
-
-							}
+					settings: {
 						
+						object: {
+		
+							name: 'sphere',
+							geometry: {
+		
+								indices: {
+									
+									//count: 10,//2D universe space faces count.
+									edges: [
+										{
+											//distance: 0.3,
+											//vertices: [0, 1],
+										},//0
+										{},//1
+										{},//2
+										{},//3
+										{},//4
+										{},//5
+									],
+									faces: [
+										[0, 1, 2],//0
+										[0, 3, 4],//1
+										[1, 4, 5],//2
+										[2, 3, 5],//3
+									],
+									bodies: [
+										[
+											0,
+											//1,
+											//2,
+											//3
+										]
+									],
+	
+								}
+							
+							}
+	
 						}
-
+					
 					}
-				
 				}
 									   
 			);

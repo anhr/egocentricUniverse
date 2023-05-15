@@ -29,11 +29,10 @@ let lang;
 
 class EgocentricUniverse {
 
-	get verticeEdgesLengthMax() {
-		
-		console.error(sOverride.replace('%s', 'Indices'));
+	//base methods
 	
-	}
+	get verticeEdgesLengthMax() { console.error(sOverride.replace('%s', 'Indices')); }
+	log() { console.error(sOverride.replace('%s', 'log')); }
 	project() { console.error(sOverride.replace('%s', 'project')); }
 	Indices() { console.error(sOverride.replace('%s', 'Indices')); }
 	Test() { console.error(sOverride.replace('%s', 'Test')); }
@@ -68,6 +67,7 @@ class EgocentricUniverse {
 	 * First face is triangle and have three edges with 0, 2 and 3 indice.
 	 * Second face is triangle and have three edges with 0, 4 and 5 indice.
 	 * First and second faces have same edge with 0 indice.
+	 * @param {Array} [classSettings.settings.object.geometry.indices.bodies] Bodies array. Every item of the <b>bodies</b> array is array of faces indices for current body.
 	 * </pre>
 	 **/
 	constructor( options, classSettings ) {
@@ -156,9 +156,13 @@ class EgocentricUniverse {
 		settings.object.geometry = settings.object.geometry || {};
 		if (settings.object.geometry.indices) {
 
-			const indices = [];
-			Object.keys( settings.object.geometry.indices ).forEach( key => indices[key] = settings.object.geometry.indices[key] );
-			settings.object.geometry.indices = indices;
+			if (!settings.object.geometry.indices.isUniversyProxy) {
+				
+				const indices = [];
+				Object.keys( settings.object.geometry.indices ).forEach( key => indices[key] = settings.object.geometry.indices[key] );
+				settings.object.geometry.indices = indices;
+
+			}
 			
 		} else settings.object.geometry.indices = {};
 		if (!settings.object.geometry.indices.isUniversyProxy) {
@@ -167,6 +171,8 @@ class EgocentricUniverse {
 			delete settings.object.geometry.indices.edges;
 			settings.object.geometry.indices[1] = settings.object.geometry.indices[1] || settings.object.geometry.indices.faces || [];
 			delete settings.object.geometry.indices.faces;
+			settings.object.geometry.indices[2] = settings.object.geometry.indices[2] || settings.object.geometry.indices.bodies || [];
+			delete settings.object.geometry.indices.bodies;
 			settings.object.geometry.indices = new Proxy(settings.object.geometry.indices ? settings.object.geometry.indices : [], {
 	
 				get: function (_indices, name) {
@@ -345,6 +351,8 @@ class EgocentricUniverse {
 		//settings.count = [[]];//Error: Faces: faces[0]. Invalid face instance
 		this.Indices();
 		
+//		this.log();
+/*			
 		if ( debug ) {
 			
 			settings.object.geometry.position.forEach((vertice, i) => console.log('position[' + i + ']. ' + JSON.stringify( vertice )));
@@ -352,6 +360,7 @@ class EgocentricUniverse {
 			settings.object.geometry.indices.faces.forEach((face, i) => console.log('indices.faces[' + i + ']. ' + JSON.stringify( face )));
 
 		}
+*/   
 
 		//Project universe into 3D space
 		this.display = ( n,//universe dimension
