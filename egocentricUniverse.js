@@ -369,7 +369,7 @@ class EgocentricUniverse {
 //			settings.scene = scene;
 			settings.options = options;
 			if (!settings.object.name) settings.object.name = lang.universe;
-
+/*
 			//for compability with ND
 			//fixing of the
 			//ND.geometry.D3.get indices: invalid edge.length = undefined
@@ -380,7 +380,7 @@ class EgocentricUniverse {
 				if (!( edge instanceof Array )) edges[i] = [0, 1];
 				
 			} );
-							
+*/							
 			new ND( n, settings );
 
 			if (debugObject) settings.scene.add( debugObject );
