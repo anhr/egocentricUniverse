@@ -118,7 +118,7 @@ class Edges extends EgocentricUniverse {
 			
 			settings.object.geometry.indices = new Proxy( settings.object.geometry.indices, {
 
-				get: function ( _indices, name ) {
+				get: ( _indices, name ) => {
 	
 					switch (name) {
 	
@@ -127,7 +127,7 @@ class Edges extends EgocentricUniverse {
 								
 								_indices[0] = new Proxy(_indices[0] || [], {
 			
-									get: function (_edges, name) {
+									get: (_edges, name) => {
 					
 										const i = parseInt(name);
 										if (!isNaN(i)) {
@@ -169,7 +169,7 @@ class Edges extends EgocentricUniverse {
 							return _indices[0];
 						case 'faceEdges': return new Proxy(_indices[0], {
 			
-								get: function (_edges, name) {
+								get: (_edges, name) => {
 				
 									const i = parseInt(name);
 									if (!isNaN(i)) {
@@ -196,7 +196,7 @@ class Edges extends EgocentricUniverse {
 									return _edges[name];
 				
 								},
-								set: function (_edges, name, value) {
+								set: (_edges, name, value) => {
 				
 									const i = parseInt(name);
 									if (!isNaN(i)) _edges[indices.faces[_this.classSettings.faceId][i]] = value;
@@ -211,7 +211,7 @@ class Edges extends EgocentricUniverse {
 								
 								_indices[1] = new Proxy(_indices[1] || [], {
 			
-									get: function (_faces, name) {
+									get: (_faces, name) => {
 
 										const i = parseInt(name);
 										if (!isNaN(i)) {
@@ -276,7 +276,7 @@ class Edges extends EgocentricUniverse {
 					return _indices[name];
 	
 				},
-				set: function (_indices, name, value) {
+				set: (_indices, name, value) => {
 	
 					switch (name) {
 	
@@ -311,7 +311,6 @@ class Edges extends EgocentricUniverse {
 		//у треугольника ребер не должно быть меньше 3
 //		for ( let i = indices.edges.length; i < edgesCount; i++ ) indices.edges.push();
 		
-		//const sIndicesEdgesSet = ': indices.edges set. ';
 		function Edge( edgeSettings = {} ) {
 
 			const sEdge = sEdges + ': ' + (edgeSettings.edgeId === undefined ? 'Edge' : 'edges[' + edgeSettings.edgeId + ']'),
@@ -433,7 +432,7 @@ class Edges extends EgocentricUniverse {
 				}
 			edgeSettings.edge.vertices = new Proxy(edgeSettings.edge.vertices, {
 
-				get: function (_vertices, name) {
+				get: (_vertices, name) => {
 
 					const i = parseInt(name);
 					if (!isNaN(i)) {
@@ -455,7 +454,7 @@ class Edges extends EgocentricUniverse {
 					return _vertices[name];
 
 				},
-				set: function (_vertices, name, value) {
+				set: (_vertices, name, value) => {
 
 					const i = parseInt(name);
 					if (!isNaN(i) && !VerticeIdDebug(i, value))
@@ -517,7 +516,7 @@ class Edges extends EgocentricUniverse {
 			} );
 			return new Proxy(edgeSettings.edge.vertices, {
 
-				get: function (edge, name) {
+				get: (edge, name) => {
 
 					const i = parseInt(name);
 					if (!isNaN(i)) {
@@ -543,7 +542,7 @@ class Edges extends EgocentricUniverse {
 					return edge[name];
 
 				},
-				set: function (edge, name, value) {
+				set: (edge, name, value) => {
 
 					//не понятно зачем вывел эту ошибку
 					//console.error(sEdge + ' set. Hidden method: edges[' + name + '] = ' + JSON.stringify(value) );

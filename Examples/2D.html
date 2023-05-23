@@ -36,13 +36,13 @@
 		//import MyThree from '../../../commonNodeJS/master/myThree/build/myThree.module.min.js';
 		MyThree.three.THREE = THREE;
 
-//		import EgocentricUniverse from '../faces.js';
 		import Faces from '../faces.js';
+//		import Sphere from '../../../commonNodeJS/master/graphicObjects/Sphere.js';
 
 
 		new MyThree( (scene, options) => {
 
-			const universe = new Faces( options,
+			const universe = new Faces/*Sphere*/( options,
 				{
 					
 					settings: {
@@ -98,6 +98,7 @@
 
 			//axesHelper: false,
 			//orbitControls: { enableRotate: false, },
+			//dat: { guiSelectPoint: { point: (options, dat, fMesh) => { return new Sphere.ND.gui(options, dat, fMesh); }, }, },
 			dat: { guiSelectPoint: { point: (options, dat, fMesh) => { return new Faces.ND.gui(options, dat, fMesh); }, }, },
 			camera: { position: new THREE.Vector3( 0, 0, 2 ) },
 			stereoEffect: false,
