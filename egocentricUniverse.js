@@ -70,9 +70,9 @@ class EgocentricUniverse {
 	 * @param {Array} [classSettings.settings.object.geometry.indices.bodies] Bodies array. Every item of the <b>bodies</b> array is array of faces indices for current body.
 	 * </pre>
 	 **/
-	constructor( options, classSettings ) {
+	constructor( options, classSettings={} ) {
 
-		const egocentricUniverse = this, settings = classSettings.settings;
+		const egocentricUniverse = this, settings = classSettings.settings || {};
 		this.options = options;
 		this.settings = settings;
 		this.classSettings = classSettings;
