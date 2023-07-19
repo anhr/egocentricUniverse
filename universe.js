@@ -38,14 +38,22 @@ class Universe {
 		this.classSettings.settings.object.geometry.indices.edges.forEach((edge, i) => console.log('edges[' + i + '] = ' + JSON.stringify(edge)));
 		
 	}
-//	Indices() { console.error(sOverride.replace('%s', 'Indices')); }
 	Test(){
 
 		const geometry = this.classSettings.settings.object.geometry;
 		geometry.position.test();
-		geometry.indices.faces.test();
+
+		//for future using
+		if (geometry.indices.faces) geometry.indices.faces.test();
 		
 	}
+	TestVertice( vertice, strVerticeId ){
+		
+		if (vertice.edges.length !== this.verticeEdgesLengthMax)
+			console.error(sUniverse + ': Test(). Invalid ' + strVerticeId + '.edges.length = ' + vertice.edges.length);
+		
+	}
+//	Indices() { console.error(sOverride.replace('%s', 'Indices')); }
 
 	constructor(options, classSettings={}) {
 
@@ -187,11 +195,11 @@ class Universe {
 					//for debug
 					case 'test': return () => {
 
-						if (!_this.debug) return;
+						if (!classSettings.debug) return;
 
 						_position.forEach( ( vertice, verticeId ) => {
 
-							const strVerticeId = 'position[' + verticeId + ']'
+							const strVerticeId = 'vertice[' + verticeId + ']'
 							_this.TestVertice( vertice, strVerticeId );
 							vertice.edges.forEach(edgeId => {
 
@@ -276,23 +284,21 @@ class Universe {
 							if (classSettings.debug) vertice.edges.push(_edges.length, verticeId);
 							
 						}
+/*						
 						if (edge[0] === undefined) {
 
 //							position[_edges.length];//push random vertice if not exists
 //							edge[0] = _edges.length;
 							setVertice(0, _edges.length);
 
-						}
-						if (edge[1] === undefined) {
-
-/*							
-							const edge1 = _edges.length + 1;
-							position[edge1];//push random vertice if not exists
-							edge[1] = edge1;
-*/	   
-							setVertice(1, _edges.length + 1);
-
-						}
+						} else setVertice(0, edge[0]);
+*/	  
+						setVertice(0, edge[0] === undefined ? _edges.length : edge[0]);
+/*						
+						if (edge[1] === undefined) setVertice(1, _edges.length + 1);
+						else setVertice(1, edge[1]);
+*/
+						setVertice(1, edge[1] === undefined ? _edges.length + 1 : edge[1]);
 						const edgesLength = _edges.push(edge);
 						return edgesLength;
 
