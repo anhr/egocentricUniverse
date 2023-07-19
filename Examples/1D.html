@@ -36,71 +36,44 @@
 		//import MyThree from '../../../commonNodeJS/master/myThree/build/myThree.module.min.js';
 		MyThree.three.THREE = THREE;
 
-		import Edges from '../edges.js';
+//		import Edges from '../edges.js';
+        import Universe1D from '../universe1D.js';
 
 		new MyThree( (scene, options) => {
 
-			const universe = new Edges( options, {
-
+			const universe = new Universe1D(options, {
+				
+				debug: true,
 				settings: {
 					
 					object: {
 	
-						//name: 'poly line',
+						//name: 'edges',
 						//color: 'red',
 						geometry: {
-	
-							indices: {
-								//count: 10,//1D universe space edges count.
-								edges: [
-									{
-										distance: 0.3,
-										//vertices: [0, 1],
-										//vertices: [0, 3],//Errors: Edges: edges[0].vertices[1]. Vertice index = 3 is limit from 0 to 0
-										//EgocentricUniverse: vertices get. Invalid index = 3 vertices.length = 1
-									},//0
-									{
-										//vertices: [0, 1],
-									},//1
-									{
-										//vertices: [1, 2],
-										//vertices: [0, 2],
-									},//2
-									/*
-									{
-										//distance: 0.3,
-										//vertices: [2, 0],
-									},//3
-		 */
-								],
-								faces: [
-								   [
-										0,
-										//1,
-										2,
-										3,
-									]
-								],
-	
-							}
-	
+
+							position: [
+								//[-0.5, 0.5], [0.0, -0.6], [0.5, 0.7]
+								[0,-1,0], [0.8660254037844388,0.5,0], [-0.8660254037844384,0.5,0]
+							],
+							indices: { edges: { count: 5 } }
+						
 						}
-	
+
 					}
-
-				}
-
-			} );
-			//universe.settings.indices.edges.push();//Error: Edges: push edge. Invalid edge = undefined
-			universe.settings.object.geometry.position.test();
-			universe.pushEdge();
+				
+				},
+				
+				
+			});
+			
 			universe.project( scene );
 
 		}, {
 
 			//axesHelper: false,
 			orbitControls: { enableRotate: false, },
-            dat: { guiSelectPoint: { point: (options, dat, fMesh) => { return new Edges.ND.gui(options, dat, fMesh); }, }, },
+            dat: { guiSelectPoint: { point: (options, dat, fMesh) => { return new Universe1D.ND.gui(options, dat, fMesh); }, }, },
 			camera: { position: new THREE.Vector3( 0, 0, 2 ) },
 			stereoEffect: false,
 			//canvasMenu: false,
