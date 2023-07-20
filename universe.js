@@ -341,13 +341,14 @@ class Universe {
 		/**
 		 * Projects the universe onto the canvas 
 		 * @param {THREE.Scene} scene [THREE.Scene]{@link https://threejs.org/docs/index.html?q=sce#api/en/scenes/Scene}
-		 * @param {object} [params={}] The following parameters are available
-		 * @param {object} [params.center={x: 0.0, y: 0.0}] center of the universe
+		 * @param {object} [params] The following parameters are available
+		 * @param {object} [params.center] center of the universe
 		 * @param {float} [params.center.x=0.0] X axis of the center
 		 * @param {float} [params.center.y=0.0] Y axis of the center
 		 */
 		this.project = (scene, params = {}) => {
 
+	
 			//remove previous universe
 			this.remove = (scene) => {
 	
@@ -366,7 +367,12 @@ class Universe {
 			
 			settings.options = options;
 			settings.scene = scene;
-			new ND(2, settings);
+			const nd = new ND(2, settings);
+			
+			params.center = params.center || {}
+			nd.object3D.position.x = params.center.x || 0;
+			nd.object3D.position.y = params.center.y || 0;
+			nd.object3D.position.z = params.center.z || 0;
 
 		}
 		
