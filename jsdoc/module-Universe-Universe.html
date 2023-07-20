@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>JSDoc: Class: Edges</title>
+    <title>JSDoc: Class: Universe</title>
 
     <script src="scripts/prettify/prettify.js"> </script>
     <script src="scripts/prettify/lang-css.js"> </script>
@@ -17,7 +17,7 @@
 
 <div id="main">
 
-    <h1 class="page-title">Class: Edges</h1>
+    <h1 class="page-title">Class: Universe</h1>
 
     
 
@@ -29,7 +29,7 @@
 <header>
     
         <h2><span class="attribs"><span class="type-signature"></span></span>
-            <span class="ancestors"><a href="module-Edges.html">Edges</a>~</span>Edges<span class="signature">(options, classSettings<span class="signature-attributes">opt</span>)</span><span class="type-signature"></span></h2>
+            <span class="ancestors"><a href="module-Universe.html">Universe</a>~</span>Universe<span class="signature">(options, classSettings<span class="signature-attributes">opt</span>)</span><span class="type-signature"></span></h2>
         
     
 </header>
@@ -42,7 +42,7 @@
     
 
     
-    <h4 class="name" id="Edges"><span class="type-signature"></span>new Edges<span class="signature">(options, classSettings<span class="signature-attributes">opt</span>)</span><span class="type-signature"></span></h4>
+    <h4 class="name" id="Universe"><span class="type-signature"></span>new Universe<span class="signature">(options, classSettings<span class="signature-attributes">opt</span>)</span><span class="type-signature"></span></h4>
     
 
     
@@ -50,7 +50,7 @@
 
 
 <div class="description">
-    1D universe or universe edges.
+    Base class for n dimensional universe.
 </div>
 
 
@@ -145,7 +145,7 @@
 
             
 
-            <td class="description last">Edges class settings.
+            <td class="description last"><b>Universe</b> class settings.
                 <h6>Properties</h6>
                 
 
@@ -171,45 +171,6 @@
     </thead>
 
     <tbody>
-    
-
-        <tr>
-            
-                <td class="name"><code>faceId</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">number</span>
-
-
-            
-            </td>
-
-            
-                <td class="attributes">
-                
-                    &lt;optional><br>
-                
-
-                
-
-                
-                </td>
-            
-
-            
-                <td class="default">
-                
-                    0
-                
-                </td>
-            
-
-            <td class="description last">Identifier of the array of the edges ids in the <b>classSettings.settings.object.geometry.indices.faces</b> array.</td>
-        </tr>
-
     
 
         <tr>
@@ -244,7 +205,7 @@
                 </td>
             
 
-            <td class="description last">See <b>EgocentricUniverse <a href="./module-EgocentricUniverse-EgocentricUniverse.html" target="_blank">settings</a></b> parameter.
+            <td class="description last">The following settings are available
                 <h6>Properties</h6>
                 
 
@@ -298,7 +259,7 @@
 
             
 
-            <td class="description last">edges object.
+            <td class="description last">Universe object.
                 <h6>Properties</h6>
                 
 
@@ -354,8 +315,6 @@
 
             
                 <td class="default">
-                
-                    'Universe'
                 
                 </td>
             
@@ -464,6 +423,39 @@
 
         <tr>
             
+                <td class="name"><code>position</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Array</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+
+            <td class="description last">Array of vertices of the n-dimensional universe.<pre>Every item of array is n-dimensional vector of vertice of object.Example of 1D universe with three vertices.<b>classSettings.settings.object.geometry.position: [	[0, -1],//0	[0.8660254037844388, 0.5],//1	[-0.8660254037844384, 0.5]//2]</b>,</pre></td>
+        </tr>
+
+    
+
+        <tr>
+            
                 <td class="name"><code>indices</code></td>
             
 
@@ -490,7 +482,61 @@
 
             
 
-            <td class="description last">Array of <b>indices</b> of vertices, edges and faces of universe.
+            <td class="description last">Array of <b>indices</b> of edges of universe.
+                <h6>Properties</h6>
+                
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+        <th>Attributes</th>
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>edges</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">object</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+
+            <td class="description last">Universe edges.
                 <h6>Properties</h6>
                 
 
@@ -552,20 +598,55 @@
                 </td>
             
 
-            <td class="description last">1D Universe edges count. Default universe is triangle with 3 edges.</td>
+            <td class="description last">edges count.</td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+            </td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+            </td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+            </td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+            </td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+            </td>
         </tr>
 
     
 
         <tr>
             
-                <td class="name"><code>edges</code></td>
+                <td class="name"><code>debug</code></td>
             
 
             <td class="type">
             
                 
-<span class="param-type">Array</span>
+<span class="param-type">boolean</span>
 
 
             
@@ -586,14 +667,136 @@
             
                 <td class="default">
                 
-                    [{}, {}, {}]
+                    false
                 
                 </td>
             
 
-            <td class="description last">Edges array. Default edges count is <b>classSettings.settings.object.geometry.indices.count</b>.
-                <h6>Properties</h6>
-                
+            <td class="description last">Debug mode. Diagnoses your code and display detected errors in console</td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+            </td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="universe.js.html">universe.js</a>, <a href="universe.js.html#line82">line 82</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    
+    </div>
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+        <h3 class="subsection-title">Methods</h3>
+
+        
+            
+
+    
+
+    
+    <h4 class="name" id="project"><span class="type-signature"></span>project<span class="signature">(scene, params<span class="signature-attributes">opt</span>)</span><span class="type-signature"></span></h4>
+    
+
+    
+
+
+
+<div class="description">
+    Projects the universe onto the canvas
+</div>
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
 
 <table class="params">
     <thead>
@@ -609,6 +812,8 @@
         
 
         
+        <th>Default</th>
+        
 
         <th class="last">Description</th>
     </tr>
@@ -619,7 +824,42 @@
 
         <tr>
             
-                <td class="name"><code>edge</code></td>
+                <td class="name"><code>scene</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">THREE.Scene</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                </td>
+            
+
+            <td class="description last"><a href="https://threejs.org/docs/index.html?q=sce#api/en/scenes/Scene">THREE.Scene</a></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>params</code></td>
             
 
             <td class="type">
@@ -644,8 +884,14 @@
             
 
             
+                <td class="default">
+                
+                    {}
+                
+                </td>
+            
 
-            <td class="description last">Edges array item is edge.
+            <td class="description last">The following parameters are available
                 <h6>Properties</h6>
                 
 
@@ -675,13 +921,13 @@
 
         <tr>
             
-                <td class="name"><code>vertices</code></td>
+                <td class="name"><code>center</code></td>
             
 
             <td class="type">
             
                 
-<span class="param-type">Array</span>
+<span class="param-type">object</span>
 
 
             
@@ -702,17 +948,42 @@
             
                 <td class="default">
                 
+                    {x: 0.0, y: 0.0}
+                
                 </td>
             
 
-            <td class="description last">Array of edge vertices indices. Every edge have two vertices.</td>
-        </tr>
+            <td class="description last">center of the universe
+                <h6>Properties</h6>
+                
 
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+        <th>Attributes</th>
+        
+
+        
+        <th>Default</th>
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
     
 
         <tr>
             
-                <td class="name"><code>distance</code></td>
+                <td class="name"><code>x</code></td>
             
 
             <td class="type">
@@ -739,39 +1010,25 @@
             
                 <td class="default">
                 
-                    1.0
+                    0.0
                 
                 </td>
             
 
-            <td class="description last">Edge length. Distance between edge vertices.</td>
-        </tr>
-
-    
-    </tbody>
-</table>
-
-            </td>
-        </tr>
-
-    
-    </tbody>
-</table>
-
-            </td>
+            <td class="description last">X axis of the center</td>
         </tr>
 
     
 
         <tr>
             
-                <td class="name"><code>faces</code></td>
+                <td class="name"><code>y</code></td>
             
 
             <td class="type">
             
                 
-<span class="param-type">Array</span>
+<span class="param-type">float</span>
 
 
             
@@ -792,33 +1049,12 @@
             
                 <td class="default">
                 
-                    [[0, 1, 2]]
+                    0.0
                 
                 </td>
             
 
-            <td class="description last">Faces array. Every item of the <b>faces</b> array is array of edges indices for current face.<pre>Example:[[0, 2, 3]]universe contains three edges with 0, 2 and 3 indice.</pre></td>
-        </tr>
-
-    
-    </tbody>
-</table>
-
-            </td>
-        </tr>
-
-    
-    </tbody>
-</table>
-
-            </td>
-        </tr>
-
-    
-    </tbody>
-</table>
-
-            </td>
+            <td class="description last">Y axis of the center</td>
         </tr>
 
     
@@ -873,7 +1109,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="edges.js.html">edges.js</a>, <a href="edges.js.html#line812">line 812</a>
+        <a href="universe.js.html">universe.js</a>, <a href="universe.js.html#line349">line 349</a>
     </li></ul></dd>
     
 
@@ -903,23 +1139,7 @@
 
 
 
-    
-    </div>
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
+        
     
 
     
@@ -935,13 +1155,13 @@
 </div>
 
 <nav>
-    <h2><a href="index.html">Home</a></h2><h3>Modules</h3><ul><li><a href="module-Edges.html">Edges</a></li><li><a href="module-EgocentricUniverse.html">EgocentricUniverse</a></li></ul><h3>Classes</h3><ul><li><a href="module-Edges-Edges.html">Edges</a></li><li><a href="module-EgocentricUniverse-EgocentricUniverse.html">EgocentricUniverse</a></li></ul>
+    <h2><a href="index.html">Home</a></h2><h3>Modules</h3><ul><li><a href="module-Universe.html">Universe</a></li><li><a href="module-Universe1D.html">Universe1D</a></li></ul><h3>Classes</h3><ul><li><a href="module-Universe1D-Universe1D.html">Universe1D</a></li><li><a href="module-Universe-Universe.html">Universe</a></li></ul>
 </nav>
 
 <br class="clear">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 3.6.11</a> on Fri May 12 2023 20:50:21 GMT+0700 (Красноярск, стандартное время)
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 3.6.11</a> on Thu Jul 20 2023 09:21:15 GMT+0700 (Красноярск, стандартное время)
 </footer>
 
 <script> prettyPrint(); </script>
