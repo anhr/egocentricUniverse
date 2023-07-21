@@ -59,7 +59,7 @@ class Universe {
 	 * Base class for n dimensional universe.
 	 * @param {Options} options See <a href="../../../commonNodeJS/master/jsdoc/Options/Options.html" target="_blank">Options</a>.
 	 * @param {object} [classSettings] <b>Universe</b> class settings.
-	 * @param {float} [classSettings.radius=1.0] Universe radius.
+	 * @param {float} [classSettings.radius=1.0] Universe start radius.
 	 * @param {object} [classSettings.settings] The following settings are available
 	 * @param {object} [classSettings.settings.object] Universe object.
 	 * @param {String} [classSettings.settings.object.name] name of universe.
