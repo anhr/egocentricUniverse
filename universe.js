@@ -108,7 +108,7 @@ class Universe {
 							let v, ll, rr = classSettings.radius * classSettings.radius;
 							do {
 								
-								const randomAxis = () => { return Math.random() * 2 - 1; };
+								const randomAxis = () => { return (Math.random() * 2 - 1) * classSettings.radius; };
 								v = [randomAxis(), randomAxis()];
 								
 								let vv = 0.0;
