@@ -36,13 +36,13 @@
 		//import MyThree from '../../../commonNodeJS/master/myThree/build/myThree.module.min.js';
 		MyThree.three.THREE = THREE;
 
-//		import Edges from '../edges.js';
-        import Universe1D from '../universe1D.js';
+		import Universe1D from '../universe1D.js';
 
 		new MyThree( (scene, options) => {
 
 			const universe = new Universe1D(options, {
 				
+				radius: 0.5,
 				debug: true,
 				settings: {
 					
@@ -54,9 +54,9 @@
 
 							position: [
 								//[-0.5, 0.5], [0.0, -0.6], [0.5, 0.7]
-								[0, -1], [0.8660254037844388, 0.5], [-0.8660254037844384, 0.5]
+								//[0, -1], [0.8660254037844388, 0.5], [-0.8660254037844384, 0.5]
 							],
-							indices: { edges: { count: 5 } }
+							indices: { edges: { count: 5000 } }
 						
 						}
 

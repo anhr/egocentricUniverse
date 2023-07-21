@@ -55,12 +55,14 @@ class Universe1D extends Universe {
 		return lang.name;
 		
 	}
+/*
 	Indices() {
 
 		const settings = this.classSettings.settings,
 			debug = this.classSettings.debug;//_this = this, 
 
 	}
+*/
 	logUniverse1D() {
 
 		if (!this.classSettings.debug) return;

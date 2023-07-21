@@ -83,6 +83,7 @@ class Universe {
 
 		const _this = this;
 		this.classSettings = classSettings;
+		if (classSettings.radius === undefined) classSettings.radius = 1.0;
 		classSettings.settings = classSettings.settings || {};
 		const settings = classSettings.settings;
 		settings.object = settings.object || {};
@@ -102,8 +103,21 @@ class Universe {
 
 						const randomPosition = () => {
 	
-							const randomAxis = () => { return Math.random() * 2 - 1; };
-							return [randomAxis(), randomAxis()];
+							//Vector length limitation
+							let v, ll, rr = classSettings.radius * classSettings.radius;
+							do {
+								
+								const randomAxis = () => { return Math.random() * 2 - 1; };
+								v = [randomAxis(), randomAxis()];
+								
+								let vv = 0.0;
+								v.forEach(axis => vv += axis * axis);
+//								length = Math.sqrt(vv);
+								ll = vv;
+
+							}while(ll > rr)
+							
+							return v;
 							
 						}
 //						_position.push(randomPosition());
@@ -337,12 +351,12 @@ class Universe {
 		indices.edges.count = indices.edges.count || 3;
 		for (let i = 0; i < indices.edges.count - 1; i++) indices.edges.push();
 		indices.edges.push([settings.object.geometry.position.length - 1, 0])//loop edges
-		this.Indices();
+//		this.Indices();
 		/**
 		 * Projects the universe onto the canvas 
 		 * @param {THREE.Scene} scene [THREE.Scene]{@link https://threejs.org/docs/index.html?q=sce#api/en/scenes/Scene}
-		 * @param {object} [params] The following parameters are available
-		 * @param {object} [params.center] center of the universe
+		 * @param {object} [params={}] The following parameters are available
+		 * @param {object} [params.center={x: 0.0, y: 0.0}] center of the universe
 		 * @param {float} [params.center.x=0.0] X axis of the center
 		 * @param {float} [params.center.y=0.0] Y axis of the center
 		 */
