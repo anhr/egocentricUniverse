@@ -36,70 +36,65 @@
 		//import MyThree from '../../../commonNodeJS/master/myThree/build/myThree.module.min.js';
 		MyThree.three.THREE = THREE;
 
-		import Faces from '../faces.js';
-//		import Sphere from '../../../commonNodeJS/master/graphicObjects/Sphere.js';
+        import Universe2D from '../universe2D.js';
 
 
 		new MyThree( (scene, options) => {
 
-			const universe = new Faces/*Sphere*/( options,
-				{
+			const universe = new Universe2D(options, {
+				
+				debug: true,
+				settings: {
 					
-					settings: {
-						
-						object: {
-		
-							name: 'sphere',
-							geometry: {
-		
-								indices: {
-									
-									//count: 10,//2D universe space faces count.
-									edges: [
-										{
-											//distance: 0.3,
-											//vertices: [0, 1],
-										},//0
-										{},//1
-										{},//2
-										{},//3
-										{},//4
-										{},//5
-									],
-									faces: [
-										[0, 1, 2],//0
-										[0, 3, 4],//1
-										[1, 4, 5],//2
-										[2, 3, 5],//3
-									],
-									bodies: [
-										[
-											0,
-											1,
-											//2,
-											//3
-										]
-									],
+					object: {
 	
-								}
+						//name: 'edges',
+						//color: 'red',
+						geometry: {
+
+							position: [
+								//pyramid
+								[0,-0.9428090415820634,0.33333333333333326],
+								[0.8164965662730563,0.4714045207910317,0.33333333333333326],
+								[-0.8164965662730563,0.4714045207910317,0.33333333333333326],
+								[7.32733549761259e-9,4.230438555019589e-9,-1.0],
+							],
+							indices: {
+
+								/*
+								edges: {
+								
+									count: 6,
+//									indices:[ [0,1], [1,2], [2,0], [0,3], [1,3], [2,3] ],//pyramid
 							
+								}
+								*/
+								edges: [ [0,1], [1,2], [2,0], [0,3], [1,3], [2,3] ],//pyramid
+								
 							}
-	
+						
 						}
-					
+
 					}
-				}
-									   
-			);
-			universe.settings.object.geometry.position.test();
-			universe.project( scene );
+				
+				},
+				
+				
+			});
+			
+			universe.project( scene, {
+				
+				//center: {x: 0.5, y: 0.3},
+			
+			});
+
 
 		}, {
 
 			//axesHelper: false,
 			//orbitControls: { enableRotate: false, },
 			//dat: { guiSelectPoint: { point: (options, dat, fMesh) => { return new Sphere.ND.gui(options, dat, fMesh); }, }, },
-			dat: { guiSelectPoint: { point: (options, dat, fMesh) => { return new Faces.ND.gui(options, dat, fMesh); }, }, },
+			dat: { guiSelectPoint: { point: (options, dat, fMesh) => { return new Universe2D.ND.gui(options, dat, fMesh); }, }, },
 			camera: { position: new THREE.Vector3( 0, 0, 2 ) },
 			stereoEffect: false,
 			//canvasMenu: false,
