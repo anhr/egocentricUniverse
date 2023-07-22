@@ -43,7 +43,7 @@ class Universe1D extends Universe {
 				if ((guiParams.lang === undefined) || (guiParams.lang.languageCode != _languageCode))
 					break;
 
-				Object.keys(guiParams.lang).forEach(function (key) {
+				Object.keys(guiParams.lang).forEach((key) => {
 
 					if (lang[key] === undefined)
 						return;
@@ -76,6 +76,7 @@ class Universe1D extends Universe {
 	//Overridden methods from base class
 
 	get verticeEdgesLengthMax() { return 2; }//нельзя добавлть новое ребро если у вершины уже 2 ребра
+	get dimension() { return 2; }//space dimension
 
 	/**
 	 * 1 dimensional universe.

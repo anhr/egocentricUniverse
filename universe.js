@@ -93,7 +93,7 @@ class Universe {
 //		settings.object.geometry.position = new Proxy(settings.object.geometry.position || [],
 		const position = new Proxy([], {
 
-			get: function (_position, name) {
+			get: (_position, name) => {
 
 				const i = parseInt(name);
 				if (!isNaN(i)) {
@@ -254,7 +254,7 @@ class Universe {
 				return _position[name];
 
 			},
-			set: function (_position, name, value) {
+			set: (_position, name, value) => {
 
 				const i = parseInt(name);
 				if (!isNaN(i)) {
@@ -292,13 +292,19 @@ class Universe {
 		}
 		const indices = settings.object.geometry.indices;
 		indices[0] = indices[0] || [];
-		if (indices.edges && !(indices.edges instanceof Array)) {
+		if (indices.edges)
+			if(indices.edges instanceof Array) {
+				
+				indices[0] = indices.edges;
+				indices[0].count = indices.edges.length;
+				
+			} else {
 
-			const edges = indices[0];
-			Object.keys(indices.edges).forEach((key) => edges[key] = indices.edges[key]);
-			indices.edges = edges;
-			
-		}
+				const edges = indices[0];
+				Object.keys(indices.edges).forEach((key) => edges[key] = indices.edges[key]);
+				indices.edges = edges;
+				
+			}
 		indices.edges = new Proxy(indices[0], {
 			
 			get: (_edges, name) => {
@@ -310,38 +316,60 @@ class Universe {
 					return edge;
 					
 				}
+				const setVertice = (edge, edgeVerticeId, verticeId, edgeId) => {
+
+					const vertice = position[verticeId];//push random vertice if not exists
+					edge[edgeVerticeId] = verticeId;
+					if (classSettings.debug) vertice.edges.push(edgeId === undefined ? _edges.length : edgeId, verticeId);
+					
+				}
 				switch (name) {
 
 					case 'push': return (edge=[]) => {
 
 						const position = settings.object.geometry.position;
 //						if (edge[0] === undefined) edge[0] = (position.length ? position.length : position.push(randomPosition())) - 1;
-						const setVertice = (edgeVerticeId, verticeId) => {
-
-							const vertice = position[verticeId];//push random vertice if not exists
-							edge[edgeVerticeId] = verticeId;
-							if (classSettings.debug) vertice.edges.push(_edges.length, verticeId);
-							
-						}
 /*						
 						if (edge[0] === undefined) {
 
 //							position[_edges.length];//push random vertice if not exists
 //							edge[0] = _edges.length;
-							setVertice(0, _edges.length);
+							setVertice(edge, 0, _edges.length);
 
-						} else setVertice(0, edge[0]);
+						} else setVertice(edge, 0, edge[0]);
 */	  
-						setVertice(0, edge[0] === undefined ? _edges.length : edge[0]);
+						setVertice(edge, 0, edge[0] === undefined ? _edges.length : edge[0]);
 /*						
 						if (edge[1] === undefined) setVertice(1, _edges.length + 1);
-						else setVertice(1, edge[1]);
+						else setVertice(edge, 1, edge[1]);
 */
-						setVertice(1, edge[1] === undefined ? _edges.length + 1 : edge[1]);
+						setVertice(edge, 1, edge[1] === undefined ? _edges.length + 1 : edge[1]);
 						const edgesLength = _edges.push(edge);
 						return edgesLength;
 
-					};
+					}
+					case 'pushEdges': return (edge=[]) => {
+
+						_edges.count = _edges.count || 3;
+						for (let i = 0; i < _edges.count; i++) {
+							
+							const edge = _edges[i];
+							if (edge){
+
+								setVertice(edge, 0, edge[0], i);
+								setVertice(edge, 1, edge[1], i);
+
+							} else {
+								
+								if(i === (_edges.count - 1)) indices.edges.push([settings.object.geometry.position.length - 1, 0])//loop edges
+								else indices.edges.push();
+
+							}
+
+						}
+//						indices.edges.push([settings.object.geometry.position.length - 1, 0])//loop edges
+						
+					}
 
 				}
 				return _edges[name];
@@ -349,9 +377,12 @@ class Universe {
 			}
 
 		});
+		indices.edges.pushEdges();
+/*		
 		indices.edges.count = indices.edges.count || 3;
 		for (let i = 0; i < indices.edges.count - 1; i++) indices.edges.push();
 		indices.edges.push([settings.object.geometry.position.length - 1, 0])//loop edges
+*/  
 //		this.Indices();
 		/**
 		 * Projects the universe onto the canvas 
@@ -382,7 +413,7 @@ class Universe {
 			
 			settings.options = options;
 			settings.scene = scene;
-			const nd = new ND(2, settings);
+			const nd = new ND(this.dimension, settings);
 			
 			params.center = params.center || {}
 			nd.object3D.position.x = params.center.x || 0;

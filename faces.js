@@ -132,7 +132,7 @@ class Faces extends Edges//EgocentricUniverse
 								
 								_indices[2] = new Proxy(_indices[2] || [], {
 			
-									get: function (_bodies, name) {
+									get: (_bodies, name) => {
 
 										const i = parseInt(name);
 										if (!isNaN(i)) {
