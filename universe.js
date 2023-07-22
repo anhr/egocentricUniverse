@@ -76,7 +76,13 @@ class Universe {
 	 * ]</b>,
 	 * </pre>
 	 * @param {object} [classSettings.settings.object.geometry.indices] Array of <b>indices</b> of edges of universe.
-	 * @param {object} [classSettings.settings.object.geometry.indices.edges] Universe edges.
+	 * @param {array|object} [classSettings.settings.object.geometry.indices.edges] Universe edges.
+	 * <pre>
+	 * array - array of edges.
+	 *	Every edge is array of indices of vertuces from
+	 *	<b>classSettings.settings.object.geometry.position</b>
+	 * object - see below:
+	 * </pre>
 	 * @param {number} [classSettings.settings.object.geometry.indices.edges.count=3] edges count.
 	 * @param {boolean} [classSettings.debug=false] Debug mode. Diagnoses your code and display detected errors in console
 	 **/
