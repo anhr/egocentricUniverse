@@ -67,8 +67,6 @@ class Universe2D extends Universe {
 
 		if (!this.classSettings.debug) return;
 		this.logUniverse();
-		console.error('Under constraction');
-//		this.classSettings.settings.object.geometry.indices.bodies.forEach((body, i) => console.log('indices.bodies[' + i + '] = ' + JSON.stringify( body )));
 		
 	}
 
@@ -77,6 +75,7 @@ class Universe2D extends Universe {
 	//Overridden methods from base class
 
 	get verticeEdgesLengthMax() { return 6; }//нельзя добавлть новое ребро если у вершины уже 6 ребра
+	TestVerticeEdges(vertice){ return (vertice.length === this.verticeEdgesLengthMax) || (vertice.length === 3) ? true : false; }
 	get dimension() { return 3; }//space dimension
 
 	/**

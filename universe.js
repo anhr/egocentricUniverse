@@ -47,9 +47,10 @@ class Universe {
 		if (geometry.indices.faces) geometry.indices.faces.test();
 		
 	}
-	TestVertice( vertice, strVerticeId ){
+	TestVertice(vertice, strVerticeId){
 		
-		if (vertice.edges.length !== this.verticeEdgesLengthMax)
+//		if (vertice.edges.length !== this.verticeEdgesLengthMax)
+		if (!this.TestVerticeEdges(vertice))
 			console.error(sUniverse + ': Test(). Invalid ' + strVerticeId + '.edges.length = ' + vertice.edges.length);
 		
 	}
