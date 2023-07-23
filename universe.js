@@ -68,19 +68,20 @@ class Universe {
 	 * @param {Array} [classSettings.settings.object.geometry.position] Array of vertices of the n-dimensional universe.
 	 * <pre>
 	 * Every item of array is n-dimensional vector of vertice of object.
-	 * Example of 1D universe with three vertices.
+	 * Example of 1D universe with three vertices:
 	 * <b>classSettings.settings.object.geometry.position: [
 	 *	[0, -1],//0
 	 *	[0.8660254037844388, 0.5],//1
 	 *	[-0.8660254037844384, 0.5]//2
-	 * ]</b>,
+	 * ]//triangle</b>,
 	 * </pre>
 	 * @param {object} [classSettings.settings.object.geometry.indices] Array of <b>indices</b> of edges of universe.
 	 * @param {array|object} [classSettings.settings.object.geometry.indices.edges] Universe edges.
 	 * <pre>
 	 * array - array of edges.
-	 *	Every edge is array of indices of vertuces from
+	 *	Every edge is array of indices of vertices from
 	 *	<b>classSettings.settings.object.geometry.position</b>
+	 *	Example: <b>[[0,1], [1,2], [2,0]],//triangle</b>
 	 * object - see below:
 	 * </pre>
 	 * @param {number} [classSettings.settings.object.geometry.indices.edges.count=3] edges count.
