@@ -66,15 +66,18 @@ class Universe {
 	 * @param {String} [classSettings.settings.object.name] name of universe.
 	 * @param {String} [classSettings.settings.object.color='lime'] color of edges.
 	 * @param {object} [classSettings.settings.object.geometry] Universe geometry.
-	 * @param {Array} [classSettings.settings.object.geometry.position] Array of vertices of the n-dimensional universe.
+	 * @param {array|object} [classSettings.settings.object.geometry.position] n-dimensional universe vertices.
 	 * <pre>
-	 * Every item of array is n-dimensional vector of vertice of object.
-	 * Example of 1D universe with three vertices:
-	 * <b>classSettings.settings.object.geometry.position: [
-	 *	[0, -1],//0
-	 *	[0.8660254037844388, 0.5],//1
-	 *	[-0.8660254037844384, 0.5]//2
-	 * ]//triangle</b>,
+	 * array - array of vertices.
+	 *	Every item of array is n-dimensional vector of vertice of object.
+	 *	Example of 1D universe with three vertices:
+	 *	<b>classSettings.settings.object.geometry.position: [
+	 *		[0, -1],//0
+	 *		[0.8660254037844388, 0.5],//1
+	 *		[-0.8660254037844384, 0.5]//2
+	 *	]//triangle</b>,
+	 * object - see below:
+	 * @param {number} [classSettings.settings.object.geometry.position.count=3] vertices count.
 	 * </pre>
 	 * @param {object} [classSettings.settings.object.geometry.indices] Array of <b>indices</b> of edges of universe.
 	 * @param {array|object} [classSettings.settings.object.geometry.indices.edges] Universe edges.
@@ -98,7 +101,25 @@ class Universe {
 		settings.object = settings.object || {};
 		settings.object.name = settings.object.name || this.name( options.getLanguageCode );
 		settings.object.geometry = settings.object.geometry || {};
-//		settings.object.geometry.position = new Proxy(settings.object.geometry.position || [],
+		const randomPosition = () => {
+
+			//Vector length limitation
+			let v, ll, rr = classSettings.radius * classSettings.radius;
+			do {
+				
+				const randomAxis = () => { return (Math.random() * 2 - 1) * classSettings.radius; };
+				v = [randomAxis(), randomAxis()];
+				
+				let vv = 0.0;
+				v.forEach(axis => vv += axis * axis);
+//								length = Math.sqrt(vv);
+				ll = vv;
+
+			}while(ll > rr)
+			
+			return v;
+			
+		}
 		const position = new Proxy([], {
 
 			get: (_position, name) => {
@@ -108,29 +129,8 @@ class Universe {
 
 					if (i > _position.length) console.error(sUniverse + ': position get. Invalid index = ' + i + ' position.length = ' + _position.length);
 					else if (i === _position.length) {
-						
 
-						const randomPosition = () => {
-	
-							//Vector length limitation
-							let v, ll, rr = classSettings.radius * classSettings.radius;
-							do {
-								
-								const randomAxis = () => { return (Math.random() * 2 - 1) * classSettings.radius; };
-								v = [randomAxis(), randomAxis()];
-								
-								let vv = 0.0;
-								v.forEach(axis => vv += axis * axis);
-//								length = Math.sqrt(vv);
-								ll = vv;
-
-							}while(ll > rr)
-							
-							return v;
-							
-						}
-//						_position.push(randomPosition());
-						settings.object.geometry.position.push(randomPosition());
+						settings.object.geometry.position.push();//randomPosition());
 
 					}
 					return _position[i];
@@ -138,7 +138,7 @@ class Universe {
 				}
 				switch (name) {
 
-					case 'push': return (vertice = []) => {
+					case 'push': return (vertice = randomPosition()) => {
 
 						return _position.push(new Proxy(vertice, {
 
@@ -283,9 +283,16 @@ class Universe {
 		});
 
 		settings.object.geometry.position = settings.object.geometry.position || [];
+
+		if(!(settings.object.geometry.position instanceof Array)) {
+			
+			for (let i = 0; i < (settings.object.geometry.position.count === undefined ? 3 : settings.object.geometry.position.count); i++)
+				position.push();
+
+		}
 		
 		//convert vertices to Proxy
-		settings.object.geometry.position.forEach(vertice => position.push(vertice));
+		else settings.object.geometry.position.forEach(vertice => position.push(vertice));
 		//if (settings.object.geometry.position) settings.object.geometry.position.forEach();
 
 		settings.object.geometry.position = position;
