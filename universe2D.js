@@ -20,6 +20,14 @@ class Universe2D extends Universe {
 
 	//base methods
 	
+	pushEdges() {
+
+		const geometry = this.classSettings.settings.object.geometry, position = geometry.position, edges = geometry.indices.edges;
+		for (let verticeId = 1; verticeId < position.length; verticeId++)
+			edges.push();
+		edges.push([position.length - 1, 0]);
+		
+	}
 	name( getLanguageCode ) {
 
 		//Localization
@@ -77,6 +85,7 @@ class Universe2D extends Universe {
 	get verticeEdgesLengthMax() { return 6; }//нельзя добавлть новое ребро если у вершины уже 6 ребра
 	TestVerticeEdges(vertice){ return (vertice.length === this.verticeEdgesLengthMax) || (vertice.length === 3) ? true : false; }
 	get dimension() { return 3; }//space dimension
+	get verticesCountMin() { return 7; }
 
 	/**
 	 * 2 dimensional universe.
