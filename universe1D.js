@@ -16,11 +16,31 @@
 
 import Universe from './universe.js';
 
+const sUniverse1D = 'Universe1D';
+
 class Universe1D extends Universe {
 
 	//base methods
 	
-	name( getLanguageCode ) {
+	pushEdges() {
+
+		const geometry = this.classSettings.settings.object.geometry, edges = geometry.indices.edges, position = geometry.position;
+/*
+		//default vertices
+		const count = position.count === undefined ? this.verticesCountMin : position.count;
+		if (count < 2) {
+
+			console.error(sUniverse1D + '.pushEdges: Invalid classSettings.settings.object.geometry.position.count < 2');
+			return;
+			
+		}
+		for (let i = 0; i < count; i++) position[i];//push vertice if not exists//if (!(position[i])) position.push();
+*/  
+		for (let verticeId = 1; verticeId < position.length; verticeId++) edges.push();
+		edges.push([position.length - 1, 0]);
+		
+	}
+	name(getLanguageCode) {
 
 		//Localization
 		
@@ -78,6 +98,7 @@ class Universe1D extends Universe {
 	get verticeEdgesLengthMax() { return 2; }//нельзя добавлть новое ребро если у вершины уже 2 ребра
 	TestVerticeEdges(vertice){ return vertice.length === this.verticeEdgesLengthMax ? true : false; }
 	get dimension() { return 2; }//space dimension
+	get verticesCountMin() { return 3; }
 
 	/**
 	 * 1 dimensional universe.

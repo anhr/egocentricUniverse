@@ -77,8 +77,8 @@ class Universe {
 	 *		[-0.8660254037844384, 0.5]//2
 	 *	]//triangle</b>,
 	 * object - see below:
-	 * @param {number} [classSettings.settings.object.geometry.position.count=3] vertices count.
 	 * </pre>
+	 * @param {number} [classSettings.settings.object.geometry.position.count=3] vertices count.
 	 * @param {object} [classSettings.settings.object.geometry.indices] Array of <b>indices</b> of edges of universe.
 	 * @param {array|object} [classSettings.settings.object.geometry.indices.edges] Universe edges.
 	 * <pre>
@@ -108,7 +108,8 @@ class Universe {
 			do {
 				
 				const randomAxis = () => { return (Math.random() * 2 - 1) * classSettings.radius; };
-				v = [randomAxis(), randomAxis()];
+				v = [];
+				for (let i = 0; i < _this.dimension; i++) v.push(randomAxis());
 				
 				let vv = 0.0;
 				v.forEach(axis => vv += axis * axis);
@@ -120,6 +121,8 @@ class Universe {
 			return v;
 			
 		}
+
+		settings.object.geometry.position = settings.object.geometry.position || {};
 		const position = new Proxy([], {
 
 			get: (_position, name) => {
@@ -276,21 +279,24 @@ class Universe {
 					});
 
 				}
+				else _position[name] = value;
 				return true;
 
 			}
 
 		});
-
-		settings.object.geometry.position = settings.object.geometry.position || [];
-
+		
 		if(!(settings.object.geometry.position instanceof Array)) {
 			
+/*
 			for (let i = 0; i < (settings.object.geometry.position.count === undefined ? 3 : settings.object.geometry.position.count); i++)
 				position.push();
+*/
+//			const position = [];
+			Object.keys(settings.object.geometry.position).forEach((key) => position[key] = settings.object.geometry.position[key]);
+//			settings.object.geometry.position = position;
 
 		}
-		
 		//convert vertices to Proxy
 		else settings.object.geometry.position.forEach(vertice => position.push(vertice));
 		//if (settings.object.geometry.position) settings.object.geometry.position.forEach();
@@ -392,12 +398,36 @@ class Universe {
 			}
 
 		});
-		indices.edges.pushEdges();
-/*		
-		indices.edges.count = indices.edges.count || 3;
-		for (let i = 0; i < indices.edges.count - 1; i++) indices.edges.push();
-		indices.edges.push([settings.object.geometry.position.length - 1, 0])//loop edges
-*/  
+		if (classSettings.mode === undefined) classSettings.mode = 0;//решил оставить режим, в котором сначала добавляются ребра а потом уже создаются вершины для них
+		switch(classSettings.mode) {
+
+			//connect vertices by edges
+			case 0: 
+				
+				//default vertices
+				if (this.verticesCountMin === undefined) {
+
+					console.error(sUniverse + ': Please define verticesCountMin in your child class.');
+					break;
+					
+				}
+				const count = position.count === undefined ? this.verticesCountMin : position.count;
+				if (count < 2) {
+		
+					console.error(sUniverse + ': Invalid classSettings.settings.object.geometry.position.count < 2');
+					return;
+					
+				}
+				for (let i = 0; i < count; i++) position[i];//push vertice if not exists//if (!(position[i])) position.push();
+				
+				this.pushEdges();
+				break;
+				
+			case 1: indices.edges.pushEdges(); break;//push edges. сначала добавляются ребра а потом уже создаются вершины для них
+			default: console.error(sUniverse + ': Unknown mode: ' + classSettings.mode); return;
+				
+		}
+		
 //		this.Indices();
 		/**
 		 * Projects the universe onto the canvas 
