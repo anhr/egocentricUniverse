@@ -23,9 +23,23 @@ class Universe2D extends Universe {
 	pushEdges() {
 
 		const geometry = this.classSettings.settings.object.geometry, position = geometry.position, edges = geometry.indices.edges;
+		for (let verticeId = 0; verticeId < (position.length - 1); verticeId++){
+
+			//Every vertice have max 6 edges
+			for (let i = 1; i < (7 - verticeId); i++) {
+				
+				const verticeIdOpposite = verticeId + i;
+				if (verticeIdOpposite < position.length) edges.push([verticeId, verticeIdOpposite]);
+				else break;
+
+			}
+			
+		}
+/*		
 		for (let verticeId = 1; verticeId < position.length; verticeId++)
 			edges.push();
 		edges.push([position.length - 1, 0]);
+*/  
 		
 	}
 	name( getLanguageCode ) {
@@ -85,7 +99,7 @@ class Universe2D extends Universe {
 	get verticeEdgesLengthMax() { return 6; }//нельзя добавлть новое ребро если у вершины уже 6 ребра
 	TestVerticeEdges(vertice){ return (vertice.length === this.verticeEdgesLengthMax) || (vertice.length === 3) ? true : false; }
 	get dimension() { return 3; }//space dimension
-	get verticesCountMin() { return 7; }
+	get verticesCountMin() { return 4; }
 
 	/**
 	 * 2 dimensional universe.
