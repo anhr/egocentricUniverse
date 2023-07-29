@@ -40,6 +40,8 @@ class Universe {
 	}
 	Test(){
 
+		if (!this.classSettings.debug) return;
+		
 		const geometry = this.classSettings.settings.object.geometry;
 		geometry.position.test();
 
@@ -365,6 +367,7 @@ class Universe {
 						else setVertice(edge, 1, edge[1]);
 */
 						setVertice(edge, 1, edge[1] === undefined ? _edges.length + 1 : edge[1]);
+						if(classSettings.debug) _edges.forEach((edgeCur, i) => { if (((edgeCur[0] === edge[0]) && (edgeCur[1] === edge[1])) || ((edgeCur[0] === edge[1]) && (edgeCur[1] === edge[0]))) console.error(sUniverse + ': edges[' + i + ']. Duplicate edge[' + edge + ']')});
 						const edgesLength = _edges.push(edge);
 						return edgesLength;
 

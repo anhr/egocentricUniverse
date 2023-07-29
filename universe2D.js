@@ -23,6 +23,56 @@ class Universe2D extends Universe {
 	pushEdges() {
 
 		const geometry = this.classSettings.settings.object.geometry, position = geometry.position, edges = geometry.indices.edges;
+		
+		//Every vertice have max 6 edges
+		for (let verticeId = 1; verticeId < position.length; verticeId++)
+			edges.push();
+		edges.push([position.length - 1, 0]);
+		for (let i = 2; i < 4; i++) {
+
+			for (let verticeId = 0; verticeId < position.length; verticeId++){
+
+				
+				let verticeIdOpposite = edges[position.length * (i - 2) + verticeId][1] + 1;
+//				let verticeIdOpposite = verticeId + i;
+				if (verticeIdOpposite >= position.length) verticeIdOpposite = 0;
+				edges.push([verticeId, verticeIdOpposite]);
+				switch(position.length){
+
+					case 4://tetraedr
+						if (edges.length >=6) return;
+						break;
+					case 6:
+						if (edges.length >=15) return;
+						break;
+						
+				}
+
+			}
+			
+		}
+/*		
+		for (let i = 1; i < 7; i++) {
+			
+			for (let verticeId = (i - 1); verticeId < position.length; verticeId++){
+	
+//				const verticeIdOpposite = verticeId + i;
+				const edge = edges[verticeId];
+				const verticeIdOpposite = edge ? edge[1] + 1 : verticeId + i;
+				if (verticeIdOpposite < position.length) edges.push([verticeId, verticeIdOpposite]);
+				else {
+
+					edges.push([verticeIdOpposite - 1, 0]);
+					break;
+
+				}
+	
+			}
+			console.log('')
+				
+		}
+*/		
+/*
 		for (let verticeId = 0; verticeId < (position.length - 1); verticeId++){
 
 			//Every vertice have max 6 edges
@@ -35,6 +85,7 @@ class Universe2D extends Universe {
 			}
 			
 		}
+*/		
 /*		
 		for (let verticeId = 1; verticeId < position.length; verticeId++)
 			edges.push();
