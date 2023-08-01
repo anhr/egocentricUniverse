@@ -22,7 +22,8 @@ import ND from '../../commonNodeJS/master/nD/nD.js';
 //import ND from 'https://raw.githack.com/anhr/commonNodeJS/master/nD/build/nD.module.min.js';
 if (ND.default) ND = ND.default;
 
-const sUniverse = 'Universe', sOverride = sUniverse + ': Please override the %s method in your child class.';
+const sUniverse = 'Universe', sOverride = sUniverse + ': Please override the %s method in your child class.',
+	verticeEdges = true;//Эту константу добавил на случай если захочу не включать индексы ребер в вершину если classSettings.debug != true
 
 class Universe {
 
@@ -171,7 +172,7 @@ class Universe {
 									}
 									case 'edges':
 
-										if (!classSettings.debug) {
+										if (!classSettings.debug && !verticeEdges) {
 
 											console.error(sUniverse + ': vertice.edges. Set debug = true first.');
 											return;
@@ -343,7 +344,7 @@ class Universe {
 
 					const vertice = position[verticeId];//push random vertice if not exists
 					edge[edgeVerticeId] = verticeId;
-					if (classSettings.debug) vertice.edges.push(edgeId === undefined ? _edges.length : edgeId, verticeId);
+					if (classSettings.debug || verticeEdges) vertice.edges.push(edgeId === undefined ? _edges.length : edgeId, verticeId);
 					
 				}
 				switch (name) {
@@ -467,6 +468,62 @@ class Universe {
 			nd.object3D.position.x = params.center.x || 0;
 			nd.object3D.position.y = params.center.y || 0;
 			nd.object3D.position.z = params.center.z || 0;
+
+			options.onSelectScene = (index, t) => {
+
+				if (index === 0) return;
+				const geometry = settings.object.geometry, position = geometry.position, edges = geometry.indices.edges,
+					vertices = [],
+					timestamp = window.performance.now();
+				
+				position.forEach((vertice, verticeId) => {
+					
+					vertices.push([]);
+					const oppositeVertices = [];
+					vertice.edges.forEach(edgeId => {
+						
+	//					console.log('vertice: ' + vertice);
+						const edge = edges[edgeId],
+							verticeIdOpposite = edge[0] === verticeId ? edge[1] : edge[1] === verticeId ?  edge[0] : undefined;
+						if (verticeIdOpposite === undefined) console.error(sUniverse + ': options.onSelectScene. Invalid opposite verticeId');
+						oppositeVertices.push(position[verticeIdOpposite]);
+							
+					});
+					
+					//find middle point between opposite vertices
+					const middlePoint = [];
+					vertice.forEach((axis, axisId) => {
+
+						middlePoint.push(0);
+						const middlePointAxisId = middlePoint.length - 1;
+						oppositeVertices.forEach(oppositeVertice => middlePoint[middlePointAxisId] += oppositeVertice[axisId]);
+//						vertice[axisId] = middlePoint[middlePointAxisId] / vertice.length;
+						vertices[verticeId][axisId] = middlePoint[middlePointAxisId] / vertice.length;
+						
+					});
+											  
+				});
+				position.forEach((vertice, verticeId) => {
+					
+					vertice.forEach((axis, axisId) => {
+
+						vertice[axisId] = vertices[verticeId][axisId];
+						
+					});
+					
+				});
+				if (classSettings.debug) console.log('time: ' + ((window.performance.now() - timestamp) / 1000) + ' sec.');
+//				const vertice0 = position[0];
+//				position[0][0] = vertice0[0] + 0.1;
+//				position[0][0] += 0.1;
+				
+			}
+/*			
+const vertice0 = nd.object.geometry.position[0];
+vertice0[0] = 0.55;
+nd.object.geometry.position[0] = vertice0;
+*/
+//nd.object.geometry.position[0][0] = -0.55;
 
 		}
 		
