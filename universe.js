@@ -22,6 +22,8 @@ import ND from '../../commonNodeJS/master/nD/nD.js';
 //import ND from 'https://raw.githack.com/anhr/commonNodeJS/master/nD/build/nD.module.min.js';
 if (ND.default) ND = ND.default;
 
+import ProgressBar from '../../commonNodeJS/master/ProgressBar/ProgressBar.js'
+
 const sUniverse = 'Universe', sOverride = sUniverse + ': Please override the %s method in your child class.',
 	verticeEdges = true;//Эту константу добавил на случай если захочу не включать индексы ребер в вершину если classSettings.debug != true
 
@@ -472,47 +474,130 @@ class Universe {
 			options.onSelectScene = (index, t) => {
 
 				if (index === 0) return;
+				let progressBar, verticeId = 0;
 				const geometry = settings.object.geometry, position = geometry.position, edges = geometry.indices.edges,
 					vertices = [],
-					timestamp = window.performance.now();
-				
-				position.forEach((vertice, verticeId) => {
-					
-					vertices.push([]);
-					const oppositeVertices = [];
-					vertice.edges.forEach(edgeId => {
-						
-	//					console.log('vertice: ' + vertice);
-						const edge = edges[edgeId],
-							verticeIdOpposite = edge[0] === verticeId ? edge[1] : edge[1] === verticeId ?  edge[0] : undefined;
-						if (verticeIdOpposite === undefined) console.error(sUniverse + ': options.onSelectScene. Invalid opposite verticeId');
-						oppositeVertices.push(position[verticeIdOpposite]);
-							
-					});
-					
-					//find middle point between opposite vertices
-					const middlePoint = [];
-					vertice.forEach((axis, axisId) => {
+					timestamp = window.performance.now(),
+/*
+					step = () => {
 
-						middlePoint.push(0);
-						const middlePointAxisId = middlePoint.length - 1;
-						oppositeVertices.forEach(oppositeVertice => middlePoint[middlePointAxisId] += oppositeVertice[axisId]);
-//						vertice[axisId] = middlePoint[middlePointAxisId] / vertice.length;
-						vertices[verticeId][axisId] = middlePoint[middlePointAxisId] / vertice.length;
-						
-					});
-											  
-				});
-				position.forEach((vertice, verticeId) => {
-					
-					vertice.forEach((axis, axisId) => {
+						position.forEach((vertice, verticeId) => {
 
-						vertice[axisId] = vertices[verticeId][axisId];
-						
-					});
-					
+							progressBar.value = verticeId;
+							progressBar.step();
+
+							vertices.push([]);
+							const oppositeVertices = [];
+							vertice.edges.forEach(edgeId => {
+
+								//					console.log('vertice: ' + vertice);
+								const edge = edges[edgeId],
+									verticeIdOpposite = edge[0] === verticeId ? edge[1] : edge[1] === verticeId ? edge[0] : undefined;
+								if (verticeIdOpposite === undefined) console.error(sUniverse + ': options.onSelectScene. Invalid opposite verticeId');
+								oppositeVertices.push(position[verticeIdOpposite]);
+
+							});
+
+							//find middle point between opposite vertices
+							const middlePoint = [];
+							vertice.forEach((axis, axisId) => {
+
+								middlePoint.push(0);
+								const middlePointAxisId = middlePoint.length - 1;
+								oppositeVertices.forEach(oppositeVertice => middlePoint[middlePointAxisId] += oppositeVertice[axisId]);
+								//						vertice[axisId] = middlePoint[middlePointAxisId] / vertice.length;
+								vertices[verticeId][axisId] = middlePoint[middlePointAxisId] / vertice.length;
+
+							});
+
+						});
+
+					},
+*/
+					step = () => {
+
+						progressBar.value = verticeId;
+						const vertice = position[verticeId];
+						vertices.push([]);
+						const oppositeVertices = [];
+						vertice.edges.forEach(edgeId => {
+
+							//					console.log('vertice: ' + vertice);
+							const edge = edges[edgeId],
+								verticeIdOpposite = edge[0] === verticeId ? edge[1] : edge[1] === verticeId ? edge[0] : undefined;
+							if (verticeIdOpposite === undefined) console.error(sUniverse + ': options.onSelectScene. Invalid opposite verticeId');
+							oppositeVertices.push(position[verticeIdOpposite]);
+
+						});
+
+						//find middle point between opposite vertices
+						const middlePoint = [];
+						vertice.forEach((axis, axisId) => {
+
+							middlePoint.push(0);
+							const middlePointAxisId = middlePoint.length - 1;
+							oppositeVertices.forEach(oppositeVertice => middlePoint[middlePointAxisId] += oppositeVertice[axisId]);
+							//						vertice[axisId] = middlePoint[middlePointAxisId] / vertice.length;
+							vertices[verticeId][axisId] = middlePoint[middlePointAxisId] / vertice.length;
+
+						});
+						verticeId += 1;
+						if (verticeId >= position.length) {
+
+							if (classSettings.debug) console.log('time: Copy vertices. ' + ((window.performance.now() - timestamp) / 1000) + ' sec.');
+
+							progressBar.remove();
+							verticeId = 0;
+							const step = () => {
+
+								progressBar.value = verticeId + position.length;
+								const vertice = position[verticeId];
+								vertice.forEach((axis, axisId) => {
+
+									vertice[axisId] = vertices[verticeId][axisId];
+
+								});
+								verticeId += 1;
+								if (verticeId >= position.length) {
+
+									progressBar.remove();
+									if (classSettings.debug) console.log('time: ' + ((window.performance.now() - timestamp) / 1000) + ' sec.');
+									return;
+
+								}
+								progressBar.step();
+
+							}
+							progressBar = new ProgressBar(options.renderer.domElement.parentElement, step, {
+
+								sTitle: 't = ' + t + '<br>Copy vertices.',
+//								min: position.length - 1,
+								max: (position.length - 1) * 2,
+
+							});
+
+/*
+							position.forEach((vertice, verticeId) => {
+
+								vertice.forEach((axis, axisId) => {
+
+									vertice[axisId] = vertices[verticeId][axisId];
+
+								});
+
+							});
+*/
+							return;
+						}
+						progressBar.step();
+
+					};
+				progressBar = new ProgressBar(options.renderer.domElement.parentElement, step, {
+
+					sTitle: 't = ' + t + '<br> Take middle vertices',
+					max: (position.length - 1) * 2,
+
 				});
-				if (classSettings.debug) console.log('time: ' + ((window.performance.now() - timestamp) / 1000) + ' sec.');
 //				const vertice0 = position[0];
 //				position[0][0] = vertice0[0] + 0.1;
 //				position[0][0] += 0.1;
