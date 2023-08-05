@@ -509,7 +509,7 @@ class Universe {
 
 							if (classSettings.debug) console.log('time: Copy vertices. ' + ((window.performance.now() - timestamp) / 1000) + ' sec.');
 
-							progressBar.remove();
+//							progressBar.remove();
 							verticeId = 0;
 							const step = () => {
 
@@ -532,6 +532,9 @@ class Universe {
 								progressBar.step();
 
 							}
+							progressBar.newStep(step);
+							progressBar.title('t = ' + t + '<br>Copy vertices.');
+/*
 							progressBar = new ProgressBar(options.renderer.domElement.parentElement, step, {
 
 								sTitle: 't = ' + t + '<br>Copy vertices.',
@@ -541,6 +544,8 @@ class Universe {
 							});
 
 							return;
+*/
+							
 						}
 						progressBar.step();
 
