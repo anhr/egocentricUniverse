@@ -522,7 +522,7 @@ class Universe {
 							const step = () => {
 
 								progressBar.value = verticeId + position.length;
-								position[verticeId] = vertices[verticeId];
+								position[verticeId] = vertices[verticeId];//Обновление текущей верщины без обновления холста для экономии времени
 /*								
 								const vertice = position[verticeId];
 								vertice.forEach((axis, axisId) => {
@@ -532,8 +532,17 @@ class Universe {
 								});
 */		
 								verticeId += 1;
-								if (verticeId >= position.length) {
+//								if (verticeId >= position.length)
+								if (verticeId === (position.length - 1)) {
 
+									//Последнюю вершину обновляю отдельно по каждой оси, потому что так ND обновляет холст
+									const vertice = position[verticeId];
+									vertice.forEach((axis, axisId) => {
+	
+										vertice[axisId] = vertices[verticeId][axisId];
+	
+									});
+									
 									progressBar.remove();
 									if (classSettings.debug) console.log('time: ' + ((window.performance.now() - timestamp) / 1000) + ' sec.');
 									options.player.continue();
