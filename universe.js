@@ -275,6 +275,13 @@ class Universe {
 				const i = parseInt(name);
 				if (!isNaN(i)) {
 
+				const vertice = _position[i];
+				vertice.forEach((axis, axisId) => {
+
+					vertice[axisId] = value[axisId];
+
+				});
+/*непонятно зачем это написал					
 					value.forEach((axis, j) => {
 
 						if (isNaN(axis)) console.error(sUniverse + ': position set. position[' + i + '][' + j + '] = ' + axis);
@@ -282,6 +289,7 @@ class Universe {
 							console.error(sUniverse + ': position set. position[' + i + '][' + j + '] = ' + axis + ' Invalid new axis index = ' + j);
 
 					});
+*/	 
 
 				}
 				else _position[name] = value;
@@ -514,12 +522,15 @@ class Universe {
 							const step = () => {
 
 								progressBar.value = verticeId + position.length;
+								position[verticeId] = vertices[verticeId];
+/*								
 								const vertice = position[verticeId];
 								vertice.forEach((axis, axisId) => {
 
 									vertice[axisId] = vertices[verticeId][axisId];
 
 								});
+*/		
 								verticeId += 1;
 								if (verticeId >= position.length) {
 
