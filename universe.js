@@ -275,12 +275,12 @@ class Universe {
 				const i = parseInt(name);
 				if (!isNaN(i)) {
 
-				const vertice = _position[i];
-				vertice.forEach((axis, axisId) => {
-
-					vertice[axisId] = value[axisId];
-
-				});
+					const vertice = _position[i];
+					vertice.forEach((axis, axisId) => {
+	
+						vertice[axisId] = value[axisId];
+	
+					});
 /*непонятно зачем это написал					
 					value.forEach((axis, j) => {
 
@@ -291,8 +291,31 @@ class Universe {
 					});
 */	 
 
+				} else {
+
+/*					
+					switch ( name ) {
+		
+						case 'vertices':
+							if (classSettings.debug && (_position.length != value.length)) {
+								
+								console.error(sUniverse + ': Copy vertices failed. New vertices count is not equal ' + _position.length);
+								return true;
+
+							}
+							for (let i = 0; i < _position.length; i++) {
+								
+								const vertice = _position[i], v = value[i];
+								vertice.forEach((axis, axisId) => vertice[axisId] = v[axisId]);
+
+							}
+							return true;
+		
+					}
+*/					
+					_position[name] = value;
+
 				}
-				else _position[name] = value;
 				return true;
 
 			}
@@ -516,21 +539,47 @@ class Universe {
 						if (verticeId >= position.length) {
 
 							if (classSettings.debug) console.log('time: Copy vertices. ' + ((window.performance.now() - timestamp) / 1000) + ' sec.');
+							progressBar.remove();
+							
+/*
+							position.vertices = vertices;
+							
+							//одну из вершин обновляю отдельно по каждой оси, потому что так ND обновляет холст
+							const vertice = position[0];
+							vertice.forEach((axis, axisId) => {
 
-//							progressBar.remove();
+								vertice[axisId] = vertices[0][axisId];
+
+							});
+							
+							if (classSettings.debug) console.log('time: ' + ((window.performance.now() - timestamp) / 1000) + ' sec.');
+							options.player.continue();
+							return;
+*/	   
+							for (verticeId = 0; verticeId < (position.length - 1); verticeId++){
+
+								position[verticeId] = vertices[verticeId];//Обновление текущей верщины без обновления холста для экономии времени								
+								
+							}
+
+							//Последнюю вершину обновляю отдельно по каждой оси, потому что так ND обновляет холст
+							verticeId = position.length - 1;
+							const vertice = position[verticeId];
+							vertice.forEach((axis, axisId) => {
+
+								vertice[axisId] = vertices[verticeId][axisId];
+
+							});
+							
+							if (classSettings.debug) console.log('time: ' + ((window.performance.now() - timestamp) / 1000) + ' sec.');
+							options.player.continue();
+							return;
+/*
 							verticeId = 0;
 							const step = () => {
 
 								progressBar.value = verticeId + position.length;
 								position[verticeId] = vertices[verticeId];//Обновление текущей верщины без обновления холста для экономии времени
-/*								
-								const vertice = position[verticeId];
-								vertice.forEach((axis, axisId) => {
-
-									vertice[axisId] = vertices[verticeId][axisId];
-
-								});
-*/		
 								verticeId += 1;
 //								if (verticeId >= position.length)
 								if (verticeId === (position.length - 1)) {
@@ -554,16 +603,6 @@ class Universe {
 							}
 							progressBar.newStep(step);
 							progressBar.title('t = ' + t + '<br>Copy vertices.');
-/*
-							progressBar = new ProgressBar(options.renderer.domElement.parentElement, step, {
-
-								sTitle: 't = ' + t + '<br>Copy vertices.',
-//								min: position.length - 1,
-								max: (position.length - 1) * 2,
-
-							});
-
-							return;
 */
 							
 						}
@@ -573,7 +612,8 @@ class Universe {
 				progressBar = new ProgressBar(options.renderer.domElement.parentElement, step, {
 
 					sTitle: 't = ' + t + '<br> Take middle vertices',
-					max: (position.length - 1) * 2,
+//					max: (position.length - 1) * 2,
+					max: position.length - 1,
 
 				});
 				return true;//player pause
