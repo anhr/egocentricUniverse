@@ -112,6 +112,7 @@ class Universe2D extends Universe {
 				lang.name = 'Двумерная вселенная';
 
 				break;
+			/*guiParams is undefined
 			default://Custom language
 				if ((guiParams.lang === undefined) || (guiParams.lang.languageCode != _languageCode))
 					break;
@@ -123,6 +124,7 @@ class Universe2D extends Universe {
 					lang[key] = guiParams.lang[key];
 
 				});
+			*/
 
 		}
 		return lang.name;

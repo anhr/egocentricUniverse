@@ -59,6 +59,7 @@ class Universe1D extends Universe {
 				lang.name = 'Одномерная вселенная';
 
 				break;
+			/*guiParams is undefined
 			default://Custom language
 				if ((guiParams.lang === undefined) || (guiParams.lang.languageCode != _languageCode))
 					break;
@@ -70,6 +71,7 @@ class Universe1D extends Universe {
 					lang[key] = guiParams.lang[key];
 
 				});
+			*/
 
 		}
 		return lang.name;
