@@ -23,6 +23,7 @@ import ND from '../../commonNodeJS/master/nD/nD.js';
 if (ND.default) ND = ND.default;
 
 import ProgressBar from '../../commonNodeJS/master/ProgressBar/ProgressBar.js'
+import WebGPU from '../../WebGPU/master/WebGPU.js';
 
 const sUniverse = 'Universe', sOverride = sUniverse + ': Please override the %s method in your child class.',
 	verticeEdges = true;//Эту константу добавил на случай если захочу не включать индексы ребер в вершину если classSettings.debug != true
@@ -506,8 +507,55 @@ class Universe {
 
 				if (index === 0) return;
 				let progressBar, verticeId = 0;
-				const geometry = settings.object.geometry, position = geometry.position, edges = geometry.indices.edges,
-					vertices = [],
+				const geometry = settings.object.geometry, position = geometry.position, edges = geometry.indices.edges;
+				if (WebGPU.isSupportWebGPU()){
+
+					const firstMatrix = [
+							[1, 2, 3, 4],
+							[5, 6, 7, 8]
+						],
+							secondMatrix = [
+							[1, 2],
+							[3, 4],
+							[5, 6],
+							[7, 8],
+						];
+					new WebGPU({
+					
+						input: { matrices: [firstMatrix, secondMatrix] },
+					
+						//shaderCode: shaderCode,
+						shaderCodeFile: '../Shader.c',
+					
+						results: [
+					
+							{
+					
+								count: firstMatrix.length * secondMatrix[0].length +
+					
+									//result matrix has reserved three elements in the head of the matrix for size of the matrix.
+									//First element is dimension of result matrix.
+									//Second element is rows count of the matrix.
+									//Third element is columns count of the matrix.
+									//See settings.size of out2Matrix method in https://raw.githack.com/anhr/WebGPU/master/jsdoc/module-WebGPU-WebGPU.html
+									3,
+								out: out => {
+					
+									console.log('out:');
+									console.log(new Float32Array(out));
+									const matrix = WebGPU.out2Matrix(out);
+									console.log('matrix:');
+									console.log(matrix);
+					
+								}
+					
+							},
+						],
+					
+					});
+					
+				}
+				const vertices = [],
 					timestamp = window.performance.now(),
 					step = () => {
 
