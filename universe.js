@@ -55,7 +55,6 @@ class Universe {
 	}
 	TestVertice(vertice, strVerticeId){
 		
-//		if (vertice.edges.length !== this.verticeEdgesLengthMax)
 		if (!this.TestVerticeEdges(vertice))
 			console.error(sUniverse + ': Test(). Invalid ' + strVerticeId + '.edges.length = ' + vertice.edges.length);
 		
@@ -190,25 +189,6 @@ class Universe {
 
 													case 'push': return (edgeId, verticeId) => {
 
-/*														
-														if (typeof edgeId === "object") {
-
-															//find edgeId
-															const edges = settings.object.geometry.indices.edges;
-															for (let i = 0; i < edges.length; i++) {
-
-																const edge = edges[i];
-																if ((edge[0] === edgeId[0]) && (edge[1] === edgeId[1]) || (edge[0] === edgeId[1]) || (edge[1] === edgeId[0])){
-
-																	edgeId = i;
-																	break;
-																	
-																}
-																
-															}
-															
-														}
-*/														
 														const sPush = sUniverse + ': Vertice' + (verticeId === undefined ? '' : '[' + verticeId + ']') + '.edges.push(' + edgeId + '):';
 
 														if (edges.length >= _this.verticeEdgesLengthMax) {
@@ -252,7 +232,7 @@ class Universe {
 						}));
 
 					};
-//						break;
+
 					//for debug
 					case 'test': return () => {
 
@@ -270,7 +250,6 @@ class Universe {
 
 						})
 					}
-//						break;
 
 				}
 				return _position[name];
@@ -287,38 +266,9 @@ class Universe {
 						vertice[axisId] = value[axisId];
 	
 					});
-/*непонятно зачем это написал					
-					value.forEach((axis, j) => {
-
-						if (isNaN(axis)) console.error(sUniverse + ': position set. position[' + i + '][' + j + '] = ' + axis);
-						else if ((_position[i].push(axis) - 1) != j)
-							console.error(sUniverse + ': position set. position[' + i + '][' + j + '] = ' + axis + ' Invalid new axis index = ' + j);
-
-					});
-*/	 
 
 				} else {
 
-/*					
-					switch ( name ) {
-		
-						case 'vertices':
-							if (classSettings.debug && (_position.length != value.length)) {
-								
-								console.error(sUniverse + ': Copy vertices failed. New vertices count is not equal ' + _position.length);
-								return true;
-
-							}
-							for (let i = 0; i < _position.length; i++) {
-								
-								const vertice = _position[i], v = value[i];
-								vertice.forEach((axis, axisId) => vertice[axisId] = v[axisId]);
-
-							}
-							return true;
-		
-					}
-*/					
 					_position[name] = value;
 
 				}
@@ -328,20 +278,11 @@ class Universe {
 
 		});
 		
-		if(!(settings.object.geometry.position instanceof Array)) {
-			
-/*
-			for (let i = 0; i < (settings.object.geometry.position.count === undefined ? 3 : settings.object.geometry.position.count); i++)
-				position.push();
-*/
-//			const position = [];
+		if(!(settings.object.geometry.position instanceof Array))
 			Object.keys(settings.object.geometry.position).forEach((key) => position[key] = settings.object.geometry.position[key]);
-//			settings.object.geometry.position = position;
 
-		}
 		//convert vertices to Proxy
 		else settings.object.geometry.position.forEach(vertice => position.push(vertice));
-		//if (settings.object.geometry.position) settings.object.geometry.position.forEach();
 
 		settings.object.geometry.position = position;
 		
@@ -395,13 +336,11 @@ class Universe {
 						const position = settings.object.geometry.position;
 						setVertice(edge, 0, edge[0] === undefined ? _edges.length : edge[0]);
 						setVertice(edge, 1, edge[1] === undefined ? _edges.length + 1 : edge[1]);
-						if(classSettings.debug) _edges.forEach((edgeCur, i) => { if (((edgeCur[0] === edge[0]) && (edgeCur[1] === edge[1])) || ((edgeCur[0] === edge[1]) && (edgeCur[1] === edge[0]))) console.error(sUniverse + ': edges[' + i + ']. Duplicate edge[' + edge + ']')});
-/*						
-						const edgesLength = _edges.push(edge);
-						return edgesLength;
-*/	  
+						if (classSettings.debug) _edges.forEach((edgeCur, i) => { if (((edgeCur[0] === edge[0]) && (edgeCur[1] === edge[1])) || ((edgeCur[0] === edge[1]) && (edgeCur[1] === edge[0]))) console.error(sUniverse + ': edges[' + i + ']. Duplicate edge[' + edge + ']') });
+
 						position[edge[0]].oppositeVertices.push(position[edge[1]]);
 						position[edge[1]].oppositeVertices.push(position[edge[0]]);
+
 						return _edges.push(edge);
 
 					}
@@ -424,7 +363,6 @@ class Universe {
 							}
 
 						}
-//						indices.edges.push([settings.object.geometry.position.length - 1, 0])//loop edges
 						
 					}
 
@@ -610,36 +548,6 @@ class Universe {
 							if (classSettings.debug) console.log('time: ' + ((window.performance.now() - timestamp) / 1000) + ' sec.');
 							options.player.continue();
 							return;
-/*
-							verticeId = 0;
-							const step = () => {
-
-								progressBar.value = verticeId + position.length;
-								position[verticeId] = vertices[verticeId];//Обновление текущей верщины без обновления холста для экономии времени
-								verticeId += 1;
-//								if (verticeId >= position.length)
-								if (verticeId === (position.length - 1)) {
-
-									//Последнюю вершину обновляю отдельно по каждой оси, потому что так ND обновляет холст
-									const vertice = position[verticeId];
-									vertice.forEach((axis, axisId) => {
-	
-										vertice[axisId] = vertices[verticeId][axisId];
-	
-									});
-									
-									progressBar.remove();
-									if (classSettings.debug) console.log('time: ' + ((window.performance.now() - timestamp) / 1000) + ' sec.');
-									options.player.continue();
-									return;
-
-								}
-								progressBar.step();
-
-							}
-							progressBar.newStep(step);
-							progressBar.title('t = ' + t + '<br>Copy vertices.');
-*/
 							
 						}
 						progressBar.step();
@@ -655,12 +563,6 @@ class Universe {
 				return true;//player pause
 				
 			}
-/*			
-const vertice0 = nd.object.geometry.position[0];
-vertice0[0] = 0.55;
-nd.object.geometry.position[0] = vertice0;
-*/
-//nd.object.geometry.position[0][0] = -0.55;
 
 		}
 		
