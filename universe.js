@@ -508,6 +508,7 @@ class Universe {
 				if (index === 0) return;
 				let progressBar, verticeId = 0;
 				const geometry = settings.object.geometry, position = geometry.position, edges = geometry.indices.edges;
+				/*
 				if (WebGPU.isSupportWebGPU()){
 
 					const firstMatrix = [
@@ -555,6 +556,7 @@ class Universe {
 					});
 					
 				}
+				*/
 				const vertices = [],
 					timestamp = window.performance.now(),
 					step = () => {
