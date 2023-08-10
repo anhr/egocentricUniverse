@@ -25,8 +25,8 @@ if (ND.default) ND = ND.default;
 import ProgressBar from '../../commonNodeJS/master/ProgressBar/ProgressBar.js'
 import WebGPU from '../../WebGPU/master/WebGPU.js';
 
-const sUniverse = 'Universe', sOverride = sUniverse + ': Please override the %s method in your child class.',
-	verticeEdges = true;//Эту константу добавил на случай если захочу не включать индексы ребер в вершину если classSettings.debug != true
+const sUniverse = 'Universe', sOverride = sUniverse + ': Please override the %s method in your child class.';
+//	verticeEdges = true;//Эту константу добавил на случай если захочу не включать индексы ребер в вершину если classSettings.debug != true
 
 class Universe {
 
@@ -175,7 +175,8 @@ class Universe {
 									}
 									case 'edges':
 
-										if (!classSettings.debug && !verticeEdges) {
+//										if (!classSettings.debug && !verticeEdges)
+										if (!classSettings.debug) {
 
 											console.error(sUniverse + ': vertice.edges. Set debug = true first.');
 											return;
@@ -238,6 +239,10 @@ class Universe {
 											},
 										});
 										return vertice.edges;
+
+									case 'oppositeVertices':
+										vertice.oppositeVertices = vertice.oppositeVertices || [];
+										break;
 
 								}
 								return vertice[name];
@@ -378,7 +383,9 @@ class Universe {
 
 					const vertice = position[verticeId];//push random vertice if not exists
 					edge[edgeVerticeId] = verticeId;
-					if (classSettings.debug || verticeEdges) vertice.edges.push(edgeId === undefined ? _edges.length : edgeId, verticeId);
+//					if (classSettings.debug || verticeEdges)
+					if (classSettings.debug)
+						vertice.edges.push(edgeId === undefined ? _edges.length : edgeId, verticeId);
 					
 				}
 				switch (name) {
@@ -386,25 +393,16 @@ class Universe {
 					case 'push': return (edge=[]) => {
 
 						const position = settings.object.geometry.position;
-//						if (edge[0] === undefined) edge[0] = (position.length ? position.length : position.push(randomPosition())) - 1;
-/*						
-						if (edge[0] === undefined) {
-
-//							position[_edges.length];//push random vertice if not exists
-//							edge[0] = _edges.length;
-							setVertice(edge, 0, _edges.length);
-
-						} else setVertice(edge, 0, edge[0]);
-*/	  
 						setVertice(edge, 0, edge[0] === undefined ? _edges.length : edge[0]);
-/*						
-						if (edge[1] === undefined) setVertice(1, _edges.length + 1);
-						else setVertice(edge, 1, edge[1]);
-*/
 						setVertice(edge, 1, edge[1] === undefined ? _edges.length + 1 : edge[1]);
 						if(classSettings.debug) _edges.forEach((edgeCur, i) => { if (((edgeCur[0] === edge[0]) && (edgeCur[1] === edge[1])) || ((edgeCur[0] === edge[1]) && (edgeCur[1] === edge[0]))) console.error(sUniverse + ': edges[' + i + ']. Duplicate edge[' + edge + ']')});
+/*						
 						const edgesLength = _edges.push(edge);
 						return edgesLength;
+*/	  
+						position[edge[0]].oppositeVertices.push(position[edge[1]]);
+						position[edge[1]].oppositeVertices.push(position[edge[0]]);
+						return _edges.push(edge);
 
 					}
 					case 'pushEdges': return (edge=[]) => {
@@ -564,6 +562,7 @@ class Universe {
 						progressBar.value = verticeId;
 						const vertice = position[verticeId];
 						vertices.push([]);
+/*						
 						const oppositeVertices = [];
 						vertice.edges.forEach(edgeId => {
 
@@ -573,6 +572,8 @@ class Universe {
 							oppositeVertices.push(position[verticeIdOpposite]);
 
 						});
+*/	  
+						const oppositeVertices = vertice.oppositeVertices;
 
 						//find middle point between opposite vertices
 						const middlePoint = [];
@@ -588,24 +589,9 @@ class Universe {
 						verticeId += 1;
 						if (verticeId >= position.length) {
 
-							if (classSettings.debug) console.log('time: Copy vertices. ' + ((window.performance.now() - timestamp) / 1000) + ' sec.');
+//							if (classSettings.debug) console.log('time: Copy vertices. ' + ((window.performance.now() - timestamp) / 1000) + ' sec.');
 							progressBar.remove();
 							
-/*
-							position.vertices = vertices;
-							
-							//одну из вершин обновляю отдельно по каждой оси, потому что так ND обновляет холст
-							const vertice = position[0];
-							vertice.forEach((axis, axisId) => {
-
-								vertice[axisId] = vertices[0][axisId];
-
-							});
-							
-							if (classSettings.debug) console.log('time: ' + ((window.performance.now() - timestamp) / 1000) + ' sec.');
-							options.player.continue();
-							return;
-*/	   
 							for (verticeId = 0; verticeId < (position.length - 1); verticeId++){
 
 								position[verticeId] = vertices[verticeId];//Обновление текущей верщины без обновления холста для экономии времени								
