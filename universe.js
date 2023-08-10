@@ -498,59 +498,70 @@ class Universe {
 					step = () => {
 
 						progressBar.value = verticeId;
-						const vertice = position[verticeId];
-						vertices.push([]);
-/*						
-						const oppositeVertices = [];
-						vertice.edges.forEach(edgeId => {
+						const stepItem = () => {
 
-							const edge = edges[edgeId],
-								verticeIdOpposite = edge[0] === verticeId ? edge[1] : edge[1] === verticeId ? edge[0] : undefined;
-							if (verticeIdOpposite === undefined) console.error(sUniverse + ': options.onSelectScene. Invalid opposite verticeId');
-							oppositeVertices.push(position[verticeIdOpposite]);
-
-						});
-*/	  
-						const oppositeVertices = vertice.oppositeVertices;
-
-						//find middle point between opposite vertices
-						const middlePoint = [];
-						vertice.forEach((axis, axisId) => {
-
-							middlePoint.push(0);
-							const middlePointAxisId = middlePoint.length - 1;
-							oppositeVertices.forEach(oppositeVertice => middlePoint[middlePointAxisId] += oppositeVertice[axisId]);
-							//						vertice[axisId] = middlePoint[middlePointAxisId] / vertice.length;
-							vertices[verticeId][axisId] = middlePoint[middlePointAxisId] / vertice.length;
-
-						});
-						verticeId += 1;
-						if (verticeId >= position.length) {
-
-//							if (classSettings.debug) console.log('time: Copy vertices. ' + ((window.performance.now() - timestamp) / 1000) + ' sec.');
-							progressBar.remove();
-							
-							for (verticeId = 0; verticeId < (position.length - 1); verticeId++){
-
-								position[verticeId] = vertices[verticeId];//Обновление текущей верщины без обновления холста для экономии времени								
-								
-							}
-
-							//Последнюю вершину обновляю отдельно по каждой оси, потому что так ND обновляет холст
-							verticeId = position.length - 1;
 							const vertice = position[verticeId];
+							vertices.push([]);
+	/*						
+							const oppositeVertices = [];
+							vertice.edges.forEach(edgeId => {
+							
+								const edge = edges[edgeId],
+									verticeIdOpposite = edge[0] === verticeId ? edge[1] : edge[1] === verticeId ? edge[0] : undefined;
+								if (verticeIdOpposite === undefined) console.error(sUniverse + ': options.onSelectScene. Invalid opposite verticeId');
+								oppositeVertices.push(position[verticeIdOpposite]);
+							
+							});
+	*/
+							const oppositeVertices = vertice.oppositeVertices;
+
+							//find middle point between opposite vertices
+							const middlePoint = [];
 							vertice.forEach((axis, axisId) => {
 
-								vertice[axisId] = vertices[verticeId][axisId];
+								middlePoint.push(0);
+								const middlePointAxisId = middlePoint.length - 1;
+								oppositeVertices.forEach(oppositeVertice => middlePoint[middlePointAxisId] += oppositeVertice[axisId]);
+								//						vertice[axisId] = middlePoint[middlePointAxisId] / vertice.length;
+								vertices[verticeId][axisId] = middlePoint[middlePointAxisId] / vertice.length;
 
 							});
-							
-							if (classSettings.debug) console.log('time: ' + ((window.performance.now() - timestamp) / 1000) + ' sec.');
-							options.player.continue();
-							return;
-							
+							verticeId += 1;
+							if (verticeId >= position.length) {
+
+								//							if (classSettings.debug) console.log('time: Copy vertices. ' + ((window.performance.now() - timestamp) / 1000) + ' sec.');
+								progressBar.remove();
+
+								for (verticeId = 0; verticeId < (position.length - 1); verticeId++) {
+
+									position[verticeId] = vertices[verticeId];//Обновление текущей верщины без обновления холста для экономии времени								
+
+								}
+
+								//Последнюю вершину обновляю отдельно по каждой оси, потому что так ND обновляет холст
+								verticeId = position.length - 1;
+								const vertice = position[verticeId];
+								vertice.forEach((axis, axisId) => {
+
+									vertice[axisId] = vertices[verticeId][axisId];
+
+								});
+
+								if (classSettings.debug) console.log('time: ' + ((window.performance.now() - timestamp) / 1000) + ' sec.');
+								options.player.continue();
+								return true;
+
+							}
+
 						}
-						progressBar.step();
+						let stop = false;
+						for (let i = 0; i < 10; i++) {
+
+							stop = stepItem();
+							if (stop) break;
+						
+						}
+						if (!stop) progressBar.step();
 
 					};
 				progressBar = new ProgressBar(options.renderer.domElement.parentElement, step, {
