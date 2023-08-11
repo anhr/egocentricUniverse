@@ -220,8 +220,8 @@ class Universe {
 										});
 										return vertice.edges;
 
-									case 'oppositeVertices':
-										vertice.oppositeVertices = vertice.oppositeVertices || [];
+									case 'oppositeVerticesId':
+										vertice.oppositeVerticesId = vertice.oppositeVerticesId || [];
 										break;
 
 								}
@@ -338,8 +338,12 @@ class Universe {
 						setVertice(edge, 1, edge[1] === undefined ? _edges.length + 1 : edge[1]);
 						if (classSettings.debug) _edges.forEach((edgeCur, i) => { if (((edgeCur[0] === edge[0]) && (edgeCur[1] === edge[1])) || ((edgeCur[0] === edge[1]) && (edgeCur[1] === edge[0]))) console.error(sUniverse + ': edges[' + i + ']. Duplicate edge[' + edge + ']') });
 
+/*						
 						position[edge[0]].oppositeVertices.push(position[edge[1]]);
 						position[edge[1]].oppositeVertices.push(position[edge[0]]);
+*/
+						position[edge[0]].oppositeVerticesId.push(edge[1]);
+						position[edge[1]].oppositeVerticesId.push(edge[0]);
 
 						return _edges.push(edge);
 
@@ -513,7 +517,7 @@ class Universe {
 							
 							});
 	*/
-							const oppositeVertices = vertice.oppositeVertices;
+							const oppositeVerticesId = vertice.oppositeVerticesId;
 
 							//find middle point between opposite vertices
 							const middlePoint = [];
@@ -521,8 +525,9 @@ class Universe {
 
 								middlePoint.push(0);
 								const middlePointAxisId = middlePoint.length - 1;
-								oppositeVertices.forEach(oppositeVertice => middlePoint[middlePointAxisId] += oppositeVertice[axisId]);
-								//						vertice[axisId] = middlePoint[middlePointAxisId] / vertice.length;
+//								oppositeVertices.forEach(oppositeVertice => middlePoint[middlePointAxisId] += oppositeVertice[axisId]);
+								oppositeVerticesId.forEach(verticeIdOpposite => middlePoint[middlePointAxisId] += position[verticeIdOpposite][axisId]);
+		//						vertice[axisId] = middlePoint[middlePointAxisId] / vertice.length;
 								vertices[verticeId][axisId] = middlePoint[middlePointAxisId] / vertice.length;
 
 							});
