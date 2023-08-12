@@ -559,6 +559,7 @@ class Universe {
 							}
 
 						}
+/*						
 						let stop = false;
 						for (let i = 0; i < 10; i++) {
 
@@ -567,6 +568,8 @@ class Universe {
 						
 						}
 						if (!stop) progressBar.step();
+*/	  
+						if (!stepItem()) progressBar.step();
 
 					};
 				progressBar = new ProgressBar(options.renderer.domElement.parentElement, step, {
