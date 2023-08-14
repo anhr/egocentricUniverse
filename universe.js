@@ -37,9 +37,59 @@ class Universe {
 	logUniverse() {
 
 		if (!this.classSettings.debug) return;
-		this.classSettings.settings.object.geometry.position.forEach((vertice, i) => console.log('vertice[' + i + '] = ' + JSON.stringify(vertice) +
+/*		
+		geometry.position.forEach((vertice, i) => console.log('vertice[' + i + '] = ' + JSON.stringify(vertice) +
 			' edges = ' + JSON.stringify(vertice.edges)));
-		this.classSettings.settings.object.geometry.indices.edges.forEach((edge, i) => console.log('edges[' + i + '] = ' + JSON.stringify(edge)));
+		geometry.indices.edges.forEach((edge, i) => console.log('edges[' + i + '] = ' + JSON.stringify(edge)));
+*/  
+		let i = 0, progressBarValue = 0,
+			log = 0;//position log
+		const settings = this.classSettings.settings, geometry = settings.object.geometry, position = geometry.position, edges = geometry.indices.edges,
+			sLogUniverse = sUniverse + ': logUniverse()',
+			progressBar = new ProgressBar(settings.options.renderer.domElement.parentElement, () => {
+
+				switch (log){
+					case 0://position log
+						const vertice = position[i];
+						console.log('vertice[' + i + '] = ' + JSON.stringify(vertice) + ' edges = ' + JSON.stringify(vertice.edges));
+						break;
+					case 1://edges log
+						const edge = edges[i];
+						console.log('edges[' + i + '] = ' + JSON.stringify(edge))
+						break;
+					default: console.error(sLogUniverse + '. Invalid log = ' + log);
+				}
+				progressBar.value = progressBarValue;
+				progressBarValue++;
+				i++;
+				switch (log){
+					case 0://position log
+						if (i === position.length) {
+							
+							log++;//edges log
+							i = 0;
+
+						}
+						progressBar.step();
+						break;
+					case 1://edges log
+						if (i === edges.length) progressBar.remove();
+						else progressBar.step();
+						break;
+					default: console.error(sLogUniverse + '. Invalid log = ' + log);
+				}
+/*				
+				if (i === position.length) progressBar.remove();
+				else progressBar.step();
+*/	
+				
+			}, {
+
+			sTitle: 'Geometry log',
+//					max: (position.length - 1) * 2,
+			max: position.length - 1 + edges.length - 1,
+
+		});
 		
 	}
 	Test(){
@@ -103,6 +153,7 @@ class Universe {
 		if (classSettings.radius === undefined) classSettings.radius = 1.0;
 		classSettings.settings = classSettings.settings || {};
 		const settings = classSettings.settings;
+		settings.options = options;
 		settings.object = settings.object || {};
 		settings.object.name = settings.object.name || this.name( options.getLanguageCode );
 		settings.object.geometry = settings.object.geometry || {};
@@ -434,7 +485,7 @@ class Universe {
 			
 			this.Test();
 			
-			settings.options = options;
+//			settings.options = options;
 			settings.scene = scene;
 			const nd = new ND(this.dimension, settings);
 			
