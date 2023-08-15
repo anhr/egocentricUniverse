@@ -44,7 +44,16 @@
 
 		new MyThree( (scene, options) => {
 
-			const universe = new Universe2D(options, {
+			const universe = new Universe2D(options,
+			{
+				scene: scene,
+				params: {
+					
+					//center: {x: 0.5, y: 0.3},
+				
+				}
+			},
+			{
 				
 				debug: true,
 				settings: {
@@ -55,7 +64,7 @@
 						//color: 'red',
 						geometry: {
 
-							position: { count: 800, },
+							position: { count: 80000, },
 							/*
 							position: [
 								//pyramid
@@ -85,12 +94,13 @@
 				
 				
 			});
-			
+/*			
 			universe.project( scene, {
 				
 				//center: {x: 0.5, y: 0.3},
 			
 			});
+*/   
 
 
 		}, {

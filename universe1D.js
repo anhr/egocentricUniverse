@@ -25,17 +25,6 @@ class Universe1D extends Universe {
 	pushEdges() {
 
 		const geometry = this.classSettings.settings.object.geometry, edges = geometry.indices.edges, position = geometry.position;
-/*
-		//default vertices
-		const count = position.count === undefined ? this.verticesCountMin : position.count;
-		if (count < 2) {
-
-			console.error(sUniverse1D + '.pushEdges: Invalid classSettings.settings.object.geometry.position.count < 2');
-			return;
-			
-		}
-		for (let i = 0; i < count; i++) position[i];//push vertice if not exists//if (!(position[i])) position.push();
-*/  
 		for (let verticeId = 1; verticeId < position.length; verticeId++) edges.push();
 		edges.push([position.length - 1, 0]);
 		

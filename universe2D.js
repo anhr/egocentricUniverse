@@ -15,6 +15,7 @@
 
 
 import Universe from './universe.js';
+import ProgressBar from '../../commonNodeJS/master/ProgressBar/ProgressBar.js'
 
 class Universe2D extends Universe {
 
@@ -22,8 +23,83 @@ class Universe2D extends Universe {
 	
 	pushEdges() {
 
-		const geometry = this.classSettings.settings.object.geometry, position = geometry.position, edges = geometry.indices.edges;
-		
+		const settings = this.classSettings.settings, geometry = settings.object.geometry, position = geometry.position, edges = geometry.indices.edges;
+		const lang = { progressTitle: 'Creating edges.<br>Phase %s from 3', };
+		switch ( settings.options.getLanguageCode() ) {
+
+			case 'ru'://Russian language
+
+				lang.progressTitle = 'Создание ребер.<br>Фаза %s из 3';
+
+				break;
+
+		}
+		let phase = 1, verticeId = 1;
+		const progressBar = new ProgressBar(settings.options.renderer.domElement.parentElement, () => {
+
+			edges.push();	
+			progressBar.value = verticeId;
+			verticeId++;
+			if (verticeId === position.length) {
+
+				edges.push([position.length - 1, 0]);
+				phase++;
+				progressBar.title(lang.progressTitle.replace('%s', phase));
+				verticeId = 0;
+				progressBar.newStep(() => {
+					
+					let verticeIdOpposite = edges[position.length * (phase - 2) + verticeId][1] + 1;
+					if (verticeIdOpposite >= position.length) verticeIdOpposite = 0;
+					edges.push([verticeId, verticeIdOpposite]);
+					switch(position.length){
+	
+						case 4://tetraedr
+							if (edges.length >=6) return;
+							break;
+						case 6:
+							if (edges.length >=15) return;
+							break;
+							
+					}
+					
+					progressBar.value = verticeId;
+					verticeId++;
+					if (verticeId === position.length) {
+
+						phase++;
+						if (phase > 3) {
+							
+							progressBar.remove();
+							this.classSettings.continue();
+							this.project(this.projectParams.scene, this.projectParams.params);
+
+						} else {
+							
+							progressBar.title(lang.progressTitle.replace('%s', phase));
+							verticeId = 0;
+							progressBar.step();
+
+						}
+						
+					} else progressBar.step();
+					
+				});
+/*				
+				progressBar.remove();
+				this.project(this.projectParams.scene, this.projectParams.params);
+*/	
+				
+			}
+			progressBar.step();
+			
+		}, {
+
+			sTitle: lang.progressTitle.replace('%s', phase),
+			max: position.length,
+
+		});
+
+/*		
 		//Every vertice have max 6 edges
 		for (let verticeId = 1; verticeId < position.length; verticeId++)
 			edges.push();
@@ -51,46 +127,7 @@ class Universe2D extends Universe {
 			}
 			
 		}
-/*		
-		for (let i = 1; i < 7; i++) {
-			
-			for (let verticeId = (i - 1); verticeId < position.length; verticeId++){
-	
-//				const verticeIdOpposite = verticeId + i;
-				const edge = edges[verticeId];
-				const verticeIdOpposite = edge ? edge[1] + 1 : verticeId + i;
-				if (verticeIdOpposite < position.length) edges.push([verticeId, verticeIdOpposite]);
-				else {
-
-					edges.push([verticeIdOpposite - 1, 0]);
-					break;
-
-				}
-	
-			}
-			console.log('')
-				
-		}
 */		
-/*
-		for (let verticeId = 0; verticeId < (position.length - 1); verticeId++){
-
-			//Every vertice have max 6 edges
-			for (let i = 1; i < (7 - verticeId); i++) {
-				
-				const verticeIdOpposite = verticeId + i;
-				if (verticeIdOpposite < position.length) edges.push([verticeId, verticeIdOpposite]);
-				else break;
-
-			}
-			
-		}
-*/		
-/*		
-		for (let verticeId = 1; verticeId < position.length; verticeId++)
-			edges.push();
-		edges.push([position.length - 1, 0]);
-*/  
 		
 	}
 	name( getLanguageCode ) {
@@ -159,10 +196,11 @@ class Universe2D extends Universe {
 	 * @param {Options} options See <a href="../../../commonNodeJS/master/jsdoc/Options/Options.html" target="_blank">Options</a>.
 	 * @param {object} [classSettings] <b>Universe1D</b> class settings. See <a href="./module-Universe-Universe.html" target="_blank">Universe classSettings</a>.
 	 **/
-	constructor(options, classSettings) {
+	constructor(options, projectParams, classSettings) {
 
-		super(options, classSettings);
-		this.logUniverse2D();
+		classSettings.continue = () => this.logUniverse2D();
+		super(options, projectParams, classSettings);
+//		this.logUniverse2D();
 
 	}
 

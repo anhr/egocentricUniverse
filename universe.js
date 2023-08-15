@@ -23,7 +23,7 @@ import ND from '../../commonNodeJS/master/nD/nD.js';
 if (ND.default) ND = ND.default;
 
 import ProgressBar from '../../commonNodeJS/master/ProgressBar/ProgressBar.js'
-import WebGPU from '../../WebGPU/master/WebGPU.js';
+//import WebGPU from '../../WebGPU/master/WebGPU.js';
 
 const sUniverse = 'Universe', sOverride = sUniverse + ': Please override the %s method in your child class.';
 //	verticeEdges = true;//Эту константу добавил на случай если захочу не включать индексы ребер в вершину если classSettings.debug != true
@@ -146,9 +146,10 @@ class Universe {
 	 * @param {number} [classSettings.settings.object.geometry.indices.edges.count=3] edges count.
 	 * @param {boolean} [classSettings.debug=false] Debug mode. Diagnoses your code and display detected errors in console
 	 **/
-	constructor(options, classSettings={}) {
+	constructor(options, projectParams, classSettings={}) {
 
 		const _this = this;
+		this.projectParams = projectParams;
 		this.classSettings = classSettings;
 		if (classSettings.radius === undefined) classSettings.radius = 1.0;
 		classSettings.settings = classSettings.settings || {};
@@ -499,8 +500,7 @@ class Universe {
 				if (index === 0) return;
 				let progressBar, verticeId = 0;
 				const geometry = settings.object.geometry, position = geometry.position, edges = geometry.indices.edges;
-				/*
-				if (WebGPU.isSupportWebGPU()){
+				if ((typeof WebGPU != 'undefined') && WebGPU.isSupportWebGPU()){
 
 					const firstMatrix = [
 							[1, 2, 3, 4],
@@ -547,7 +547,6 @@ class Universe {
 					});
 					
 				}
-				*/
 				const vertices = [],
 					timestamp = window.performance.now(),
 					step = () => {
