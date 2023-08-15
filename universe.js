@@ -152,7 +152,7 @@ class Universe {
 	 * </pre>
 	 * @param {number} [classSettings.settings.object.geometry.indices.edges.count=3] edges count.
 	 * @param {boolean} [classSettings.debug=false] Debug mode. Diagnoses your code and display detected errors in console
-	 * @param {function} classSettings.continue Callback function that called after universe edges was created.
+	 * @param {function} [classSettings.continue] Callback function that called after universe edges was created.
 	 **/
 	constructor(options, projectParams, classSettings={}) {
 

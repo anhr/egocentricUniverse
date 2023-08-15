@@ -70,7 +70,7 @@ class Universe2D extends Universe {
 						if (phase > 3) {
 							
 							progressBar.remove();
-							this.classSettings.continue();
+							if (this.classSettings.continue) this.classSettings.continue();
 							this.project(this.projectParams.scene, this.projectParams.params);
 
 						} else {
@@ -198,7 +198,7 @@ class Universe2D extends Universe {
 	 **/
 	constructor(options, projectParams, classSettings) {
 
-		classSettings.continue = () => this.logUniverse2D();
+		//classSettings.continue = () => this.logUniverse2D();
 		super(options, projectParams, classSettings);
 //		this.logUniverse2D();
 
