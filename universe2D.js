@@ -43,6 +43,9 @@ class Universe2D extends Universe {
 			if (verticeId === position.length) {
 
 				edges.push([position.length - 1, 0]);
+				
+				if (this.classSettings.debug) console.log('time: Push edges. phase ' + phase + '. ' + ((window.performance.now() - this.timestamp) / 1000) + ' sec.');
+				
 				phase++;
 				progressBar.title(lang.progressTitle.replace('%s', phase));
 				verticeId = 0;
@@ -66,6 +69,8 @@ class Universe2D extends Universe {
 					verticeId++;
 					if (verticeId === position.length) {
 
+						if (this.classSettings.debug) console.log('time: Push edges. phase ' + phase + '. ' + ((window.performance.now() - this.timestamp) / 1000) + ' sec.');
+				
 						phase++;
 						if (phase > 3) {
 							
@@ -198,7 +203,7 @@ class Universe2D extends Universe {
 	 **/
 	constructor(options, projectParams, classSettings) {
 
-		//classSettings.continue = () => this.logUniverse2D();
+		classSettings.continue = () => this.logUniverse2D();
 		super(options, projectParams, classSettings);
 //		this.logUniverse2D();
 

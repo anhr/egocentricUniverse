@@ -73,8 +73,12 @@ class Universe {
 						progressBar.step();
 						break;
 					case 1://edges log
-						if (i === edges.length) progressBar.remove();
-						else progressBar.step();
+						if (i === edges.length) {
+							
+							progressBar.remove();
+							if (this.classSettings.debug) console.log('time: Geometry log. ' + ((window.performance.now() - this.timestamp) / 1000) + ' sec.');
+							
+						} else progressBar.step();
 						break;
 					default: console.error(sLogUniverse + '. Invalid log = ' + log);
 				}
@@ -157,6 +161,7 @@ class Universe {
 	constructor(options, projectParams, classSettings={}) {
 
 		const _this = this;
+		if (classSettings.debug) this.timestamp = window.performance.now();
 		this.projectParams = projectParams;
 		this.classSettings = classSettings;
 		if (classSettings.radius === undefined) classSettings.radius = 1.0;
@@ -458,6 +463,8 @@ class Universe {
 				}
 				for (let i = 0; i < count; i++) position[i];//push vertice if not exists//if (!(position[i])) position.push();
 				
+				if (this.classSettings.debug) console.log('time: Push positions. ' + ((window.performance.now() - this.timestamp) / 1000) + ' sec.');
+				
 				this.pushEdges();
 				break;
 				
@@ -556,7 +563,7 @@ class Universe {
 					
 				}
 				const vertices = [],
-					timestamp = window.performance.now(),
+					timestamp = classSettings.debug ? window.performance.now() : undefined,
 					step = () => {
 
 						progressBar.value = verticeId;
@@ -640,6 +647,7 @@ class Universe {
 				return true;//player pause
 				
 			}
+			if (classSettings.debug) console.log('time: Project. ' + ((window.performance.now() - this.timestamp) / 1000) + ' sec.');
 
 		}
 		
