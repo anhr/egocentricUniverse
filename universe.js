@@ -118,14 +118,14 @@ class Universe {
 	/**
 	 * Base class for n dimensional universe.
 	 * @param {Options} options See <a href="../../../commonNodeJS/master/jsdoc/Options/Options.html" target="_blank">Options</a>.
-	 * @param {object} projectParams Parameters of project the universe onto the canvas.
-	 * @param {THREE.Scene} projectParams.scene [THREE.Scene]{@link https://threejs.org/docs/index.html?q=sce#api/en/scenes/Scene}
-	 * @param {object} [projectParams.params={}] The following parameters are available
-	 * @param {object} [projectParams.params.center={x: 0.0, y: 0.0, z: 0.0}] center of the universe
-	 * @param {float} [projectParams.params.center.x=0.0] X axis of the center
-	 * @param {float} [projectParams.params.center.y=0.0] Y axis of the center
-	 * @param {float} [projectParams.params.center.z=0.0] Y axis of the center
 	 * @param {object} [classSettings] <b>Universe</b> class settings.
+	 * @param {object} [classSettings.projectParams] Parameters of project the universe onto the canvas.
+	 * @param {THREE.Scene} classSettings.projectParams.scene [THREE.Scene]{@link https://threejs.org/docs/index.html?q=sce#api/en/scenes/Scene}
+	 * @param {object} [classSettings.projectParams.params={}] The following parameters are available
+	 * @param {object} [classSettings.projectParams.params.center={x: 0.0, y: 0.0, z: 0.0}] center of the universe
+	 * @param {float} [classSettings.projectParams.params.center.x=0.0] X axis of the center
+	 * @param {float} [classSettings.projectParams.params.center.y=0.0] Y axis of the center
+	 * @param {float} [classSettings.projectParams.params.center.z=0.0] Y axis of the center
 	 * @param {float} [classSettings.radius=1.0] Universe start radius.
 	 * @param {object} [classSettings.settings] The following settings are available
 	 * @param {object} [classSettings.settings.object] Universe object.
@@ -480,9 +480,10 @@ class Universe {
 		 * Projects the universe onto the canvas 
 		 * @param {THREE.Scene} scene [THREE.Scene]{@link https://threejs.org/docs/index.html?q=sce#api/en/scenes/Scene}
 		 * @param {object} [params={}] The following parameters are available
-		 * @param {object} [params.center={x: 0.0, y: 0.0}] center of the universe
+		 * @param {object} [params.center={x: 0.0, y: 0.0, z: 0.0}] center of the universe
 		 * @param {float} [params.center.x=0.0] X axis of the center
 		 * @param {float} [params.center.y=0.0] Y axis of the center
+		 * @param {float} [params.center.z=0.0] Z axis of the center
 		 */
 		this.project = (scene, params = {}) => {
 
