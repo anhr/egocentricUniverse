@@ -158,11 +158,13 @@ class Universe {
 	 * @param {boolean} [classSettings.debug=false] Debug mode. Diagnoses your code and display detected errors in console
 	 * @param {function} [classSettings.continue] Callback function that called after universe edges was created.
 	 **/
-	constructor(options, projectParams, classSettings={}) {
+	constructor(options,
+//			projectParams,
+			classSettings={}) {
 
 		const _this = this;
 		if (classSettings.debug) this.timestamp = window.performance.now();
-		this.projectParams = projectParams;
+//		this.projectParams = projectParams;
 		this.classSettings = classSettings;
 		if (classSettings.radius === undefined) classSettings.radius = 1.0;
 		classSettings.settings = classSettings.settings || {};
@@ -474,7 +476,7 @@ class Universe {
 		}
 		
 //		this.Indices();
-		/* *
+		/**
 		 * Projects the universe onto the canvas 
 		 * @param {THREE.Scene} scene [THREE.Scene]{@link https://threejs.org/docs/index.html?q=sce#api/en/scenes/Scene}
 		 * @param {object} [params={}] The following parameters are available

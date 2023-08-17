@@ -76,7 +76,7 @@ class Universe2D extends Universe {
 							
 							progressBar.remove();
 							if (this.classSettings.continue) this.classSettings.continue();
-							this.project(this.projectParams.scene, this.projectParams.params);
+							if (this.classSettings.projectParams) this.project(this.classSettings.projectParams.scene, this.classSettings.projectParams.params);
 
 						} else {
 							
@@ -201,10 +201,10 @@ class Universe2D extends Universe {
 	 * @param {Options} options See <a href="../../../commonNodeJS/master/jsdoc/Options/Options.html" target="_blank">Options</a>.
 	 * @param {object} [classSettings] <b>Universe1D</b> class settings. See <a href="./module-Universe-Universe.html" target="_blank">Universe classSettings</a>.
 	 **/
-	constructor(options, projectParams, classSettings) {
+	constructor(options, classSettings) {
 
 		classSettings.continue = () => this.logUniverse2D();
-		super(options, projectParams, classSettings);
+		super(options, classSettings);
 //		this.logUniverse2D();
 
 	}
