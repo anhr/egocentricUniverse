@@ -28,6 +28,8 @@ class Universe1D extends Universe {
 		for (let verticeId = 1; verticeId < position.length; verticeId++) edges.push();
 		edges.push([position.length - 1, 0]);
 		
+		if (this.classSettings.debug) console.log('time: Push edges. ' + ((window.performance.now() - this.timestamp) / 1000) + ' sec.');
+		
 	}
 	name(getLanguageCode) {
 
