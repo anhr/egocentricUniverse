@@ -175,6 +175,18 @@ class Universe {
 		settings.object.geometry = settings.object.geometry || {};
 		const randomPosition = () => {
 
+			//Каждая вершина педставляет из себя набор углов поворота относительно центра вселенной в радианах для определенного момента времени
+			//Центр вселенной это точка большого взрыва когда время равно нулю.
+			//Например в одномерной вселенной _this.dimension = 2 каждая вершина это одномерный вектор v, указывающий на положение вершины на окружности.
+			//v[0] это угол поворота. v.length = 1
+			//Для двумерной вселенной _this.dimension = 3 каждая вершина это двумерный вектор v, указывающий на положение вершины на сфере.
+			//v[0] это первый угол поворота.
+			//v[2] это второй угол поворота.
+			//v.length = 2
+			const v = [];
+			for (let i = 0; i < (_this.dimension - 1); i++) v.push(Math.random() * Math.PI * 2);
+			return v;
+/*			
 			//Vector length limitation
 			let v, ll, rr = classSettings.radius * classSettings.radius;
 			do {
@@ -191,6 +203,7 @@ class Universe {
 			}while(ll > rr)
 			
 			return v;
+*/
 			
 		}
 
@@ -213,21 +226,38 @@ class Universe {
 				}
 				switch (name) {
 
-					case 'push': return (vertice = randomPosition()) => {
+					case 'push': return (angles = randomPosition()) => {
 
-						return _position.push(new Proxy(vertice, {
+						const proxy = new Proxy([], {
 
 							get: (vertice, name) => {
 
+/*								
+								const i = parseInt(name);
+								if (!isNaN(i)) {
+												
+									//https://observablehq.com/@thuvee0pan/cartesian-and-polar-coordinates
+									const time = 1, theta = vertice[0];
+									switch(i){
+																			
+										case 0: return time * Math.cos(theta);
+										case 1: return time * Math.sin(theta);
+																			
+									}
+									console.error(sUniverse + ': get vertice[' + i + '] failed.')
+									return;
+												
+								}
+*/
 								switch (name) {
 
 									case 'distanceTo': return (verticeTo) => {
 
 										if (vertice.length != verticeTo.length) {
-											
+
 											console.error(sUniverse + ': settings.object.geometry.position[i].distanceTo(...). vertice.length != verticeTo.length');
 											return;
-											
+
 										}
 										//const distance = new three.THREE.Vector3(vertice[0], vertice[1], vertice[2], ).distanceTo(new three.THREE.Vector3(verticeTo[0], verticeTo[1], verticeTo[2], ));
 										let sum = 0;
@@ -235,13 +265,13 @@ class Universe {
 
 											const d = axis - verticeTo[i];
 											sum += d * d;
-											
+
 										})
 										return Math.sqrt(sum);
 									}
 									case 'edges':
 
-//										if (!classSettings.debug && !verticeEdges)
+										//										if (!classSettings.debug && !verticeEdges)
 										if (!classSettings.debug) {
 
 											console.error(sUniverse + ': vertice.edges. Set debug = true first.');
@@ -290,13 +320,69 @@ class Universe {
 									case 'oppositeVerticesId':
 										vertice.oppositeVerticesId = vertice.oppositeVerticesId || [];
 										break;
+/*
+									case 'length':
+										//в декартовой системе коодинат количество осей на единицу больше количества углов в полярной системе координат
+										return vertice.length + 1;
+*/
 
 								}
 								return vertice[name];
 
 							},
+							set: (vertice, name, value) => {
+				
+								switch (name) {
+					
+									case 'angles':
+/*										
+										//https://observablehq.com/@thuvee0pan/cartesian-and-polar-coordinates
+										// Given an object in Polar coordiantes { r: …, theta: … } 
+										// compute its Cartesian coordinates { x: …, y: … }
+										function polar_to_cartesian({ r, theta }) {
+						
+											return [r * Math.cos(theta), r * Math.sin(theta)];
+											
+										}
+										vertice = polar_to_cartesian({ r: 1, theta: value[0] });
+*/										
+										vertice.length = 0;
+										
+										//https://observablehq.com/@thuvee0pan/cartesian-and-polar-coordinates
+										switch(value.length) {
 
-						}));
+											case 1://1D universe
+												const time = 1, theta = value[0];
+												vertice.push(time * Math.cos(theta));
+												vertice.push(time * Math.sin(theta));
+												break;
+											case 2: {//2D universe
+												
+													let theta = value[1];
+													const time = 1;
+													const z = time * Math.sin(theta),
+														r = time * Math.cos(theta);
+													theta = value[0];
+													vertice.push(r * Math.cos(theta));
+													vertice.push(r * Math.sin(theta));
+													vertice.push(z);
+
+												}
+												break;
+											default: console.error(sUniverse + ': Position set angles. Invalid angles count = ' + value.length);
+
+										}
+										return true;
+										
+								}
+								vertice[name] = value;
+								return true;
+				
+							}
+
+						});
+						proxy.angles = angles;
+						return _position.push(proxy);
 
 					};
 
