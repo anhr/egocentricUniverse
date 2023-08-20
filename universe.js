@@ -22,6 +22,8 @@ import ND from '../../commonNodeJS/master/nD/nD.js';
 //import ND from 'https://raw.githack.com/anhr/commonNodeJS/master/nD/build/nD.module.min.js';
 if (ND.default) ND = ND.default;
 
+import MyPoints from '../../commonNodeJS/master/myPoints/myPoints.js';
+import MyThree from '../../commonNodeJS/master/myThree/myThree.js';
 import ProgressBar from '../../commonNodeJS/master/ProgressBar/ProgressBar.js'
 //import WebGPU from '../../WebGPU/master/WebGPU.js';
 
@@ -325,6 +327,10 @@ class Universe {
 										//в декартовой системе коодинат количество осей на единицу больше количества углов в полярной системе координат
 										return vertice.length + 1;
 */
+									case 'vector':
+										//для совместимости с Player.getPoints. Туда попадает когда хочу вывести на холст точки вместо ребер и использую дя этого MyPoints вместо ND
+										const vertice2 = vertice[2];
+										return new MyThree.three.THREE.Vector4(vertice[0], vertice[1], vertice2 === undefined ? 0 : vertice2, 1);
 
 								}
 								return vertice[name];
@@ -411,14 +417,18 @@ class Universe {
 			set: (_position, name, value) => {
 
 				const i = parseInt(name);
-				if (!isNaN(i)) {
+				if ( !isNaN(i)) {
 
-					const vertice = _position[i];
-					vertice.forEach((axis, axisId) => {
-	
-						vertice[axisId] = value[axisId];
-	
-					});
+					if (value instanceof Array === true) {//для совместимости с Player.getPoints. Туда попадает когда хочу вывести на холст точки вместо ребер и использую дя этого MyPoints вместо ND
+						
+						const vertice = _position[i];
+						vertice.forEach((axis, axisId) => {
+		
+							vertice[axisId] = value[axisId];
+		
+						});
+
+					}
 
 				} else {
 
@@ -589,15 +599,41 @@ class Universe {
 			this.remove(scene);
 			
 			this.Test();
-			
-//			settings.options = options;
+
+			MyPoints(settings.object.geometry.position, scene, {
+				pointsOptions: {
+
+					//shaderMaterial: false,
+
+				},
+				options: { point: { size: 0.1 } }
+			});
+			/*
 			settings.scene = scene;
-			const nd = new ND(this.dimension, settings);
+//			const nd = new ND(this.dimension, settings);
+			const nd = new ND(this.dimension, {
+
+				options: settings.options,
+				scene: settings.scene,
+				object: {
+
+					geometry: {
+
+						position: settings.object.geometry.position,
+//						indices: [[[0, 1]]],//settings.object.geometry.indices,
+						indices: settings.object.geometry.indices,
+						
+					},
+					
+				}
+				
+			});
 			
 			params.center = params.center || {}
 			nd.object3D.position.x = params.center.x || 0;
 			nd.object3D.position.y = params.center.y || 0;
 			nd.object3D.position.z = params.center.z || 0;
+			*/
 
 			options.onSelectScene = (index, t) => {
 
