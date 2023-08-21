@@ -22,7 +22,9 @@ import ND from '../../commonNodeJS/master/nD/nD.js';
 //import ND from 'https://raw.githack.com/anhr/commonNodeJS/master/nD/build/nD.module.min.js';
 if (ND.default) ND = ND.default;
 
+//когда хочу вывести на холст точки вместо ребер то использую MyPoints вместо ND
 import MyPoints from '../../commonNodeJS/master/myPoints/myPoints.js';
+
 import MyThree from '../../commonNodeJS/master/myThree/myThree.js';
 import ProgressBar from '../../commonNodeJS/master/ProgressBar/ProgressBar.js'
 //import WebGPU from '../../WebGPU/master/WebGPU.js';
@@ -75,7 +77,7 @@ class Universe {
 						progressBar.step();
 						break;
 					case 1://edges log
-						if (i === edges.length) {
+						if (i >= edges.length) {
 							
 							progressBar.remove();
 							if (this.classSettings.debug) console.log('time: Geometry log. ' + ((window.performance.now() - this.timestamp) / 1000) + ' sec.');
@@ -539,39 +541,9 @@ class Universe {
 			}
 
 		});
-		if (classSettings.mode === undefined) classSettings.mode = 0;//решил оставить режим, в котором сначала добавляются ребра а потом уже создаются вершины для них
-		switch(classSettings.mode) {
 
-			//connect vertices by edges
-			case 0: 
-				
-				//default vertices
-				if (this.verticesCountMin === undefined) {
-
-					console.error(sUniverse + ': Please define verticesCountMin in your child class.');
-					break;
-					
-				}
-				const count = position.count === undefined ? this.verticesCountMin : position.count;
-				if (count < 2) {
-		
-					console.error(sUniverse + ': Invalid classSettings.settings.object.geometry.position.count < 2');
-					return;
-					
-				}
-				for (let i = 0; i < count; i++) position[i];//push vertice if not exists//if (!(position[i])) position.push();
-				
-				if (this.classSettings.debug) console.log('time: Push positions. ' + ((window.performance.now() - this.timestamp) / 1000) + ' sec.');
-				
-				this.pushEdges();
-				break;
-				
-			case 1: indices.edges.pushEdges(); break;//push edges. сначала добавляются ребра а потом уже создаются вершины для них
-			default: console.error(sUniverse + ': Unknown mode: ' + classSettings.mode); return;
-				
-		}
-		
-//		this.Indices();
+		//Эту функцию надо содать до вызова this.pushEdges(); потому что когда используется MyPoints для вывода на холст вершин вместо ребер,
+		//вызывается this.project вместо this.pushEdges()
 		/**
 		 * Projects the universe onto the canvas 
 		 * @param {THREE.Scene} scene [THREE.Scene]{@link https://threejs.org/docs/index.html?q=sce#api/en/scenes/Scene}
@@ -583,88 +555,96 @@ class Universe {
 		 */
 		this.project = (scene, params = {}) => {
 
-	
 			//remove previous universe
 			this.remove = (scene) => {
-	
+
 				for (var i = scene.children.length - 1; i >= 0; i--) {
-	
+
 					const child = scene.children[i];
 					scene.remove(child);
 					if (options.guiSelectPoint) options.guiSelectPoint.removeMesh(child);
-	
+
 				}
-	
+
 			}
 			this.remove(scene);
-			
+
 			this.Test();
 
-			MyPoints(settings.object.geometry.position, scene, {
-				pointsOptions: {
+			if (typeof MyPoints === 'undefined') {
 
-					//shaderMaterial: false,
-
-				},
-				options: { point: { size: 0.1 } }
-			});
-			/*
-			settings.scene = scene;
-//			const nd = new ND(this.dimension, settings);
-			const nd = new ND(this.dimension, {
-
-				options: settings.options,
-				scene: settings.scene,
-				object: {
-
-					geometry: {
-
-						position: settings.object.geometry.position,
-//						indices: [[[0, 1]]],//settings.object.geometry.indices,
-						indices: settings.object.geometry.indices,
-						
-					},
+				settings.scene = scene;
+				const nd = new ND(this.dimension, settings);
+				/*				
+								const nd = new ND(this.dimension, {
 					
-				}
+									options: settings.options,
+									scene: settings.scene,
+									object: {
+					
+										geometry: {
+					
+											position: settings.object.geometry.position,
+					//						indices: [[[0, 1]]],//settings.object.geometry.indices,
+											indices: settings.object.geometry.indices,
+											
+										},
+										
+									}
+									
+								});
+				*/
+
+				params.center = params.center || {}
+				nd.object3D.position.x = params.center.x || 0;
+				nd.object3D.position.y = params.center.y || 0;
+				nd.object3D.position.z = params.center.z || 0;
+
+			} else MyPoints(settings.object.geometry.position, scene, {
+				pointsOptions: {
+					
+					//shaderMaterial: false,
+					name: settings.object.name,
 				
+				},
+				options: {
+					
+					point: { size: 0.0 },
+					guiSelectPoint: settings.options.guiSelectPoint,
+				
+				}
 			});
-			
-			params.center = params.center || {}
-			nd.object3D.position.x = params.center.x || 0;
-			nd.object3D.position.y = params.center.y || 0;
-			nd.object3D.position.z = params.center.z || 0;
-			*/
 
 			options.onSelectScene = (index, t) => {
 
 				if (index === 0) return;
 				let progressBar, verticeId = 0;
 				const geometry = settings.object.geometry, position = geometry.position, edges = geometry.indices.edges;
-				if ((typeof WebGPU != 'undefined') && WebGPU.isSupportWebGPU()){
+				if ((typeof WebGPU != 'undefined') && WebGPU.isSupportWebGPU()) {
 
 					const firstMatrix = [
-							[1, 2, 3, 4],
-							[5, 6, 7, 8]
-						],
-							secondMatrix = [
+						[1, 2, 3, 4],
+						[5, 6, 7, 8]
+					],
+						secondMatrix = [
 							[1, 2],
 							[3, 4],
 							[5, 6],
 							[7, 8],
 						];
 					new WebGPU({
-					
+
 						input: { matrices: [firstMatrix, secondMatrix] },
-					
+
 						//shaderCode: shaderCode,
 						shaderCodeFile: '../Shader.c',
-					
+
 						results: [
-					
+
 							{
-					
+
 								count: firstMatrix.length * secondMatrix[0].length +
-					
+
 									//result matrix has reserved three elements in the head of the matrix for size of the matrix.
 									//First element is dimension of result matrix.
 									//Second element is rows count of the matrix.
@@ -672,20 +652,20 @@ class Universe {
 									//See settings.size of out2Matrix method in https://raw.githack.com/anhr/WebGPU/master/jsdoc/module-WebGPU-WebGPU.html
 									3,
 								out: out => {
-					
+
 									console.log('out:');
 									console.log(new Float32Array(out));
 									const matrix = WebGPU.out2Matrix(out);
 									console.log('matrix:');
 									console.log(matrix);
-					
+
 								}
-					
+
 							},
 						],
-					
+
 					});
-					
+
 				}
 				const vertices = [],
 					timestamp = classSettings.debug ? window.performance.now() : undefined,
@@ -696,17 +676,17 @@ class Universe {
 
 							const vertice = position[verticeId];
 							vertices.push([]);
-	/*						
-							const oppositeVertices = [];
-							vertice.edges.forEach(edgeId => {
-							
-								const edge = edges[edgeId],
-									verticeIdOpposite = edge[0] === verticeId ? edge[1] : edge[1] === verticeId ? edge[0] : undefined;
-								if (verticeIdOpposite === undefined) console.error(sUniverse + ': options.onSelectScene. Invalid opposite verticeId');
-								oppositeVertices.push(position[verticeIdOpposite]);
-							
-							});
-	*/
+							/*						
+													const oppositeVertices = [];
+													vertice.edges.forEach(edgeId => {
+													
+														const edge = edges[edgeId],
+															verticeIdOpposite = edge[0] === verticeId ? edge[1] : edge[1] === verticeId ? edge[0] : undefined;
+														if (verticeIdOpposite === undefined) console.error(sUniverse + ': options.onSelectScene. Invalid opposite verticeId');
+														oppositeVertices.push(position[verticeIdOpposite]);
+													
+													});
+							*/
 							const oppositeVerticesId = vertice.oppositeVerticesId;
 
 							//find middle point between opposite vertices
@@ -715,9 +695,9 @@ class Universe {
 
 								middlePoint.push(0);
 								const middlePointAxisId = middlePoint.length - 1;
-//								oppositeVertices.forEach(oppositeVertice => middlePoint[middlePointAxisId] += oppositeVertice[axisId]);
+								//								oppositeVertices.forEach(oppositeVertice => middlePoint[middlePointAxisId] += oppositeVertice[axisId]);
 								oppositeVerticesId.forEach(verticeIdOpposite => middlePoint[middlePointAxisId] += position[verticeIdOpposite][axisId]);
-		//						vertice[axisId] = middlePoint[middlePointAxisId] / vertice.length;
+								//						vertice[axisId] = middlePoint[middlePointAxisId] / vertice.length;
 								vertices[verticeId][axisId] = middlePoint[middlePointAxisId] / vertice.length;
 
 							});
@@ -749,32 +729,68 @@ class Universe {
 							}
 
 						}
-/*						
-						let stop = false;
-						for (let i = 0; i < 10; i++) {
-
-							stop = stepItem();
-							if (stop) break;
+						/*						
+												let stop = false;
+												for (let i = 0; i < 10; i++) {
 						
-						}
-						if (!stop) progressBar.step();
-*/	  
+													stop = stepItem();
+													if (stop) break;
+												
+												}
+												if (!stop) progressBar.step();
+						*/
 						if (!stepItem()) progressBar.step();
 
 					};
 				progressBar = new ProgressBar(options.renderer.domElement.parentElement, step, {
 
 					sTitle: 't = ' + t + '<br> Take middle vertices',
-//					max: (position.length - 1) * 2,
+					//					max: (position.length - 1) * 2,
 					max: position.length - 1,
 
 				});
 				return true;//player pause
-				
+
 			}
 			if (classSettings.debug) console.log('time: Project. ' + ((window.performance.now() - this.timestamp) / 1000) + ' sec.');
 
 		}
+		if (classSettings.mode === undefined) classSettings.mode = 0;//решил оставить режим, в котором сначала добавляются ребра а потом уже создаются вершины для них
+		switch(classSettings.mode) {
+
+			//connect vertices by edges
+			case 0: 
+				
+				//default vertices
+				if (this.verticesCountMin === undefined) {
+
+					console.error(sUniverse + ': Please define verticesCountMin in your child class.');
+					break;
+					
+				}
+				const count = position.count === undefined ? this.verticesCountMin : position.count;
+				if (count < 2) {
+		
+					console.error(sUniverse + ': Invalid classSettings.settings.object.geometry.position.count < 2');
+					return;
+					
+				}
+				for (let i = 0; i < count; i++) position[i];//push vertice if not exists//if (!(position[i])) position.push();
+				
+				if (this.classSettings.debug) console.log('time: Push positions. ' + ((window.performance.now() - this.timestamp) / 1000) + ' sec.');
+				
+				if (typeof MyPoints === 'undefined')//Для экономии времени не добавляю ребра если на холст вывожу только вершины
+					this.pushEdges();
+				else if (this.classSettings.projectParams) this.project(this.classSettings.projectParams.scene, this.classSettings.projectParams.params);
+				
+				break;
+				
+			case 1: indices.edges.pushEdges(); break;//push edges. сначала добавляются ребра а потом уже создаются вершины для них
+			default: console.error(sUniverse + ': Unknown mode: ' + classSettings.mode); return;
+				
+		}
+		
+//		this.Indices();
 		
 	}
 
