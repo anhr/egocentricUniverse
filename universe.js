@@ -188,7 +188,13 @@ class Universe {
 			//v[2] это второй угол поворота.
 			//v.length = 2
 			const v = [];
-			for (let i = 0; i < (_this.dimension - 1); i++) v.push(Math.random() * Math.PI * 2);
+			for (let i = 0; i < (_this.dimension - 1); i++) {
+
+			   let angle = Math.random() * Math.PI * 2;
+//				if (i === 1) angle *= Math.cos(angle);
+			   v.push(angle);
+
+			}
 			return v;
 /*			
 			//Vector length limitation
@@ -212,6 +218,24 @@ class Universe {
 		}
 
 		settings.object.geometry.position = settings.object.geometry.position || {};
+
+		//for debug
+		//для 2D вселенной это плотность вероятности распределения вершин по поверхости сферы в зависимости от второго угла поворота вершины vertice.angles[1]
+		//Плотности разбил на несколько диапазонов в зависимости от угла поворота vertice.angles[1]
+		//Разбил окружность на 8 сегментов от 0 до 7.
+		//Верхний предел угла поворота каждого сегмента вычисляю по формуле Math.PI * 2 / 16 * (2 * i + 1)
+		//где i - номер сегмента
+		const probabilityDensity = classSettings.debug ? [
+			0,//0. From 0 to 0.39269908169872414 and 5.890486225480862 to 0
+			0,//1. From 0.39269908169872414 to 1.1780972450961724
+			0,//2. From 1.1780972450961724 to 1.9634954084936207
+			0,//3. From 1.9634954084936207 to 2.748893571891069
+			0,//4. From 2.748893571891069 to 3.5342917352885173
+			0,//5. From 3.5342917352885173 to 4.319689898685965
+			0,//6. From 4.319689898685965 to 5.105088062083414
+			0,//7. From 5.105088062083414 to 5.890486225480862
+		] : undefined;
+
 		const position = new Proxy([], {
 
 			get: (_position, name) => {
@@ -220,11 +244,7 @@ class Universe {
 				if (!isNaN(i)) {
 
 					if (i > _position.length) console.error(sUniverse + ': position get. Invalid index = ' + i + ' position.length = ' + _position.length);
-					else if (i === _position.length) {
-
-						settings.object.geometry.position.push();//randomPosition());
-
-					}
+					else if (i === _position.length) settings.object.geometry.position.push();
 					return _position[i];
 
 				}
@@ -357,6 +377,59 @@ class Universe {
 										vertice.length = 0;
 										
 										//https://observablehq.com/@thuvee0pan/cartesian-and-polar-coordinates
+										value.forEach((angle, angleId) => {
+
+											const time = 1;
+											if(angleId === 0) {
+
+//												vertice = [time * Math.cos(angle), time * Math.sin(angle)];
+												vertice.push(time * Math.cos(angle));
+												vertice.push(time * Math.sin(angle));
+
+											} else {
+
+												const r = Math.cos(angle);
+												if (classSettings.debug) {
+													
+													let boDetected = false;
+													for (let i = 0; i < 8; i++){
+	
+														if (Math.PI * 2 / 16 * (2 * i + 1) > angle) {
+	
+															probabilityDensity[i]++;
+															boDetected = true;
+															break;
+															
+														}
+													}
+													if (!boDetected) {
+
+														probabilityDensity[0]++;
+														//console.error(sUniverse + ': Set angles. Probability density. Angle = ' + angle + '. Segment is not detected');
+
+													}
+													
+												}
+												vertice.forEach((axis, axisId) => vertice[axisId] = axis * r);
+												vertice.push(time * Math.sin(angle));
+												
+											}
+										});
+/*
+										for(let angleId = value.length - 1; angleId > 0; angleId--) {
+
+											const angle = value[angleId];
+											if(angleId === 0) {
+
+												const time = 1;
+//												vertice = [time * Math.cos(angle), time * Math.sin(angle)];
+												vertice.push(time * Math.cos(angle));
+												vertice.push(time * Math.sin(angle));
+
+											}
+										}
+*/													  
+/*										
 										switch(value.length) {
 
 											case 1://1D universe
@@ -380,6 +453,7 @@ class Universe {
 											default: console.error(sUniverse + ': Position set angles. Invalid angles count = ' + value.length);
 
 										}
+*/
 										return true;
 										
 								}
@@ -777,8 +851,77 @@ class Universe {
 				}
 				for (let i = 0; i < count; i++) position[i];//push vertice if not exists//if (!(position[i])) position.push();
 				
-				if (this.classSettings.debug) console.log('time: Push positions. ' + ((window.performance.now() - this.timestamp) / 1000) + ' sec.');
-				
+				if (this.classSettings.debug) {
+					
+					//для 2D вселенной это плотность вероятности распределения вершин по поверхости сферы в зависимости от второго угла поворота вершины vertice.angles[1]
+					//Плотности разбил на несколько диапазонов в зависимости от угла поворота vertice.angles[1]
+					//Разбил окружность на 8 сегментов от 0 до 7.
+					//Верхний предел угла поворота каждого сегмента вычисляю по формуле Math.PI * 2 / 16 * (2 * i + 1)
+					//где i - номер сегмента
+					//0. From 0 to 0.39269908169872414 and 5.890486225480862 to 0
+					//1. From 0.39269908169872414 to 1.1780972450961724
+					//2. From 1.1780972450961724 to 1.9634954084936207
+					//3. From 1.9634954084936207 to 2.748893571891069
+					//4. From 2.748893571891069 to 3.5342917352885173
+					//5. From 3.5342917352885173 to 4.319689898685965
+					//6. From 4.319689898685965 to 5.105088062083414
+					//7. From 5.105088062083414 to 5.890486225480862
+					console.log('');
+					console.log('Probability density.');
+/*					
+					console.table([
+							['Equator', ((probabilityDensity[0] + probabilityDensity[4]) / 2)],
+						],
+						['Segment', 'Count'],
+					);
+*/
+					function Sector(sector, count, angle) {
+						
+						this.sector = sector;
+						this.count = count;
+						this.angle = angle;
+/*						
+						this.angle = i === 0 ?
+						  0 ://для нулевого сектора угол равен нулю. Иначе он буде равен минус угол первого сектора
+						  Math.PI * 2 / 16 * (2 * i - 1);//угол беру по нижней границе сегмента потому что для полюсов сосинус верхней границы равен нулю и я не смогу поучить плотность вершин в сегменте;
+*/		
+						this.radius = Math.cos(this.angle);
+						this.сircumference = Math.PI * 2 * this.radius;//длинна окружности
+						this.density = this.count / this.сircumference;//Плотность вершин в секторе
+						
+					}
+					
+//					const tyrone = new Sector("Equator", ((probabilityDensity[0] + probabilityDensity[4]) / 2));
+//					const janet = new Sector("Janet", "Smith");
+//					const maria = new Sector("Maria", "Cruz");
+					
+					console.table([
+						new Sector("Equator",          ((probabilityDensity[0] + probabilityDensity[4]) / 2),
+							(Math.PI * 2 / 16 * (2 * 0 + 1) / 2)),//на экваторе средний угол находтся посередине между экватором и краем сектора
+						new Sector("Middle latitudes", ((probabilityDensity[1] + probabilityDensity[3] + probabilityDensity[5] + probabilityDensity[7]) / 4),
+							Math.PI * 2 / 16 * (2 * 1 + 0)//угол посередине среднего сектора
+						),
+						new Sector("Poles",            ((probabilityDensity[2] + probabilityDensity[6]) / 2),
+							(Math.PI * 2 / 16 * (2 * 2 - 1) + Math.PI / 2) /2 ),//На полюсе средний угол находится между границей сектора и полюсом (90 градусов)
+					], ['sector', "count", 'angle', 'radius', 'сircumference', 'density']);
+/*					
+					const log = (name, whitespace, count, i = 0) => {
+						
+//						console.log('  ' + name + ': ' + whitespace + 'count = ' + count + 
+//							' angle = ' + Math.PI * 2 / 16 * (2 * i + 0));//угол беру по нижней границе сегмента потому что для полюсов сосинус верхней границы равен нулю и я не смогу поучить плотность вершин в сегменте
+						
+					}
+//					console.log('  Equator: ' + ((probabilityDensity[0] + probabilityDensity[4]) / 2));
+					log('Equator', '         ', ((probabilityDensity[0] + probabilityDensity[4]) / 2));
+//					console.log('  Middle latitudes: ' + ((probabilityDensity[1] + probabilityDensity[3] + probabilityDensity[5] + probabilityDensity[7]) / 4));
+					log('Middle latitudes', '',((probabilityDensity[1] + probabilityDensity[3] + probabilityDensity[5] + probabilityDensity[7]) / 4));
+//					console.log('  Poles: ' + ((probabilityDensity[2] + probabilityDensity[6]) / 2));
+					log('Poles', '           ', ((probabilityDensity[2] + probabilityDensity[6]) / 2));
+*/					
+					console.log('');		   
+					console.log('time: Push positions. ' + ((window.performance.now() - this.timestamp) / 1000) + ' sec.');
+
+				}				
 				if (typeof MyPoints === 'undefined')//Для экономии времени не добавляю ребра если на холст вывожу только вершины
 					this.pushEdges();
 				else if (this.classSettings.projectParams) this.project(this.classSettings.projectParams.scene, this.classSettings.projectParams.params);
