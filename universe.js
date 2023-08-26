@@ -188,9 +188,8 @@ class Universe {
 			//v[2] это второй угол поворота.
 			//v.length = 2
 			const v = [];
-			for (let i = 0; i < (_this.dimension - 1); i++) v.push(Math.random() - 0.5);
+//			for (let i = 0; i < (_this.dimension - 1); i++) v.push(Math.random() - 0.5);
 			let radius = 0;
-/*
 			do {
 
 				v.length = 0;
@@ -213,9 +212,8 @@ class Universe {
 				});
 
 			} while(Math.sqrt(radius) > 0.5);
-*/
-			v.forEach((angle) => radius += angle * angle);
-			if (Math.sqrt(radius) > 0.5) return;
+//			v.forEach((angle) => radius += angle * angle);
+//			if (Math.sqrt(radius) > 0.5) return;
 			//v.forEach((angle, i) => v[i] = (v[i] + 0.5) * Math.PI * 2);
 			v.forEach((angle, i) => v[i] = v[i] * Math.PI * 2);
 			return v;
@@ -704,13 +702,11 @@ class Universe {
 
 				let points = settings.object.geometry.position;
 
-				/*
 				//for debug
 				//Выводим углы вместо вершин. Нужно для отладки равномерного распределения верши во вселенной
 				//См. randomPosition()
 				points = [];
 				settings.object.geometry.position.forEach(vertive => points.push(vertive.angles));
-				*/
 				
 				MyPoints(points, scene, {
 					
