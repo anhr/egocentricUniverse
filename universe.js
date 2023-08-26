@@ -188,13 +188,36 @@ class Universe {
 			//v[2] это второй угол поворота.
 			//v.length = 2
 			const v = [];
-			for (let i = 0; i < (_this.dimension - 1); i++) {
+			for (let i = 0; i < (_this.dimension - 1); i++) v.push(Math.random() - 0.5);
+			let radius = 0;
+/*
+			do {
 
-			   let angle = Math.random() * Math.PI * 2;
-//				if (i === 1) angle *= Math.cos(angle);
-			   v.push(angle);
+				v.length = 0;
+				for (let i = 0; i < (_this.dimension - 1); i++) {
 
-			}
+					let angle = Math.random() - 0.5;// * Math.PI * 2;
+//					if (i === 1) angle *= Math.cos(angle);
+					v.push(angle);
+
+				}
+
+				 //Для 2D вселенной все вершины должны находиться внутри круга чтобы вершины равномерно распределились по поверхности сферы
+				radius = 0;
+				v.forEach((angle) => {
+
+//					angle = Math.abs(angle);
+//					while(angle > 0.25) angle -= 0.25;
+					radius += angle * angle;
+				 
+				});
+
+			} while(Math.sqrt(radius) > 0.5);
+*/
+			v.forEach((angle) => radius += angle * angle);
+			if (Math.sqrt(radius) > 0.5) return;
+			//v.forEach((angle, i) => v[i] = (v[i] + 0.5) * Math.PI * 2);
+			v.forEach((angle, i) => v[i] = v[i] * Math.PI * 2);
 			return v;
 /*			
 			//Vector length limitation
@@ -252,6 +275,8 @@ class Universe {
 
 					case 'push': return (angles = randomPosition()) => {
 
+						if (angles === undefined) return;
+						
 						const proxy = new Proxy([], {
 
 							get: (vertice, name) => {
@@ -454,6 +479,7 @@ class Universe {
 
 										}
 */
+										vertice.angles = value;
 										return true;
 										
 								}
@@ -674,20 +700,36 @@ class Universe {
 				nd.object3D.position.y = params.center.y || 0;
 				nd.object3D.position.z = params.center.z || 0;
 
-			} else MyPoints(settings.object.geometry.position, scene, {
-				pointsOptions: {
-					
-					//shaderMaterial: false,
-					name: settings.object.name,
+			} else {
+
+				let points = settings.object.geometry.position;
+
+				/*
+				//for debug
+				//Выводим углы вместо вершин. Нужно для отладки равномерного распределения верши во вселенной
+				//См. randomPosition()
+				points = [];
+				settings.object.geometry.position.forEach(vertive => points.push(vertive.angles));
+				*/
 				
-				},
-				options: {
+				MyPoints(points, scene, {
 					
-					point: { size: 0.0 },
-					guiSelectPoint: settings.options.guiSelectPoint,
-				
-				}
-			});
+					pointsOptions: {
+						
+						//shaderMaterial: false,
+						name: settings.object.name,
+					
+					},
+					options: {
+						
+						point: { size: 0.0 },
+						guiSelectPoint: settings.options.guiSelectPoint,
+					
+					}
+					
+				});
+
+			}
 
 			options.onSelectScene = (index, t) => {
 
@@ -833,23 +875,29 @@ class Universe {
 		switch(classSettings.mode) {
 
 			//connect vertices by edges
-			case 0: 
-				
+			case 0:
+
 				//default vertices
 				if (this.verticesCountMin === undefined) {
 
 					console.error(sUniverse + ': Please define verticesCountMin in your child class.');
 					break;
-					
+
 				}
 				const count = position.count === undefined ? this.verticesCountMin : position.count;
 				if (count < 2) {
-		
+
 					console.error(sUniverse + ': Invalid classSettings.settings.object.geometry.position.count < 2');
 					return;
-					
+
 				}
-				for (let i = 0; i < count; i++) position[i];//push vertice if not exists//if (!(position[i])) position.push();
+				let positionId = 0;
+				for (let i = 0; i < count; i++) {
+
+					const res = position[positionId];//push vertice if not exists//if (!(position[i])) position.push();
+					if (res != undefined) positionId++;
+
+				}
 				
 				if (this.classSettings.debug) {
 					
