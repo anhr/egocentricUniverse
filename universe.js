@@ -179,6 +179,34 @@ class Universe {
 		settings.object.geometry = settings.object.geometry || {};
 		const randomPosition = () => {
 
+			//Sphere Point Picking
+			//https://mathworld.wolfram.com/SpherePointPicking.html
+			//Marsaglia (1972) method
+		   let x1, x2;
+	 
+			 //Если не делать этот цикл, то некоторые вершины будут иметь значения NaN и появится ошибка:
+			//THREE.BufferGeometry.computeBoundingSphere(): Computed radius is NaN. The "position" attribute is likely to have NaN values. 
+			 //но при этом распределение вершин по вселенной все равно будет равномерным.
+			 //Не разобрался почему так происходит.
+			do {
+
+				//picking x1 and x2 from independent uniform distributions on(-1, 1)
+				x1 = Math.random() * 2 - 1;
+				x2 = Math.random() * 2 - 1;
+//				if ((x1 * x1 + x2 * x2) >= 1) console.log('x1 = ' + x1 + ' x2 = ' + x2);
+	
+			} while (false)//((x1 * x1 + x2 * x2) >= 1);//rejecting points for which x1^2+x2^2>=1
+
+			
+		   const sqrt = Math.sqrt(1 - x1 * x1 - x2 * x2);
+		   return [
+				2 * x1 * sqrt,//x = 2x_1sqrt(1-x_1^2-x_2^2)
+				2 * x2 * sqrt,//2x_2sqrt(1-x_1^2-x_2^2)
+				1 - 2 * (x1 * x1 + x2 * x2)//1-2(x_1^2+x_2^2)
+			];
+   
+//			return [x1, x2];
+/*
 			//Каждая вершина педставляет из себя набор углов поворота относительно центра вселенной в радианах для определенного момента времени
 			//Центр вселенной это точка большого взрыва когда время равно нулю.
 			//Например в одномерной вселенной _this.dimension = 2 каждая вершина это одномерный вектор v, указывающий на положение вершины на окружности.
@@ -217,6 +245,7 @@ class Universe {
 			//v.forEach((angle, i) => v[i] = (v[i] + 0.5) * Math.PI * 2);
 			v.forEach((angle, i) => v[i] = v[i] * Math.PI * 2);
 			return v;
+*/
 /*			
 			//Vector length limitation
 			let v, ll, rr = classSettings.radius * classSettings.radius;
@@ -271,11 +300,12 @@ class Universe {
 				}
 				switch (name) {
 
-					case 'push': return (angles = randomPosition()) => {
+					case 'push': return (position = randomPosition()) =>//(angles = randomPosition()) =>
+						{
 
-						if (angles === undefined) return;
+//						if (angles === undefined) return;
 						
-						const proxy = new Proxy([], {
+						const proxy = new Proxy(position, {
 
 							get: (vertice, name) => {
 
@@ -487,7 +517,7 @@ class Universe {
 							}
 
 						});
-						proxy.angles = angles;
+//						proxy.angles = angles;
 						return _position.push(proxy);
 
 					};
@@ -702,11 +732,13 @@ class Universe {
 
 				let points = settings.object.geometry.position;
 
+				/*
 				//for debug
 				//Выводим углы вместо вершин. Нужно для отладки равномерного распределения верши во вселенной
 				//См. randomPosition()
 				points = [];
 				settings.object.geometry.position.forEach(vertive => points.push(vertive.angles));
+				*/
 				
 				MyPoints(points, scene, {
 					
