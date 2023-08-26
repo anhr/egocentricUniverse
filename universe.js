@@ -195,7 +195,7 @@ class Universe {
 				x2 = Math.random() * 2 - 1;
 //				if ((x1 * x1 + x2 * x2) >= 1) console.log('x1 = ' + x1 + ' x2 = ' + x2);
 	
-			} while (false)//((x1 * x1 + x2 * x2) >= 1);//rejecting points for which x1^2+x2^2>=1
+			} while ((x1 * x1 + x2 * x2) >= 1);//rejecting points for which x1^2+x2^2>=1
 
 			
 		   const sqrt = Math.sqrt(1 - x1 * x1 - x2 * x2);
