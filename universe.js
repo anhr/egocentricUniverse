@@ -182,6 +182,34 @@ class Universe {
 			//Sphere Point Picking
 			//https://mathworld.wolfram.com/SpherePointPicking.html
 			//Marsaglia (1972) method
+			const x = [];
+			let sum;
+
+			//Если не делать этот цикл, то некоторые вершины будут иметь значения NaN и появится ошибка:
+			//THREE.BufferGeometry.computeBoundingSphere(): Computed radius is NaN. The "position" attribute is likely to have NaN values. 
+			//но при этом распределение вершин по вселенной все равно будет равномерным.
+			//Не разобрался почему так происходит.
+			do {
+
+				x.length = 0;
+				sum = 0;
+				//picking x1 and x2 from independent uniform distributions on(-1, 1)
+				for (let i = 0; i < (_this.dimension - 1); i++) {
+
+					const random = Math.random() * 2 - 1;
+					sum += random * random;
+					x.push(random);
+
+				}
+
+			} while (sum >= 1);//rejecting points for which x1^2+x2^2>=1
+
+
+			const ret = [];
+			for (let i = 0; i < (_this.dimension - 1); i++) ret.push(2 * x[i] * Math.sqrt(1 - sum));
+			ret.push(1 - 2 * sum);
+			return ret;
+/*
 		   let x1, x2;
 	 
 			 //Если не делать этот цикл, то некоторые вершины будут иметь значения NaN и появится ошибка:
@@ -204,6 +232,7 @@ class Universe {
 				2 * x2 * sqrt,//2x_2sqrt(1-x_1^2-x_2^2)
 				1 - 2 * (x1 * x1 + x2 * x2)//1-2(x_1^2+x_2^2)
 			];
+*/
    
 //			return [x1, x2];
 /*
