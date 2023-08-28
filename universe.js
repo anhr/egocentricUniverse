@@ -23,7 +23,7 @@ import ND from '../../commonNodeJS/master/nD/nD.js';
 if (ND.default) ND = ND.default;
 
 //когда хочу вывести на холст точки вместо ребер то использую MyPoints вместо ND
-import MyPoints from '../../commonNodeJS/master/myPoints/myPoints.js';
+//import MyPoints from '../../commonNodeJS/master/myPoints/myPoints.js';
 
 import MyThree from '../../commonNodeJS/master/myThree/myThree.js';
 import ProgressBar from '../../commonNodeJS/master/ProgressBar/ProgressBar.js'
@@ -304,7 +304,8 @@ class Universe {
 		//Разбил окружность на 8 сегментов от 0 до 7.
 		//Верхний предел угла поворота каждого сегмента вычисляю по формуле Math.PI * 2 / 16 * (2 * i + 1)
 		//где i - номер сегмента
-		const probabilityDensity = classSettings.debug ? [
+		const probabilityDensity = classSettings.debug ?
+		[
 			0,//0. From 0 to 0.39269908169872414 and 5.890486225480862 to 0
 			0,//1. From 0.39269908169872414 to 1.1780972450961724
 			0,//2. From 1.1780972450961724 to 1.9634954084936207
@@ -948,6 +949,8 @@ class Universe {
 					return;
 
 				}
+				for (let i = 0; i < count; i++) position[i];//push vertice if not exists
+/*				
 				let positionId = 0;
 				for (let i = 0; i < count; i++) {
 
@@ -955,8 +958,9 @@ class Universe {
 					if (res != undefined) positionId++;
 
 				}
+*/	
 				
-				if (this.classSettings.debug) {
+				if (this.classSettings.debug && probabilityDensity) {
 					
 					//для 2D вселенной это плотность вероятности распределения вершин по поверхости сферы в зависимости от второго угла поворота вершины vertice.angles[1]
 					//Плотности разбил на несколько диапазонов в зависимости от угла поворота vertice.angles[1]
