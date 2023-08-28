@@ -23,7 +23,7 @@ import ND from '../../commonNodeJS/master/nD/nD.js';
 if (ND.default) ND = ND.default;
 
 //когда хочу вывести на холст точки вместо ребер то использую MyPoints вместо ND
-//import MyPoints from '../../commonNodeJS/master/myPoints/myPoints.js';
+import MyPoints from '../../commonNodeJS/master/myPoints/myPoints.js';
 
 import MyThree from '../../commonNodeJS/master/myThree/myThree.js';
 import ProgressBar from '../../commonNodeJS/master/ProgressBar/ProgressBar.js'
@@ -457,6 +457,29 @@ class Universe {
 										}
 										vertice = polar_to_cartesian({ r: 1, theta: value[0] });
 */										
+										if (classSettings.debug) {
+
+											let boDetected = false;
+											const angle = value[1];
+											for (let i = 0; i < 8; i++) {
+
+												if (Math.PI * 2 / 16 * (2 * i + 1) > angle) {
+
+													probabilityDensity[i]++;
+													boDetected = true;
+													break;
+
+												}
+											}
+											if (!boDetected) {
+
+												probabilityDensity[0]++;
+												//console.error(sUniverse + ': Set angles. Probability density. Angle = ' + angle + '. Segment is not detected');
+
+											}
+
+										}
+/*
 										vertice.length = 0;
 										
 										//https://observablehq.com/@thuvee0pan/cartesian-and-polar-coordinates
@@ -498,44 +521,6 @@ class Universe {
 												
 											}
 										});
-/*
-										for(let angleId = value.length - 1; angleId > 0; angleId--) {
-
-											const angle = value[angleId];
-											if(angleId === 0) {
-
-												const time = 1;
-//												vertice = [time * Math.cos(angle), time * Math.sin(angle)];
-												vertice.push(time * Math.cos(angle));
-												vertice.push(time * Math.sin(angle));
-
-											}
-										}
-*/													  
-/*										
-										switch(value.length) {
-
-											case 1://1D universe
-												const time = 1, theta = value[0];
-												vertice.push(time * Math.cos(theta));
-												vertice.push(time * Math.sin(theta));
-												break;
-											case 2: {//2D universe
-												
-													let theta = value[1];
-													const time = 1;
-													const z = time * Math.sin(theta),
-														r = time * Math.cos(theta);
-													theta = value[0];
-													vertice.push(r * Math.cos(theta));
-													vertice.push(r * Math.sin(theta));
-													vertice.push(z);
-
-												}
-												break;
-											default: console.error(sUniverse + ': Position set angles. Invalid angles count = ' + value.length);
-
-										}
 */
 										vertice.angles = value;
 										return true;
@@ -547,6 +532,13 @@ class Universe {
 							}
 
 						});
+
+						//for debug
+						//используется для вычисления плотности вероятности распределения вершин по поверхости сферы probabilityDensity
+						proxy.angles = [
+							Math.acos(position[0]),
+							Math.asin(position[2])
+						];
 //						proxy.angles = angles;
 						return _position.push(proxy);
 
