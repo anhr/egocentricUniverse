@@ -299,11 +299,62 @@ class Universe {
 		settings.object.geometry.position = settings.object.geometry.position || {};
 
 		//for debug
+		//для 2D вселенной это плотность вероятности распределения вершин по поверхости сферы в зависимости от третьей координаты вершины z = vertice.[2]
+		//Плотности разбил на несколько диапазонов в зависимости от третьей координаты вершины z = vertice.[2]
+		//Разбил сферу на sc = 5 сегментов от 0 до 4.
+		//Границы сегментов вычисляю по фомулам:
+		//Высота сегмента hs = d / sc = 2 / 5 = 0.4
+		//Нижняя граница сегмента hb = hs * i - r
+		//Верхняя граница сегмента ht = hs * (i + 1) - r
+		//где r = 1 - радиус сферыб d = 2 * r = 2 - диаметр сферы, i - индекс сегмента
+		const probabilityDensity = classSettings.debug ?
+			[
+				/*
+				{ count: 0, },//0. From -1 to -0.6
+				{ count: 0, },//1. From -0.6 to -0.2
+				{ count: 0, },//2. From -0.2 to 0.2
+				{ count: 0, },//3. From 0.2 to 0.6
+				{ count: 0, },//4. From 0.6 to 1
+				*/
+			] : undefined;
+		if (probabilityDensity) {
+			
+			for (let i = 0; i < 5; i++) probabilityDensity.push({
+
+				count: 0,
+//				get density() { return 22; },
+				
+			});
+			probabilityDensity.options = { r: 1 };
+			probabilityDensity.options.d = probabilityDensity.options.r * 2;
+			probabilityDensity.options.sc = probabilityDensity.length;//Количество сегментов
+			probabilityDensity.options.hs = probabilityDensity.options.d / probabilityDensity.options.sc;//Высота сегмента
+			let segmentsSquare = 0;
+			probabilityDensity.forEach((sector, i) => {
+				
+				sector.hb = probabilityDensity.options.hs * i - probabilityDensity.options.r;//Нижняя граница сегмента
+				sector.ht = probabilityDensity.options.hs * (i + 1) - probabilityDensity.options.r;//Верхняя граница сегмента
+
+				//Площадь сегмента
+				//https://allll.net/wiki/%D0%9F%D0%BB%D0%BE%D1%89%D0%B0%D0%B4%D1%8C_%D0%BF%D0%BE%D0%B2%D0%B5%D1%80%D1%85%D0%BD%D0%BE%D1%81%D1%82%D0%B8_%D1%88%D0%B0%D1%80%D0%BE%D0%B2%D0%BE%D0%B3%D0%BE_%D1%81%D0%B5%D0%B3%D0%BC%D0%B5%D0%BD%D1%82%D0%B0
+				sector.square = 2 * Math.PI * probabilityDensity.options.r * (sector.ht - sector.hb);
+
+				segmentsSquare += sector.square;
+
+//				sector.get = density() {return 56;}
+//				sector.density = 45;
+
+			});
+			const sphereSquare = 4 * Math.PI * probabilityDensity.options.r * probabilityDensity.options.r;
+			if (sphereSquare != segmentsSquare) console.error('Segments square: ' + segmentsSquare + '. Sphere square: ' + sphereSquare);
+		
+		}
+/*
 		//для 2D вселенной это плотность вероятности распределения вершин по поверхости сферы в зависимости от второго угла поворота вершины vertice.angles[1]
 		//Плотности разбил на несколько диапазонов в зависимости от угла поворота vertice.angles[1]
-		//Разбил окружность на 8 сегментов от 0 до 7.
+		//Разбил сферу на 8 сегментов от 0 до 7.
 		//Верхний предел угла поворота каждого сегмента вычисляю по формуле Math.PI * 2 / 16 * (2 * i + 1)
-		//где i - номер сегмента
+		//где i - индекс сегмента
 		const probabilityDensity = classSettings.debug ?
 		[
 			0,//0. From 0 to 0.39269908169872414 and 5.890486225480862 to 0
@@ -315,6 +366,7 @@ class Universe {
 			0,//6. From 4.319689898685965 to 5.105088062083414
 			0,//7. From 5.105088062083414 to 5.890486225480862
 		] : undefined;
+*/
 
 		const position = new Proxy([], {
 
@@ -456,7 +508,8 @@ class Universe {
 											
 										}
 										vertice = polar_to_cartesian({ r: 1, theta: value[0] });
-*/										
+*/
+/*Сейчас probabilityDensity вычисляю сразу после создания этого Proxy
 										if (classSettings.debug) {
 
 											let boDetected = false;
@@ -479,6 +532,7 @@ class Universe {
 											}
 
 										}
+*/								
 /*
 										vertice.length = 0;
 										
@@ -533,12 +587,50 @@ class Universe {
 
 						});
 
-						//for debug
+						if (classSettings.debug) {
+							
+							//Для 2D вселенной.
+							//Плотность вероятности распределения вершин по поверхости сферы в зависимости от третьей координаты вершины z = vertice.[2]
+							//Плотности разбил на несколько диапазонов в зависимости от третьей координаты вершины z = vertice.[2]
+							//Разбил сферу на sc = probabilityDensity.length = 5 сегментов от 0 до 4.
+							//Границы сегментов вычисляю по фомулам:
+							//Высота сегмента hs = d / sc = 2 / 5 = 0.4
+							//Нижняя граница сегмента hb = hs * i - r
+							//Верхняя граница сегмента ht = hs * (i + 1) - r
+							//где r = 1 - радиус сферы, d = 2 * r = 2 - диаметр сферы, i - индекс сегмента
+							const z = position[2];
+							let boDetected = false;
+							for (let i = 0; i < probabilityDensity.options.sc; i++) {
+
+								const segment = probabilityDensity[i];
+								if (
+									(segment.hb <= z) &&//Нижняя граница сегмента
+									(segment.ht > z)//Верхняя граница сегмента
+								) {
+
+									segment.count++;
+									boDetected = true;
+									break;
+									
+								}
+								
+							}
+							if (!boDetected) {
+
+								//probabilityDensity[0]++;
+								console.error(sUniverse + ': add vertice. Probability density. z = ' + z + '. Segment is not detected');
+
+							}
+							
+						}
+							
+/*							
 						//используется для вычисления плотности вероятности распределения вершин по поверхости сферы probabilityDensity
 						proxy.angles = [
 							Math.acos(position[0]),
 							Math.asin(position[2])
 						];
+*/	  
 //						proxy.angles = angles;
 						return _position.push(proxy);
 
@@ -954,48 +1046,45 @@ class Universe {
 				
 				if (this.classSettings.debug && probabilityDensity) {
 					
-					//для 2D вселенной это плотность вероятности распределения вершин по поверхости сферы в зависимости от второго угла поворота вершины vertice.angles[1]
-					//Плотности разбил на несколько диапазонов в зависимости от угла поворота vertice.angles[1]
-					//Разбил окружность на 8 сегментов от 0 до 7.
-					//Верхний предел угла поворота каждого сегмента вычисляю по формуле Math.PI * 2 / 16 * (2 * i + 1)
-					//где i - номер сегмента
-					//0. From 0 to 0.39269908169872414 and 5.890486225480862 to 0
-					//1. From 0.39269908169872414 to 1.1780972450961724
-					//2. From 1.1780972450961724 to 1.9634954084936207
-					//3. From 1.9634954084936207 to 2.748893571891069
-					//4. From 2.748893571891069 to 3.5342917352885173
-					//5. From 3.5342917352885173 to 4.319689898685965
-					//6. From 4.319689898685965 to 5.105088062083414
-					//7. From 5.105088062083414 to 5.890486225480862
+					//для 2D вселенной это плотность вероятности распределения вершин по поверхости сферы в зависимости от третьей координаты вершины z = vertice.[2]
+					//Плотности разбил на несколько диапазонов в зависимости от третьей координаты вершины z = vertice.[2]
+					//Разбил сферу на sc = 5 сегментов от 0 до 4.
+					//Границы сегментов вычисляю по фомулам:
+					//Высота сегмента hs = d / sc = 2 / 5 = 0.4
+					//Нижняя граница hb = hs * i - r
+					//Верхняя граница ht = hs * (i + 1) - r
+					//где r = 1 - радиус сферыб d = 2 * r = 2 - диаметр сферы, i - индекс сегмента
+					//0. From -1 to -0.6
+					//1. From -0.6 to -0.2
+					//2. From -0.2 to 0.2
+					//3. From 0.2 to 0.6
+					//4. From 0.6 to 1
 					console.log('');
 					console.log('Probability density.');
 /*					
-					console.table([
-							['Equator', ((probabilityDensity[0] + probabilityDensity[4]) / 2)],
-						],
-						['Segment', 'Count'],
-					);
-*/
-					function Sector(sector, count, angle) {
+					function Sector(segment, segmentId) {
 						
-						this.sector = sector;
-						this.count = count;
-						this.angle = angle;
-/*						
-						this.angle = i === 0 ?
-						  0 ://для нулевого сектора угол равен нулю. Иначе он буде равен минус угол первого сектора
-						  Math.PI * 2 / 16 * (2 * i - 1);//угол беру по нижней границе сегмента потому что для полюсов сосинус верхней границы равен нулю и я не смогу поучить плотность вершин в сегменте;
-*/		
-						this.radius = Math.cos(this.angle);
-						this.сircumference = Math.PI * 2 * this.radius;//длинна окружности
-						this.density = this.count / this.сircumference;//Плотность вершин в секторе
+						this.count = segment.count;
+						this.square = segment.square;
+						
+//						this.sector = sector;
+//						this.angle = angle;
+//						this.radius = Math.cos(this.angle);
+//						this.сircumference = Math.PI * 2 * this.radius;//длинна окружности
+//						this.density = this.count / this.сircumference;//Плотность вершин в секторе
 						
 					}
+*/					
+					const table = [];
+//					probabilityDensity.forEach((segment, segmentId) => table.push(new Sector(segment, segmentId)))
+					probabilityDensity.forEach((segment, segmentId) => {
+
+						segment.density = segment.square / segment.count;
+						table.push(segment);
 					
-//					const tyrone = new Sector("Equator", ((probabilityDensity[0] + probabilityDensity[4]) / 2));
-//					const janet = new Sector("Janet", "Smith");
-//					const maria = new Sector("Maria", "Cruz");
-					
+					})
+					console.table(table, ['count', 'square', 'density']);
+/*					
 					console.table([
 						new Sector("Equator",          ((probabilityDensity[0] + probabilityDensity[4]) / 2),
 							(Math.PI * 2 / 16 * (2 * 0 + 1) / 2)),//на экваторе средний угол находтся посередине между экватором и краем сектора
@@ -1005,20 +1094,7 @@ class Universe {
 						new Sector("Poles",            ((probabilityDensity[2] + probabilityDensity[6]) / 2),
 							(Math.PI * 2 / 16 * (2 * 2 - 1) + Math.PI / 2) /2 ),//На полюсе средний угол находится между границей сектора и полюсом (90 градусов)
 					], ['sector', "count", 'angle', 'radius', 'сircumference', 'density']);
-/*					
-					const log = (name, whitespace, count, i = 0) => {
-						
-//						console.log('  ' + name + ': ' + whitespace + 'count = ' + count + 
-//							' angle = ' + Math.PI * 2 / 16 * (2 * i + 0));//угол беру по нижней границе сегмента потому что для полюсов сосинус верхней границы равен нулю и я не смогу поучить плотность вершин в сегменте
-						
-					}
-//					console.log('  Equator: ' + ((probabilityDensity[0] + probabilityDensity[4]) / 2));
-					log('Equator', '         ', ((probabilityDensity[0] + probabilityDensity[4]) / 2));
-//					console.log('  Middle latitudes: ' + ((probabilityDensity[1] + probabilityDensity[3] + probabilityDensity[5] + probabilityDensity[7]) / 4));
-					log('Middle latitudes', '',((probabilityDensity[1] + probabilityDensity[3] + probabilityDensity[5] + probabilityDensity[7]) / 4));
-//					console.log('  Poles: ' + ((probabilityDensity[2] + probabilityDensity[6]) / 2));
-					log('Poles', '           ', ((probabilityDensity[2] + probabilityDensity[6]) / 2));
-*/					
+*/	 
 					console.log('');		   
 					console.log('time: Push positions. ' + ((window.performance.now() - this.timestamp) / 1000) + ' sec.');
 
