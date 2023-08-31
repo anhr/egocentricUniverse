@@ -23,7 +23,7 @@ import ND from '../../commonNodeJS/master/nD/nD.js';
 if (ND.default) ND = ND.default;
 
 //когда хочу вывести на холст точки вместо ребер то использую MyPoints вместо ND
-//import MyPoints from '../../commonNodeJS/master/myPoints/myPoints.js';
+import MyPoints from '../../commonNodeJS/master/myPoints/myPoints.js';
 
 import MyThree from '../../commonNodeJS/master/myThree/myThree.js';
 import ProgressBar from '../../commonNodeJS/master/ProgressBar/ProgressBar.js'
@@ -192,7 +192,7 @@ class Universe {
 				sum = 0;
 				//picking x1 and x2 from independent uniform distributions on(-1, 1)
 				for (let i = 0;
-//					i < (_this.dimension - 1);
+//					i < (_this.dimension - 1) * 2;
 					i < 2;
 				 i++) {
 
@@ -217,13 +217,13 @@ class Universe {
 					//Sphere Point Picking
 					//https://mathworld.wolfram.com/SpherePointPicking.html
 					//Marsaglia (1972) method
-		
 					for (let i = 0; i < (_this.dimension - 1); i++) ret.push(2 * x[i] * Math.sqrt(1 - sum));
 					ret.push(1 - 2 * sum);
 					 break;
 				default: console.error(sUniverse + ': randomPosition. Invalid universe dimension = ' + _this.dimension);
 
 			}
+			ret.forEach((axis, i) => ret[i] *= classSettings.radius);
 			return ret;
 /*
 		   let x1, x2;
@@ -341,7 +341,7 @@ class Universe {
 //				get density() { return 22; },
 				
 			});
-			probabilityDensity.options = { r: 1 };
+			probabilityDensity.options = { r: classSettings.radius };
 			probabilityDensity.options.d = probabilityDensity.options.r * 2;
 			probabilityDensity.options.sc = probabilityDensity.length;//Количество сегментов
 			probabilityDensity.options.hs = probabilityDensity.options.d / probabilityDensity.options.sc;//Высота сегмента
