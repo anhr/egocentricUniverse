@@ -319,7 +319,7 @@ class Universe {
 			] : undefined;
 		if (probabilityDensity) {
 			
-			for (let i = 0; i < 5; i++) probabilityDensity.push({
+			for (let i = 0; i < 2; i++) probabilityDensity.push({
 
 				count: 0,
 //				get density() { return 22; },
@@ -329,24 +329,56 @@ class Universe {
 			probabilityDensity.options.d = probabilityDensity.options.r * 2;
 			probabilityDensity.options.sc = probabilityDensity.length;//Количество сегментов
 			probabilityDensity.options.hs = probabilityDensity.options.d / probabilityDensity.options.sc;//Высота сегмента
-			let segmentsSquare = 0;
+//			let segmentsSquare = 0;
+			let sectorsValue = 0;
 			probabilityDensity.forEach((sector, i) => {
 				
 				sector.hb = probabilityDensity.options.hs * i - probabilityDensity.options.r;//Нижняя граница сегмента
 				sector.ht = probabilityDensity.options.hs * (i + 1) - probabilityDensity.options.r;//Верхняя граница сегмента
 
-				//Площадь сегмента
-				//https://allll.net/wiki/%D0%9F%D0%BB%D0%BE%D1%89%D0%B0%D0%B4%D1%8C_%D0%BF%D0%BE%D0%B2%D0%B5%D1%80%D1%85%D0%BD%D0%BE%D1%81%D1%82%D0%B8_%D1%88%D0%B0%D1%80%D0%BE%D0%B2%D0%BE%D0%B3%D0%BE_%D1%81%D0%B5%D0%B3%D0%BC%D0%B5%D0%BD%D1%82%D0%B0
-				sector.square = 2 * Math.PI * probabilityDensity.options.r * (sector.ht - sector.hb);
+//				const r = probabilityDensity.options.r, hb = sector.hb, ht = sector.ht;
 
-				segmentsSquare += sector.square;
+				sectorsValue += _this.probabilityDensity.sectorValue(probabilityDensity, i);
+/*				
+				switch(_this.dimension) {
 
-//				sector.get = density() {return 56;}
-//				sector.density = 45;
+					case 2://1D universe
+						
+						//Длинна дуги сегмента по формуле Гюйгенса
+						//https://mnogoformul.ru/dlina-dugi#:~:text=%D0%94%D0%BB%D0%B8%D0%BD%D0%B0%20%D0%B4%D1%83%D0%B3%D0%B8%20%D0%BF%D0%BE%D0%BB%D0%BD%D0%BE%D0%B9%20%D0%BE%D0%BA%D1%80%D1%83%D0%B6%D0%BD%D0%BE%D1%81%D1%82%D0%B8%20%D1%80%D0%B0%D0%B2%D0%BD%D0%B0,%2C%20%D0%B3%D0%B4%D0%B5%20r%20%2D%20%D1%80%D0%B0%D0%B4%D0%B8%D1%83%D1%81%20%D0%BE%D0%BA%D1%80%D1%83%D0%B6%D0%BD%D0%BE%D1%81%D1%82%D0%B8.
+						const arcLength = (hb) => {
+
+							const M = Math.sqrt(r * r - hb * hb),
+								m = Math.sqrt((M * M) / 4 + (r - hb) * (r - hb));
+							return 2 * m + ((2 * m - M) / 3);
+							
+						}
+						sector.arcLength = arcLength(hb) - arcLength(ht);
+		
+						segmentsSquare += sector.arcLength;
+						break;
+					case 3://2D universe
+						
+						//Площадь сегмента
+						//https://allll.net/wiki/%D0%9F%D0%BB%D0%BE%D1%89%D0%B0%D0%B4%D1%8C_%D0%BF%D0%BE%D0%B2%D0%B5%D1%80%D1%85%D0%BD%D0%BE%D1%81%D1%82%D0%B8_%D1%88%D0%B0%D1%80%D0%BE%D0%B2%D0%BE%D0%B3%D0%BE_%D1%81%D0%B5%D0%B3%D0%BC%D0%B5%D0%BD%D1%82%D0%B0
+						sector.square = 2 * Math.PI * r * (ht - hb);
+		
+						segmentsSquare += sector.square;
+						break;
+					default: console.error(sUniverse + ': probabilityDensity. Invalid universe dimension = ' + _this.dimension);
+
+				}
+*/				
 
 			});
+			let unverseValue = Math.PI;
+			const r = probabilityDensity.options.r;
+			for (let i = 0; i < (_this.dimension - 1); i++) unverseValue *= 2 * r;
+			if (unverseValue != sectorsValue) console.error(sUniverse + ': Unverse value = ' + unverseValue + '. Sectors value = ' + sectorsValue);
+/*			
 			const sphereSquare = 4 * Math.PI * probabilityDensity.options.r * probabilityDensity.options.r;
 			if (sphereSquare != segmentsSquare) console.error('Segments square: ' + segmentsSquare + '. Sphere square: ' + sphereSquare);
+*/
 		
 		}
 /*
@@ -598,7 +630,7 @@ class Universe {
 							//Нижняя граница сегмента hb = hs * i - r
 							//Верхняя граница сегмента ht = hs * (i + 1) - r
 							//где r = 1 - радиус сферы, d = 2 * r = 2 - диаметр сферы, i - индекс сегмента
-							const z = position[2];
+							const z = position[position.length - 1];
 							let boDetected = false;
 							for (let i = 0; i < probabilityDensity.options.sc; i++) {
 
@@ -1034,17 +1066,8 @@ class Universe {
 
 				}
 				for (let i = 0; i < count; i++) position[i];//push vertice if not exists
-/*				
-				let positionId = 0;
-				for (let i = 0; i < count; i++) {
-
-					const res = position[positionId];//push vertice if not exists//if (!(position[i])) position.push();
-					if (res != undefined) positionId++;
-
-				}
-*/	
 				
-				if (this.classSettings.debug && probabilityDensity) {
+				if (probabilityDensity) {
 					
 					//для 2D вселенной это плотность вероятности распределения вершин по поверхости сферы в зависимости от третьей координаты вершины z = vertice.[2]
 					//Плотности разбил на несколько диапазонов в зависимости от третьей координаты вершины z = vertice.[2]
@@ -1061,40 +1084,15 @@ class Universe {
 					//4. From 0.6 to 1
 					console.log('');
 					console.log('Probability density.');
-/*					
-					function Sector(segment, segmentId) {
-						
-						this.count = segment.count;
-						this.square = segment.square;
-						
-//						this.sector = sector;
-//						this.angle = angle;
-//						this.radius = Math.cos(this.angle);
-//						this.сircumference = Math.PI * 2 * this.radius;//длинна окружности
-//						this.density = this.count / this.сircumference;//Плотность вершин в секторе
-						
-					}
-*/					
 					const table = [];
-//					probabilityDensity.forEach((segment, segmentId) => table.push(new Sector(segment, segmentId)))
 					probabilityDensity.forEach((segment, segmentId) => {
 
-						segment.density = segment.square / segment.count;
+						segment.density = segment.count / segment.square;
+						segment.height = segment.ht - segment.hb;
 						table.push(segment);
 					
 					})
-					console.table(table, ['count', 'square', 'density']);
-/*					
-					console.table([
-						new Sector("Equator",          ((probabilityDensity[0] + probabilityDensity[4]) / 2),
-							(Math.PI * 2 / 16 * (2 * 0 + 1) / 2)),//на экваторе средний угол находтся посередине между экватором и краем сектора
-						new Sector("Middle latitudes", ((probabilityDensity[1] + probabilityDensity[3] + probabilityDensity[5] + probabilityDensity[7]) / 4),
-							Math.PI * 2 / 16 * (2 * 1 + 0)//угол посередине среднего сектора
-						),
-						new Sector("Poles",            ((probabilityDensity[2] + probabilityDensity[6]) / 2),
-							(Math.PI * 2 / 16 * (2 * 2 - 1) + Math.PI / 2) /2 ),//На полюсе средний угол находится между границей сектора и полюсом (90 градусов)
-					], ['sector', "count", 'angle', 'radius', 'сircumference', 'density']);
-*/	 
+					console.table(table, ['count', 'hb', 'ht', 'height', 'square', 'density']);
 					console.log('');		   
 					console.log('time: Push positions. ' + ((window.performance.now() - this.timestamp) / 1000) + ' sec.');
 
