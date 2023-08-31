@@ -341,60 +341,32 @@ class Universe {
 //				get density() { return 22; },
 				
 			});
-			probabilityDensity.options = { r: classSettings.radius };
-			probabilityDensity.options.d = probabilityDensity.options.r * 2;
+			probabilityDensity.options = {
+
+//				r: classSettings.radius,
+				d: classSettings.radius * 2,
+
+			};
+//			probabilityDensity.options.d = probabilityDensity.options.r * 2;
 			probabilityDensity.options.sc = probabilityDensity.length;//Количество сегментов
 			probabilityDensity.options.hs = probabilityDensity.options.d / probabilityDensity.options.sc;//Высота сегмента
 //			let segmentsSquare = 0;
 			let sectorsValue = 0;
 			probabilityDensity.forEach((sector, i) => {
-				
+
+				sector.hb = probabilityDensity.options.hs * i - classSettings.radius;//Нижняя граница сегмента
+				sector.ht = probabilityDensity.options.hs * (i + 1) - classSettings.radius;//Верхняя граница сегмента
+/*				
 				sector.hb = probabilityDensity.options.hs * i - probabilityDensity.options.r;//Нижняя граница сегмента
 				sector.ht = probabilityDensity.options.hs * (i + 1) - probabilityDensity.options.r;//Верхняя граница сегмента
-
-//				const r = probabilityDensity.options.r, hb = sector.hb, ht = sector.ht;
-
+*/	
 				sectorsValue += _this.probabilityDensity.sectorValue(probabilityDensity, i);
-/*				
-				switch(_this.dimension) {
-
-					case 2://1D universe
-						
-						//Длинна дуги сегмента по формуле Гюйгенса
-						//https://mnogoformul.ru/dlina-dugi#:~:text=%D0%94%D0%BB%D0%B8%D0%BD%D0%B0%20%D0%B4%D1%83%D0%B3%D0%B8%20%D0%BF%D0%BE%D0%BB%D0%BD%D0%BE%D0%B9%20%D0%BE%D0%BA%D1%80%D1%83%D0%B6%D0%BD%D0%BE%D1%81%D1%82%D0%B8%20%D1%80%D0%B0%D0%B2%D0%BD%D0%B0,%2C%20%D0%B3%D0%B4%D0%B5%20r%20%2D%20%D1%80%D0%B0%D0%B4%D0%B8%D1%83%D1%81%20%D0%BE%D0%BA%D1%80%D1%83%D0%B6%D0%BD%D0%BE%D1%81%D1%82%D0%B8.
-						const arcLength = (hb) => {
-
-							const M = Math.sqrt(r * r - hb * hb),
-								m = Math.sqrt((M * M) / 4 + (r - hb) * (r - hb));
-							return 2 * m + ((2 * m - M) / 3);
-							
-						}
-						sector.arcLength = arcLength(hb) - arcLength(ht);
-		
-						segmentsSquare += sector.arcLength;
-						break;
-					case 3://2D universe
-						
-						//Площадь сегмента
-						//https://allll.net/wiki/%D0%9F%D0%BB%D0%BE%D1%89%D0%B0%D0%B4%D1%8C_%D0%BF%D0%BE%D0%B2%D0%B5%D1%80%D1%85%D0%BD%D0%BE%D1%81%D1%82%D0%B8_%D1%88%D0%B0%D1%80%D0%BE%D0%B2%D0%BE%D0%B3%D0%BE_%D1%81%D0%B5%D0%B3%D0%BC%D0%B5%D0%BD%D1%82%D0%B0
-						sector.square = 2 * Math.PI * r * (ht - hb);
-		
-						segmentsSquare += sector.square;
-						break;
-					default: console.error(sUniverse + ': probabilityDensity. Invalid universe dimension = ' + _this.dimension);
-
-				}
-*/				
 
 			});
 			let unverseValue = Math.PI;
-			const r = probabilityDensity.options.r;
+			const r = classSettings.radius;//probabilityDensity.options.r;
 			for (let i = 0; i < (_this.dimension - 1); i++) unverseValue *= 2 * r;
 			if (unverseValue != sectorsValue) console.error(sUniverse + ': Unverse value = ' + unverseValue + '. Sectors value = ' + sectorsValue);
-/*			
-			const sphereSquare = 4 * Math.PI * probabilityDensity.options.r * probabilityDensity.options.r;
-			if (sphereSquare != segmentsSquare) console.error('Segments square: ' + segmentsSquare + '. Sphere square: ' + sphereSquare);
-*/
 		
 		}
 /*
