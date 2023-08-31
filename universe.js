@@ -23,7 +23,7 @@ import ND from '../../commonNodeJS/master/nD/nD.js';
 if (ND.default) ND = ND.default;
 
 //когда хочу вывести на холст точки вместо ребер то использую MyPoints вместо ND
-import MyPoints from '../../commonNodeJS/master/myPoints/myPoints.js';
+//import MyPoints from '../../commonNodeJS/master/myPoints/myPoints.js';
 
 import MyThree from '../../commonNodeJS/master/myThree/myThree.js';
 import ProgressBar from '../../commonNodeJS/master/ProgressBar/ProgressBar.js'
@@ -179,10 +179,7 @@ class Universe {
 		settings.object.geometry = settings.object.geometry || {};
 		const randomPosition = () => {
 
-			//Sphere Point Picking
-			//https://mathworld.wolfram.com/SpherePointPicking.html
-			//Marsaglia (1972) method
-			const x = [];
+			const ret = [], x = [];
 			let sum;
 
 			//Если не делать этот цикл, то некоторые вершины будут иметь значения NaN и появится ошибка:
@@ -194,7 +191,10 @@ class Universe {
 				x.length = 0;
 				sum = 0;
 				//picking x1 and x2 from independent uniform distributions on(-1, 1)
-				for (let i = 0; i < (_this.dimension - 1); i++) {
+				for (let i = 0;
+//					i < (_this.dimension - 1);
+					i < 2;
+				 i++) {
 
 					const random = Math.random() * 2 - 1;
 					sum += random * random;
@@ -203,11 +203,27 @@ class Universe {
 				}
 
 			} while (sum >= 1);//rejecting points for which x1^2+x2^2>=1
+			switch(_this.dimension) {
 
+				case 2://1D universe
+					
+					//Circle Point Picking
+					//https://mathworld.wolfram.com/CirclePointPicking.html
+					ret.push((x[0] * x[0] - (x[1] * x[1])) / sum);//x	=	(x_1^2-x_2^2)/(x_1^2+x_2^2)	
+					ret.push(2 * x[0] * x[1] / sum);//y	=	(2x_1x_2)/(x_1^2+x_2^2)
+					break;
+				case 3://2D universe
+					
+					//Sphere Point Picking
+					//https://mathworld.wolfram.com/SpherePointPicking.html
+					//Marsaglia (1972) method
+		
+					for (let i = 0; i < (_this.dimension - 1); i++) ret.push(2 * x[i] * Math.sqrt(1 - sum));
+					ret.push(1 - 2 * sum);
+					 break;
+				default: console.error(sUniverse + ': randomPosition. Invalid universe dimension = ' + _this.dimension);
 
-			const ret = [];
-			for (let i = 0; i < (_this.dimension - 1); i++) ret.push(2 * x[i] * Math.sqrt(1 - sum));
-			ret.push(1 - 2 * sum);
+			}
 			return ret;
 /*
 		   let x1, x2;
@@ -319,7 +335,7 @@ class Universe {
 			] : undefined;
 		if (probabilityDensity) {
 			
-			for (let i = 0; i < 2; i++) probabilityDensity.push({
+			for (let i = 0; i < 5; i++) probabilityDensity.push({
 
 				count: 0,
 //				get density() { return 22; },
@@ -1087,12 +1103,16 @@ class Universe {
 					const table = [];
 					probabilityDensity.forEach((segment, segmentId) => {
 
-						segment.density = segment.count / segment.square;
+						segment.density = segment.count / segment[_this.probabilityDensity.sectorValueName];//segment.square;
 						segment.height = segment.ht - segment.hb;
 						table.push(segment);
 					
 					})
-					console.table(table, ['count', 'hb', 'ht', 'height', 'square', 'density']);
+					const sectorValueName = _this.probabilityDensity.sectorValueName;
+					if (!sectorValueName) console.error(sUniverse + ': Invalid sectorValueName = ' + sectorValueName);
+					console.table(table, ['count', 'hb', 'ht', 'height',
+						sectorValueName,//'square',
+						'density']);
 					console.log('');		   
 					console.log('time: Push positions. ' + ((window.performance.now() - this.timestamp) / 1000) + ' sec.');
 
