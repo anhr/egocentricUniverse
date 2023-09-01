@@ -192,8 +192,8 @@ class Universe {
 				sum = 0;
 				//picking x1 and x2 from independent uniform distributions on(-1, 1)
 				for (let i = 0;
-//					i < (_this.dimension - 1) * 2;
-					i < 2;
+					i < (_this.dimension - 1) * 2;
+//					i < 2;
 				 i++) {
 
 					const random = Math.random() * 2 - 1;
@@ -216,9 +216,16 @@ class Universe {
 					
 					//Sphere Point Picking
 					//https://mathworld.wolfram.com/SpherePointPicking.html
+					//Cook (1957) extended a method of von Neumann (1951)
+					ret.push((x[0] * x[0] + x[3] * x[3] - x[1] * x[1] - x[2] * x[2]) / sum);//z	=	(x_0^2+x_3^2-x_1^2-x_2^2)/(x_0^2+x_1^2+x_2^2+x_3^2)
+					ret.push(2 * (x[0] * x[1] - x[2] * x[3]) / sum);//y	=	(2(x_2x_3-x_0x_1))/(x_0^2+x_1^2+x_2^2+x_3^2)	
+					ret.push(2 * (x[1] * x[3] + x[0] * x[2]) / sum);//x	=	(2(x_1x_3+x_0x_2))/(x_0^2+x_1^2+x_2^2+x_3^2)	
+	 
+/*	 
 					//Marsaglia (1972) method
 					for (let i = 0; i < (_this.dimension - 1); i++) ret.push(2 * x[i] * Math.sqrt(1 - sum));
 					ret.push(1 - 2 * sum);
+*/	 
 					 break;
 				default: console.error(sUniverse + ': randomPosition. Invalid universe dimension = ' + _this.dimension);
 
