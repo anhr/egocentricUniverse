@@ -203,13 +203,25 @@ class Universe {
 				}
 
 			} while (sum >= 1);//rejecting points for which x1^2+x2^2>=1
+   
+			//ret.push((x[0] * x[0] + x[3] * x[3] - (x[1] * x[1] + x[2] * x[2])) / sum);//z	=	(x_0^2+x_3^2-x_1^2-x_2^2)/(x_0^2+x_1^2+x_2^2+x_3^2)
+			let positive = x[0] * x[0], negative = x[1] * x[1];
+			for (let i = 0; i < (_this.dimension - 2); i++) {
+
+				const p = x[_this.dimension - i], n = x[2 + i];
+				positive += p * p;
+				negative += n * n;
+	  
+			}
+			ret.push((positive - negative) / sum);
+   
 			switch(_this.dimension) {
 
 				case 2://1D universe
 					
 					//Circle Point Picking
 					//https://mathworld.wolfram.com/CirclePointPicking.html
-					ret.push((x[0] * x[0] - (x[1] * x[1])) / sum);//x	=	(x_1^2-x_2^2)/(x_1^2+x_2^2)	
+//					ret.push((x[0] * x[0] - x[1] * x[1]) / sum);//x	=	(x_1^2-x_2^2)/(x_1^2+x_2^2)	
 					ret.push(2 * x[0] * x[1] / sum);//y	=	(2x_1x_2)/(x_1^2+x_2^2)
 					break;
 				case 3://2D universe
@@ -217,105 +229,21 @@ class Universe {
 					//Sphere Point Picking
 					//https://mathworld.wolfram.com/SpherePointPicking.html
 					//Cook (1957) extended a method of von Neumann (1951)
-					ret.push((x[0] * x[0] + x[3] * x[3] - x[1] * x[1] - x[2] * x[2]) / sum);//z	=	(x_0^2+x_3^2-x_1^2-x_2^2)/(x_0^2+x_1^2+x_2^2+x_3^2)
+//					ret.push((x[0] * x[0] + x[3] * x[3] - x[1] * x[1] - x[2] * x[2]) / sum);//z	=	(x_0^2+x_3^2-x_1^2-x_2^2)/(x_0^2+x_1^2+x_2^2+x_3^2)
 					ret.push(2 * (x[0] * x[1] - x[2] * x[3]) / sum);//y	=	(2(x_2x_3-x_0x_1))/(x_0^2+x_1^2+x_2^2+x_3^2)	
 					ret.push(2 * (x[1] * x[3] + x[0] * x[2]) / sum);//x	=	(2(x_1x_3+x_0x_2))/(x_0^2+x_1^2+x_2^2+x_3^2)	
 	 
-/*	 
 					//Marsaglia (1972) method
-					for (let i = 0; i < (_this.dimension - 1); i++) ret.push(2 * x[i] * Math.sqrt(1 - sum));
-					ret.push(1 - 2 * sum);
-*/	 
+//					for (let i = 0; i < (_this.dimension - 1); i++) ret.push(2 * x[i] * Math.sqrt(1 - sum));
+//					ret.push(1 - 2 * sum);
+	 
 					 break;
 				default: console.error(sUniverse + ': randomPosition. Invalid universe dimension = ' + _this.dimension);
 
 			}
+
 			ret.forEach((axis, i) => ret[i] *= classSettings.radius);
 			return ret;
-/*
-		   let x1, x2;
-	 
-			 //Если не делать этот цикл, то некоторые вершины будут иметь значения NaN и появится ошибка:
-			//THREE.BufferGeometry.computeBoundingSphere(): Computed radius is NaN. The "position" attribute is likely to have NaN values. 
-			 //но при этом распределение вершин по вселенной все равно будет равномерным.
-			 //Не разобрался почему так происходит.
-			do {
-
-				//picking x1 and x2 from independent uniform distributions on(-1, 1)
-				x1 = Math.random() * 2 - 1;
-				x2 = Math.random() * 2 - 1;
-//				if ((x1 * x1 + x2 * x2) >= 1) console.log('x1 = ' + x1 + ' x2 = ' + x2);
-	
-			} while ((x1 * x1 + x2 * x2) >= 1);//rejecting points for which x1^2+x2^2>=1
-
-			
-		   const sqrt = Math.sqrt(1 - x1 * x1 - x2 * x2);
-		   return [
-				2 * x1 * sqrt,//x = 2x_1sqrt(1-x_1^2-x_2^2)
-				2 * x2 * sqrt,//2x_2sqrt(1-x_1^2-x_2^2)
-				1 - 2 * (x1 * x1 + x2 * x2)//1-2(x_1^2+x_2^2)
-			];
-*/
-   
-//			return [x1, x2];
-/*
-			//Каждая вершина педставляет из себя набор углов поворота относительно центра вселенной в радианах для определенного момента времени
-			//Центр вселенной это точка большого взрыва когда время равно нулю.
-			//Например в одномерной вселенной _this.dimension = 2 каждая вершина это одномерный вектор v, указывающий на положение вершины на окружности.
-			//v[0] это угол поворота. v.length = 1
-			//Для двумерной вселенной _this.dimension = 3 каждая вершина это двумерный вектор v, указывающий на положение вершины на сфере.
-			//v[0] это первый угол поворота.
-			//v[2] это второй угол поворота.
-			//v.length = 2
-			const v = [];
-//			for (let i = 0; i < (_this.dimension - 1); i++) v.push(Math.random() - 0.5);
-			let radius = 0;
-			do {
-
-				v.length = 0;
-				for (let i = 0; i < (_this.dimension - 1); i++) {
-
-					let angle = Math.random() - 0.5;// * Math.PI * 2;
-//					if (i === 1) angle *= Math.cos(angle);
-					v.push(angle);
-
-				}
-
-				 //Для 2D вселенной все вершины должны находиться внутри круга чтобы вершины равномерно распределились по поверхности сферы
-				radius = 0;
-				v.forEach((angle) => {
-
-//					angle = Math.abs(angle);
-//					while(angle > 0.25) angle -= 0.25;
-					radius += angle * angle;
-				 
-				});
-
-			} while(Math.sqrt(radius) > 0.5);
-//			v.forEach((angle) => radius += angle * angle);
-//			if (Math.sqrt(radius) > 0.5) return;
-			//v.forEach((angle, i) => v[i] = (v[i] + 0.5) * Math.PI * 2);
-			v.forEach((angle, i) => v[i] = v[i] * Math.PI * 2);
-			return v;
-*/
-/*			
-			//Vector length limitation
-			let v, ll, rr = classSettings.radius * classSettings.radius;
-			do {
-				
-				const randomAxis = () => { return (Math.random() * 2 - 1) * classSettings.radius; };
-				v = [];
-				for (let i = 0; i < _this.dimension; i++) v.push(randomAxis());
-				
-				let vv = 0.0;
-				v.forEach(axis => vv += axis * axis);
-//								length = Math.sqrt(vv);
-				ll = vv;
-
-			}while(ll > rr)
-			
-			return v;
-*/
 			
 		}
 
