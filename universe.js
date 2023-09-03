@@ -23,6 +23,7 @@ import ND from '../../commonNodeJS/master/nD/nD.js';
 if (ND.default) ND = ND.default;
 
 //когда хочу вывести на холст точки вместо ребер то использую MyPoints вместо ND
+//При этом ребра не создаются что дает экономию времени
 import MyPoints from '../../commonNodeJS/master/myPoints/myPoints.js';
 
 import MyThree from '../../commonNodeJS/master/myThree/myThree.js';
@@ -179,49 +180,85 @@ class Universe {
 		settings.object.geometry = settings.object.geometry || {};
 		const randomPosition = () => {
 
-			const ret = [], x = [];
+			const ret = [],
+				x = [];//random array
 			let sum;
 
-			//Если не делать этот цикл, то некоторые вершины будут иметь значения NaN и появится ошибка:
-			//THREE.BufferGeometry.computeBoundingSphere(): Computed radius is NaN. The "position" attribute is likely to have NaN values. 
-			//но при этом распределение вершин по вселенной все равно будет равномерным.
-			//Не разобрался почему так происходит.
-			do {
+			const
+				randomArray = (length = (_this.dimension - 1) * 2, array) => {
 
-				x.length = 0;
-				sum = 0;
-				//picking x1 and x2 from independent uniform distributions on(-1, 1)
-				for (let i = 0;
-					i < (_this.dimension - 1) * 2;
-//					i < 2;
-				 i++) {
+					//Если не делать этот цикл, то некоторые вершины будут иметь значения NaN и появится ошибка:
+					//THREE.BufferGeometry.computeBoundingSphere(): Computed radius is NaN. The "position" attribute is likely to have NaN values. 
+					//но при этом распределение вершин по вселенной все равно будет равномерным.
+					//Не разобрался почему так происходит.
+					do {
 
-					const random = Math.random() * 2 - 1;
-					sum += random * random;
-					x.push(random);
+						x.length = 0;
+						sum = 0;
+						if (array) array.length = 0;
+						//picking x1 and x2 from independent uniform distributions on(-1, 1)
+						for (let i = 0;
+							i < length;
+							//					i < 2;
+							i++) {
+
+							const random = Math.random() * 2 - 1;
+							sum += random * random;
+							(array || x).push(random);
+
+						}
+
+					} while (sum >= 1);//rejecting points for which x1^2+x2^2>=1
+
+				},
+				push0 = () => {
+
+					randomArray();
+/*
+					//Если не делать этот цикл, то некоторые вершины будут иметь значения NaN и появится ошибка:
+					//THREE.BufferGeometry.computeBoundingSphere(): Computed radius is NaN. The "position" attribute is likely to have NaN values. 
+					//но при этом распределение вершин по вселенной все равно будет равномерным.
+					//Не разобрался почему так происходит.
+					do {
+
+						x.length = 0;
+						sum = 0;
+						//picking x1 and x2 from independent uniform distributions on(-1, 1)
+						for (let i = 0;
+							i < (_this.dimension - 1) * 2;
+							//					i < 2;
+							i++) {
+
+							const random = Math.random() * 2 - 1;
+							sum += random * random;
+							x.push(random);
+
+						}
+
+					} while (sum >= 1);//rejecting points for which x1^2+x2^2>=1
+*/
+
+					//ret.push((x[0] * x[0] + x[3] * x[3] - (x[1] * x[1] + x[2] * x[2])) / sum);//z	=	(x_0^2+x_3^2-x_1^2-x_2^2)/(x_0^2+x_1^2+x_2^2+x_3^2)
+					let positive = x[0] * x[0], negative = x[1] * x[1];
+					for (let i = 0; i < (_this.dimension - 2); i++) {
+
+						const p = x[_this.dimension - i], n = x[2 + i];
+						positive += p * p;
+						negative += n * n;
+
+					}
+					ret.push((positive - negative) / sum);
 
 				}
-
-			} while (sum >= 1);//rejecting points for which x1^2+x2^2>=1
-   
-			//ret.push((x[0] * x[0] + x[3] * x[3] - (x[1] * x[1] + x[2] * x[2])) / sum);//z	=	(x_0^2+x_3^2-x_1^2-x_2^2)/(x_0^2+x_1^2+x_2^2+x_3^2)
-			let positive = x[0] * x[0], negative = x[1] * x[1];
-			for (let i = 0; i < (_this.dimension - 2); i++) {
-
-				const p = x[_this.dimension - i], n = x[2 + i];
-				positive += p * p;
-				negative += n * n;
-	  
-			}
-			ret.push((positive - negative) / sum);
    
 			switch(_this.dimension) {
 
 				case 2://1D universe
-					
+
 					//Circle Point Picking
 					//https://mathworld.wolfram.com/CirclePointPicking.html
 //					ret.push((x[0] * x[0] - x[1] * x[1]) / sum);//x	=	(x_1^2-x_2^2)/(x_1^2+x_2^2)	
+					push0();
 					ret.push(2 * x[0] * x[1] / sum);//y	=	(2x_1x_2)/(x_1^2+x_2^2)
 					break;
 				case 3://2D universe
@@ -230,6 +267,7 @@ class Universe {
 					//https://mathworld.wolfram.com/SpherePointPicking.html
 					//Cook (1957) extended a method of von Neumann (1951)
 //					ret.push((x[0] * x[0] + x[3] * x[3] - x[1] * x[1] - x[2] * x[2]) / sum);//z	=	(x_0^2+x_3^2-x_1^2-x_2^2)/(x_0^2+x_1^2+x_2^2+x_3^2)
+					push0();
 					ret.push(2 * (x[0] * x[1] - x[2] * x[3]) / sum);//y	=	(2(x_2x_3-x_0x_1))/(x_0^2+x_1^2+x_2^2+x_3^2)	
 					ret.push(2 * (x[1] * x[3] + x[0] * x[2]) / sum);//x	=	(2(x_1x_3+x_0x_2))/(x_0^2+x_1^2+x_2^2+x_3^2)	
 	 
@@ -238,6 +276,10 @@ class Universe {
 //					ret.push(1 - 2 * sum);
 	 
 					 break;
+				case 4://3D universe
+					randomArray(3, ret);
+//					ret.push(x);				
+					break;
 				default: console.error(sUniverse + ': randomPosition. Invalid universe dimension = ' + _this.dimension);
 
 			}
@@ -258,7 +300,9 @@ class Universe {
 		//Нижняя граница сегмента hb = hs * i - r
 		//Верхняя граница сегмента ht = hs * (i + 1) - r
 		//где r = 1 - радиус сферыб d = 2 * r = 2 - диаметр сферы, i - индекс сегмента
-		const probabilityDensity = classSettings.debug ?
+		const probabilityDensity = classSettings.debug &&
+			_this.dimension < 4//Для 3D вселенной плотность не вычисляю так как с этим нет проблем 
+			?
 			[
 				/*
 				{ count: 0, },//0. From -1 to -0.6
@@ -542,7 +586,7 @@ class Universe {
 
 						});
 
-						if (classSettings.debug) {
+						if (probabilityDensity) {
 							
 							//Для 2D вселенной.
 							//Плотность вероятности распределения вершин по поверхости сферы в зависимости от третьей координаты вершины z = vertice.[2]
