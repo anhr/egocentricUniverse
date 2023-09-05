@@ -22,7 +22,7 @@ import ND from '../../commonNodeJS/master/nD/nD.js';
 //import ND from 'https://raw.githack.com/anhr/commonNodeJS/master/nD/build/nD.module.min.js';
 if (ND.default) ND = ND.default;
 
-//когда хочу вывести на холст точки вместо ребер то использую MyPoints вместо ND
+//Когда хочу вывести на холст точки вместо ребер то использую MyPoints вместо ND
 //При этом ребра не создаются что дает экономию времени
 import MyPoints from '../../commonNodeJS/master/myPoints/myPoints.js';
 
@@ -193,7 +193,7 @@ class Universe {
 					//Не разобрался почему так происходит.
 					do {
 
-						x.length = 0;
+						if (!array) x.length = 0;
 						sum = 0;
 						if (array) array.length = 0;
 						//picking x1 and x2 from independent uniform distributions on(-1, 1)
@@ -277,14 +277,38 @@ class Universe {
 	 
 					 break;
 				case 4://3D universe
-					randomArray(3, ret);
-//					ret.push(x);				
+
+//					randomArray(3, ret);
+					
+					//Hypersphere Point Picking
+					//https://mathworld.wolfram.com/HyperspherePointPicking.html
+					//Marsaglia (1972)
+
+					//set x - random array
+					randomArray(2);
+					const sum1 = sum, x2 = [];
+					randomArray(2, x2);
+					x2.forEach(item => x.push(item));
+
+					ret.push(x[0]);//x	=	x_1	
+					ret.push(x[1]);//y	=	x_2	
+					const sqrt = Math.sqrt((1 - sum1) / sum);//sqrt((1-x_1^2-x_2^2)/(x_3^2+x_4^2)
+					ret.push(x[2] * sqrt);//z	=	x_3sqrt((1-x_1^2-x_2^2)/(x_3^2+x_4^2))	
+					ret.push(x[3] * sqrt);;//w	=	x_4sqrt((1-x_1^2-x_2^2)/(x_3^2+x_4^2))
+					
 					break;
 				default: console.error(sUniverse + ': randomPosition. Invalid universe dimension = ' + _this.dimension);
 
 			}
 
-			ret.forEach((axis, i) => ret[i] *= classSettings.radius);
+			sum = 0;
+			ret.forEach((axis, i) => {
+
+				sum += ret[i] * ret[i]; 
+				ret[i] *= classSettings.radius
+			
+			});
+			if (classSettings.debug && (Math.abs(sum - 1) > 5.0e-16)) console.error(sUniverse + ': randomPosition. Vertice[' + ret + '] is not situated at a constant distance 1')
 			return ret;
 			
 		}
@@ -300,8 +324,8 @@ class Universe {
 		//Нижняя граница сегмента hb = hs * i - r
 		//Верхняя граница сегмента ht = hs * (i + 1) - r
 		//где r = 1 - радиус сферыб d = 2 * r = 2 - диаметр сферы, i - индекс сегмента
-		const probabilityDensity = classSettings.debug &&
-			_this.dimension < 4//Для 3D вселенной плотность не вычисляю так как с этим нет проблем 
+		const probabilityDensity = classSettings.debug
+//			&& _this.dimension < 4//Для 3D вселенной плотность не вычисляю так как с этим нет проблем 
 			?
 			[
 				/*
@@ -342,9 +366,14 @@ class Universe {
 				sectorsValue += _this.probabilityDensity.sectorValue(probabilityDensity, i);
 
 			});
-			let unverseValue = Math.PI;
-			const r = classSettings.radius;//probabilityDensity.options.r;
-			for (let i = 0; i < (_this.dimension - 1); i++) unverseValue *= 2 * r;
+			let unverseValue = this.probabilityDensity.unverseValue;
+			if (unverseValue === undefined) {
+				
+				unverseValue = Math.PI;
+				const r = classSettings.radius;//probabilityDensity.options.r;
+				for (let i = 0; i < (_this.dimension - 1); i++) unverseValue *= 2 * r;
+
+			}
 			if (unverseValue != sectorsValue) console.error(sUniverse + ': Unverse value = ' + unverseValue + '. Sectors value = ' + sectorsValue);
 		
 		}

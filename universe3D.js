@@ -23,19 +23,30 @@ class Universe3D extends Universe {
 	
 	get probabilityDensity() {
 
+		const _this = this;
 		return {
 
-			sectorValueName: 'sectorSquare',
+			sectorValueName: 'sectorVolume',
 			sectorValue: (probabilityDensity, i) => {
 
 				const sector = probabilityDensity[i], r = this.classSettings.radius, hb = sector.hb, ht = sector.ht;
 				
-				//Площадь сегмента
-				//https://allll.net/wiki/%D0%9F%D0%BB%D0%BE%D1%89%D0%B0%D0%B4%D1%8C_%D0%BF%D0%BE%D0%B2%D0%B5%D1%80%D1%85%D0%BD%D0%BE%D1%81%D1%82%D0%B8_%D1%88%D0%B0%D1%80%D0%BE%D0%B2%D0%BE%D0%B3%D0%BE_%D1%81%D0%B5%D0%B3%D0%BC%D0%B5%D0%BD%D1%82%D0%B0
-				sector[this.probabilityDensity.sectorValueName] = 2 * Math.PI * r * (ht - hb);
+				//объем сегмента
+				//https://en.wikipedia.org/wiki/Sphere
+				//https://www.sjsu.edu/faculty/watkins/ndim.htm сводная таблица площади и объема для сфер разной размерности
+//				sector[this.probabilityDensity.sectorValueName] = 2 * Math.PI * r * (ht - hb);
+				sector[this.probabilityDensity.sectorValueName] = Math.PI * Math.PI * r * r * (ht - hb);
 				return sector[this.probabilityDensity.sectorValueName];
 
 			},
+			get unverseValue() {
+				
+				//https://www.sjsu.edu/faculty/watkins/ndim.htm
+				//Dimension = 4. Bounding Area = 2ππRRR
+				const r = _this.classSettings.radius;
+				return 2 * Math.PI * Math.PI * r * r * r//Bounding Area
+
+			}
 
 		}
 
@@ -195,7 +206,7 @@ class Universe3D extends Universe {
 	//Overridden methods from base class
 
 	get verticeEdgesLengthMax() { return 6; }//нельзя добавлть новое ребро если у вершины уже 6 ребра
-	TestVerticeEdges(vertice){ return (vertice.length === this.verticeEdgesLengthMax) || (vertice.length === 3) ? true : false; }
+	TestVerticeEdges(vertice){ return (vertice.length === this.verticeEdgesLengthMax) || (vertice.length === 3) || (vertice.length === 4) ? true : false; }
 	get dimension() { return 4; }//space dimension
 	get verticesCountMin() { return 4; }
 
