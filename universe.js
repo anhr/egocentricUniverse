@@ -25,6 +25,7 @@ if (ND.default) ND = ND.default;
 //Когда хочу вывести на холст точки вместо ребер то использую MyPoints вместо ND
 //При этом ребра не создаются что дает экономию времени
 import MyPoints from '../../commonNodeJS/master/myPoints/myPoints.js';
+import ColorPicker from '../../commonNodeJS/master/colorpicker/colorpicker.js';
 
 import MyThree from '../../commonNodeJS/master/myThree/myThree.js';
 import ProgressBar from '../../commonNodeJS/master/ProgressBar/ProgressBar.js'
@@ -890,9 +891,11 @@ class Universe {
 						name: settings.object.name,
 					
 					},
+					palette: new ColorPicker.palette({ palette: ColorPicker.paletteIndexes.bidirectional }),
+					scales: { w: { min: -1 } },
 					options: {
 						
-						point: { size: 0.0 },
+						point: settings.options.point,//{ size: 0.0 },
 						guiSelectPoint: settings.options.guiSelectPoint,
 					
 					}

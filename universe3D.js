@@ -168,7 +168,7 @@ class Universe3D extends Universe {
 		
 		const lang = {
 
-			name: "2D universe",
+			name: "3D universe",
 
 		};
 
@@ -178,7 +178,7 @@ class Universe3D extends Universe {
 
 			case 'ru'://Russian language
 
-				lang.name = 'Двумерная вселенная';
+				lang.name = 'Трехмерная вселенная';
 
 				break;
 
@@ -194,12 +194,14 @@ class Universe3D extends Universe {
 
 	}
 */
+/*
 	logUniverse2D() {
 
 		if (!this.classSettings.debug) return;
 		this.logUniverse();
 		
 	}
+*/
 
 //	project(scene) { }
 
@@ -217,9 +219,9 @@ class Universe3D extends Universe {
 	 **/
 	constructor(options, classSettings) {
 
-		classSettings.continue = () => this.logUniverse2D();
+//		classSettings.continue = () => this.logUniverse();
 		super(options, classSettings);
-//		this.logUniverse3D();
+		this.logUniverse();
 
 	}
 
