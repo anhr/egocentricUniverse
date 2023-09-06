@@ -515,8 +515,11 @@ class Universe {
 */
 									case 'vector':
 										//для совместимости с Player.getPoints. Туда попадает когда хочу вывести на холст точки вместо ребер и использую дя этого MyPoints вместо ND
-										const vertice2 = vertice[2];
-										return new MyThree.three.THREE.Vector4(vertice[0], vertice[1], vertice2 === undefined ? 0 : vertice2, 1);
+										const vertice2 = vertice[2], vertice3 = vertice[3];
+										return new MyThree.three.THREE.Vector4(vertice[0], vertice[1], vertice2 === undefined ? 0 : vertice2, vertice3 === undefined ? 1 : vertice3);
+									case 'w':
+										//для совместимости с Player.getColors. Туда попадает когда хочу вывести на холст точки вместо ребер и использую дя этого MyPoints вместо ND
+										return vertice[3];
 
 								}
 								return vertice[name];
@@ -892,11 +895,11 @@ class Universe {
 					
 					},
 					palette: new ColorPicker.palette({ palette: ColorPicker.paletteIndexes.bidirectional }),
-					scales: { w: { min: -1 } },
 					options: {
 						
 						point: settings.options.point,//{ size: 0.0 },
 						guiSelectPoint: settings.options.guiSelectPoint,
+						scales: { w: { min: -1 } },
 					
 					}
 					
