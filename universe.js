@@ -894,7 +894,7 @@ class Universe {
 						name: settings.object.name,
 					
 					},
-					palette: new ColorPicker.palette({ palette: ColorPicker.paletteIndexes.bidirectional }),
+					//palette: new ColorPicker.palette({ palette: ColorPicker.paletteIndexes.bidirectional }),
 					options: {
 						
 						point: settings.options.point,//{ size: 0.0 },
