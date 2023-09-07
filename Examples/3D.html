@@ -115,7 +115,8 @@
 			scales: {
 
 				posAxesIntersection: new THREE.Vector3( -1, -1, -1 ),
-				text: { precision: 1, rect: { displayRect: false, }, }
+				text: { precision: 1, rect: { displayRect: false, }, },
+				//w: { min: -1 },
 
 			},
 			//dat: false,
@@ -126,7 +127,7 @@
 			},
 			//pointLight: false,
 			point: { size: 0.0 },
-			palette: 3,
+			palette: MyThree.ColorPicker.paletteIndexes.rainbow,
 			playerOptions: {
 				
 				max: Infinity,

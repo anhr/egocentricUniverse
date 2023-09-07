@@ -886,6 +886,15 @@ class Universe {
 				settings.object.geometry.position.forEach(vertive => points.push(vertive.angles));
 				*/
 				
+				settings.options.scales.w.min = -classSettings.radius;
+/*				
+settings.options.scales.setW({
+	
+	scales: { w: { min: -classSettings.radius } },
+	palette: settings.options.palette,
+
+});
+*/
 				MyPoints(points, scene, {
 					
 					pointsOptions: {
@@ -894,14 +903,18 @@ class Universe {
 						name: settings.object.name,
 					
 					},
-					//palette: new ColorPicker.palette({ palette: ColorPicker.paletteIndexes.bidirectional }),
+//					palette: new ColorPicker.palette({ palette: ColorPicker.paletteIndexes.bidirectional }),
+					options: settings.options,
+/*					
 					options: {
 						
 						point: settings.options.point,//{ size: 0.0 },
 						guiSelectPoint: settings.options.guiSelectPoint,
 						scales: { w: { min: -1 } },
+						palette: settings.options.palette,
 					
 					}
+*/	 
 					
 				});
 
