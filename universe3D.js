@@ -20,7 +20,14 @@ import ProgressBar from '../../commonNodeJS/master/ProgressBar/ProgressBar.js'
 class Universe3D extends Universe {
 
 	//base methods
-	
+
+	setW() {
+
+		const classSettings = this.classSettings, w = classSettings.settings.options.scales.w;
+		w.min = -classSettings.radius;
+		w.max = classSettings.radius;
+		
+	};
 	get probabilityDensity() {
 
 		const _this = this;

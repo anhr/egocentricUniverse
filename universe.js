@@ -309,7 +309,7 @@ class Universe {
 				ret[i] *= classSettings.radius
 			
 			});
-			if (classSettings.debug && (Math.abs(sum - 1) > 5.0e-16)) console.error(sUniverse + ': randomPosition. Vertice[' + ret + '] is not situated at a constant distance 1')
+			if (classSettings.debug && (Math.abs(sum - 1) > 7.0e-16)) console.error(sUniverse + ': randomPosition. Vertice[' + ret + '] is not situated at a constant distance 1. Real distance is ' + sum)
 			return ret;
 			
 		}
@@ -885,17 +885,13 @@ class Universe {
 				points = [];
 				settings.object.geometry.position.forEach(vertive => points.push(vertive.angles));
 				*/
-				
+
+				if (this.setW) this.setW();
+/*				
 				settings.options.scales.w.min = -classSettings.radius;
 				settings.options.scales.w.max = classSettings.radius;
-/*				
-settings.options.scales.setW({
-	
-	scales: { w: { min: -classSettings.radius } },
-	palette: settings.options.palette,
-
-});
-*/
+*/	
+				
 				MyPoints(points, scene, {
 					
 					pointsOptions: {
