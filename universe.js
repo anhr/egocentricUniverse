@@ -887,6 +887,7 @@ class Universe {
 				*/
 				
 				settings.options.scales.w.min = -classSettings.radius;
+				settings.options.scales.w.max = classSettings.radius;
 /*				
 settings.options.scales.setW({
 	
