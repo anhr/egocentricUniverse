@@ -24,8 +24,8 @@ class Universe3D extends Universe {
 	setW() {
 
 		const classSettings = this.classSettings, w = classSettings.settings.options.scales.w;
-		w.min = -classSettings.radius;
-		w.max = classSettings.radius;
+		w.min = -classSettings.t;
+		w.max = classSettings.t;
 		
 	};
 	get probabilityDensity() {
@@ -36,7 +36,7 @@ class Universe3D extends Universe {
 			sectorValueName: 'sectorVolume',
 			sectorValue: (probabilityDensity, i) => {
 
-				const sector = probabilityDensity[i], r = this.classSettings.radius, hb = sector.hb, ht = sector.ht;
+				const sector = probabilityDensity[i], r = this.classSettings.t, hb = sector.hb, ht = sector.ht;
 				
 				//объем сегмента
 				//https://en.wikipedia.org/wiki/Sphere
@@ -50,7 +50,7 @@ class Universe3D extends Universe {
 				
 				//https://www.sjsu.edu/faculty/watkins/ndim.htm
 				//Dimension = 4. Bounding Area = 2ππRRR
-				const r = _this.classSettings.radius;
+				const r = _this.classSettings.t;
 				return 2 * Math.PI * Math.PI * r * r * r//Bounding Area
 
 			}

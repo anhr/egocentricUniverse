@@ -31,7 +31,7 @@ class Universe1D extends Universe {
 			sectorValue: (probabilityDensity, i) => {
 				
 //				const sector = probabilityDensity[i], r = probabilityDensity.options.r, hb = sector.hb, ht = sector.ht,
-				const sector = probabilityDensity[i], r = this.classSettings.radius, hb = sector.hb, ht = sector.ht,
+				const sector = probabilityDensity[i], r = this.classSettings.t, hb = sector.hb, ht = sector.ht,
 					angle = (hb) => {
 
 						const M = Math.sqrt(r * r - hb * hb);//Прилежащий катет прямоугольного треугольника

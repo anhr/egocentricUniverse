@@ -132,7 +132,7 @@ class Universe {
 	 * @param {float} [classSettings.projectParams.params.center.x=0.0] X axis of the center
 	 * @param {float} [classSettings.projectParams.params.center.y=0.0] Y axis of the center
 	 * @param {float} [classSettings.projectParams.params.center.z=0.0] Y axis of the center
-	 * @param {float} [classSettings.radius=1.0] Universe start radius.
+	 * @param {float} [classSettings.t=1.0] Universe start time. Time is the radius of the Universe.
 	 * @param {object} [classSettings.settings] The following settings are available
 	 * @param {object} [classSettings.settings.object] Universe object.
 	 * @param {String} [classSettings.settings.object.name] name of universe.
@@ -172,7 +172,7 @@ class Universe {
 		if (classSettings.debug) this.timestamp = window.performance.now();
 //		this.projectParams = projectParams;
 		this.classSettings = classSettings;
-		if (classSettings.radius === undefined) classSettings.radius = 1.0;
+		if (classSettings.t === undefined) classSettings.t = 1.0;
 		classSettings.settings = classSettings.settings || {};
 		const settings = classSettings.settings;
 		settings.options = options;
@@ -306,7 +306,7 @@ class Universe {
 			ret.forEach((axis, i) => {
 
 				sum += ret[i] * ret[i]; 
-				ret[i] *= classSettings.radius
+				ret[i] *= classSettings.t
 			
 			});
 			if (classSettings.debug && (Math.abs(sum - 1) > 7.0e-16)) console.error(sUniverse + ': randomPosition. Vertice[' + ret + '] is not situated at a constant distance 1. Real distance is ' + sum)
@@ -347,8 +347,8 @@ class Universe {
 			});
 			probabilityDensity.options = {
 
-//				r: classSettings.radius,
-				d: classSettings.radius * 2,
+//				r: classSettings.t,
+				d: classSettings.t * 2,
 
 			};
 //			probabilityDensity.options.d = probabilityDensity.options.r * 2;
@@ -358,8 +358,8 @@ class Universe {
 			let sectorsValue = 0;
 			probabilityDensity.forEach((sector, i) => {
 
-				sector.hb = probabilityDensity.options.hs * i - classSettings.radius;//Нижняя граница сегмента
-				sector.ht = probabilityDensity.options.hs * (i + 1) - classSettings.radius;//Верхняя граница сегмента
+				sector.hb = probabilityDensity.options.hs * i - classSettings.t;//Нижняя граница сегмента
+				sector.ht = probabilityDensity.options.hs * (i + 1) - classSettings.t;//Верхняя граница сегмента
 /*				
 				sector.hb = probabilityDensity.options.hs * i - probabilityDensity.options.r;//Нижняя граница сегмента
 				sector.ht = probabilityDensity.options.hs * (i + 1) - probabilityDensity.options.r;//Верхняя граница сегмента
@@ -371,7 +371,7 @@ class Universe {
 			if (unverseValue === undefined) {
 				
 				unverseValue = Math.PI;
-				const r = classSettings.radius;//probabilityDensity.options.r;
+				const r = classSettings.t;//probabilityDensity.options.r;
 				for (let i = 0; i < (_this.dimension - 1); i++) unverseValue *= 2 * r;
 
 			}
@@ -888,8 +888,8 @@ class Universe {
 
 				if (this.setW) this.setW();
 /*				
-				settings.options.scales.w.min = -classSettings.radius;
-				settings.options.scales.w.max = classSettings.radius;
+				settings.options.scales.w.min = -classSettings.t;
+				settings.options.scales.w.max = classSettings.t;
 */	
 				
 				MyPoints(points, scene, {
