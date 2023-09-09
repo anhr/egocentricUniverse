@@ -50,8 +50,10 @@ import ND from '../../commonNodeJS/master/nD/nD.js';
 //import ND from 'https://raw.githack.com/anhr/commonNodeJS/master/nD/build/nD.module.min.js';
 if (ND.default) ND = ND.default;
 
-//когда хочу вывести на холст точки вместо ребер то использую MyPoints вместо ND
-import MyPoints from '../../commonNodeJS/master/myPoints/myPoints.js';
+//Когда хочу вывести на холст точки вместо ребер то использую MyPoints вместо ND
+//При этом ребра не создаются что дает экономию времени
+//import MyPoints from '../../commonNodeJS/master/myPoints/myPoints.js';
+//import ColorPicker from '../../commonNodeJS/master/colorpicker/colorpicker.js';
 
 import MyThree from '../../commonNodeJS/master/myThree/myThree.js';
 import ProgressBar from '../../commonNodeJS/master/ProgressBar/ProgressBar.js'
@@ -158,7 +160,7 @@ class Universe {
 	 * @param {float} [classSettings.projectParams.params.center.x=0.0] X axis of the center
 	 * @param {float} [classSettings.projectParams.params.center.y=0.0] Y axis of the center
 	 * @param {float} [classSettings.projectParams.params.center.z=0.0] Y axis of the center
-	 * @param {float} [classSettings.radius=1.0] Universe start radius.
+	 * @param {float} [classSettings.t=1.0] Universe start time. Time is the radius of the Universe.
 	 * @param {object} [classSettings.settings] The following settings are available
 	 * @param {object} [classSettings.settings.object] Universe object.
 	 * @param {String} [classSettings.settings.object.name] name of universe.
@@ -198,7 +200,7 @@ class Universe {
 		if (classSettings.debug) this.timestamp = window.performance.now();
 //		this.projectParams = projectParams;
 		this.classSettings = classSettings;
-		if (classSettings.radius === undefined) classSettings.radius = 1.0;
+		if (classSettings.t === undefined) classSettings.t = 1.0;
 		classSettings.settings = classSettings.settings || {};
 		const settings = classSettings.settings;
 		settings.options = options;
@@ -207,49 +209,85 @@ class Universe {
 		settings.object.geometry = settings.object.geometry || {};
 		const randomPosition = () => {
 
-			const ret = [], x = [];
+			const ret = [],
+				x = [];//random array
 			let sum;
 
-			//Если не делать этот цикл, то некоторые вершины будут иметь значения NaN и появится ошибка:
-			//THREE.BufferGeometry.computeBoundingSphere(): Computed radius is NaN. The "position" attribute is likely to have NaN values. 
-			//но при этом распределение вершин по вселенной все равно будет равномерным.
-			//Не разобрался почему так происходит.
-			do {
+			const
+				randomArray = (length = (_this.dimension - 1) * 2, array) => {
 
-				x.length = 0;
-				sum = 0;
-				//picking x1 and x2 from independent uniform distributions on(-1, 1)
-				for (let i = 0;
-					i &lt; (_this.dimension - 1) * 2;
-//					i &lt; 2;
-				 i++) {
+					//Если не делать этот цикл, то некоторые вершины будут иметь значения NaN и появится ошибка:
+					//THREE.BufferGeometry.computeBoundingSphere(): Computed radius is NaN. The "position" attribute is likely to have NaN values. 
+					//но при этом распределение вершин по вселенной все равно будет равномерным.
+					//Не разобрался почему так происходит.
+					do {
 
-					const random = Math.random() * 2 - 1;
-					sum += random * random;
-					x.push(random);
+						if (!array) x.length = 0;
+						sum = 0;
+						if (array) array.length = 0;
+						//picking x1 and x2 from independent uniform distributions on(-1, 1)
+						for (let i = 0;
+							i &lt; length;
+							//					i &lt; 2;
+							i++) {
+
+							const random = Math.random() * 2 - 1;
+							sum += random * random;
+							(array || x).push(random);
+
+						}
+
+					} while (sum >= 1);//rejecting points for which x1^2+x2^2>=1
+
+				},
+				push0 = () => {
+
+					randomArray();
+/*
+					//Если не делать этот цикл, то некоторые вершины будут иметь значения NaN и появится ошибка:
+					//THREE.BufferGeometry.computeBoundingSphere(): Computed radius is NaN. The "position" attribute is likely to have NaN values. 
+					//но при этом распределение вершин по вселенной все равно будет равномерным.
+					//Не разобрался почему так происходит.
+					do {
+
+						x.length = 0;
+						sum = 0;
+						//picking x1 and x2 from independent uniform distributions on(-1, 1)
+						for (let i = 0;
+							i &lt; (_this.dimension - 1) * 2;
+							//					i &lt; 2;
+							i++) {
+
+							const random = Math.random() * 2 - 1;
+							sum += random * random;
+							x.push(random);
+
+						}
+
+					} while (sum >= 1);//rejecting points for which x1^2+x2^2>=1
+*/
+
+					//ret.push((x[0] * x[0] + x[3] * x[3] - (x[1] * x[1] + x[2] * x[2])) / sum);//z	=	(x_0^2+x_3^2-x_1^2-x_2^2)/(x_0^2+x_1^2+x_2^2+x_3^2)
+					let positive = x[0] * x[0], negative = x[1] * x[1];
+					for (let i = 0; i &lt; (_this.dimension - 2); i++) {
+
+						const p = x[_this.dimension - i], n = x[2 + i];
+						positive += p * p;
+						negative += n * n;
+
+					}
+					ret.push((positive - negative) / sum);
 
 				}
-
-			} while (sum >= 1);//rejecting points for which x1^2+x2^2>=1
-   
-			//ret.push((x[0] * x[0] + x[3] * x[3] - (x[1] * x[1] + x[2] * x[2])) / sum);//z	=	(x_0^2+x_3^2-x_1^2-x_2^2)/(x_0^2+x_1^2+x_2^2+x_3^2)
-			let positive = x[0] * x[0], negative = x[1] * x[1];
-			for (let i = 0; i &lt; (_this.dimension - 2); i++) {
-
-				const p = x[_this.dimension - i], n = x[2 + i];
-				positive += p * p;
-				negative += n * n;
-	  
-			}
-			ret.push((positive - negative) / sum);
    
 			switch(_this.dimension) {
 
 				case 2://1D universe
-					
+
 					//Circle Point Picking
 					//https://mathworld.wolfram.com/CirclePointPicking.html
 //					ret.push((x[0] * x[0] - x[1] * x[1]) / sum);//x	=	(x_1^2-x_2^2)/(x_1^2+x_2^2)	
+					push0();
 					ret.push(2 * x[0] * x[1] / sum);//y	=	(2x_1x_2)/(x_1^2+x_2^2)
 					break;
 				case 3://2D universe
@@ -258,6 +296,7 @@ class Universe {
 					//https://mathworld.wolfram.com/SpherePointPicking.html
 					//Cook (1957) extended a method of von Neumann (1951)
 //					ret.push((x[0] * x[0] + x[3] * x[3] - x[1] * x[1] - x[2] * x[2]) / sum);//z	=	(x_0^2+x_3^2-x_1^2-x_2^2)/(x_0^2+x_1^2+x_2^2+x_3^2)
+					push0();
 					ret.push(2 * (x[0] * x[1] - x[2] * x[3]) / sum);//y	=	(2(x_2x_3-x_0x_1))/(x_0^2+x_1^2+x_2^2+x_3^2)	
 					ret.push(2 * (x[1] * x[3] + x[0] * x[2]) / sum);//x	=	(2(x_1x_3+x_0x_2))/(x_0^2+x_1^2+x_2^2+x_3^2)	
 	 
@@ -266,11 +305,39 @@ class Universe {
 //					ret.push(1 - 2 * sum);
 	 
 					 break;
+				case 4://3D universe
+
+//					randomArray(3, ret);
+					
+					//Hypersphere Point Picking
+					//https://mathworld.wolfram.com/HyperspherePointPicking.html
+					//Marsaglia (1972)
+
+					//set x - random array
+					randomArray(2);
+					const sum1 = sum, x2 = [];
+					randomArray(2, x2);
+					x2.forEach(item => x.push(item));
+
+					ret.push(x[0]);//x	=	x_1	
+					ret.push(x[1]);//y	=	x_2	
+					const sqrt = Math.sqrt((1 - sum1) / sum);//sqrt((1-x_1^2-x_2^2)/(x_3^2+x_4^2)
+					ret.push(x[2] * sqrt);//z	=	x_3sqrt((1-x_1^2-x_2^2)/(x_3^2+x_4^2))	
+					ret.push(x[3] * sqrt);;//w	=	x_4sqrt((1-x_1^2-x_2^2)/(x_3^2+x_4^2))
+					
+					break;
 				default: console.error(sUniverse + ': randomPosition. Invalid universe dimension = ' + _this.dimension);
 
 			}
 
-			ret.forEach((axis, i) => ret[i] *= classSettings.radius);
+			sum = 0;
+			ret.forEach((axis, i) => {
+
+				sum += ret[i] * ret[i]; 
+				ret[i] *= classSettings.t
+			
+			});
+			if (classSettings.debug &amp;&amp; (Math.abs(sum - 1) > 7.0e-16)) console.error(sUniverse + ': randomPosition. Vertice[' + ret + '] is not situated at a constant distance 1. Real distance is ' + sum)
 			return ret;
 			
 		}
@@ -286,7 +353,9 @@ class Universe {
 		//Нижняя граница сегмента hb = hs * i - r
 		//Верхняя граница сегмента ht = hs * (i + 1) - r
 		//где r = 1 - радиус сферыб d = 2 * r = 2 - диаметр сферы, i - индекс сегмента
-		const probabilityDensity = classSettings.debug ?
+		const probabilityDensity = classSettings.debug
+//			&amp;&amp; _this.dimension &lt; 4//Для 3D вселенной плотность не вычисляю так как с этим нет проблем 
+			?
 			[
 				/*
 				{ count: 0, },//0. From -1 to -0.6
@@ -306,8 +375,8 @@ class Universe {
 			});
 			probabilityDensity.options = {
 
-//				r: classSettings.radius,
-				d: classSettings.radius * 2,
+//				r: classSettings.t,
+				d: classSettings.t * 2,
 
 			};
 //			probabilityDensity.options.d = probabilityDensity.options.r * 2;
@@ -317,8 +386,8 @@ class Universe {
 			let sectorsValue = 0;
 			probabilityDensity.forEach((sector, i) => {
 
-				sector.hb = probabilityDensity.options.hs * i - classSettings.radius;//Нижняя граница сегмента
-				sector.ht = probabilityDensity.options.hs * (i + 1) - classSettings.radius;//Верхняя граница сегмента
+				sector.hb = probabilityDensity.options.hs * i - classSettings.t;//Нижняя граница сегмента
+				sector.ht = probabilityDensity.options.hs * (i + 1) - classSettings.t;//Верхняя граница сегмента
 /*				
 				sector.hb = probabilityDensity.options.hs * i - probabilityDensity.options.r;//Нижняя граница сегмента
 				sector.ht = probabilityDensity.options.hs * (i + 1) - probabilityDensity.options.r;//Верхняя граница сегмента
@@ -326,9 +395,14 @@ class Universe {
 				sectorsValue += _this.probabilityDensity.sectorValue(probabilityDensity, i);
 
 			});
-			let unverseValue = Math.PI;
-			const r = classSettings.radius;//probabilityDensity.options.r;
-			for (let i = 0; i &lt; (_this.dimension - 1); i++) unverseValue *= 2 * r;
+			let unverseValue = this.probabilityDensity.unverseValue;
+			if (unverseValue === undefined) {
+				
+				unverseValue = Math.PI;
+				const r = classSettings.t;//probabilityDensity.options.r;
+				for (let i = 0; i &lt; (_this.dimension - 1); i++) unverseValue *= 2 * r;
+
+			}
 			if (unverseValue != sectorsValue) console.error(sUniverse + ': Unverse value = ' + unverseValue + '. Sectors value = ' + sectorsValue);
 		
 		}
@@ -469,8 +543,11 @@ class Universe {
 */
 									case 'vector':
 										//для совместимости с Player.getPoints. Туда попадает когда хочу вывести на холст точки вместо ребер и использую дя этого MyPoints вместо ND
-										const vertice2 = vertice[2];
-										return new MyThree.three.THREE.Vector4(vertice[0], vertice[1], vertice2 === undefined ? 0 : vertice2, 1);
+										const vertice2 = vertice[2], vertice3 = vertice[3];
+										return new MyThree.three.THREE.Vector4(vertice[0], vertice[1], vertice2 === undefined ? 0 : vertice2, vertice3 === undefined ? 1 : vertice3);
+									case 'w':
+										//для совместимости с Player.getColors. Туда попадает когда хочу вывести на холст точки вместо ребер и использую дя этого MyPoints вместо ND
+										return vertice[3];
 
 								}
 								return vertice[name];
@@ -570,7 +647,7 @@ class Universe {
 
 						});
 
-						if (classSettings.debug) {
+						if (probabilityDensity) {
 							
 							//Для 2D вселенной.
 							//Плотность вероятности распределения вершин по поверхости сферы в зависимости от третьей координаты вершины z = vertice.[2]
@@ -799,26 +876,12 @@ class Universe {
 			if (typeof MyPoints === 'undefined') {
 
 				settings.scene = scene;
+settings.object.geometry.colors = [
+	1, 0, 0,	1, 0.6, 0,
+	0, 1, 0,	0.6, 1, 0,
+	0, 0, 1,	0, 0.6, 1
+];				
 				const nd = new ND(this.dimension, settings);
-				/*				
-								const nd = new ND(this.dimension, {
-					
-									options: settings.options,
-									scene: settings.scene,
-									object: {
-					
-										geometry: {
-					
-											position: settings.object.geometry.position,
-					//						indices: [[[0, 1]]],//settings.object.geometry.indices,
-											indices: settings.object.geometry.indices,
-											
-										},
-										
-									}
-									
-								});
-				*/
 
 				params.center = params.center || {}
 				nd.object3D.position.x = params.center.x || 0;
@@ -836,6 +899,12 @@ class Universe {
 				points = [];
 				settings.object.geometry.position.forEach(vertive => points.push(vertive.angles));
 				*/
+
+				if (this.setW) this.setW();
+/*				
+				settings.options.scales.w.min = -classSettings.t;
+				settings.options.scales.w.max = classSettings.t;
+*/	
 				
 				MyPoints(points, scene, {
 					
@@ -845,12 +914,18 @@ class Universe {
 						name: settings.object.name,
 					
 					},
+//					palette: new ColorPicker.palette({ palette: ColorPicker.paletteIndexes.bidirectional }),
+					options: settings.options,
+/*					
 					options: {
 						
-						point: { size: 0.0 },
+						point: settings.options.point,//{ size: 0.0 },
 						guiSelectPoint: settings.options.guiSelectPoint,
+						scales: { w: { min: -1 } },
+						palette: settings.options.palette,
 					
 					}
+*/	 
 					
 				});
 
@@ -1089,7 +1164,7 @@ export default Universe;
 <br class="clear">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 3.6.11</a> on Sat Sep 02 2023 08:38:25 GMT+0700 (Красноярск, стандартное время)
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 3.6.11</a> on Sat Sep 09 2023 07:43:20 GMT+0700 (Красноярск, стандартное время)
 </footer>
 
 <script> prettyPrint(); </script>
