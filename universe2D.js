@@ -15,7 +15,7 @@
 
 
 import Universe from './universe.js';
-import ProgressBar from '../../commonNodeJS/master/ProgressBar/ProgressBar.js'
+//import ProgressBar from '../../commonNodeJS/master/ProgressBar/ProgressBar.js'
 
 class Universe2D extends Universe {
 
