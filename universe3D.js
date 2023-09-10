@@ -92,15 +92,32 @@ class Universe3D extends Universe {
 					let verticeIdOpposite = edges[position.length * (phase - 2) + verticeId][1] + 1;
 					if (verticeIdOpposite >= position.length) verticeIdOpposite = 0;
 					edges.push([verticeId, verticeIdOpposite]);
+					const stop = () => {
+						
+						progressBar.remove();
+						if (this.classSettings.continue) this.classSettings.continue();
+						if (this.classSettings.projectParams) this.project(this.classSettings.projectParams.scene, this.classSettings.projectParams.params);
+					
+					}
 					switch(position.length){
 	
 						case 4://tetraedr
-							if (edges.length >=6) return;
+							if (edges.length >=6) {
+
+								stop();
+								return;
+
+							}
 							break;
-						case 6:
-							if (edges.length >=15) return;
+						case 6://устраняет ошибку
+							//Universe: edges[12]. Duplicate edge[3,0]
+							if (edges.length >=15){
+
+								stop();
+								return;
+
+							}
 							break;
-							
 					}
 					
 					progressBar.value = verticeId;
@@ -110,13 +127,8 @@ class Universe3D extends Universe {
 						if (this.classSettings.debug) console.log('time: Push edges. phase ' + phase + '. ' + ((window.performance.now() - this.timestamp) / 1000) + ' sec.');
 				
 						phase++;
-						if (phase > 3) {
-							
-							progressBar.remove();
-							if (this.classSettings.continue) this.classSettings.continue();
-							if (this.classSettings.projectParams) this.project(this.classSettings.projectParams.scene, this.classSettings.projectParams.params);
-
-						} else {
+						if (phase > 3) stop();
+						else {
 							
 							progressBar.title(lang.progressTitle.replace('%s', phase));
 							verticeId = 0;

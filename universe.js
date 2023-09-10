@@ -24,8 +24,8 @@ if (ND.default) ND = ND.default;
 
 //Когда хочу вывести на холст точки вместо ребер то использую MyPoints вместо ND
 //При этом ребра не создаются что дает экономию времени
-import MyPoints from '../../commonNodeJS/master/myPoints/myPoints.js';
-import ColorPicker from '../../commonNodeJS/master/colorpicker/colorpicker.js';
+//import MyPoints from '../../commonNodeJS/master/myPoints/myPoints.js';
+//import ColorPicker from '../../commonNodeJS/master/colorpicker/colorpicker.js';
 
 import MyThree from '../../commonNodeJS/master/myThree/myThree.js';
 import ProgressBar from '../../commonNodeJS/master/ProgressBar/ProgressBar.js'
@@ -848,26 +848,21 @@ class Universe {
 			if (typeof MyPoints === 'undefined') {
 
 				settings.scene = scene;
+/*				
+settings.object.geometry.colors = [
+	1, 0, 0,	1, 0.6, 0,
+	0, 1, 0,	0.6, 1, 0,
+	0, 0, 1,	0, 0.6, 1
+];
+*/
+/*				
+settings.object.geometry.colors = [
+	1, 0, 0,	0, 1, 0,
+	0, 0, 1,	//0.6, 1, 0,
+//	0, 0, 1,	0, 0.6, 1
+];
+*/
 				const nd = new ND(this.dimension, settings);
-				/*				
-								const nd = new ND(this.dimension, {
-					
-									options: settings.options,
-									scene: settings.scene,
-									object: {
-					
-										geometry: {
-					
-											position: settings.object.geometry.position,
-					//						indices: [[[0, 1]]],//settings.object.geometry.indices,
-											indices: settings.object.geometry.indices,
-											
-										},
-										
-									}
-									
-								});
-				*/
 
 				params.center = params.center || {}
 				nd.object3D.position.x = params.center.x || 0;
