@@ -58,7 +58,7 @@ class Universe3D extends Universe {
 		}
 
 	}
-
+/*
 	pushEdges() {
 
 		const settings = this.classSettings.settings, geometry = settings.object.geometry, position = geometry.position, edges = geometry.indices.edges;
@@ -150,37 +150,8 @@ class Universe3D extends Universe {
 
 		});
 
-/*		
-		//Every vertice have max 6 edges
-		for (let verticeId = 1; verticeId < position.length; verticeId++)
-			edges.push();
-		edges.push([position.length - 1, 0]);
-		for (let i = 2; i < 4; i++) {
-
-			for (let verticeId = 0; verticeId < position.length; verticeId++){
-
-				
-				let verticeIdOpposite = edges[position.length * (i - 2) + verticeId][1] + 1;
-//				let verticeIdOpposite = verticeId + i;
-				if (verticeIdOpposite >= position.length) verticeIdOpposite = 0;
-				edges.push([verticeId, verticeIdOpposite]);
-				switch(position.length){
-
-					case 4://tetraedr
-						if (edges.length >=6) return;
-						break;
-					case 6:
-						if (edges.length >=15) return;
-						break;
-						
-				}
-
-			}
-			
-		}
-*/		
-		
 	}
+*/
 	name( getLanguageCode ) {
 
 		//Localization
