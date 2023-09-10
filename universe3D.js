@@ -14,10 +14,11 @@
 */
 
 
-import Universe from './universe.js';
+//import Universe from './universe.js';
+import Universe2D from './universe2D.js';
 //import ProgressBar from '../../commonNodeJS/master/ProgressBar/ProgressBar.js'
 
-class Universe3D extends Universe {
+class Universe3D extends Universe2D {
 
 	//base methods
 
