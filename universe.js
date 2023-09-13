@@ -24,7 +24,9 @@ if (ND.default) ND = ND.default;
 
 //Когда хочу вывести на холст точки вместо ребер то использую MyPoints вместо ND
 //При этом ребра не создаются что дает экономию времени
-//import MyPoints from '../../commonNodeJS/master/myPoints/myPoints.js';
+import MyPoints from '../../commonNodeJS/master/myPoints/myPoints.js';
+
+//не используется
 //import ColorPicker from '../../commonNodeJS/master/colorpicker/colorpicker.js';
 
 import MyThree from '../../commonNodeJS/master/myThree/myThree.js';
@@ -178,6 +180,10 @@ class Universe {
 		settings.options = options;
 		settings.object = settings.object || {};
 		settings.object.name = settings.object.name || this.name( options.getLanguageCode );
+  
+		//не получается сменить имя оси
+		//if (options.scales.w.name === 'w') options.scales.w.name = 't';
+  
 		settings.object.geometry = settings.object.geometry || {};
 		const randomPosition = () => {
 
@@ -845,23 +851,12 @@ class Universe {
 
 			this.Test();
 
+			if (this.setW) this.setW();
+
 			if (typeof MyPoints === 'undefined') {
 
 				settings.scene = scene;
-/*				
-settings.object.geometry.colors = [
-	1, 0, 0,	1, 0.6, 0,
-	0, 1, 0,	0.6, 1, 0,
-	0, 0, 1,	0, 0.6, 1
-];
-*/
-/*				
-settings.object.geometry.colors = [
-	1, 0, 0,	0, 1, 0,
-	0, 0, 1,	//0.6, 1, 0,
-//	0, 0, 1,	0, 0.6, 1
-];
-*/
+				if ((settings.object.geometry.position[0].length > 3 ) && (!settings.object.color)) settings.object.color = {};//Color of vertice from palette
 				const nd = new ND(this.dimension, settings);
 
 				params.center = params.center || {}
@@ -881,12 +876,7 @@ settings.object.geometry.colors = [
 				settings.object.geometry.position.forEach(vertive => points.push(vertive.angles));
 				*/
 
-				if (this.setW) this.setW();
-/*				
-				settings.options.scales.w.min = -classSettings.t;
-				settings.options.scales.w.max = classSettings.t;
-*/	
-				
+		
 				MyPoints(points, scene, {
 					
 					pointsOptions: {
