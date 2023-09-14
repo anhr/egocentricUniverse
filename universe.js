@@ -24,7 +24,7 @@ if (ND.default) ND = ND.default;
 
 //Когда хочу вывести на холст точки вместо ребер то использую MyPoints вместо ND
 //При этом ребра не создаются что дает экономию времени
-import MyPoints from '../../commonNodeJS/master/myPoints/myPoints.js';
+//import MyPoints from '../../commonNodeJS/master/myPoints/myPoints.js';
 
 //не используется
 //import ColorPicker from '../../commonNodeJS/master/colorpicker/colorpicker.js';
