@@ -25,8 +25,8 @@ class Universe3D extends Universe2D {
 	setW() {
 
 		const classSettings = this.classSettings, w = classSettings.settings.options.scales.w;
-		w.min = -classSettings.t;
 		w.max = classSettings.t;
+		w.min = -classSettings.t;
 		
 	};
 	get probabilityDensity() {
