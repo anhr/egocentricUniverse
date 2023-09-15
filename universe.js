@@ -445,6 +445,7 @@ class Universe {
 */
 								switch (name) {
 
+/*See ND distanceTo
 									case 'distanceTo': return (verticeTo) => {
 
 										if (vertice.length != verticeTo.length) {
@@ -463,6 +464,7 @@ class Universe {
 										})
 										return Math.sqrt(sum);
 									}
+*/										
 									case 'edges':
 
 										//										if (!classSettings.debug && !verticeEdges)
