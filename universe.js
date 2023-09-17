@@ -24,7 +24,7 @@ if (ND.default) ND = ND.default;
 
 //Когда хочу вывести на холст точки вместо ребер то использую MyPoints вместо ND
 //При этом ребра не создаются что дает экономию времени
-import MyPoints from '../../commonNodeJS/master/myPoints/myPoints.js';
+//import MyPoints from '../../commonNodeJS/master/myPoints/myPoints.js';
 
 //не используется
 //import ColorPicker from '../../commonNodeJS/master/colorpicker/colorpicker.js';
@@ -860,16 +860,6 @@ class Universe {
 
 			if (this.setW) this.setW();
 
-			settings.scene = scene;
-			if ((settings.object.geometry.position[0].length > 3) && (!settings.object.color)) settings.object.color = {};//Color of vertice from palette
-			const nd = new ND(this.dimension, settings);
-
-			params.center = params.center || {}
-			nd.object3D.position.x = params.center.x || 0;
-			nd.object3D.position.y = params.center.y || 0;
-			nd.object3D.position.z = params.center.z || 0;
-
-/*
 			if (typeof MyPoints === 'undefined') {
 
 				settings.scene = scene;
@@ -888,8 +878,10 @@ class Universe {
 				//for debug
 				//Выводим углы вместо вершин. Нужно для отладки равномерного распределения верши во вселенной
 				//См. randomPosition()
-				//points = [];
-				//settings.object.geometry.position.forEach(vertive => points.push(vertive.angles));
+				/*
+				points = [];
+				settings.object.geometry.position.forEach(vertive => points.push(vertive.angles));
+				*/
 
 		
 				MyPoints(points, scene, {
@@ -905,7 +897,6 @@ class Universe {
 				});
 
 			}
-*/
 
 			options.onSelectScene = (index, t) => {
 
