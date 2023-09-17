@@ -24,12 +24,17 @@ if (ND.default) ND = ND.default;
 
 //Когда хочу вывести на холст точки вместо ребер то использую MyPoints вместо ND
 //При этом ребра не создаются что дает экономию времени
-//import MyPoints from '../../commonNodeJS/master/myPoints/myPoints.js';
+import MyPoints from '../../commonNodeJS/master/myPoints/myPoints.js';
 
 //не используется
 //import ColorPicker from '../../commonNodeJS/master/colorpicker/colorpicker.js';
 
-import MyThree from '../../commonNodeJS/master/myThree/myThree.js';
+//Получаю ошибку
+//myThree: duplicate myThree. Please use one instance of the myThree class.
+//если на веб странце импортировать import MyThree from '../../../commonNodeJS/master/myThree/build/myThree.module.js';
+//import MyThree from '../../commonNodeJS/master/myThree/myThree.js';
+import three from '../../commonNodeJS/master/three.js'
+
 import ProgressBar from '../../commonNodeJS/master/ProgressBar/ProgressBar.js'
 //import WebGPU from '../../WebGPU/master/WebGPU.js';
 
@@ -524,7 +529,7 @@ class Universe {
 									case 'vector':
 										//для совместимости с Player.getPoints. Туда попадает когда хочу вывести на холст точки вместо ребер и использую дя этого MyPoints вместо ND
 										const vertice2 = vertice[2], vertice3 = vertice[3];
-										return new MyThree.three.THREE.Vector4(vertice[0], vertice[1], vertice2 === undefined ? 0 : vertice2, vertice3 === undefined ? 1 : vertice3);
+										return new three.THREE.Vector4(vertice[0], vertice[1], vertice2 === undefined ? 0 : vertice2, vertice3 === undefined ? 1 : vertice3);
 									case 'w':
 										//для совместимости с Player.getColors. Туда попадает когда хочу вывести на холст точки вместо ребер и использую дя этого MyPoints вместо ND
 										return vertice[3];
