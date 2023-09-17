@@ -860,6 +860,16 @@ class Universe {
 
 			if (this.setW) this.setW();
 
+			settings.scene = scene;
+			if ((settings.object.geometry.position[0].length > 3) && (!settings.object.color)) settings.object.color = {};//Color of vertice from palette
+			const nd = new ND(this.dimension, settings);
+
+			params.center = params.center || {}
+			nd.object3D.position.x = params.center.x || 0;
+			nd.object3D.position.y = params.center.y || 0;
+			nd.object3D.position.z = params.center.z || 0;
+
+/*
 			if (typeof MyPoints === 'undefined') {
 
 				settings.scene = scene;
@@ -875,13 +885,11 @@ class Universe {
 
 				let points = settings.object.geometry.position;
 
-				/*
 				//for debug
 				//Выводим углы вместо вершин. Нужно для отладки равномерного распределения верши во вселенной
 				//См. randomPosition()
-				points = [];
-				settings.object.geometry.position.forEach(vertive => points.push(vertive.angles));
-				*/
+				//points = [];
+				//settings.object.geometry.position.forEach(vertive => points.push(vertive.angles));
 
 		
 				MyPoints(points, scene, {
@@ -892,22 +900,12 @@ class Universe {
 						name: settings.object.name,
 					
 					},
-//					palette: new ColorPicker.palette({ palette: ColorPicker.paletteIndexes.bidirectional }),
 					options: settings.options,
-/*					
-					options: {
-						
-						point: settings.options.point,//{ size: 0.0 },
-						guiSelectPoint: settings.options.guiSelectPoint,
-						scales: { w: { min: -1 } },
-						palette: settings.options.palette,
-					
-					}
-*/	 
 					
 				});
 
 			}
+*/
 
 			options.onSelectScene = (index, t) => {
 
