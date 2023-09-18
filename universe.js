@@ -24,7 +24,7 @@ if (ND.default) ND = ND.default;
 
 //Когда хочу вывести на холст точки вместо ребер то использую MyPoints вместо ND
 //При этом ребра не создаются что дает экономию времени
-//import MyPoints from '../../commonNodeJS/master/myPoints/myPoints.js';
+import MyPoints from '../../commonNodeJS/master/myPoints/myPoints.js';
 
 //не используется
 //import ColorPicker from '../../commonNodeJS/master/colorpicker/colorpicker.js';
@@ -171,14 +171,12 @@ class Universe {
 	 * @param {boolean} [classSettings.debug=false] Debug mode. Diagnoses your code and display detected errors in console
 	 * @param {function} [classSettings.continue] Callback function that called after universe edges was created.
 	 **/
-	constructor(options,
-//			projectParams,
-			classSettings={}) {
+	constructor(options, classSettings={}) {
 
 		const _this = this;
 		if (classSettings.debug) this.timestamp = window.performance.now();
-//		this.projectParams = projectParams;
 		this.classSettings = classSettings;
+		if (classSettings.edges != false) classSettings.edges = classSettings.edges || {};
 		if (classSettings.t === undefined) classSettings.t = 1.0;
 		classSettings.settings = classSettings.settings || {};
 		const settings = classSettings.settings;
@@ -860,7 +858,9 @@ class Universe {
 
 			if (this.setW) this.setW();
 
-			if (typeof MyPoints === 'undefined') {
+			if ((classSettings.edges != false) && (classSettings.edges.project === undefined)) classSettings.edges.project = true;
+//			if (typeof MyPoints === 'undefined')
+			if ((classSettings.edges != false) && classSettings.edges.project) {
 
 				settings.scene = scene;
 				if ((settings.object.geometry.position[0].length > 3 ) && (!settings.object.color)) settings.object.color = {};//Color of vertice from palette
@@ -1094,7 +1094,8 @@ class Universe {
 					console.log('time: Push positions. ' + ((window.performance.now() - this.timestamp) / 1000) + ' sec.');
 
 				}				
-				if (typeof MyPoints === 'undefined')//Для экономии времени не добавляю ребра если на холст вывожу только вершины
+//				if (typeof MyPoints === 'undefined')//Для экономии времени не добавляю ребра если на холст вывожу только вершины
+				if (classSettings.edges)//Для экономии времени не добавляю ребра если на холст вывожу только вершины
 					this.pushEdges();
 				else if (this.classSettings.projectParams) this.project(this.classSettings.projectParams.scene, this.classSettings.projectParams.params);
 				
