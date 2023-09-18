@@ -140,6 +140,11 @@ class Universe {
 	 * @param {float} [classSettings.projectParams.params.center.y=0.0] Y axis of the center
 	 * @param {float} [classSettings.projectParams.params.center.z=0.0] Y axis of the center
 	 * @param {float} [classSettings.t=1.0] Universe start time. Time is the radius of the Universe.
+	 * @param {boolean|object} [classSettings.edges={}] Universe edges
+	 * <pre>
+	 *	false - Doesn't create edges to reduce the creation time of the universe
+	 * </pre>
+	 * @param {boolean} [classSettings.edges.project=true] false - Doesn't project edges onto canvas
 	 * @param {object} [classSettings.settings] The following settings are available
 	 * @param {object} [classSettings.settings.object] Universe object.
 	 * @param {String} [classSettings.settings.object.name] name of universe.

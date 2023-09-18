@@ -52,10 +52,17 @@ if (ND.default) ND = ND.default;
 
 //Когда хочу вывести на холст точки вместо ребер то использую MyPoints вместо ND
 //При этом ребра не создаются что дает экономию времени
-//import MyPoints from '../../commonNodeJS/master/myPoints/myPoints.js';
+import MyPoints from '../../commonNodeJS/master/myPoints/myPoints.js';
+
+//не используется
 //import ColorPicker from '../../commonNodeJS/master/colorpicker/colorpicker.js';
 
-import MyThree from '../../commonNodeJS/master/myThree/myThree.js';
+//Получаю ошибку
+//myThree: duplicate myThree. Please use one instance of the myThree class.
+//если на веб странце импортировать import MyThree from '../../../commonNodeJS/master/myThree/build/myThree.module.js';
+//import MyThree from '../../commonNodeJS/master/myThree/myThree.js';
+import three from '../../commonNodeJS/master/three.js'
+
 import ProgressBar from '../../commonNodeJS/master/ProgressBar/ProgressBar.js'
 //import WebGPU from '../../WebGPU/master/WebGPU.js';
 
@@ -161,6 +168,11 @@ class Universe {
 	 * @param {float} [classSettings.projectParams.params.center.y=0.0] Y axis of the center
 	 * @param {float} [classSettings.projectParams.params.center.z=0.0] Y axis of the center
 	 * @param {float} [classSettings.t=1.0] Universe start time. Time is the radius of the Universe.
+	 * @param {boolean|object} [classSettings.edges={}] Universe edges
+	 * &lt;pre>
+	 *	false - Doesn't create edges to reduce the creation time of the universe
+	 * &lt;/pre>
+	 * @param {boolean} [classSettings.edges.project=true] false - Doesn't project edges onto canvas
 	 * @param {object} [classSettings.settings] The following settings are available
 	 * @param {object} [classSettings.settings.object] Universe object.
 	 * @param {String} [classSettings.settings.object.name] name of universe.
@@ -192,20 +204,22 @@ class Universe {
 	 * @param {boolean} [classSettings.debug=false] Debug mode. Diagnoses your code and display detected errors in console
 	 * @param {function} [classSettings.continue] Callback function that called after universe edges was created.
 	 **/
-	constructor(options,
-//			projectParams,
-			classSettings={}) {
+	constructor(options, classSettings={}) {
 
 		const _this = this;
 		if (classSettings.debug) this.timestamp = window.performance.now();
-//		this.projectParams = projectParams;
 		this.classSettings = classSettings;
+		if (classSettings.edges != false) classSettings.edges = classSettings.edges || {};
 		if (classSettings.t === undefined) classSettings.t = 1.0;
 		classSettings.settings = classSettings.settings || {};
 		const settings = classSettings.settings;
 		settings.options = options;
 		settings.object = settings.object || {};
 		settings.object.name = settings.object.name || this.name( options.getLanguageCode );
+  
+		//не получается сменить имя оси
+		//if (options.scales.w.name === 'w') options.scales.w.name = 't';
+  
 		settings.object.geometry = settings.object.geometry || {};
 		const randomPosition = () => {
 
@@ -467,6 +481,7 @@ class Universe {
 */
 								switch (name) {
 
+/*See ND distanceTo
 									case 'distanceTo': return (verticeTo) => {
 
 										if (vertice.length != verticeTo.length) {
@@ -485,6 +500,7 @@ class Universe {
 										})
 										return Math.sqrt(sum);
 									}
+*/										
 									case 'edges':
 
 										//										if (!classSettings.debug &amp;&amp; !verticeEdges)
@@ -544,7 +560,7 @@ class Universe {
 									case 'vector':
 										//для совместимости с Player.getPoints. Туда попадает когда хочу вывести на холст точки вместо ребер и использую дя этого MyPoints вместо ND
 										const vertice2 = vertice[2], vertice3 = vertice[3];
-										return new MyThree.three.THREE.Vector4(vertice[0], vertice[1], vertice2 === undefined ? 0 : vertice2, vertice3 === undefined ? 1 : vertice3);
+										return new three.THREE.Vector4(vertice[0], vertice[1], vertice2 === undefined ? 0 : vertice2, vertice3 === undefined ? 1 : vertice3);
 									case 'w':
 										//для совместимости с Player.getColors. Туда попадает когда хочу вывести на холст точки вместо ребер и использую дя этого MyPoints вместо ND
 										return vertice[3];
@@ -873,14 +889,14 @@ class Universe {
 
 			this.Test();
 
-			if (typeof MyPoints === 'undefined') {
+			if (this.setW) this.setW();
+
+			if ((classSettings.edges != false) &amp;&amp; (classSettings.edges.project === undefined)) classSettings.edges.project = true;
+//			if (typeof MyPoints === 'undefined')
+			if ((classSettings.edges != false) &amp;&amp; classSettings.edges.project) {
 
 				settings.scene = scene;
-settings.object.geometry.colors = [
-	1, 0, 0,	1, 0.6, 0,
-	0, 1, 0,	0.6, 1, 0,
-	0, 0, 1,	0, 0.6, 1
-];				
+				if ((settings.object.geometry.position[0].length > 3 ) &amp;&amp; (!settings.object.color)) settings.object.color = {};//Color of vertice from palette
 				const nd = new ND(this.dimension, settings);
 
 				params.center = params.center || {}
@@ -892,20 +908,15 @@ settings.object.geometry.colors = [
 
 				let points = settings.object.geometry.position;
 
-				/*
 				//for debug
 				//Выводим углы вместо вершин. Нужно для отладки равномерного распределения верши во вселенной
 				//См. randomPosition()
+				/*
 				points = [];
 				settings.object.geometry.position.forEach(vertive => points.push(vertive.angles));
 				*/
 
-				if (this.setW) this.setW();
-/*				
-				settings.options.scales.w.min = -classSettings.t;
-				settings.options.scales.w.max = classSettings.t;
-*/	
-				
+		
 				MyPoints(points, scene, {
 					
 					pointsOptions: {
@@ -914,18 +925,7 @@ settings.object.geometry.colors = [
 						name: settings.object.name,
 					
 					},
-//					palette: new ColorPicker.palette({ palette: ColorPicker.paletteIndexes.bidirectional }),
 					options: settings.options,
-/*					
-					options: {
-						
-						point: settings.options.point,//{ size: 0.0 },
-						guiSelectPoint: settings.options.guiSelectPoint,
-						scales: { w: { min: -1 } },
-						palette: settings.options.palette,
-					
-					}
-*/	 
 					
 				});
 
@@ -1127,7 +1127,8 @@ settings.object.geometry.colors = [
 					console.log('time: Push positions. ' + ((window.performance.now() - this.timestamp) / 1000) + ' sec.');
 
 				}				
-				if (typeof MyPoints === 'undefined')//Для экономии времени не добавляю ребра если на холст вывожу только вершины
+//				if (typeof MyPoints === 'undefined')//Для экономии времени не добавляю ребра если на холст вывожу только вершины
+				if (classSettings.edges)//Для экономии времени не добавляю ребра если на холст вывожу только вершины
 					this.pushEdges();
 				else if (this.classSettings.projectParams) this.project(this.classSettings.projectParams.scene, this.classSettings.projectParams.params);
 				
@@ -1164,7 +1165,7 @@ export default Universe;
 <br class="clear">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 3.6.11</a> on Sat Sep 09 2023 07:43:20 GMT+0700 (Красноярск, стандартное время)
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 3.6.11</a> on Mon Sep 18 2023 07:29:41 GMT+0700 (Красноярск, стандартное время)
 </footer>
 
 <script> prettyPrint(); </script>
