@@ -868,10 +868,16 @@ class Universe {
 			let nd, myPoints;
 			this.projectGeometry = () => {
 
+				const guiSelectPoint = settings.options.guiSelectPoint;
 	//			if (typeof MyPoints === 'undefined')
 				if ((classSettings.edges != false) && classSettings.edges.project) {
 	
-					if (myPoints) myPoints.visible = false;
+					if (myPoints) {
+						
+						myPoints.visible = false;
+						if (guiSelectPoint) guiSelectPoint.removeMesh(myPoints);
+
+					}
 					if (nd) nd.object3D.visible = true;
 					else {
 						
@@ -896,10 +902,7 @@ class Universe {
 					if (nd) {
 	
 						nd.object3D.visible = false;
-	/*					
-						nd.object3D.parent.remove(nd.object3D);
-						nd = undefined;
-	*/	 
+						if (guiSelectPoint) guiSelectPoint.removeMesh(nd.object3D);
 	
 					}
 					if (myPoints) myPoints.visible = true;
