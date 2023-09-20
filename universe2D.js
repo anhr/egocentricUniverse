@@ -43,7 +43,11 @@ class Universe2D extends Universe {
 	pushEdges() {
 
 		const settings = this.classSettings.settings, geometry = settings.object.geometry, position = geometry.position, edges = geometry.indices.edges;
+			
+		//Localization
+		
 		const lang = { progressTitle: 'Creating edges.<br>Phase %s from 3', };
+
 		switch (settings.options.getLanguageCode()) {
 
 			case 'ru'://Russian language

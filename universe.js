@@ -181,7 +181,10 @@ class Universe {
 		const _this = this;
 		if (classSettings.debug) this.timestamp = window.performance.now();
 		this.classSettings = classSettings;
+
 		if (classSettings.edges != false) classSettings.edges = classSettings.edges || {};
+		if ((classSettings.edges != false) && (classSettings.edges.project === undefined)) classSettings.edges.project = true;
+
 		if (classSettings.t === undefined) classSettings.t = 1.0;
 		classSettings.settings = classSettings.settings || {};
 		const settings = classSettings.settings;
@@ -862,46 +865,76 @@ class Universe {
 			this.Test();
 
 			if (this.setW) this.setW();
+			let nd, myPoints;
+			this.projectGeometry = () => {
 
-			if ((classSettings.edges != false) && (classSettings.edges.project === undefined)) classSettings.edges.project = true;
-//			if (typeof MyPoints === 'undefined')
-			if ((classSettings.edges != false) && classSettings.edges.project) {
-
-				settings.scene = scene;
-				if ((settings.object.geometry.position[0].length > 3 ) && (!settings.object.color)) settings.object.color = {};//Color of vertice from palette
-				const nd = new ND(this.dimension, settings);
-
-				params.center = params.center || {}
-				nd.object3D.position.x = params.center.x || 0;
-				nd.object3D.position.y = params.center.y || 0;
-				nd.object3D.position.z = params.center.z || 0;
-
-			} else {
-
-				let points = settings.object.geometry.position;
-
-				//for debug
-				//Выводим углы вместо вершин. Нужно для отладки равномерного распределения верши во вселенной
-				//См. randomPosition()
-				/*
-				points = [];
-				settings.object.geometry.position.forEach(vertive => points.push(vertive.angles));
-				*/
-
-		
-				MyPoints(points, scene, {
-					
-					pointsOptions: {
+	//			if (typeof MyPoints === 'undefined')
+				if ((classSettings.edges != false) && classSettings.edges.project) {
+	
+					if (myPoints) myPoints.visible = false;
+					if (nd) nd.object3D.visible = true;
+					else {
 						
-						//shaderMaterial: false,
-						name: settings.object.name,
+						settings.scene = scene;
+						if (settings.object.geometry.indices.edges.length === 0 ) this.pushEdges();
+						else {
+							
+							if ((settings.object.geometry.position[0].length > 3 ) && (!settings.object.color)) settings.object.color = {};//Color of vertice from palette
+							nd = new ND(this.dimension, settings);
+			
+							params.center = params.center || {}
+							nd.object3D.position.x = params.center.x || 0;
+							nd.object3D.position.y = params.center.y || 0;
+							nd.object3D.position.z = params.center.z || 0;
+
+						}
+
+					}
+	
+				} else {
+	
+					if (nd) {
+	
+						nd.object3D.visible = false;
+	/*					
+						nd.object3D.parent.remove(nd.object3D);
+						nd = undefined;
+	*/	 
+	
+					}
+					if (myPoints) myPoints.visible = true;
+					else {
+						
+						let points = settings.object.geometry.position;
+		
+						//for debug
+						//Выводим углы вместо вершин. Нужно для отладки равномерного распределения верши во вселенной
+						//См. randomPosition()
+						/*
+						points = [];
+						settings.object.geometry.position.forEach(vertive => points.push(vertive.angles));
+						*/
+		
+				
+						MyPoints(points, scene, {
+							
+							pointsOptions: {
+								
+								//shaderMaterial: false,
+								name: settings.object.name,
+								onReady: (points) => { myPoints = points; }
+							
+							},
+							options: settings.options,
+							
+						});
+		
+					}
 					
-					},
-					options: settings.options,
-					
-				});
+				}
 
 			}
+			this.projectGeometry();
 
 			options.onSelectScene = (index, t) => {
 
@@ -1112,6 +1145,73 @@ class Universe {
 		}
 		
 //		this.Indices();
+		if ( options.dat.gui ) {
+
+			const getLanguageCode = options.getLanguageCode;
+			
+			//Localization
+			
+			const lang = {
+	
+				edges: "Edges",
+				edgesTitle: "Create Edges",
+	
+				edge: "Edge",
+	
+				project: "Project",
+				projectTitle: "Project edges onto canvas",
+				
+			};
+	
+			const _languageCode = getLanguageCode();
+	
+			switch (_languageCode) {
+	
+				case 'ru'://Russian language
+	
+					lang.edges = "Ребра";
+					lang.edgesTitle = "Создать ребра";
+	
+					lang.edge = "Ребро";
+					
+					lang.project = "Отображать";
+					lang.projectTitle = "Отображать ребра на холсте";
+	
+					break;
+	
+			}
+			
+			let edgesOld = { project: true, };
+			const fUniverse = options.dat.gui.addFolder(this.name( getLanguageCode )),
+				objectEdges = { boEdges: ((typeof classSettings.edges) === 'object') || (classSettings.edges === true) ? true : false},
+				cEdges = fUniverse.add( objectEdges, 'boEdges' ).onChange((boEdges) => {
+
+					if (boEdges) classSettings.edges = edgesOld;
+					else {
+
+						edgesOld = classSettings.edges;
+						classSettings.edges = false;
+						
+					}
+
+					displayEdge();
+					_this.projectGeometry();
+				
+				} ),
+				fEdge = fUniverse.addFolder(lang.edge),
+				objectEdge = { boProject: ((typeof classSettings.edges) === 'object') ? classSettings.edges.project : false},
+				cProject = fEdge.add( objectEdge, 'boProject' ).onChange((boProject) => {
+
+					classSettings.edges.project = boProject;
+					_this.projectGeometry();
+				
+				} ),
+				displayEdge = () => { fEdge.domElement.style.display = classSettings.edges === false ? 'none' : 'block'; };
+			displayEdge();
+			three.dat.controllerNameAndTitle( cEdges, lang.edges, lang.edgesTitle );
+			three.dat.controllerNameAndTitle( cProject, lang.project, lang.projectTitle );
+
+		}
 		
 	}
 

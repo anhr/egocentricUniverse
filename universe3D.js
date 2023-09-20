@@ -16,7 +16,6 @@
 
 //import Universe from './universe.js';
 import Universe2D from './universe2D.js';
-//import ProgressBar from '../../commonNodeJS/master/ProgressBar/ProgressBar.js'
 
 class Universe3D extends Universe2D {
 
@@ -59,100 +58,6 @@ class Universe3D extends Universe2D {
 		}
 
 	}
-/*
-	pushEdges() {
-
-		const settings = this.classSettings.settings, geometry = settings.object.geometry, position = geometry.position, edges = geometry.indices.edges;
-		const lang = { progressTitle: 'Creating edges.<br>Phase %s from 3', };
-		switch ( settings.options.getLanguageCode() ) {
-
-			case 'ru'://Russian language
-
-				lang.progressTitle = 'Создание ребер.<br>Фаза %s из 3';
-
-				break;
-
-		}
-		let phase = 1, verticeId = 1;
-		const progressBar = new ProgressBar(settings.options.renderer.domElement.parentElement, () => {
-
-			edges.push();	
-			progressBar.value = verticeId;
-			verticeId++;
-			if (verticeId === position.length) {
-
-				edges.push([position.length - 1, 0]);
-				
-				if (this.classSettings.debug) console.log('time: Push edges. phase ' + phase + '. ' + ((window.performance.now() - this.timestamp) / 1000) + ' sec.');
-				
-				phase++;
-				progressBar.title(lang.progressTitle.replace('%s', phase));
-				verticeId = 0;
-				progressBar.newStep(() => {
-					
-					let verticeIdOpposite = edges[position.length * (phase - 2) + verticeId][1] + 1;
-					if (verticeIdOpposite >= position.length) verticeIdOpposite = 0;
-					edges.push([verticeId, verticeIdOpposite]);
-					const stop = () => {
-						
-						progressBar.remove();
-						if (this.classSettings.continue) this.classSettings.continue();
-						if (this.classSettings.projectParams) this.project(this.classSettings.projectParams.scene, this.classSettings.projectParams.params);
-					
-					}
-					switch(position.length){
-	
-						case 4://tetraedr
-							if (edges.length >=6) {
-
-								stop();
-								return;
-
-							}
-							break;
-						case 6://устраняет ошибку
-							//Universe: edges[12]. Duplicate edge[3,0]
-							if (edges.length >=15){
-
-								stop();
-								return;
-
-							}
-							break;
-					}
-					
-					progressBar.value = verticeId;
-					verticeId++;
-					if (verticeId === position.length) {
-
-						if (this.classSettings.debug) console.log('time: Push edges. phase ' + phase + '. ' + ((window.performance.now() - this.timestamp) / 1000) + ' sec.');
-				
-						phase++;
-						if (phase > 3) stop();
-						else {
-							
-							progressBar.title(lang.progressTitle.replace('%s', phase));
-							verticeId = 0;
-							progressBar.step();
-
-						}
-						
-					} else progressBar.step();
-					
-				});
-				
-			}
-			progressBar.step();
-			
-		}, {
-
-			sTitle: lang.progressTitle.replace('%s', phase),
-			max: position.length,
-
-		});
-
-	}
-*/
 	name( getLanguageCode ) {
 
 		//Localization
@@ -177,24 +82,6 @@ class Universe3D extends Universe2D {
 		return lang.name;
 		
 	}
-/*
-	Indices() {
-
-		const settings = this.classSettings.settings,
-			debug = this.classSettings.debug;//_this = this, 
-
-	}
-*/
-/*
-	logUniverse2D() {
-
-		if (!this.classSettings.debug) return;
-		this.logUniverse();
-		
-	}
-*/
-
-//	project(scene) { }
 
 	//Overridden methods from base class
 
