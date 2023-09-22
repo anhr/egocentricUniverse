@@ -187,7 +187,7 @@ class Universe {
 			cookieOptions = {};
 		cookie.getObject(cookieName, cookieOptions);
 //		let edgesOld = cookieOptions.edgesOld || { project: true, };
-		classSettings.edges = cookieOptions === false ? false : cookieOptions.edges || classSettings.edges;
+		classSettings.edges = cookieOptions.edges === false ? false : cookieOptions.edges || classSettings.edges;
 		if (classSettings.edges != false) classSettings.edges = classSettings.edges || {};
 		if ((classSettings.edges != false) && (classSettings.edges.project === undefined)) classSettings.edges.project = true;
 
