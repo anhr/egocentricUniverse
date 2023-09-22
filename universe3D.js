@@ -98,8 +98,31 @@ class Universe3D extends Universe2D {
 	constructor(options, classSettings) {
 
 //		classSettings.continue = () => this.logUniverse();
+
+		if (classSettings.intersection)	{
+  
+			/** @class
+			* @description 
+			* <pre>
+			* Intersection object is sphere.
+			* For 1 dimensional universe is line.
+			* For 2 dimensional universe is plane.
+			* For 3 dimensional universe is sphere.
+			* </pre>
+			*/
+			classSettings.Intersection = class {
+		
+				constructor() {}
+		
+			}
+	
+		}
+	
 		super(options, classSettings);
 		this.logUniverse();
+  
+		
+	
 
 	}
 

@@ -1233,6 +1233,10 @@ class Universe {
 			three.dat.controllerNameAndTitle( cEdges, lang.edges, lang.edgesTitle );
 			three.dat.controllerNameAndTitle( cProject, lang.project, lang.projectTitle );
 
+			//intersection
+			
+			if (classSettings.Intersection) new classSettings.Intersection();
+			
 		}
 		
 	}
