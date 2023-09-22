@@ -182,6 +182,12 @@ class Universe {
 		if (classSettings.debug) this.timestamp = window.performance.now();
 		this.classSettings = classSettings;
 
+		const cookie = options.dat.cookie,
+			cookieName = options.dat.getCookieName(sUniverse),
+			cookieOptions = {};
+		cookie.getObject(cookieName, cookieOptions);
+//		let edgesOld = cookieOptions.edgesOld || { project: true, };
+		classSettings.edges = cookieOptions === false ? false : cookieOptions.edges || classSettings.edges;
 		if (classSettings.edges != false) classSettings.edges = classSettings.edges || {};
 		if ((classSettings.edges != false) && (classSettings.edges.project === undefined)) classSettings.edges.project = true;
 
@@ -875,7 +881,7 @@ class Universe {
 					if (myPoints) {
 						
 						myPoints.visible = false;
-						if (guiSelectPoint) guiSelectPoint.removeMesh(myPoints);
+						if (guiSelectPoint) guiSelectPoint.removeMesh(myPoints, false);
 
 					}
 					if (nd) nd.object3D.visible = true;
@@ -1184,13 +1190,22 @@ class Universe {
 	
 			}
 			
-			let edgesOld = { project: true, };
+			const cookieOptions = {};
+			cookie.getObject(cookieName, cookieOptions);
+			let edgesOld = cookieOptions.edgesOld || { project: true, };
+			classSettings.edges = cookieOptions === false ? false : cookieOptions.edges || classSettings.edges;
+			
 			const fUniverse = options.dat.gui.addFolder(this.name( getLanguageCode )),
 				objectEdges = { boEdges: ((typeof classSettings.edges) === 'object') || (classSettings.edges === true) ? true : false},
+				setCockie = () => { cookie.setObject(cookieName, { edges: classSettings.edges, edgesOld: edgesOld, }); },
 				cEdges = fUniverse.add( objectEdges, 'boEdges' ).onChange((boEdges) => {
 
-					if (boEdges) classSettings.edges = edgesOld;
-					else {
+					if (boEdges) {
+						
+						classSettings.edges = edgesOld;
+						cProject.setValue(classSettings.edges.project);
+						
+					} else {
 
 						edgesOld = classSettings.edges;
 						classSettings.edges = false;
@@ -1199,14 +1214,18 @@ class Universe {
 
 					displayEdge();
 					_this.projectGeometry();
+					setCockie();
+//					cookie.setObject(cookieName, { edges: classSettings.edges, edgesOld: edgesOld, });
 				
 				} ),
 				fEdge = fUniverse.addFolder(lang.edge),
 				objectEdge = { boProject: ((typeof classSettings.edges) === 'object') ? classSettings.edges.project : false},
 				cProject = fEdge.add( objectEdge, 'boProject' ).onChange((boProject) => {
 
+					if (classSettings.edges.project === boProject) return;
 					classSettings.edges.project = boProject;
 					_this.projectGeometry();
+					setCockie();
 				
 				} ),
 				displayEdge = () => { fEdge.domElement.style.display = classSettings.edges === false ? 'none' : 'block'; };
