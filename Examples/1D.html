@@ -45,6 +45,7 @@
 
 			const universe = new Universe1D(options, {
 				
+				intersection: {},
 				//radius: 0.5,
 				debug: true,
 				//mode: 1,
@@ -56,11 +57,11 @@
 						//color: 'red',
 						geometry: {
 
-							//position: { count: 1000, },
 							position: [
 								//[-0.5, 0.5], [0.0, -0.6], [0.5, 0.7]
 								[0.0, -1.0], [0.8660254037844388, 0.5], [-0.8660254037844384, 0.5]//Triangle
 							],
+							position: { count: 1000, },
 							colors: [
 								1, 0, 0,	0, 1, 0,
 								0, 0, 1,	//0.6, 1, 0,

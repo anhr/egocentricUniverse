@@ -83,6 +83,8 @@ class Universe3D extends Universe2D {
 		
 	}
 
+	intersection() { }
+
 	//Overridden methods from base class
 
 	get verticeEdgesLengthMax() { return 6; }//нельзя добавлть новое ребро если у вершины уже 6 ребра
@@ -97,32 +99,8 @@ class Universe3D extends Universe2D {
 	 **/
 	constructor(options, classSettings) {
 
-//		classSettings.continue = () => this.logUniverse();
-
-		if (classSettings.intersection)	{
-  
-			/** @class
-			* @description 
-			* <pre>
-			* Intersection object is sphere.
-			* For 1 dimensional universe is line.
-			* For 2 dimensional universe is plane.
-			* For 3 dimensional universe is sphere.
-			* </pre>
-			*/
-			classSettings.Intersection = class {
-		
-				constructor() {}
-		
-			}
-	
-		}
-	
 		super(options, classSettings);
 		this.logUniverse();
-  
-		
-	
 
 	}
 

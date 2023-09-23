@@ -15,6 +15,7 @@
 
 
 import Universe from './universe.js';
+import three from '../../commonNodeJS/master/three.js'
 
 const sUniverse1D = 'Universe1D';
 
@@ -128,7 +129,18 @@ class Universe1D extends Universe {
 		
 	}
 
-//	project(scene) { }
+	intersection(color) {
+
+		const THREE = three.THREE,
+			classSettings = this.classSettings,
+			options = classSettings.settings.options,
+			mesh = new THREE.Line( new THREE.BufferGeometry().setFromPoints( [
+			new THREE.Vector3( options.scales.x.min, 0, 0 ), new THREE.Vector3( options.scales.x.max, 0, 0 )
+		] ), new THREE.LineBasicMaterial( { color: color } ) );
+		mesh.position.copy(new THREE.Vector3(0, classSettings.intersection.position === undefined ? 0 : classSettings.intersection.position, 0));
+		return mesh;
+		
+	}
 
 	//Overridden methods from base class
 

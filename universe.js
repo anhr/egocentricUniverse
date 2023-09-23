@@ -45,16 +45,10 @@ class Universe {
 
 	//base methods
 
-//	project() { console.error(sOverride.replace('%s', 'project')); }
 	name() { console.error(sOverride.replace('%s', 'name')); }
 	logUniverse() {
 
 		if (!this.classSettings.debug) return;
-/*		
-		geometry.position.forEach((vertice, i) => console.log('vertice[' + i + '] = ' + JSON.stringify(vertice) +
-			' edges = ' + JSON.stringify(vertice.edges)));
-		geometry.indices.edges.forEach((edge, i) => console.log('edges[' + i + '] = ' + JSON.stringify(edge)));
-*/  
 		let i = 0, progressBarValue = 0,
 			log = 0;//position log
 		const settings = this.classSettings.settings, geometry = settings.object.geometry, position = geometry.position, edges = geometry.indices.edges,
@@ -95,15 +89,10 @@ class Universe {
 						break;
 					default: console.error(sLogUniverse + '. Invalid log = ' + log);
 				}
-/*				
-				if (i === position.length) progressBar.remove();
-				else progressBar.step();
-*/	
 				
 			}, {
 
 			sTitle: 'Geometry log',
-//					max: (position.length - 1) * 2,
 			max: position.length - 1 + edges.length - 1,
 
 		});
@@ -186,7 +175,6 @@ class Universe {
 			cookieName = options.dat.getCookieName(sUniverse),
 			cookieOptions = {};
 		cookie.getObject(cookieName, cookieOptions);
-//		let edgesOld = cookieOptions.edgesOld || { project: true, };
 		classSettings.edges = cookieOptions.edges === false ? false : cookieOptions.edges || classSettings.edges;
 		if (classSettings.edges != false) classSettings.edges = classSettings.edges || {};
 		if ((classSettings.edges != false) && (classSettings.edges.project === undefined)) classSettings.edges.project = true;
@@ -238,31 +226,7 @@ class Universe {
 				push0 = () => {
 
 					randomArray();
-/*
-					//Если не делать этот цикл, то некоторые вершины будут иметь значения NaN и появится ошибка:
-					//THREE.BufferGeometry.computeBoundingSphere(): Computed radius is NaN. The "position" attribute is likely to have NaN values. 
-					//но при этом распределение вершин по вселенной все равно будет равномерным.
-					//Не разобрался почему так происходит.
-					do {
 
-						x.length = 0;
-						sum = 0;
-						//picking x1 and x2 from independent uniform distributions on(-1, 1)
-						for (let i = 0;
-							i < (_this.dimension - 1) * 2;
-							//					i < 2;
-							i++) {
-
-							const random = Math.random() * 2 - 1;
-							sum += random * random;
-							x.push(random);
-
-						}
-
-					} while (sum >= 1);//rejecting points for which x1^2+x2^2>=1
-*/
-
-					//ret.push((x[0] * x[0] + x[3] * x[3] - (x[1] * x[1] + x[2] * x[2])) / sum);//z	=	(x_0^2+x_3^2-x_1^2-x_2^2)/(x_0^2+x_1^2+x_2^2+x_3^2)
 					let positive = x[0] * x[0], negative = x[1] * x[1];
 					for (let i = 0; i < (_this.dimension - 2); i++) {
 
@@ -281,7 +245,6 @@ class Universe {
 
 					//Circle Point Picking
 					//https://mathworld.wolfram.com/CirclePointPicking.html
-//					ret.push((x[0] * x[0] - x[1] * x[1]) / sum);//x	=	(x_1^2-x_2^2)/(x_1^2+x_2^2)	
 					push0();
 					ret.push(2 * x[0] * x[1] / sum);//y	=	(2x_1x_2)/(x_1^2+x_2^2)
 					break;
@@ -290,7 +253,6 @@ class Universe {
 					//Sphere Point Picking
 					//https://mathworld.wolfram.com/SpherePointPicking.html
 					//Cook (1957) extended a method of von Neumann (1951)
-//					ret.push((x[0] * x[0] + x[3] * x[3] - x[1] * x[1] - x[2] * x[2]) / sum);//z	=	(x_0^2+x_3^2-x_1^2-x_2^2)/(x_0^2+x_1^2+x_2^2+x_3^2)
 					push0();
 					ret.push(2 * (x[0] * x[1] - x[2] * x[3]) / sum);//y	=	(2(x_2x_3-x_0x_1))/(x_0^2+x_1^2+x_2^2+x_3^2)	
 					ret.push(2 * (x[1] * x[3] + x[0] * x[2]) / sum);//x	=	(2(x_1x_3+x_0x_2))/(x_0^2+x_1^2+x_2^2+x_3^2)	
@@ -302,8 +264,6 @@ class Universe {
 					 break;
 				case 4://3D universe
 
-//					randomArray(3, ret);
-					
 					//Hypersphere Point Picking
 					//https://mathworld.wolfram.com/HyperspherePointPicking.html
 					//Marsaglia (1972)
@@ -348,9 +308,7 @@ class Universe {
 		//Нижняя граница сегмента hb = hs * i - r
 		//Верхняя граница сегмента ht = hs * (i + 1) - r
 		//где r = 1 - радиус сферыб d = 2 * r = 2 - диаметр сферы, i - индекс сегмента
-		const probabilityDensity = classSettings.debug
-//			&& _this.dimension < 4//Для 3D вселенной плотность не вычисляю так как с этим нет проблем 
-			?
+		const probabilityDensity = classSettings.debug ?
 			[
 				/*
 				{ count: 0, },//0. From -1 to -0.6
@@ -365,28 +323,20 @@ class Universe {
 			for (let i = 0; i < 5; i++) probabilityDensity.push({
 
 				count: 0,
-//				get density() { return 22; },
 				
 			});
 			probabilityDensity.options = {
 
-//				r: classSettings.t,
 				d: classSettings.t * 2,
 
 			};
-//			probabilityDensity.options.d = probabilityDensity.options.r * 2;
 			probabilityDensity.options.sc = probabilityDensity.length;//Количество сегментов
 			probabilityDensity.options.hs = probabilityDensity.options.d / probabilityDensity.options.sc;//Высота сегмента
-//			let segmentsSquare = 0;
 			let sectorsValue = 0;
 			probabilityDensity.forEach((sector, i) => {
 
 				sector.hb = probabilityDensity.options.hs * i - classSettings.t;//Нижняя граница сегмента
 				sector.ht = probabilityDensity.options.hs * (i + 1) - classSettings.t;//Верхняя граница сегмента
-/*				
-				sector.hb = probabilityDensity.options.hs * i - probabilityDensity.options.r;//Нижняя граница сегмента
-				sector.ht = probabilityDensity.options.hs * (i + 1) - probabilityDensity.options.r;//Верхняя граница сегмента
-*/	
 				sectorsValue += _this.probabilityDensity.sectorValue(probabilityDensity, i);
 
 			});
@@ -401,24 +351,6 @@ class Universe {
 			if (unverseValue != sectorsValue) console.error(sUniverse + ': Unverse value = ' + unverseValue + '. Sectors value = ' + sectorsValue);
 		
 		}
-/*
-		//для 2D вселенной это плотность вероятности распределения вершин по поверхости сферы в зависимости от второго угла поворота вершины vertice.angles[1]
-		//Плотности разбил на несколько диапазонов в зависимости от угла поворота vertice.angles[1]
-		//Разбил сферу на 8 сегментов от 0 до 7.
-		//Верхний предел угла поворота каждого сегмента вычисляю по формуле Math.PI * 2 / 16 * (2 * i + 1)
-		//где i - индекс сегмента
-		const probabilityDensity = classSettings.debug ?
-		[
-			0,//0. From 0 to 0.39269908169872414 and 5.890486225480862 to 0
-			0,//1. From 0.39269908169872414 to 1.1780972450961724
-			0,//2. From 1.1780972450961724 to 1.9634954084936207
-			0,//3. From 1.9634954084936207 to 2.748893571891069
-			0,//4. From 2.748893571891069 to 3.5342917352885173
-			0,//5. From 3.5342917352885173 to 4.319689898685965
-			0,//6. From 4.319689898685965 to 5.105088062083414
-			0,//7. From 5.105088062083414 to 5.890486225480862
-		] : undefined;
-*/
 
 		const position = new Proxy([], {
 
@@ -437,54 +369,14 @@ class Universe {
 					case 'push': return (position = randomPosition()) =>//(angles = randomPosition()) =>
 						{
 
-//						if (angles === undefined) return;
-						
 						const proxy = new Proxy(position, {
 
 							get: (vertice, name) => {
 
-/*								
-								const i = parseInt(name);
-								if (!isNaN(i)) {
-												
-									//https://observablehq.com/@thuvee0pan/cartesian-and-polar-coordinates
-									const time = 1, theta = vertice[0];
-									switch(i){
-																			
-										case 0: return time * Math.cos(theta);
-										case 1: return time * Math.sin(theta);
-																			
-									}
-									console.error(sUniverse + ': get vertice[' + i + '] failed.')
-									return;
-												
-								}
-*/
 								switch (name) {
 
-/*See ND distanceTo
-									case 'distanceTo': return (verticeTo) => {
-
-										if (vertice.length != verticeTo.length) {
-
-											console.error(sUniverse + ': settings.object.geometry.position[i].distanceTo(...). vertice.length != verticeTo.length');
-											return;
-
-										}
-										//const distance = new three.THREE.Vector3(vertice[0], vertice[1], vertice[2], ).distanceTo(new three.THREE.Vector3(verticeTo[0], verticeTo[1], verticeTo[2], ));
-										let sum = 0;
-										vertice.forEach((axis, i) => {
-
-											const d = axis - verticeTo[i];
-											sum += d * d;
-
-										})
-										return Math.sqrt(sum);
-									}
-*/										
 									case 'edges':
 
-										//										if (!classSettings.debug && !verticeEdges)
 										if (!classSettings.debug) {
 
 											console.error(sUniverse + ': vertice.edges. Set debug = true first.');
@@ -533,11 +425,6 @@ class Universe {
 									case 'oppositeVerticesId':
 										vertice.oppositeVerticesId = vertice.oppositeVerticesId || [];
 										break;
-/*
-									case 'length':
-										//в декартовой системе коодинат количество осей на единицу больше количества углов в полярной системе координат
-										return vertice.length + 1;
-*/
 									case 'vector':
 										//для совместимости с Player.getPoints. Туда попадает когда хочу вывести на холст точки вместо ребер и использую дя этого MyPoints вместо ND
 										const vertice2 = vertice[2], vertice3 = vertice[3];
@@ -555,84 +442,6 @@ class Universe {
 								switch (name) {
 					
 									case 'angles':
-/*										
-										//https://observablehq.com/@thuvee0pan/cartesian-and-polar-coordinates
-										// Given an object in Polar coordiantes { r: …, theta: … } 
-										// compute its Cartesian coordinates { x: …, y: … }
-										function polar_to_cartesian({ r, theta }) {
-						
-											return [r * Math.cos(theta), r * Math.sin(theta)];
-											
-										}
-										vertice = polar_to_cartesian({ r: 1, theta: value[0] });
-*/
-/*Сейчас probabilityDensity вычисляю сразу после создания этого Proxy
-										if (classSettings.debug) {
-
-											let boDetected = false;
-											const angle = value[1];
-											for (let i = 0; i < 8; i++) {
-
-												if (Math.PI * 2 / 16 * (2 * i + 1) > angle) {
-
-													probabilityDensity[i]++;
-													boDetected = true;
-													break;
-
-												}
-											}
-											if (!boDetected) {
-
-												probabilityDensity[0]++;
-												//console.error(sUniverse + ': Set angles. Probability density. Angle = ' + angle + '. Segment is not detected');
-
-											}
-
-										}
-*/								
-/*
-										vertice.length = 0;
-										
-										//https://observablehq.com/@thuvee0pan/cartesian-and-polar-coordinates
-										value.forEach((angle, angleId) => {
-
-											const time = 1;
-											if(angleId === 0) {
-
-//												vertice = [time * Math.cos(angle), time * Math.sin(angle)];
-												vertice.push(time * Math.cos(angle));
-												vertice.push(time * Math.sin(angle));
-
-											} else {
-
-												const r = Math.cos(angle);
-												if (classSettings.debug) {
-													
-													let boDetected = false;
-													for (let i = 0; i < 8; i++){
-	
-														if (Math.PI * 2 / 16 * (2 * i + 1) > angle) {
-	
-															probabilityDensity[i]++;
-															boDetected = true;
-															break;
-															
-														}
-													}
-													if (!boDetected) {
-
-														probabilityDensity[0]++;
-														//console.error(sUniverse + ': Set angles. Probability density. Angle = ' + angle + '. Segment is not detected');
-
-													}
-													
-												}
-												vertice.forEach((axis, axisId) => vertice[axisId] = axis * r);
-												vertice.push(time * Math.sin(angle));
-												
-											}
-										});
-*/
 										vertice.angles = value;
 										return true;
 										
@@ -674,21 +483,12 @@ class Universe {
 							}
 							if (!boDetected) {
 
-								//probabilityDensity[0]++;
 								console.error(sUniverse + ': add vertice. Probability density. z = ' + z + '. Segment is not detected');
 
 							}
 							
 						}
 							
-/*							
-						//используется для вычисления плотности вероятности распределения вершин по поверхости сферы probabilityDensity
-						proxy.angles = [
-							Math.acos(position[0]),
-							Math.asin(position[2])
-						];
-*/	  
-//						proxy.angles = angles;
 						return _position.push(proxy);
 
 					};
@@ -788,7 +588,6 @@ class Universe {
 
 					const vertice = position[verticeId];//push random vertice if not exists
 					edge[edgeVerticeId] = verticeId;
-//					if (classSettings.debug || verticeEdges)
 					if (classSettings.debug)
 						vertice.edges.push(edgeId === undefined ? _edges.length : edgeId, verticeId);
 					
@@ -802,10 +601,6 @@ class Universe {
 						setVertice(edge, 1, edge[1] === undefined ? _edges.length + 1 : edge[1]);
 						if (classSettings.debug) _edges.forEach((edgeCur, i) => { if (((edgeCur[0] === edge[0]) && (edgeCur[1] === edge[1])) || ((edgeCur[0] === edge[1]) && (edgeCur[1] === edge[0]))) console.error(sUniverse + ': edges[' + i + ']. Duplicate edge[' + edge + ']') });
 
-/*						
-						position[edge[0]].oppositeVertices.push(position[edge[1]]);
-						position[edge[1]].oppositeVertices.push(position[edge[0]]);
-*/
 						position[edge[0]].oppositeVerticesId.push(edge[1]);
 						position[edge[1]].oppositeVerticesId.push(edge[0]);
 
@@ -875,7 +670,6 @@ class Universe {
 			this.projectGeometry = () => {
 
 				const guiSelectPoint = settings.options.guiSelectPoint;
-	//			if (typeof MyPoints === 'undefined')
 				if ((classSettings.edges != false) && classSettings.edges.project) {
 	
 					if (myPoints) {
@@ -1006,17 +800,6 @@ class Universe {
 
 							const vertice = position[verticeId];
 							vertices.push([]);
-							/*						
-													const oppositeVertices = [];
-													vertice.edges.forEach(edgeId => {
-													
-														const edge = edges[edgeId],
-															verticeIdOpposite = edge[0] === verticeId ? edge[1] : edge[1] === verticeId ? edge[0] : undefined;
-														if (verticeIdOpposite === undefined) console.error(sUniverse + ': options.onSelectScene. Invalid opposite verticeId');
-														oppositeVertices.push(position[verticeIdOpposite]);
-													
-													});
-							*/
 							const oppositeVerticesId = vertice.oppositeVerticesId;
 
 							//find middle point between opposite vertices
@@ -1025,16 +808,13 @@ class Universe {
 
 								middlePoint.push(0);
 								const middlePointAxisId = middlePoint.length - 1;
-								//								oppositeVertices.forEach(oppositeVertice => middlePoint[middlePointAxisId] += oppositeVertice[axisId]);
 								oppositeVerticesId.forEach(verticeIdOpposite => middlePoint[middlePointAxisId] += position[verticeIdOpposite][axisId]);
-								//						vertice[axisId] = middlePoint[middlePointAxisId] / vertice.length;
 								vertices[verticeId][axisId] = middlePoint[middlePointAxisId] / vertice.length;
 
 							});
 							verticeId += 1;
 							if (verticeId >= position.length) {
 
-								//							if (classSettings.debug) console.log('time: Copy vertices. ' + ((window.performance.now() - timestamp) / 1000) + ' sec.');
 								progressBar.remove();
 
 								for (verticeId = 0; verticeId < (position.length - 1); verticeId++) {
@@ -1059,29 +839,49 @@ class Universe {
 							}
 
 						}
-						/*						
-												let stop = false;
-												for (let i = 0; i < 10; i++) {
-						
-													stop = stepItem();
-													if (stop) break;
-												
-												}
-												if (!stop) progressBar.step();
-						*/
 						if (!stepItem()) progressBar.step();
 
 					};
 				progressBar = new ProgressBar(options.renderer.domElement.parentElement, step, {
 
 					sTitle: 't = ' + t + '<br> Take middle vertices',
-					//					max: (position.length - 1) * 2,
 					max: position.length - 1,
 
 				});
 				return true;//player pause
 
 			}
+
+			//intersection
+
+			if (classSettings.intersection) {
+
+				const mesh = this.intersection(classSettings.intersection.color === undefined ? 0x0000FF : //blue
+					classSettings.intersection.color);
+			
+				//Localization
+				
+				const lang = {
+		
+					intersector: "Intersector",
+	
+				};
+		
+				switch (options.getLanguageCode()) {
+		
+					case 'ru'://Russian language
+		
+						lang.intersector = "Сечение";
+	
+						break;
+		
+				}
+				mesh.name = lang.intersector;
+				scene.add(mesh);
+				if (options.guiSelectPoint) options.guiSelectPoint.addMesh(mesh);
+
+			}
+
 			if (classSettings.debug) console.log('time: Project. ' + ((window.performance.now() - this.timestamp) / 1000) + ' sec.');
 
 		}
@@ -1135,13 +935,12 @@ class Universe {
 					const sectorValueName = _this.probabilityDensity.sectorValueName;
 					if (!sectorValueName) console.error(sUniverse + ': Invalid sectorValueName = ' + sectorValueName);
 					console.table(table, ['count', 'hb', 'ht', 'height',
-						sectorValueName,//'square',
+						sectorValueName,
 						'density']);
 					console.log('');		   
 					console.log('time: Push positions. ' + ((window.performance.now() - this.timestamp) / 1000) + ' sec.');
 
 				}				
-//				if (typeof MyPoints === 'undefined')//Для экономии времени не добавляю ребра если на холст вывожу только вершины
 				if (classSettings.edges)//Для экономии времени не добавляю ребра если на холст вывожу только вершины
 					this.pushEdges();
 				else if (this.classSettings.projectParams) this.project(this.classSettings.projectParams.scene, this.classSettings.projectParams.params);
@@ -1153,7 +952,6 @@ class Universe {
 				
 		}
 		
-//		this.Indices();
 		if ( options.dat.gui ) {
 
 			const getLanguageCode = options.getLanguageCode;
@@ -1169,7 +967,7 @@ class Universe {
 	
 				project: "Project",
 				projectTitle: "Project edges onto canvas",
-				
+
 			};
 	
 			const _languageCode = getLanguageCode();
@@ -1185,7 +983,7 @@ class Universe {
 					
 					lang.project = "Отображать";
 					lang.projectTitle = "Отображать ребра на холсте";
-	
+
 					break;
 	
 			}
@@ -1215,7 +1013,6 @@ class Universe {
 					displayEdge();
 					_this.projectGeometry();
 					setCockie();
-//					cookie.setObject(cookieName, { edges: classSettings.edges, edgesOld: edgesOld, });
 				
 				} ),
 				fEdge = fUniverse.addFolder(lang.edge),
@@ -1232,10 +1029,6 @@ class Universe {
 			displayEdge();
 			three.dat.controllerNameAndTitle( cEdges, lang.edges, lang.edgesTitle );
 			three.dat.controllerNameAndTitle( cProject, lang.project, lang.projectTitle );
-
-			//intersection
-			
-			if (classSettings.Intersection) new classSettings.Intersection();
 			
 		}
 		

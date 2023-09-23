@@ -188,7 +188,7 @@ class Universe2D extends Universe {
 		
 	}
 
-//	project(scene) { }
+	intersection() { }
 
 	//Overridden methods from base class
 
@@ -205,20 +205,6 @@ class Universe2D extends Universe {
 	constructor(options, classSettings) {
 
 		classSettings.continue = () => this.logUniverse2D();
-  
-		if (classSettings.intersection && !classSettings.Intersection)	{
-  
-			/** @class
-			* @description 
-			* Intersection object is plane.
-			*/
-			classSettings.Intersection = class {
-		
-				constructor() {}
-		
-			}
-	
-		}
 		super(options, classSettings);
 //		this.logUniverse2D();
 
