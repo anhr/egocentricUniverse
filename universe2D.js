@@ -16,6 +16,7 @@
 
 import Universe from './universe.js';
 import ProgressBar from '../../commonNodeJS/master/ProgressBar/ProgressBar.js'
+import three from '../../commonNodeJS/master/three.js'
 
 class Universe2D extends Universe {
 
@@ -188,7 +189,16 @@ class Universe2D extends Universe {
 		
 	}
 
-	intersection() { }
+	intersection(color) {
+
+		const THREE = three.THREE,
+			classSettings = this.classSettings,
+			mesh = new THREE.GridHelper(2, 10, color, color);
+		mesh.rotation.x = Math.PI / 2;
+		mesh.position.copy(new THREE.Vector3(0, 0, classSettings.intersection.position === undefined ? 0 : classSettings.intersection.position));
+		return mesh;
+
+	}
 
 	//Overridden methods from base class
 

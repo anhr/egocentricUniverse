@@ -16,6 +16,8 @@
 
 //import Universe from './universe.js';
 import Universe2D from './universe2D.js';
+import three from '../../commonNodeJS/master/three.js'
+import FibonacciSphereGeometry from '../../commonNodeJS/master/FibonacciSphere/FibonacciSphereGeometry.js'
 
 class Universe3D extends Universe2D {
 
@@ -83,7 +85,14 @@ class Universe3D extends Universe2D {
 		
 	}
 
-	intersection() { }
+	intersection(color) {
+
+		const THREE = three.THREE,
+			mesh = new THREE.Mesh(new FibonacciSphereGeometry(1, 320), new THREE.MeshBasicMaterial( { color: color, wireframe: true } ));
+//		mesh.rotation.x = Math.PI / 2;
+		return mesh;
+		
+	}
 
 	//Overridden methods from base class
 

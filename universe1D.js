@@ -72,6 +72,7 @@ class Universe1D extends Universe {
 		const geometry = this.classSettings.settings.object.geometry, edges = geometry.indices.edges, position = geometry.position;
 		for (let verticeId = 1; verticeId < position.length; verticeId++) edges.push();
 		edges.push([position.length - 1, 0]);
+		if (this.projectGeometry) this.projectGeometry();
 		
 		if (this.classSettings.debug) console.log('time: Push edges. ' + ((window.performance.now() - this.timestamp) / 1000) + ' sec.');
 		

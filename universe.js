@@ -121,6 +121,19 @@ class Universe {
 	 * Base class for n dimensional universe.
 	 * @param {Options} options See <a href="../../../commonNodeJS/master/jsdoc/Options/Options.html" target="_blank">Options</a>.
 	 * @param {object} [classSettings] <b>Universe</b> class settings.
+	 * @param {object} [classSettings.intersection] Universe intersection.
+	 * <pre>
+	 *	For 1D universe intersector is line.
+	 *	For 2D universe intersector is plane.
+	 *	For 1D universe intersector is sphere.
+	 * </pre>
+	 * @param {float} [classSettings.intersection.position=0.0] Position of the intersector.
+	 * <pre>
+	 *	For 1D universe <b>position</b> is Y coordinate of the intersection line.
+	 *	For 2D universe <b>position</b> is Z coordinate of the intersection plane.
+	 *	For 3D universe <b>position</b> is radius of the intersection sphere.
+	 * </pre>
+	 * @param {number|string} [classSettings.intersection.color=0x0000FF] Color of the intersector. Example: 'red'.
 	 * @param {object} [classSettings.projectParams] Parameters of project the universe onto the canvas.
 	 * @param {THREE.Scene} classSettings.projectParams.scene [THREE.Scene]{@link https://threejs.org/docs/index.html?q=sce#api/en/scenes/Scene}
 	 * @param {object} [classSettings.projectParams.params={}] The following parameters are available
@@ -655,6 +668,7 @@ class Universe {
 				for (var i = scene.children.length - 1; i >= 0; i--) {
 
 					const child = scene.children[i];
+					this.remove(child);
 					scene.remove(child);
 					if (options.guiSelectPoint) options.guiSelectPoint.removeMesh(child);
 
@@ -669,17 +683,60 @@ class Universe {
 			let nd, myPoints;
 			this.projectGeometry = () => {
 
+				const intersection = (parent) => {
+
+					if (!classSettings.intersection) return;
+
+					const mesh = this.intersection(classSettings.intersection.color === undefined ? 0x0000FF : //blue
+						classSettings.intersection.color);
+
+					//Localization
+
+					const lang = {
+
+						intersector: "Intersector",
+
+					};
+
+					switch (options.getLanguageCode()) {
+
+						case 'ru'://Russian language
+
+							lang.intersector = "Сечение";
+
+							break;
+
+					}
+					mesh.name = lang.intersector;
+					parent.add(mesh);
+					if (options.guiSelectPoint) options.guiSelectPoint.addMesh(mesh);
+
+				}
+
 				const guiSelectPoint = settings.options.guiSelectPoint;
 				if ((classSettings.edges != false) && classSettings.edges.project) {
 	
 					if (myPoints) {
 						
 						myPoints.visible = false;
-						if (guiSelectPoint) guiSelectPoint.removeMesh(myPoints, false);
+						if (guiSelectPoint) {
+							
+							guiSelectPoint.removeMesh(myPoints, false);
+							myPoints.children.forEach(child => guiSelectPoint.removeMesh(child, false));
+						}
 
 					}
-					if (nd) nd.object3D.visible = true;
-					else {
+					if (nd) {
+						
+						nd.object3D.visible = true;
+						if (guiSelectPoint) {
+							
+							guiSelectPoint.addMesh(nd.object3D);
+							nd.object3D.children.forEach(child => guiSelectPoint.addMesh(child));
+
+						}
+						
+					} else {
 						
 						settings.scene = scene;
 						if (settings.object.geometry.indices.edges.length === 0 ) this.pushEdges();
@@ -692,6 +749,8 @@ class Universe {
 							nd.object3D.position.x = params.center.x || 0;
 							nd.object3D.position.y = params.center.y || 0;
 							nd.object3D.position.z = params.center.z || 0;
+							
+							intersection(nd.object3D);
 
 						}
 
@@ -702,11 +761,25 @@ class Universe {
 					if (nd) {
 	
 						nd.object3D.visible = false;
-						if (guiSelectPoint) guiSelectPoint.removeMesh(nd.object3D);
+						if (guiSelectPoint) {
+							
+							guiSelectPoint.removeMesh(nd.object3D);
+							nd.object3D.children.forEach(child => guiSelectPoint.removeMesh(child, false));
+
+						}
 	
 					}
-					if (myPoints) myPoints.visible = true;
-					else {
+					if (myPoints) {
+						
+						myPoints.visible = true;
+						if (guiSelectPoint) {
+							
+							guiSelectPoint.addMesh(myPoints);
+							myPoints.children.forEach(child => guiSelectPoint.addMesh(child));
+
+						}
+						
+					} else {
 						
 						let points = settings.object.geometry.position;
 		
@@ -725,7 +798,12 @@ class Universe {
 								
 								//shaderMaterial: false,
 								name: settings.object.name,
-								onReady: (points) => { myPoints = points; }
+								onReady: (points) => {
+									
+									myPoints = points;
+									intersection(points);
+								
+								}
 							
 							},
 							options: settings.options,
@@ -849,36 +927,6 @@ class Universe {
 
 				});
 				return true;//player pause
-
-			}
-
-			//intersection
-
-			if (classSettings.intersection) {
-
-				const mesh = this.intersection(classSettings.intersection.color === undefined ? 0x0000FF : //blue
-					classSettings.intersection.color);
-			
-				//Localization
-				
-				const lang = {
-		
-					intersector: "Intersector",
-	
-				};
-		
-				switch (options.getLanguageCode()) {
-		
-					case 'ru'://Russian language
-		
-						lang.intersector = "Сечение";
-	
-						break;
-		
-				}
-				mesh.name = lang.intersector;
-				scene.add(mesh);
-				if (options.guiSelectPoint) options.guiSelectPoint.addMesh(mesh);
 
 			}
 
