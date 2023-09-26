@@ -207,9 +207,10 @@ class Universe2D extends Universe {
 
 		const THREE = three.THREE,
 			classSettings = this.classSettings,
-			mesh = new THREE.GridHelper(2, 10, color, color);
+			t = classSettings.t,
+			mesh = new THREE.GridHelper(2 * t, 10, color, color);
 		mesh.rotation.x = Math.PI / 2;
-		mesh.position.copy(new THREE.Vector3(0, 0, classSettings.intersection.position));
+		mesh.position.copy(new THREE.Vector3(0, 0, classSettings.intersection.position * t));
 		return mesh;
 
 	}
