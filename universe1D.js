@@ -145,7 +145,7 @@ class Universe1D extends Universe {
 			mesh = new THREE.Line( new THREE.BufferGeometry().setFromPoints( [
 			new THREE.Vector3( options.scales.x.min, 0, 0 ), new THREE.Vector3( options.scales.x.max, 0, 0 )
 		] ), new THREE.LineBasicMaterial( { color: color } ) );
-		mesh.position.copy(new THREE.Vector3(0, classSettings.intersection.position === undefined ? 0 : classSettings.intersection.position, 0));
+		mesh.position.copy(new THREE.Vector3(0, classSettings.intersection.position, 0));
 		return mesh;
 		
 	}

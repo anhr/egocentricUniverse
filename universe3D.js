@@ -105,11 +105,49 @@ class Universe3D extends Universe2D {
 		
 	}
 
-	intersection(color) {
+	intersection(color, scene) {
 
 		const THREE = three.THREE,
-			mesh = new THREE.Mesh(new FibonacciSphereGeometry(1, 320), new THREE.MeshBasicMaterial( { color: color, wireframe: true } ));
-//		mesh.rotation.x = Math.PI / 2;
+			classSettings = this.classSettings,
+			mesh = new THREE.Mesh(new FibonacciSphereGeometry(((classSettings.intersection.position + 1) / 2) * classSettings.t, 320),
+				//new THREE.MeshBasicMaterial( { color: color, wireframe: true } )//сетка
+				new THREE.MeshLambertMaterial( {//полупрозрачные грани
+
+					color: color,//"lightgray",
+					opacity: 0.2,
+					transparent: true,
+					side: THREE.DoubleSide//от этого ключа зависят точки пересечения объектов
+
+				} )
+			);
+		
+		const lights = [], lightsCount = 6;
+		for (let i = 0; i < lightsCount; i++) lights.push(new THREE.DirectionalLight(color, i > 2 ? 1 : 0.5));
+
+/*		
+		lights[0].position.set(0, 200, 0);
+		lights[1].position.set(100, 200, 100);
+		lights[2].position.set(- 100, - 200, - 100);
+*/  
+		/*
+		lights[0].position.set(-200, 0, 0);
+		lights[1].position.set(0, -200, 0);
+		lights[2].position.set(0, 0, -200);
+		*/
+		lights[0].position.set(200, 0, 0);
+		lights[1].position.set(0, 200, 0);
+		lights[2].position.set(0, 0, 200);
+		lights[3].position.set(-200, 0, 0);
+		lights[4].position.set(0, -200, 0);
+		lights[5].position.set(0, 0, -200);
+
+		for (let i = 0; i < lightsCount; i++) scene.add(lights[i]);
+/*		
+		scene.add(lights[0]);
+		scene.add(lights[1]);
+		scene.add(lights[2]);
+*/  
+
 		return mesh;
 		
 	}

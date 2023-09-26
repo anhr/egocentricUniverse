@@ -692,8 +692,9 @@ class Universe {
 
 					if (!classSettings.intersection) return;
 
-					const mesh = this.intersection(classSettings.intersection.color === undefined ? 0x0000FF : //blue
-						classSettings.intersection.color);
+					if (classSettings.intersection.position === undefined) classSettings.intersection.position = 0;
+					const mesh = this.intersection(classSettings.intersection.color === undefined ? "lightgray" ://0x0000FF : //blue
+						classSettings.intersection.color, scene);
 
 					//Localization
 
