@@ -66,7 +66,14 @@ class Universe1D extends Universe {
 		}
 		
 	}
-	
+	randomPosition(params) {
+		
+		//Circle Point Picking
+		//https://mathworld.wolfram.com/CirclePointPicking.html
+		const res = params.push0(), ret = res.ret, x = params.x, sum = res.sum;
+		ret.push(2 * x[0] * x[1] / sum);//y	=	(2x_1x_2)/(x_1^2+x_2^2)
+		
+	}
 	pushEdges() {
 
 		const geometry = this.classSettings.settings.object.geometry, edges = geometry.indices.edges, position = geometry.position;

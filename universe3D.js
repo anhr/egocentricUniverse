@@ -60,6 +60,26 @@ class Universe3D extends Universe2D {
 		}
 
 	}
+	randomPosition(params) {
+
+		//Hypersphere Point Picking
+		//https://mathworld.wolfram.com/HyperspherePointPicking.html
+		//Marsaglia (1972)
+		const ret = params.ret, x = params.x, randomArray = params.randomArray;
+
+		//set x - random array
+		let sum = randomArray(2);
+		const sum1 = sum, x2 = [];
+		sum = randomArray(2, x2);
+		x2.forEach(item => x.push(item));
+
+		ret.push(x[0]);//x	=	x_1	
+		ret.push(x[1]);//y	=	x_2	
+		const sqrt = Math.sqrt((1 - sum1) / sum);//sqrt((1-x_1^2-x_2^2)/(x_3^2+x_4^2)
+		ret.push(x[2] * sqrt);//z	=	x_3sqrt((1-x_1^2-x_2^2)/(x_3^2+x_4^2))	
+		ret.push(x[3] * sqrt);;//w	=	x_4sqrt((1-x_1^2-x_2^2)/(x_3^2+x_4^2))
+
+	}
 	name( getLanguageCode ) {
 
 		//Localization

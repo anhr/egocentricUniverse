@@ -234,6 +234,7 @@ class Universe {
 						}
 
 					} while (sum >= 1);//rejecting points for which x1^2+x2^2>=1
+					return sum;
 
 				},
 				push0 = () => {
@@ -249,9 +250,12 @@ class Universe {
 
 					}
 					ret.push((positive - negative) / sum);
+					return { ret: ret, sum: sum };
 
 				}
-   
+
+			this.randomPosition({ push0: push0, x: x, randomArray: randomArray, ret: ret });
+/*   
 			switch(_this.dimension) {
 
 				case 2://1D universe
@@ -260,6 +264,7 @@ class Universe {
 					//https://mathworld.wolfram.com/CirclePointPicking.html
 					push0();
 					ret.push(2 * x[0] * x[1] / sum);//y	=	(2x_1x_2)/(x_1^2+x_2^2)
+	 
 					break;
 				case 3://2D universe
 					
@@ -297,7 +302,7 @@ class Universe {
 				default: console.error(sUniverse + ': randomPosition. Invalid universe dimension = ' + _this.dimension);
 
 			}
-
+*/   
 			sum = 0;
 			ret.forEach((axis, i) => {
 

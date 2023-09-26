@@ -41,6 +41,20 @@ class Universe2D extends Universe {
 		}
 
 	}
+	randomPosition(params) {
+
+		//Sphere Point Picking
+		//https://mathworld.wolfram.com/SpherePointPicking.html
+		//Cook (1957) extended a method of von Neumann (1951)
+		const res = params.push0(), ret = res.ret, x = params.x, sum = res.sum;
+		ret.push(2 * (x[0] * x[1] - x[2] * x[3]) / sum);//y	=	(2(x_2x_3-x_0x_1))/(x_0^2+x_1^2+x_2^2+x_3^2)	
+		ret.push(2 * (x[1] * x[3] + x[0] * x[2]) / sum);//x	=	(2(x_1x_3+x_0x_2))/(x_0^2+x_1^2+x_2^2+x_3^2)	
+	
+		//Marsaglia (1972) method
+//		for (let i = 0; i < (_this.dimension - 1); i++) ret.push(2 * x[i] * Math.sqrt(1 - sum));
+//		ret.push(1 - 2 * sum);
+
+	}
 	pushEdges() {
 
 		const settings = this.classSettings.settings, geometry = settings.object.geometry, position = geometry.position, edges = geometry.indices.edges;
