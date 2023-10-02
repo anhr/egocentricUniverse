@@ -80,6 +80,7 @@ class Universe3D extends Universe2D {
 		ret.push(x[3] * sqrt);;//w	=	x_4sqrt((1-x_1^2-x_2^2)/(x_3^2+x_4^2))
 
 	}
+	color() {}
 	name( getLanguageCode ) {
 
 		//Localization

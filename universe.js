@@ -43,6 +43,7 @@ class Universe {
 
 	//base methods
 
+	color() { if (this.classSettings.settings.object.color === undefined) this.classSettings.settings.object.color = 'lime'; }
 	name() { console.error(sOverride.replace('%s', 'name')); }
 	logUniverse() {
 
@@ -686,7 +687,7 @@ class Universe {
 
 			this.Test();
 
-			if (classSettings.settings.object.color === undefined) classSettings.settings.object.color = 'lime';
+			this.color();
 
 			if (this.setW) this.setW();
 			let nd, myPoints;
