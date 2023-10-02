@@ -25,9 +25,7 @@ if (ND.default) ND = ND.default;
 //Когда хочу вывести на холст точки вместо ребер то использую MyPoints вместо ND
 //При этом ребра не создаются что дает экономию времени
 import MyPoints from '../../commonNodeJS/master/myPoints/myPoints.js';
-
-//не используется
-//import ColorPicker from '../../commonNodeJS/master/colorpicker/colorpicker.js';
+import ColorPicker from '../../commonNodeJS/master/colorpicker/colorpicker.js';
 
 //Получаю ошибку
 //myThree: duplicate myThree. Please use one instance of the myThree class.
@@ -150,7 +148,11 @@ class Universe {
 	 * @param {object} [classSettings.settings] The following settings are available
 	 * @param {object} [classSettings.settings.object] Universe object.
 	 * @param {String} [classSettings.settings.object.name] name of universe.
-	 * @param {String} [classSettings.settings.object.color='lime'] color of edges.
+	 * @param {String|number} [classSettings.settings.object.color='lime'] color of edges or vertices.
+	 * <pre>
+	 * String - color name. See list of available color names in the <b>_colorKeywords</b> object in the [Color.js]{@link https://github.com/mrdoob/three.js/blob/dev/src/math/Color.js} file.
+	 * number - color [Hex triplet]{@link https://en.wikipedia.org/wiki/Web_colors#Hex_triplet}. Example: 0x0000ff - blue color.
+	 * <pre>
 	 * @param {object} [classSettings.settings.object.geometry] Universe geometry.
 	 * @param {array|object} [classSettings.settings.object.geometry.position] n-dimensional universe vertices.
 	 * <pre>
@@ -684,6 +686,8 @@ class Universe {
 
 			this.Test();
 
+			if (classSettings.settings.object.color === undefined) classSettings.settings.object.color = 'lime';
+
 			if (this.setW) this.setW();
 			let nd, myPoints;
 			this.projectGeometry = () => {
@@ -796,7 +800,13 @@ class Universe {
 						points = [];
 						settings.object.geometry.position.forEach(vertive => points.push(vertive.angles));
 						*/
-		
+
+						if (classSettings.settings.object.color != undefined) {
+
+							const color = new three.THREE.Color(classSettings.settings.object.color);
+							classSettings.settings.options.setPalette(new ColorPicker.palette( { palette: [{ percent: 0, r: color.r * 255, g: color.g * 255, b: color.b * 255, },] } ));
+							
+						}
 				
 						MyPoints(points, scene, {
 							

@@ -53,9 +53,7 @@ if (ND.default) ND = ND.default;
 //Когда хочу вывести на холст точки вместо ребер то использую MyPoints вместо ND
 //При этом ребра не создаются что дает экономию времени
 import MyPoints from '../../commonNodeJS/master/myPoints/myPoints.js';
-
-//не используется
-//import ColorPicker from '../../commonNodeJS/master/colorpicker/colorpicker.js';
+import ColorPicker from '../../commonNodeJS/master/colorpicker/colorpicker.js';
 
 //Получаю ошибку
 //myThree: duplicate myThree. Please use one instance of the myThree class.
@@ -178,7 +176,11 @@ class Universe {
 	 * @param {object} [classSettings.settings] The following settings are available
 	 * @param {object} [classSettings.settings.object] Universe object.
 	 * @param {String} [classSettings.settings.object.name] name of universe.
-	 * @param {String} [classSettings.settings.object.color='lime'] color of edges.
+	 * @param {String|number} [classSettings.settings.object.color='lime'] color of edges or vertices.
+	 * &lt;pre>
+	 * String - color name. See list of available color names in the &lt;b>_colorKeywords&lt;/b> object in the [Color.js]{@link https://github.com/mrdoob/three.js/blob/dev/src/math/Color.js} file.
+	 * number - color [Hex triplet]{@link https://en.wikipedia.org/wiki/Web_colors#Hex_triplet}. Example: 0x0000ff - blue color.
+	 * &lt;pre>
 	 * @param {object} [classSettings.settings.object.geometry] Universe geometry.
 	 * @param {array|object} [classSettings.settings.object.geometry.position] n-dimensional universe vertices.
 	 * &lt;pre>
@@ -262,6 +264,7 @@ class Universe {
 						}
 
 					} while (sum >= 1);//rejecting points for which x1^2+x2^2>=1
+					return sum;
 
 				},
 				push0 = () => {
@@ -277,9 +280,12 @@ class Universe {
 
 					}
 					ret.push((positive - negative) / sum);
+					return { ret: ret, sum: sum };
 
 				}
-   
+
+			this.randomPosition({ push0: push0, x: x, randomArray: randomArray, ret: ret });
+/*   
 			switch(_this.dimension) {
 
 				case 2://1D universe
@@ -288,6 +294,7 @@ class Universe {
 					//https://mathworld.wolfram.com/CirclePointPicking.html
 					push0();
 					ret.push(2 * x[0] * x[1] / sum);//y	=	(2x_1x_2)/(x_1^2+x_2^2)
+	 
 					break;
 				case 3://2D universe
 					
@@ -325,7 +332,7 @@ class Universe {
 				default: console.error(sUniverse + ': randomPosition. Invalid universe dimension = ' + _this.dimension);
 
 			}
-
+*/   
 			sum = 0;
 			ret.forEach((axis, i) => {
 
@@ -696,6 +703,7 @@ class Universe {
 				for (var i = scene.children.length - 1; i >= 0; i--) {
 
 					const child = scene.children[i];
+					this.remove(child);
 					scene.remove(child);
 					if (options.guiSelectPoint) options.guiSelectPoint.removeMesh(child);
 
@@ -706,9 +714,42 @@ class Universe {
 
 			this.Test();
 
+			if (classSettings.settings.object.color === undefined) classSettings.settings.object.color = 'lime';
+
 			if (this.setW) this.setW();
 			let nd, myPoints;
 			this.projectGeometry = () => {
+
+				const intersection = (parent) => {
+
+					if (!classSettings.intersection) return;
+
+					if (classSettings.intersection.position === undefined) classSettings.intersection.position = 0;
+					const mesh = this.intersection(classSettings.intersection.color === undefined ? "lightgray" ://0x0000FF : //blue
+						classSettings.intersection.color, scene);
+
+					//Localization
+
+					const lang = {
+
+						intersector: "Intersector",
+
+					};
+
+					switch (options.getLanguageCode()) {
+
+						case 'ru'://Russian language
+
+							lang.intersector = "Сечение";
+
+							break;
+
+					}
+					mesh.name = lang.intersector;
+					parent.add(mesh);
+					if (options.guiSelectPoint) options.guiSelectPoint.addMesh(mesh);
+
+				}
 
 				const guiSelectPoint = settings.options.guiSelectPoint;
 				if ((classSettings.edges != false) &amp;&amp; classSettings.edges.project) {
@@ -716,11 +757,24 @@ class Universe {
 					if (myPoints) {
 						
 						myPoints.visible = false;
-						if (guiSelectPoint) guiSelectPoint.removeMesh(myPoints, false);
+						if (guiSelectPoint) {
+							
+							guiSelectPoint.removeMesh(myPoints, false);
+							myPoints.children.forEach(child => guiSelectPoint.removeMesh(child, false));
+						}
 
 					}
-					if (nd) nd.object3D.visible = true;
-					else {
+					if (nd) {
+						
+						nd.object3D.visible = true;
+						if (guiSelectPoint) {
+							
+							guiSelectPoint.addMesh(nd.object3D);
+							nd.object3D.children.forEach(child => guiSelectPoint.addMesh(child));
+
+						}
+						
+					} else {
 						
 						settings.scene = scene;
 						if (settings.object.geometry.indices.edges.length === 0 ) this.pushEdges();
@@ -733,6 +787,8 @@ class Universe {
 							nd.object3D.position.x = params.center.x || 0;
 							nd.object3D.position.y = params.center.y || 0;
 							nd.object3D.position.z = params.center.z || 0;
+							
+							intersection(nd.object3D);
 
 						}
 
@@ -743,11 +799,25 @@ class Universe {
 					if (nd) {
 	
 						nd.object3D.visible = false;
-						if (guiSelectPoint) guiSelectPoint.removeMesh(nd.object3D);
+						if (guiSelectPoint) {
+							
+							guiSelectPoint.removeMesh(nd.object3D);
+							nd.object3D.children.forEach(child => guiSelectPoint.removeMesh(child, false));
+
+						}
 	
 					}
-					if (myPoints) myPoints.visible = true;
-					else {
+					if (myPoints) {
+						
+						myPoints.visible = true;
+						if (guiSelectPoint) {
+							
+							guiSelectPoint.addMesh(myPoints);
+							myPoints.children.forEach(child => guiSelectPoint.addMesh(child));
+
+						}
+						
+					} else {
 						
 						let points = settings.object.geometry.position;
 		
@@ -758,7 +828,13 @@ class Universe {
 						points = [];
 						settings.object.geometry.position.forEach(vertive => points.push(vertive.angles));
 						*/
-		
+
+						if (classSettings.settings.object.color != undefined) {
+
+							const color = new three.THREE.Color(classSettings.settings.object.color);
+							classSettings.settings.options.setPalette(new ColorPicker.palette( { palette: [{ percent: 0, r: color.r * 255, g: color.g * 255, b: color.b * 255, },] } ));
+							
+						}
 				
 						MyPoints(points, scene, {
 							
@@ -766,7 +842,12 @@ class Universe {
 								
 								//shaderMaterial: false,
 								name: settings.object.name,
-								onReady: (points) => { myPoints = points; }
+								onReady: (points) => {
+									
+									myPoints = points;
+									intersection(points);
+								
+								}
 							
 							},
 							options: settings.options,
@@ -890,36 +971,6 @@ class Universe {
 
 				});
 				return true;//player pause
-
-			}
-
-			//intersection
-
-			if (classSettings.intersection) {
-
-				const mesh = this.intersection(classSettings.intersection.color === undefined ? 0x0000FF : //blue
-					classSettings.intersection.color);
-			
-				//Localization
-				
-				const lang = {
-		
-					intersector: "Intersector",
-	
-				};
-		
-				switch (options.getLanguageCode()) {
-		
-					case 'ru'://Russian language
-		
-						lang.intersector = "Сечение";
-	
-						break;
-		
-				}
-				mesh.name = lang.intersector;
-				scene.add(mesh);
-				if (options.guiSelectPoint) options.guiSelectPoint.addMesh(mesh);
 
 			}
 
@@ -1097,7 +1148,7 @@ export default Universe;
 <br class="clear">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 3.6.11</a> on Sat Sep 23 2023 09:53:09 GMT+0700 (Красноярск, стандартное время)
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 3.6.11</a> on Mon Oct 02 2023 12:32:42 GMT+0700 (Красноярск, стандартное время)
 </footer>
 
 <script> prettyPrint(); </script>

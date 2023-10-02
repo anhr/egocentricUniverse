@@ -47,10 +47,11 @@
 				
 				intersection: {
 
-					position: 0.5,
+					//position: 0.5,
 					//color: 'red',
 					
 				},
+				edges: false,
 				//t: 0.5,
 				debug: true,
 				//mode: 1,
@@ -59,14 +60,15 @@
 					object: {
 	
 						//name: 'edges',
-						//color: 'red',
+						color: 'red',
+						//color: 0x0000ff,//blue
 						geometry: {
 
 							position: [
 								//[-0.5, 0.5], [0.0, -0.6], [0.5, 0.7]
 								[0.0, -1.0], [0.8660254037844388, 0.5], [-0.8660254037844384, 0.5]//Triangle
 							],
-							position: { count: 320, },
+							//position: { count: 320, },
 							/*
 							colors: [
 								1, 0, 0,	0, 1, 0,
@@ -96,6 +98,18 @@
 
 		}, {
 
+			//Have effect only if
+			//  classSettings.settings.object.color of Universe1D is undefined
+			//  and classSettings.edges = false
+			//
+			//palette: 'red',
+			//palette: 'rgb(0, 255, 0)',//green
+			//palette: 'rgb(100%, 0%, 0%)',//red
+			//palette: 'hsl(0, 100%, 50%)',//red https://www.w3schools.com/css/css_colors_hsl.asp
+			//palette: [{ percent: 0, r: 0, g: 0, b: 0xff, },],//blue
+			//palette: MyThree.ColorPicker.paletteIndexes.bidirectional,
+			//palette: new MyThree.ColorPicker.palette({ palette:  [{ percent: 0, r: 0xff, g: 0, b: 0, },]}),//red
+			
 			//axesHelper: false,
 			orbitControls: { enableRotate: false, },
             dat: { guiSelectPoint: { point: (options, dat, fMesh) => { return new Universe1D.ND.gui(options, dat, fMesh); }, }, },
