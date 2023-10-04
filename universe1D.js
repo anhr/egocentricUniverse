@@ -141,12 +141,24 @@ class Universe1D extends Universe {
 
 		const THREE = three.THREE,
 			classSettings = this.classSettings,
-			options = classSettings.settings.options,
+			settings = classSettings.settings,
+			options = settings.options,
 			t = classSettings.t,
+			ip = classSettings.intersection.position,//координата сечения
 			mesh = new THREE.Line( new THREE.BufferGeometry().setFromPoints( [
 				new THREE.Vector3( options.scales.x.min * t, 0, 0 ), new THREE.Vector3( options.scales.x.max * t, 0, 0 )
-			] ), new THREE.LineBasicMaterial( { color: color } ) );
-		mesh.position.copy(new THREE.Vector3(0, classSettings.intersection.position * t, 0));
+			] ), new THREE.LineBasicMaterial( { color: color } ) ),
+			vectors = settings.object.geometry.position;
+		mesh.position.copy(new THREE.Vector3(0, ip * t, 0));
+
+		//длинна дуги
+		const angle = (leg) => Math.asin(leg / t),
+			ai = angle(ip);//угол наклона точки пересечения окружности с линией сечения
+		vectors.forEach(vector => {
+
+			const a = angle(vector.y) - ai;//угол между векторами текущей вершины и точки пересечения
+			console.log(a);
+		})
 		return mesh;
 		
 	}

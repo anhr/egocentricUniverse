@@ -183,7 +183,7 @@ class Universe {
 	 **/
 	constructor(options, classSettings={}) {
 
-		const _this = this;
+		const _this = this, THREE = three.THREE;
 		if (classSettings.debug) this.timestamp = window.performance.now();
 		this.classSettings = classSettings;
 
@@ -341,16 +341,8 @@ class Universe {
 			] : undefined;
 		if (probabilityDensity) {
 			
-			for (let i = 0; i < 5; i++) probabilityDensity.push({
-
-				count: 0,
-				
-			});
-			probabilityDensity.options = {
-
-				d: classSettings.t * 2,
-
-			};
+			for (let i = 0; i < 5; i++) probabilityDensity.push({ count: 0, });
+			probabilityDensity.options = { d: classSettings.t * 2, };
 			probabilityDensity.options.sc = probabilityDensity.length;//Количество сегментов
 			probabilityDensity.options.hs = probabilityDensity.options.d / probabilityDensity.options.sc;//Высота сегмента
 			let sectorsValue = 0;
@@ -450,6 +442,9 @@ class Universe {
 										//для совместимости с Player.getPoints. Туда попадает когда хочу вывести на холст точки вместо ребер и использую дя этого MyPoints вместо ND
 										const vertice2 = vertice[2], vertice3 = vertice[3];
 										return new three.THREE.Vector4(vertice[0], vertice[1], vertice2 === undefined ? 0 : vertice2, vertice3 === undefined ? 1 : vertice3);
+									case 'x': return vertice[0];
+									case 'y': return vertice[1];
+									case 'z': return vertice[2];
 									case 'w':
 										//для совместимости с Player.getColors. Туда попадает когда хочу вывести на холст точки вместо ребер и использую дя этого MyPoints вместо ND
 										return vertice[3];
@@ -491,8 +486,11 @@ class Universe {
 
 								const segment = probabilityDensity[i];
 								if (
-									(segment.hb <= z) &&//Нижняя граница сегмента
-									(segment.ht > z)//Верхняя граница сегмента
+									(
+										(segment.hb <= z) &&//Нижняя граница сегмента
+										(segment.ht > z)//Верхняя граница сегмента
+									) ||
+									(i === (probabilityDensity.options.sc - 1) && (segment.ht === z))//вершина находится на краю последнего сегмента
 								) {
 
 									segment.count++;
@@ -565,9 +563,12 @@ class Universe {
 		
 		if(!(settings.object.geometry.position instanceof Array))
 			Object.keys(settings.object.geometry.position).forEach((key) => position[key] = settings.object.geometry.position[key]);
+		else settings.object.geometry.position.forEach(vertice => {
 
-		//convert vertices to Proxy
-		else settings.object.geometry.position.forEach(vertice => position.push(vertice));
+			vertice.forEach((axis, i) => vertice[i] = axis * classSettings.t);//scale vertice
+			position.push(vertice);
+		
+		});//scale and convert vertices to Proxy
 
 		settings.object.geometry.position = position;
 		
@@ -815,6 +816,7 @@ class Universe {
 								
 								//shaderMaterial: false,
 								name: settings.object.name,
+								opacity: settings.object.geometry.opacity,
 								onReady: (points) => {
 									
 									myPoints = points;
