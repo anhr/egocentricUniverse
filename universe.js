@@ -168,6 +168,7 @@ class Universe {
 	 * object - see below:
 	 * </pre>
 	 * @param {number} [classSettings.settings.object.geometry.position.count=3] vertices count.
+	 * @param {array} [classSettings.settings.object.geometry.opacity] array of opacities of each vertice. Each item of array is float value in the range of 0.0 - 1.0 indicating how transparent the material is. A value of 0.0 indicates fully transparent, 1.0 is fully opaque.
 	 * @param {object} [classSettings.settings.object.geometry.indices] Array of <b>indices</b> of edges of universe.
 	 * @param {array|object} [classSettings.settings.object.geometry.indices.edges] Universe edges.
 	 * <pre>
