@@ -818,8 +818,9 @@ class Universe {
 							
 							pointsOptions: {
 								
-								shaderMaterial: false,
+								//shaderMaterial: false,
 								name: settings.object.name,
+								color: settings.object.color,
 								colors: settings.object.geometry.colors,
 								opacity: settings.object.geometry.opacity,
 								onReady: (points) => {
