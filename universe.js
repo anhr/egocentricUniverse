@@ -442,6 +442,9 @@ class Universe {
 									case 'vector':
 										//для совместимости с Player.getPoints. Туда попадает когда хочу вывести на холст точки вместо ребер и использую дя этого MyPoints вместо ND
 										const vertice2 = vertice[2], vertice3 = vertice[3];
+										//Если вернуть THREE.Vector4 то будет неправильно отображаться цвет точки
+										if (vertice3 === undefined)
+											return new three.THREE.Vector3(vertice[0], vertice[1], vertice2 === undefined ? 0 : vertice2);
 										return new three.THREE.Vector4(vertice[0], vertice[1], vertice2 === undefined ? 0 : vertice2, vertice3 === undefined ? 1 : vertice3);
 									case 'x': return vertice[0];
 									case 'y': return vertice[1];
@@ -815,8 +818,9 @@ class Universe {
 							
 							pointsOptions: {
 								
-								//shaderMaterial: false,
+								shaderMaterial: false,
 								name: settings.object.name,
+								colors: settings.object.geometry.colors,
 								opacity: settings.object.geometry.opacity,
 								onReady: (points) => {
 									
