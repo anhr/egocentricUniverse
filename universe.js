@@ -807,7 +807,10 @@ class Universe {
 						settings.object.geometry.position.forEach(vertive => points.push(vertive.angles));
 						*/
 
-						if (classSettings.settings.object.color != undefined) {
+						if (
+							(classSettings.settings.object.color != undefined) &&
+							(classSettings.settings.object.geometry.position[0].length < 4)//цвет для всех вершин одновременно задается только если коодинаты вершин не содержат индекс цвета палитры. Другими словами если нет координаты w
+						) {
 
 							const color = new three.THREE.Color(classSettings.settings.object.color);
 							classSettings.settings.options.setPalette(new ColorPicker.palette( { palette: [{ percent: 0, r: color.r * 255, g: color.g * 255, b: color.b * 255, },] } ));
