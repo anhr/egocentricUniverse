@@ -114,7 +114,6 @@ class Universe {
 			console.error(sUniverse + ': Test(). Invalid ' + strVerticeId + '.edges.length = ' + vertice.edges.length);
 		
 	}
-//	Indices() { console.error(sOverride.replace('%s', 'Indices')); }
 
 	/**
 	 * Base class for n dimensional universe.
@@ -259,54 +258,6 @@ class Universe {
 				}
 
 			this.randomPosition({ push0: push0, x: x, randomArray: randomArray, ret: ret });
-/*   
-			switch(_this.dimension) {
-
-				case 2://1D universe
-
-					//Circle Point Picking
-					//https://mathworld.wolfram.com/CirclePointPicking.html
-					push0();
-					ret.push(2 * x[0] * x[1] / sum);//y	=	(2x_1x_2)/(x_1^2+x_2^2)
-	 
-					break;
-				case 3://2D universe
-					
-					//Sphere Point Picking
-					//https://mathworld.wolfram.com/SpherePointPicking.html
-					//Cook (1957) extended a method of von Neumann (1951)
-					push0();
-					ret.push(2 * (x[0] * x[1] - x[2] * x[3]) / sum);//y	=	(2(x_2x_3-x_0x_1))/(x_0^2+x_1^2+x_2^2+x_3^2)	
-					ret.push(2 * (x[1] * x[3] + x[0] * x[2]) / sum);//x	=	(2(x_1x_3+x_0x_2))/(x_0^2+x_1^2+x_2^2+x_3^2)	
-	 
-					//Marsaglia (1972) method
-//					for (let i = 0; i < (_this.dimension - 1); i++) ret.push(2 * x[i] * Math.sqrt(1 - sum));
-//					ret.push(1 - 2 * sum);
-	 
-					 break;
-				case 4://3D universe
-
-					//Hypersphere Point Picking
-					//https://mathworld.wolfram.com/HyperspherePointPicking.html
-					//Marsaglia (1972)
-
-					//set x - random array
-					randomArray(2);
-					const sum1 = sum, x2 = [];
-					randomArray(2, x2);
-					x2.forEach(item => x.push(item));
-
-					ret.push(x[0]);//x	=	x_1	
-					ret.push(x[1]);//y	=	x_2	
-					const sqrt = Math.sqrt((1 - sum1) / sum);//sqrt((1-x_1^2-x_2^2)/(x_3^2+x_4^2)
-					ret.push(x[2] * sqrt);//z	=	x_3sqrt((1-x_1^2-x_2^2)/(x_3^2+x_4^2))	
-					ret.push(x[3] * sqrt);;//w	=	x_4sqrt((1-x_1^2-x_2^2)/(x_3^2+x_4^2))
-					
-					break;
-				default: console.error(sUniverse + ': randomPosition. Invalid universe dimension = ' + _this.dimension);
-
-			}
-*/   
 			sum = 0;
 			ret.forEach((axis, i) => {
 
@@ -572,13 +523,11 @@ class Universe {
 			const newVertice = [], bColor = (this.classSettings.settings.object.color != undefined) || (this.classSettings.settings.object.geometry.colors != undefined);
 			vertice.forEach((axis, i) => {
 				
-//				vertice[i] = axis * classSettings.t//scale vertice
 				//решил что цвета всех точек или цвет каждой точки будут в приоритете перед цветом из палитры цветов
 				if (!bColor || (i < 3))
 					newVertice.push(axis * classSettings.t);//scale vertice
 				
 			});
-//			position.push(vertice);
 			position.push(newVertice);
 		
 		});//scale and convert vertices to Proxy
