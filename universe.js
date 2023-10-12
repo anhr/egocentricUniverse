@@ -569,8 +569,17 @@ class Universe {
 			Object.keys(settings.object.geometry.position).forEach((key) => position[key] = settings.object.geometry.position[key]);
 		else settings.object.geometry.position.forEach(vertice => {
 
-			vertice.forEach((axis, i) => vertice[i] = axis * classSettings.t);//scale vertice
-			position.push(vertice);
+			const newVertice = [], bColor = (this.classSettings.settings.object.color != undefined) || (this.classSettings.settings.object.geometry.colors != undefined);
+			vertice.forEach((axis, i) => {
+				
+//				vertice[i] = axis * classSettings.t//scale vertice
+				//решил что цвета всех точек или цвет каждой точки будут в приоритете перед цветом из палитры цветов
+				if (!bColor || (i < 3))
+					newVertice.push(axis * classSettings.t);//scale vertice
+				
+			});
+//			position.push(vertice);
+			position.push(newVertice);
 		
 		});//scale and convert vertices to Proxy
 
@@ -786,12 +795,16 @@ class Universe {
 	
 					}
 					if (myPoints) {
-						
-						myPoints.visible = true;
-						if (guiSelectPoint) {
+
+						if (myPoints.visible != true) {
 							
-							guiSelectPoint.addMesh(myPoints);
-							myPoints.children.forEach(child => guiSelectPoint.addMesh(child));
+							myPoints.visible = true;
+							if (guiSelectPoint) {
+								
+								guiSelectPoint.addMesh(myPoints);
+								myPoints.children.forEach(child => guiSelectPoint.addMesh(child));
+	
+							}
 
 						}
 						
@@ -809,7 +822,8 @@ class Universe {
 
 						if (
 							(classSettings.settings.object.color != undefined) &&
-							(classSettings.settings.object.geometry.position[0].length < 4)//цвет для всех вершин одновременно задается только если коодинаты вершин не содержат индекс цвета палитры. Другими словами если нет координаты w
+							(typeof classSettings.settings.object.color != "object")
+							//&& (classSettings.settings.object.geometry.position[0].length < 4)//цвет для всех вершин одновременно задается только если коодинаты вершин не содержат индекс цвета палитры. Другими словами если нет координаты w
 						) {
 
 							const color = new three.THREE.Color(classSettings.settings.object.color);

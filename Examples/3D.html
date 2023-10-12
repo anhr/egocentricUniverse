@@ -47,12 +47,14 @@
 			const universe = new Universe3D(options,
 			{
 
+				/*
 				intersection: {
 					
 					position: 1,
 					//color: 'red',
 					
 				},
+				*/
 				/*
 				edges: {
 
@@ -73,14 +75,15 @@
 					 */
 					
 				},
-				t: 0.5,
+				//t: 0.5,
 				debug: true,
 				settings: {
 					
 					object: {
 	
 						//name: 'edges',
-						color: 'red',
+						//color: 'red',//Error: Universe: randomPosition. Vertice[0.06182962232650224,0.17260235605753627,0.7147391423930815] is not situated at a constant distance 1. Real distance is 0.5444665171824481
+									//for random position - position: { count: 4, },
 						//color: 0xffffff,
 						geometry: {
 
@@ -97,16 +100,21 @@
 								[-0.8164965662730563,0.4714045207910317,0.33333333333333326, 0],
 								[7.32733549761259e-9,4.230438555019589e-9,-1.0, -1.0],
 							],
-							position: { count: 32, },
+							position: { count: 4, },
+
 							/*
+							//Error: Universe: randomPosition. Vertice[0.06182962232650224,0.17260235605753627,0.7147391423930815] is not situated at a constant distance 1. Real distance is 0.5444665171824481
+									//for random position - position: { count: 4, },
 							colors: [
 								1, 0, 0,//red
 								0, 1, 0,//green
 								0, 0, 1,//blue
-								1, 1, 1,//white
+								//1, 1, 1,//white
 							//	0, 0, 1,	0, 0.6, 1
 							],
 							*/
+							
+							opacity: [1, 0.3],
 							/*
 							indices: {
 

@@ -76,8 +76,13 @@ class Universe3D extends Universe2D {
 		ret.push(x[0]);//x	=	x_1	
 		ret.push(x[1]);//y	=	x_2	
 		const sqrt = Math.sqrt((1 - sum1) / sum);//sqrt((1-x_1^2-x_2^2)/(x_3^2+x_4^2)
-		ret.push(x[2] * sqrt);//z	=	x_3sqrt((1-x_1^2-x_2^2)/(x_3^2+x_4^2))	
-		ret.push(x[3] * sqrt);;//w	=	x_4sqrt((1-x_1^2-x_2^2)/(x_3^2+x_4^2))
+		ret.push(x[2] * sqrt);//z	=	x_3sqrt((1-x_1^2-x_2^2)/(x_3^2+x_4^2))
+
+		//решил что цвета всех точек или цвет каждой точки будут в приоритете перед цветом из палитры цветов
+		//Получаю ошибку
+		//Universe: randomPosition. Vertice[-0.13316564278446008,0.14970979415607943,-0.18131373233337517] is not situated at a constant distance 1. Real distance is 0.2920831216684517
+		if ((this.classSettings.settings.object.color === undefined) && (this.classSettings.settings.object.geometry.colors === undefined))
+			ret.push(x[3] * sqrt);;//w	=	x_4sqrt((1-x_1^2-x_2^2)/(x_3^2+x_4^2))
 
 	}
 	color() {}
