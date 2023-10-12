@@ -167,6 +167,22 @@ class Universe {
 	 * object - see below:
 	 * </pre>
 	 * @param {number} [classSettings.settings.object.geometry.position.count=3] vertices count.
+	 * @param {Array} [classSettings.settings.object.geometry.colors] Array of colors for the each vertex.
+	 * <pre>
+	 * Every vertex is associated with 3 values of the <b>colors</b> array.
+	 * Each value of the <b>colors</b> array is red or green or blue color of the particular vertex in range from 0 to 1.
+	 * 
+	 * 0 is no color.
+	 * 1 is full color.
+	 * 
+	 * For example:
+	 * settings.object.geometry.colors: [
+	 * 	1, 0, 0,//red color of the <b>position[0]</b> vertex.
+	 * 	0, 1, 0,//green color of the <b>position[1]</b> vertex.
+	 * 	0, 0, 1,//blue color of the <b>position[2]</b> vertex.
+	 * 	1, 1, 1,//white color of the <b>position[3]</b> vertex.
+	 * ],
+	 * </pre>
 	 * @param {array} [classSettings.settings.object.geometry.opacity] array of opacities of each vertice. Each item of array is float value in the range of 0.0 - 1.0 indicating how transparent the material is. A value of 0.0 indicates fully transparent, 1.0 is fully opaque.
 	 * @param {object} [classSettings.settings.object.geometry.indices] Array of <b>indices</b> of edges of universe.
 	 * @param {array|object} [classSettings.settings.object.geometry.indices.edges] Universe edges.
