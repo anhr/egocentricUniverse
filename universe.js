@@ -544,10 +544,105 @@ class Universe {
 					if (i > _position.length) console.error(sUniverse + ': position get. Invalid index = ' + i + ' position.length = ' + _position.length);
 					else if (i === _position.length) settings.object.geometry.position.push();
 					const angle = _position[i], t = classSettings.t;
+/*
 					return [
 						Math.cos(angle[0]) * t,//x
 						Math.sin(angle[0]) * t//y
 					];
+*/
+					return new Proxy([
+						Math.cos(angle[0]) * t,//x
+						Math.sin(angle[0]) * t//y
+					], {
+
+						get: (vertice, name) => {
+
+							switch (name) {
+
+								case 'edges':
+
+									if (!classSettings.debug) {
+
+										console.error(sUniverse + ': vertice.edges. Set debug = true first.');
+										return;
+
+									}
+									vertice.edges = vertice.edges || new Proxy([], {
+
+										get: (edges, name) => {
+
+											switch (name) {
+
+												case 'push': return (edgeId, verticeId) => {
+
+													const sPush = sUniverse + ': Vertice' + (verticeId === undefined ? '' : '[' + verticeId + ']') + '.edges.push(' + edgeId + '):';
+
+													if (edges.length >= _this.verticeEdgesLengthMax) {
+
+														console.error(sPush + ' invalid edges.length = ' + edges.length);
+														return;
+
+													}
+													//find for duplicate edgeId
+													for (let j = 0; j < edges.length; j++) {
+
+														if (edges[j] === edgeId) {
+
+															console.error(sPush + ' duplicate edgeId: ' + edgeId);
+															return;
+
+														}
+
+													}
+
+													edges.push(edgeId);
+
+												}
+
+											}
+											return edges[name];
+
+										},
+									});
+									return vertice.edges;
+
+								case 'oppositeVerticesId':
+									vertice.oppositeVerticesId = vertice.oppositeVerticesId || [];
+									break;
+								case 'vector':
+									//для совместимости с Player.getPoints. Туда попадает когда хочу вывести на холст точки вместо ребер и использую дя этого MyPoints вместо ND
+									const vertice2 = vertice[2], vertice3 = vertice[3];
+									//Если вернуть THREE.Vector4 то будет неправильно отображаться цвет точки
+									if (vertice3 === undefined)
+										return new three.THREE.Vector3(vertice[0], vertice[1], vertice2 === undefined ? 0 : vertice2);
+									return new three.THREE.Vector4(vertice[0], vertice[1], vertice2 === undefined ? 0 : vertice2, vertice3 === undefined ? 1 : vertice3);
+								case 'x': return vertice[0];
+								case 'y': return vertice[1];
+								case 'z': return vertice[2];
+								case 'w':
+									//для совместимости с Player.getColors. Туда попадает когда хочу вывести на холст точки вместо ребер и использую дя этого MyPoints вместо ND
+									return vertice[3];
+
+							}
+							return vertice[name];
+
+						},
+						set: (vertice, name, value) => {
+
+							switch (name) {
+
+								case 'angles':
+console.error('Under constraction');
+									vertice.angles = value;
+									return true;
+
+							}
+							vertice[name] = value;
+							return true;
+
+						}
+
+					});
 
 				}
 				switch (name) {
@@ -556,6 +651,8 @@ class Universe {
 					case 'push': return (position = randomPosition()) =>//(angles = randomPosition()) =>
 					{
 
+						console.error(sUniverse + ': deprecated push vertice');
+/*
 						const proxy = new Proxy(position, {
 
 							get: (vertice, name) => {
@@ -686,6 +783,7 @@ class Universe {
 						}
 
 						return _position.push(proxy);
+*/
 
 					};
 
@@ -694,9 +792,9 @@ class Universe {
 
 						if (!classSettings.debug) return;
 
-						_position.forEach((vertice, verticeId) => {
+						_position.forEach((angle, verticeId) => {
 
-							const strVerticeId = 'vertice[' + verticeId + ']'
+							const vertice = settings.object.geometry.position[verticeId], strVerticeId = 'vertice[' + verticeId + ']'
 							_this.TestVertice(vertice, strVerticeId);
 							vertice.edges.forEach(edgeId => {
 
