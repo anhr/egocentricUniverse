@@ -105,18 +105,6 @@
 
 		}, {
 
-			//Have effect only if
-			//  classSettings.settings.object.color of Universe1D is undefined
-			//  and classSettings.edges = false
-			//
-			//palette: 'red',
-			//palette: 'rgb(0, 255, 0)',//green
-			//palette: 'rgb(100%, 0%, 0%)',//red
-			//palette: 'hsl(0, 100%, 50%)',//red https://www.w3schools.com/css/css_colors_hsl.asp
-			//palette: [{ percent: 0, r: 0, g: 0, b: 0xff, },],//blue
-			//palette: MyThree.ColorPicker.paletteIndexes.bidirectional,
-			//palette: new MyThree.ColorPicker.palette({ palette:  [{ percent: 0, r: 0xff, g: 0, b: 0, },]}),//red
-			
 			//axesHelper: false,
 			orbitControls: { enableRotate: false, },
             dat: { guiSelectPoint: { point: (options, dat, fMesh) => { return new Universe1D.ND.gui(options, dat, fMesh); }, }, },
@@ -131,19 +119,13 @@
 				text: { precision: 1, rect: { displayRect: false, }, }
 
 			},
-//			title: '<a href="https://github.com/anhr/egocentricUniverse" target="_blank" rel="noopener">Egocentric Universe</a>',
 			//dat: false,
 			canvas: {
 
 				noButtonFullScreen: true,
-/*
-				fullScreen: false,
-				width: window.innerWidth / 2,
-				height: window.innerHeight / 2,
-*/				
 
 			},
-			point: { size: 0.0 },
+			//point: { size: 0.0 },
 			playerOptions: {
 				
 				max: Infinity,
