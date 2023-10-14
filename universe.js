@@ -43,6 +43,7 @@ class Universe {
 
 	//base methods
 
+	randomAngle() { return Math.random() * Math.PI * 2; }
 	color() { if (this.classSettings.settings.object.color === undefined) this.classSettings.settings.object.color = 'lime'; }
 	name() { console.error(sOverride.replace('%s', 'name')); }
 	logUniverse() {
@@ -191,7 +192,7 @@ class Universe {
 			cookieName = options.dat.getCookieName(sUniverse),
 			cookieOptions = {};
 		cookie.getObject(cookieName, cookieOptions);
-		classSettings.edges = cookieOptions.edges === false ? false : cookieOptions.edges || classSettings.edges;
+//		classSettings.edges = cookieOptions.edges === false ? false : cookieOptions.edges || classSettings.edges;
 		if (classSettings.edges != false) classSettings.edges = classSettings.edges || {};
 		if ((classSettings.edges != false) && (classSettings.edges.project === undefined)) classSettings.edges.project = true;
 
@@ -206,6 +207,7 @@ class Universe {
 		//if (options.scales.w.name === 'w') options.scales.w.name = 't';
   
 		settings.object.geometry = settings.object.geometry || {};
+/*
 		const randomPosition = () => {
 
 			const ret = [],
@@ -269,6 +271,7 @@ class Universe {
 			return ret;
 			
 		}
+*/
 
 //		settings.object.geometry.position = settings.object.geometry.position || {};
 
@@ -316,208 +319,9 @@ class Universe {
 			if (unverseValue != sectorsValue) console.error(sUniverse + ': Unverse value = ' + unverseValue + '. Sectors value = ' + sectorsValue);
 		
 		}
-/*
-		const position = new Proxy([], {
 
-			get: (_position, name) => {
-
-				const i = parseInt(name);
-				if (!isNaN(i)) {
-
-					if (i > _position.length) console.error(sUniverse + ': position get. Invalid index = ' + i + ' position.length = ' + _position.length);
-					else if (i === _position.length) settings.object.geometry.position.push();
-					return _position[i];
-
-				}
-				switch (name) {
-
-					case 'push': return (position = randomPosition()) =>//(angles = randomPosition()) =>
-						{
-
-						const proxy = new Proxy(position, {
-
-							get: (vertice, name) => {
-
-								switch (name) {
-
-									case 'edges':
-
-										if (!classSettings.debug) {
-
-											console.error(sUniverse + ': vertice.edges. Set debug = true first.');
-											return;
-
-										}
-										vertice.edges = vertice.edges || new Proxy([], {
-
-											get: (edges, name) => {
-
-												switch (name) {
-
-													case 'push': return (edgeId, verticeId) => {
-
-														const sPush = sUniverse + ': Vertice' + (verticeId === undefined ? '' : '[' + verticeId + ']') + '.edges.push(' + edgeId + '):';
-
-														if (edges.length >= _this.verticeEdgesLengthMax) {
-
-															console.error(sPush + ' invalid edges.length = ' + edges.length);
-															return;
-
-														}
-														//find for duplicate edgeId
-														for (let j = 0; j < edges.length; j++) {
-
-															if (edges[j] === edgeId) {
-
-																console.error(sPush + ' duplicate edgeId: ' + edgeId);
-																return;
-
-															}
-
-														}
-
-														edges.push(edgeId);
-
-													}
-
-												}
-												return edges[name];
-
-											},
-										});
-										return vertice.edges;
-
-									case 'oppositeVerticesId':
-										vertice.oppositeVerticesId = vertice.oppositeVerticesId || [];
-										break;
-									case 'vector':
-										//для совместимости с Player.getPoints. Туда попадает когда хочу вывести на холст точки вместо ребер и использую дя этого MyPoints вместо ND
-										const vertice2 = vertice[2], vertice3 = vertice[3];
-										//Если вернуть THREE.Vector4 то будет неправильно отображаться цвет точки
-										if (vertice3 === undefined)
-											return new three.THREE.Vector3(vertice[0], vertice[1], vertice2 === undefined ? 0 : vertice2);
-										return new three.THREE.Vector4(vertice[0], vertice[1], vertice2 === undefined ? 0 : vertice2, vertice3 === undefined ? 1 : vertice3);
-									case 'x': return vertice[0];
-									case 'y': return vertice[1];
-									case 'z': return vertice[2];
-									case 'w':
-										//для совместимости с Player.getColors. Туда попадает когда хочу вывести на холст точки вместо ребер и использую дя этого MyPoints вместо ND
-										return vertice[3];
-
-								}
-								return vertice[name];
-
-							},
-							set: (vertice, name, value) => {
-				
-								switch (name) {
-					
-									case 'angles':
-										vertice.angles = value;
-										return true;
-										
-								}
-								vertice[name] = value;
-								return true;
-				
-							}
-
-						});
-
-						if (probabilityDensity) {
-							
-							//Для 2D вселенной.
-							//Плотность вероятности распределения вершин по поверхости сферы в зависимости от третьей координаты вершины z = vertice.[2]
-							//Плотности разбил на несколько диапазонов в зависимости от третьей координаты вершины z = vertice.[2]
-							//Разбил сферу на sc = probabilityDensity.length = 5 сегментов от 0 до 4.
-							//Границы сегментов вычисляю по фомулам:
-							//Высота сегмента hs = d / sc = 2 / 5 = 0.4
-							//Нижняя граница сегмента hb = hs * i - r
-							//Верхняя граница сегмента ht = hs * (i + 1) - r
-							//где r = 1 - радиус сферы, d = 2 * r = 2 - диаметр сферы, i - индекс сегмента
-							const z = position[position.length - 1];
-							let boDetected = false;
-							for (let i = 0; i < probabilityDensity.options.sc; i++) {
-
-								const segment = probabilityDensity[i];
-								if (
-									(
-										(segment.hb <= z) &&//Нижняя граница сегмента
-										(segment.ht > z)//Верхняя граница сегмента
-									) ||
-									(i === (probabilityDensity.options.sc - 1) && (segment.ht === z))//вершина находится на краю последнего сегмента
-								) {
-
-									segment.count++;
-									boDetected = true;
-									break;
-									
-								}
-								
-							}
-							if (!boDetected) {
-
-								console.error(sUniverse + ': add vertice. Probability density. z = ' + z + '. Segment is not detected');
-
-							}
-							
-						}
-							
-						return _position.push(proxy);
-
-					};
-
-					//for debug
-					case 'test': return () => {
-
-						if (!classSettings.debug) return;
-
-						_position.forEach( ( vertice, verticeId ) => {
-
-							const strVerticeId = 'vertice[' + verticeId + ']'
-							_this.TestVertice( vertice, strVerticeId );
-							vertice.edges.forEach(edgeId => {
-
-								if (typeof edgeId !== "number") console.error(sUniverse + ': position.test()', strVerticeId = 'position(' + verticeId + ')' + '. ' + strVerticeId + '. Invalid edgeId = ' + edgeId);
-
-							});
-
-						})
-					}
-
-				}
-				return _position[name];
-
-			},
-			set: (_position, name, value) => {
-
-				const i = parseInt(name);
-				if ( !isNaN(i)) {
-
-					if (value instanceof Array === true) {//для совместимости с Player.getPoints. Туда попадает когда хочу вывести на холст точки вместо ребер и использую дя этого MyPoints вместо ND
-						
-						const vertice = _position[i];
-						vertice.forEach((axis, axisId) => {
-		
-							vertice[axisId] = value[axisId];
-		
-						});
-
-					}
-
-				} else {
-
-					_position[name] = value;
-
-				}
-				return true;
-
-			}
-
-		});
-*/
-
-		settings.object.geometry.angles = settings.object.geometry.angles || { count: 3, };
+//		settings.object.geometry.angles = settings.object.geometry.angles || { count: 3, };
+		settings.object.geometry.angles = settings.object.geometry.angles || this.defaultAngles();
 		if(!(settings.object.geometry.angles instanceof Array)) {
 
 			const angles = [];
@@ -530,7 +334,8 @@ class Universe {
 			for (let i = angles.length; i < angles.count; i++){
 	
 				const verticeAngles = [];
-				verticeAngles.push(Math.random() * Math.PI * 2);
+//				verticeAngles.push(Math.random() * Math.PI * 2);
+				this.pushRandomAngle(verticeAngles);
 				angles.push(verticeAngles);
 				
 			}
@@ -544,12 +349,6 @@ class Universe {
 					if (i > _position.length) console.error(sUniverse + ': position get. Invalid index = ' + i + ' position.length = ' + _position.length);
 					else if (i === _position.length) settings.object.geometry.position.push();
 					const angle = _position[i], t = classSettings.t;
-/*
-					return [
-						Math.cos(angle[0]) * t,//x
-						Math.sin(angle[0]) * t//y
-					];
-*/
 					return new Proxy([
 						Math.cos(angle[0]) * t,//x
 						Math.sin(angle[0]) * t//y

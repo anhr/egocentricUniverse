@@ -14,11 +14,12 @@
 */
 
 
-import Universe from './universe.js';
+//import Universe from './universe.js';
+import Universe1D from './universe1D.js';
 import ProgressBar from '../../commonNodeJS/master/ProgressBar/ProgressBar.js'
 import three from '../../commonNodeJS/master/three.js'
 
-class Universe2D extends Universe {
+class Universe2D extends Universe1D {
 
 	//base methods
 	
@@ -41,6 +42,14 @@ class Universe2D extends Universe {
 		}
 
 	}
+	defaultAngles() { return { count: 4, } }//random pyramid
+	pushRandomAngle(verticeAngles) {
+
+		super.pushRandomAngle(verticeAngles);
+		super.pushRandomAngle(verticeAngles);
+
+	}
+/*
 	randomPosition(params) {
 
 		//Sphere Point Picking
@@ -55,6 +64,7 @@ class Universe2D extends Universe {
 //		ret.push(1 - 2 * sum);
 
 	}
+*/
 	pushEdges() {
 
 		const settings = this.classSettings.settings, geometry = settings.object.geometry, position = geometry.position, edges = geometry.indices.edges;

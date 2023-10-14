@@ -66,6 +66,9 @@ class Universe1D extends Universe {
 		}
 		
 	}
+	defaultAngles() { return { count: 3, } }//random triangle
+	pushRandomAngle(verticeAngles) { verticeAngles.push(this.randomAngle()); }
+/*	
 	randomPosition(params) {
 		
 		//Circle Point Picking
@@ -74,6 +77,7 @@ class Universe1D extends Universe {
 		ret.push(2 * x[0] * x[1] / sum);//y	=	(2x_1x_2)/(x_1^2+x_2^2)
 		
 	}
+*/ 
 	pushEdges() {
 
 		const geometry = this.classSettings.settings.object.geometry, edges = geometry.indices.edges, position = geometry.position;

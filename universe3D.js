@@ -60,6 +60,20 @@ class Universe3D extends Universe2D {
 		}
 
 	}
+	defaultAngles() { return { count: 5, } }//random pentachoron https://en.wikipedia.org/wiki/5-cell
+	pushRandomAngle(verticeAngles) {
+
+		super.pushRandomAngle(verticeAngles);
+		verticeAngles.push(this.randomAngle());
+/*		
+//		Universe1D.prototype.pushRandomAngle(verticeAngles);
+		const pushRandomAngle = this.__proto__.__proto__.pushRandomAngle;
+//		const pushRandomAngle = Object.getPrototypeOf(Object.getPrototypeOf(this)).pushRandomAngle;
+		pushRandomAngle(verticeAngles);
+*/  
+
+	}
+/*
 	randomPosition(params) {
 
 		//Hypersphere Point Picking
@@ -85,6 +99,7 @@ class Universe3D extends Universe2D {
 			ret.push(x[3] * sqrt);;//w	=	x_4sqrt((1-x_1^2-x_2^2)/(x_3^2+x_4^2))
 
 	}
+*/
 	color() {}
 	name( getLanguageCode ) {
 
