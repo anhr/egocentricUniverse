@@ -66,11 +66,11 @@ class Universe3D extends Universe2D {
 //		super.pushRandomAngle(verticeAngles);
 		//https://en.wikipedia.org/wiki/3-sphere#Hyperspherical_coordinates
 		verticeAngles.push(this.randomAngle());//ψ range 0 to π,
-//verticeAngles.push(Math.PI * 6 /8);//сфера
+//verticeAngles.push(Math.PI * 7 /8);//сфера
 		verticeAngles.push(this.randomAngle(1));//θ range 0 to π,
-//verticeAngles.push(Math.PI * 1 /4);//два конуса
+//verticeAngles.push(Math.PI * 4 /8);//два конуса
 		verticeAngles.push(this.randomAngle());//φ range 0 to 2π,
-//verticeAngles.push(Math.PI * 1 /4);//блин
+//verticeAngles.push(Math.PI * 1 /8);//блин
 /*		
 //		Universe1D.prototype.pushRandomAngle(verticeAngles);
 		const pushRandomAngle = this.__proto__.__proto__.pushRandomAngle;
@@ -82,7 +82,7 @@ class Universe3D extends Universe2D {
 	angle2Vertice(angle) {
 
 //		const t = this.classSettings.t;
-		//
+		//https://en.wikipedia.org/wiki/3-sphere#Hyperspherical_coordinates
 /*		
 		const vertice = super.angle2Vertice(angle);
 		const //teta = angle[0],
@@ -95,10 +95,10 @@ class Universe3D extends Universe2D {
 */		
 		const ψ = angle[0], sinψ = Math.sin(ψ), θ = angle[1], sinθ = Math.sin(θ), φ = angle[2];
 		const vector = [
-			sinψ * sinθ * Math.sin(φ),//w
-			sinψ * sinθ * Math.cos(φ),//z
-			sinψ * Math.cos(θ),//y
-			Math.cos(ψ),//x
+			sinψ * sinθ * Math.sin(φ),//x
+			sinψ * sinθ * Math.cos(φ),//y
+			sinψ * Math.cos(θ),//z
+			Math.cos(ψ),//w
 		];
 /*		
 		const vector = [
@@ -131,11 +131,6 @@ class Universe3D extends Universe2D {
 			Math.cos(psi),//w
 		];
 */		
-  
-		/*
-			Math.cos(teta),// * r,//x
-			Math.sin(teta)// * r//y
-		*/
 
 	}
 /*

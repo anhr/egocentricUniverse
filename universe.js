@@ -167,17 +167,16 @@ class Universe {
 				Math.cos(θ),//x
 				Math.sin(θ)//y
 			]</b> array. <b>θ</b> is vertex angle.
-	 *		Example of 1D universe with three vertices:
+	 *		Example of 1D universe with three vertices is triangle:
 	 *		<b>classSettings.settings.object.geometry.angles: [
 	 *			[0],//vertice[0] = [1,0]
 	 *			[Math.PI * 2 / 3],//vertice[1] = [-0.4999999999999998,0.8660254037844387]
 	 *			[Math.PI * 2 *2 / 3]//vertice[2] = [-0.5000000000000004,-0.8660254037844384]
-	 *		]//triangle</b>,
+	 *		]</b>,
 	 *	For <b><a href="module-Universe2D.html" target="_blank">Universe2D</a></b> every item is array of two vertex angle.
-	 *		The first vertex angle is a cross section of the 2D universe in the XY plane
-	 *		in the range from <b>0</b> to <b>2 * Math.PI</b>.
+	 *		The first vertex angle <b>θ</b> is a cross section of the 2D universe in the XY plane in the range from <b>0</b> to <b>2 * Math.PI</b>.
 	 *		
-	 *		The second vertex angle is a cross section of the 2D universe across the center of the universe
+	 *		The second vertex angle <b>φ</b> is a cross section of the 2D universe across the center of the universe
 	 *		in the range from <b>0</b> to <b>2 * Math.PI</b>.
 	 *		The second vertex angle is angle of rotation of the cross section around of Z axis.
 	 *		Cross section is parallel to the XZ plane if second vertex angle is 0 radians.
@@ -185,20 +184,42 @@ class Universe {
 	 *		
 	 *		Position of vertex is array of the three axiz:
 	 *		<b>[
-	 *			sinθ * Math.cos(φ),//x
-	 *			sinθ * Math.sin(φ),//y
+	 *			Math.sin(θ) * Math.cos(φ),//x
+	 *			Math.sin(θ) * Math.sin(φ),//y
 	 *			Math.cos(θ),//z
 	 *		]</b>
 	 *		as described in [Cartesian coordinates]{@link https://en.wikipedia.org/wiki/Spherical_coordinate_system#Cartesian_coordinates}.
 	 *		<b>θ</b> angle is first vertex angle and <b>φ</b> is second vertex angle.
 	 *		
-	 *		Example of 2D universe with 4 vertices:
+	 *		Example of 2D universe with 4 vertices is pyramid:
 	 *		<b>classSettings.settings.object.geometry.angles: [
 	 *			[Math.PI * 0 * 1 / 3, Math.PI * 0 * 2 / 3],//vertice[0] = [0,0,1]
 	 *			[Math.PI * 2 * 1 / 3, Math.PI * 0 * 2 / 3],//vertice[1] = [0.8660254037844387,0,-0.4999999999999998]
 	 *			[Math.PI * 2 * 1 / 3, Math.PI * 1 * 2 / 3],//vertice[2] = [-0.4330127018922192,0.7500000000000001,-0.4999999999999998]
 	 *			[Math.PI * 2 * 1 / 3, Math.PI * 2 * 2 / 3],//vertice[3] = [-0.43301270189221974,-0.7499999999999998,-0.4999999999999998]
-	 *		]//pyramid</b>,
+	 *		]</b>,
+	 *	For <b><a href="module-Universe3D.html" target="_blank">Universe3D</a></b> every item is array of three vertex angle.
+	 *		The first vertex angle <b>ψ</b> defines the sphere that across the 3D universe in the range from <b>0</b> to <b>Math.PI</b>.
+	 *		
+	 *		Position of vertex is array of the 4 axiz:
+	 *		<b>[
+	 *			Math.sin(ψ) * Math.sin(θ) * Math.sin(φ),//x
+	 *			Math.sin(ψ) * Math.sin(θ) * Math.cos(φ),//y
+	 *			Math.sin(ψ) * Math.cos(θ),//z
+	 *			Math.cos(ψ),//w
+	 *		]</b>
+	 *		as described in [Hyperspherical coordinates]{@link https://en.wikipedia.org/wiki/3-sphere#Hyperspherical_coordinates}.
+	 *		<b>ψ</b> is first vertex angle.
+	 *		<b>θ</b> is second vertex angle.
+	 *		<b>φ</b> is three vertex angle.
+	 *		
+	 *		Example of 3D universe with 5 vertices is [pentahedroid]{@link https://en.wikipedia.org/wiki/5-cell}:
+	 *		<b>classSettings.settings.object.geometry.angles: [
+	 *			[Math.PI * 0 * 1 / 3, Math.PI * 0 * 2 / 3],//vertice[0] = [0,0,1]
+	 *			[Math.PI * 2 * 1 / 3, Math.PI * 0 * 2 / 3],//vertice[1] = [0.8660254037844387,0,-0.4999999999999998]
+	 *			[Math.PI * 2 * 1 / 3, Math.PI * 1 * 2 / 3],//vertice[2] = [-0.4330127018922192,0.7500000000000001,-0.4999999999999998]
+	 *			[Math.PI * 2 * 1 / 3, Math.PI * 2 * 2 / 3],//vertice[3] = [-0.43301270189221974,-0.7499999999999998,-0.4999999999999998]
+	 *		]</b>,
 	 * object - see below:
 	 * </pre>
 	 * @param {number} [classSettings.settings.object.geometry.position.count=3] vertices count.
