@@ -45,8 +45,39 @@ class Universe2D extends Universe1D {
 	defaultAngles() { return { count: 4, } }//random pyramid
 	pushRandomAngle(verticeAngles) {
 
+		verticeAngles.push(super.randomAngle());
+//verticeAngles.push(Math.PI / 8);
+		verticeAngles.push(super.randomAngle());
+//verticeAngles.push(Math.PI / 4);
+/*		
 		super.pushRandomAngle(verticeAngles);
 		super.pushRandomAngle(verticeAngles);
+*/  
+
+	}
+	angle2Vertice(angle) {
+
+//		const t = this.classSettings.t;
+		//https://en.wikipedia.org/wiki/Spherical_coordinate_system#Cartesian_coordinates
+		const vertice = super.angle2Vertice(angle);
+		const //teta = angle[0],
+			fi = angle[1];//, r = t;
+		return [
+			vertice[1] * Math.cos(fi),//Math.sin(teta) * Math.cos(fi),// * r,//x
+			vertice[1] * Math.sin(fi),//Math.sin(teta) * Math.sin(fi),// * r,//y
+			vertice[0],//Math.cos(teta),// * r,//z
+		];
+/*		
+		return [
+			Math.sin(teta) * Math.cos(fi),// * r,//x
+			Math.sin(teta) * Math.sin(fi),// * r,//y
+			Math.cos(teta),// * r,//z
+		];
+*/  
+		/*
+			Math.cos(teta),// * r,//x
+			Math.sin(teta)// * r//y
+		*/
 
 	}
 /*

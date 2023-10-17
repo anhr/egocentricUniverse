@@ -63,14 +63,71 @@ class Universe3D extends Universe2D {
 	defaultAngles() { return { count: 5, } }//random pentachoron https://en.wikipedia.org/wiki/5-cell
 	pushRandomAngle(verticeAngles) {
 
-		super.pushRandomAngle(verticeAngles);
-		verticeAngles.push(this.randomAngle());
+//		super.pushRandomAngle(verticeAngles);
+		//https://en.wikipedia.org/wiki/3-sphere#Hyperspherical_coordinates
+		verticeAngles.push(this.randomAngle());//psi range 0 to π,
+//verticeAngles.push(Math.PI/4);//psi range 0 to π,
+		verticeAngles.push(this.randomAngle(1));//teta range 0 to π,
+//verticeAngles.push(Math.PI/4);//teta range 0 to π,
+		verticeAngles.push(this.randomAngle());//fi range 0 to 2π,
+//verticeAngles.push(Math.PI/8);//fi range 0 to 2π,
 /*		
 //		Universe1D.prototype.pushRandomAngle(verticeAngles);
 		const pushRandomAngle = this.__proto__.__proto__.pushRandomAngle;
 //		const pushRandomAngle = Object.getPrototypeOf(Object.getPrototypeOf(this)).pushRandomAngle;
 		pushRandomAngle(verticeAngles);
 */  
+
+	}
+	angle2Vertice(angle) {
+
+//		const t = this.classSettings.t;
+		//https://en.wikipedia.org/wiki/3-sphere#Hyperspherical_coordinates
+/*		
+		const vertice = super.angle2Vertice(angle);
+		const //teta = angle[0],
+			fi = angle[1];//, r = t;
+		return [
+			vertice[1] * Math.cos(fi),//Math.sin(teta) * Math.cos(fi),// * r,//x
+			vertice[1] * Math.sin(fi),//Math.sin(teta) * Math.sin(fi),// * r,//y
+			vertice[0],//Math.cos(teta),// * r,//z
+		];
+*/		
+		const psi = angle[0], teta = angle[1], fi = angle[2];
+		const vector = [
+			Math.cos(psi),//x
+			Math.sin(psi) * Math.cos(teta),//y
+			Math.sin(psi) * Math.sin(teta) * Math.cos(fi),//z
+			Math.sin(psi) * Math.sin(teta) * Math.sin(fi),//w
+		];
+/*		
+		let sum = 0;
+		vector.forEach(axis => sum += axis * axis);
+//		vector.push(Math.sqrt(1 - sum) * 2 - 1);
+		vector.push(Math.sqrt(1 - sum));
+*/  
+		return vector;
+/*		
+		return [
+			Math.sin(psi) * Math.cos(teta),//z
+			Math.sin(psi) * Math.sin(teta) * Math.cos(fi),//y
+			Math.cos(psi),//w
+			Math.sin(psi) * Math.sin(teta) * Math.cos(fi),//x
+		];
+*/  
+/*вселенная в виде плоскости, перпендикулядной плоскости xy	
+		return [
+			Math.sin(psi) * Math.sin(teta) * Math.cos(fi),//x
+			Math.sin(psi) * Math.sin(teta) * Math.cos(fi),//y
+			Math.sin(psi) * Math.cos(teta),//z
+			Math.cos(psi),//w
+		];
+*/		
+  
+		/*
+			Math.cos(teta),// * r,//x
+			Math.sin(teta)// * r//y
+		*/
 
 	}
 /*

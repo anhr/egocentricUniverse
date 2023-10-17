@@ -43,7 +43,7 @@ class Universe {
 
 	//base methods
 
-	randomAngle() { return Math.random() * Math.PI * 2; }
+	randomAngle(n=2) { return Math.random() * Math.PI * n; }
 	color() { if (this.classSettings.settings.object.color === undefined) this.classSettings.settings.object.color = 'lime'; }
 	name() { console.error(sOverride.replace('%s', 'name')); }
 	logUniverse() {
@@ -192,7 +192,7 @@ class Universe {
 			cookieName = options.dat.getCookieName(sUniverse),
 			cookieOptions = {};
 		cookie.getObject(cookieName, cookieOptions);
-//		classSettings.edges = cookieOptions.edges === false ? false : cookieOptions.edges || classSettings.edges;
+		classSettings.edges = cookieOptions.edges === false ? false : cookieOptions.edges || classSettings.edges;
 		if (classSettings.edges != false) classSettings.edges = classSettings.edges || {};
 		if ((classSettings.edges != false) && (classSettings.edges.project === undefined)) classSettings.edges.project = true;
 
@@ -348,11 +348,30 @@ class Universe {
 
 					if (i > _position.length) console.error(sUniverse + ': position get. Invalid index = ' + i + ' position.length = ' + _position.length);
 					else if (i === _position.length) settings.object.geometry.position.push();
-					const angle = _position[i], t = classSettings.t;
-					return new Proxy([
-						Math.cos(angle[0]) * t,//x
-						Math.sin(angle[0]) * t//y
-					], {
+//					const angle = _position[i], t = classSettings.t;
+					const angle2Vertice = () => {
+
+						const vertice = _this.angle2Vertice(_position[i]), r = classSettings.t;
+						//Эта прверка не проходит для Universe3D
+						if (classSettings.debug) {
+
+							let sum = 0;
+							vertice.forEach(axis => sum += axis * axis);
+							if (Math.abs((sum - 1)) > 4.5e-16) console.error(sUniverse + ': Invalid vertice[' + i + '] sum = ' + sum);
+							
+						}
+						vertice.forEach((axis, i) => vertice[i] *= r);
+						return vertice;
+						
+					}
+					return new Proxy(angle2Vertice()
+/*						
+						[
+							Math.cos(angle[0]) * t,//x
+							Math.sin(angle[0]) * t//y
+						]
+*/						
+						, {
 
 						get: (vertice, name) => {
 
