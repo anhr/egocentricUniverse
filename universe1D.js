@@ -71,10 +71,10 @@ class Universe1D extends Universe {
 	angle2Vertice(angle) {
 
 //		const t = this.classSettings.t;
-		const teta = angle[0];//, r = t;
+		const θ = angle[0];//, r = t;
 		return [
-			Math.cos(teta),// * r,//x
-			Math.sin(teta)// * r//y
+			Math.cos(θ),// * r,//x
+			Math.sin(θ)// * r//y
 		];
 
 	}

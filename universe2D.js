@@ -46,9 +46,9 @@ class Universe2D extends Universe1D {
 	pushRandomAngle(verticeAngles) {
 
 		verticeAngles.push(super.randomAngle());
-//verticeAngles.push(Math.PI / 8);
+//verticeAngles.push(Math.PI * 1 / 4);
 		verticeAngles.push(super.randomAngle());
-//verticeAngles.push(Math.PI / 4);
+//verticeAngles.push(Math.PI * 1 / 4);
 /*		
 		super.pushRandomAngle(verticeAngles);
 		super.pushRandomAngle(verticeAngles);
@@ -59,6 +59,7 @@ class Universe2D extends Universe1D {
 
 //		const t = this.classSettings.t;
 		//https://en.wikipedia.org/wiki/Spherical_coordinate_system#Cartesian_coordinates
+/*		
 		const vertice = super.angle2Vertice(angle);
 		const //teta = angle[0],
 			fi = angle[1];//, r = t;
@@ -66,6 +67,13 @@ class Universe2D extends Universe1D {
 			vertice[1] * Math.cos(fi),//Math.sin(teta) * Math.cos(fi),// * r,//x
 			vertice[1] * Math.sin(fi),//Math.sin(teta) * Math.sin(fi),// * r,//y
 			vertice[0],//Math.cos(teta),// * r,//z
+		];
+*/  
+		const θ = angle[0], sinθ = Math.sin(θ), φ = angle[1] === undefined ? 0 : angle[1];
+		return [
+			sinθ * Math.cos(φ),//x
+			sinθ * Math.sin(φ),//y
+			Math.cos(θ),//z
 		];
 /*		
 		return [

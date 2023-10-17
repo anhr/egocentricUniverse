@@ -155,16 +155,50 @@ class Universe {
 	 * number - color [Hex triplet]{@link https://en.wikipedia.org/wiki/Web_colors#Hex_triplet}. Example: 0x0000ff - blue color.
 	 * <pre>
 	 * @param {object} [classSettings.settings.object.geometry] Universe geometry.
-	 * @param {array|object} [classSettings.settings.object.geometry.position] n-dimensional universe vertices.
+	 * @param {array|object} [classSettings.settings.object.geometry.angles] n-dimensional universe vertice angles.
 	 * <pre>
-	 * array - array of vertices.
-	 *	Every item of array is n-dimensional vector of vertice of object.
-	 *	Example of 1D universe with three vertices:
-	 *	<b>classSettings.settings.object.geometry.position: [
-	 *		[0, -1],//0
-	 *		[0.8660254037844388, 0.5],//1
-	 *		[-0.8660254037844384, 0.5]//2
-	 *	]//triangle</b>,
+	 * array - array of vertex angles.
+	 *	Every item of array is n-dimensional array of vertex angles.
+	 *	For <b><a href="module-Universe1D.html" target="_blank">Universe1D</a></b> every item is array of one vertex angle.
+	 *		Vertex angle is angle of rotation around of Z axis in 3D space
+	 *		in the range from <b>0</b> to <b>2 * Math.PI</b>.
+	 *		Angle is begin from X axis.
+	 *		Every vertex is <b>[
+				Math.cos(θ),//x
+				Math.sin(θ)//y
+			]</b> array. <b>θ</b> is vertex angle.
+	 *		Example of 1D universe with three vertices:
+	 *		<b>classSettings.settings.object.geometry.angles: [
+	 *			[0],//vertice[0] = [1,0]
+	 *			[Math.PI * 2 / 3],//vertice[1] = [-0.4999999999999998,0.8660254037844387]
+	 *			[Math.PI * 2 *2 / 3]//vertice[2] = [-0.5000000000000004,-0.8660254037844384]
+	 *		]//triangle</b>,
+	 *	For <b><a href="module-Universe2D.html" target="_blank">Universe2D</a></b> every item is array of two vertex angle.
+	 *		The first vertex angle is a cross section of the 2D universe in the XY plane
+	 *		in the range from <b>0</b> to <b>2 * Math.PI</b>.
+	 *		
+	 *		The second vertex angle is a cross section of the 2D universe across the center of the universe
+	 *		in the range from <b>0</b> to <b>2 * Math.PI</b>.
+	 *		The second vertex angle is angle of rotation of the cross section around of Z axis.
+	 *		Cross section is parallel to the XZ plane if second vertex angle is 0 radians.
+	 *		Cross section is parallel to the YZ plane if second vertex angle is <b>Math.PI / 2</b> radians.
+	 *		
+	 *		Position of vertex is array of the three axiz:
+	 *		<b>[
+	 *			sinθ * Math.cos(φ),//x
+	 *			sinθ * Math.sin(φ),//y
+	 *			Math.cos(θ),//z
+	 *		]</b>
+	 *		as described in [Cartesian coordinates]{@link https://en.wikipedia.org/wiki/Spherical_coordinate_system#Cartesian_coordinates}.
+	 *		<b>θ</b> angle is first vertex angle and <b>φ</b> is second vertex angle.
+	 *		
+	 *		Example of 2D universe with 4 vertices:
+	 *		<b>classSettings.settings.object.geometry.angles: [
+	 *			[Math.PI * 0 * 1 / 3, Math.PI * 0 * 2 / 3],//vertice[0] = [0,0,1]
+	 *			[Math.PI * 2 * 1 / 3, Math.PI * 0 * 2 / 3],//vertice[1] = [0.8660254037844387,0,-0.4999999999999998]
+	 *			[Math.PI * 2 * 1 / 3, Math.PI * 1 * 2 / 3],//vertice[2] = [-0.4330127018922192,0.7500000000000001,-0.4999999999999998]
+	 *			[Math.PI * 2 * 1 / 3, Math.PI * 2 * 2 / 3],//vertice[3] = [-0.43301270189221974,-0.7499999999999998,-0.4999999999999998]
+	 *		]//pyramid</b>,
 	 * object - see below:
 	 * </pre>
 	 * @param {number} [classSettings.settings.object.geometry.position.count=3] vertices count.

@@ -65,12 +65,12 @@ class Universe3D extends Universe2D {
 
 //		super.pushRandomAngle(verticeAngles);
 		//https://en.wikipedia.org/wiki/3-sphere#Hyperspherical_coordinates
-		verticeAngles.push(this.randomAngle());//psi range 0 to π,
-//verticeAngles.push(Math.PI/4);//psi range 0 to π,
-		verticeAngles.push(this.randomAngle(1));//teta range 0 to π,
-//verticeAngles.push(Math.PI/4);//teta range 0 to π,
-		verticeAngles.push(this.randomAngle());//fi range 0 to 2π,
-//verticeAngles.push(Math.PI/8);//fi range 0 to 2π,
+		verticeAngles.push(this.randomAngle());//ψ range 0 to π,
+//verticeAngles.push(Math.PI * 6 /8);//сфера
+		verticeAngles.push(this.randomAngle(1));//θ range 0 to π,
+//verticeAngles.push(Math.PI * 1 /4);//два конуса
+		verticeAngles.push(this.randomAngle());//φ range 0 to 2π,
+//verticeAngles.push(Math.PI * 1 /4);//блин
 /*		
 //		Universe1D.prototype.pushRandomAngle(verticeAngles);
 		const pushRandomAngle = this.__proto__.__proto__.pushRandomAngle;
@@ -82,7 +82,7 @@ class Universe3D extends Universe2D {
 	angle2Vertice(angle) {
 
 //		const t = this.classSettings.t;
-		//https://en.wikipedia.org/wiki/3-sphere#Hyperspherical_coordinates
+		//
 /*		
 		const vertice = super.angle2Vertice(angle);
 		const //teta = angle[0],
@@ -93,13 +93,21 @@ class Universe3D extends Universe2D {
 			vertice[0],//Math.cos(teta),// * r,//z
 		];
 */		
-		const psi = angle[0], teta = angle[1], fi = angle[2];
+		const ψ = angle[0], sinψ = Math.sin(ψ), θ = angle[1], sinθ = Math.sin(θ), φ = angle[2];
 		const vector = [
-			Math.cos(psi),//x
-			Math.sin(psi) * Math.cos(teta),//y
-			Math.sin(psi) * Math.sin(teta) * Math.cos(fi),//z
-			Math.sin(psi) * Math.sin(teta) * Math.sin(fi),//w
+			sinψ * sinθ * Math.sin(φ),//w
+			sinψ * sinθ * Math.cos(φ),//z
+			sinψ * Math.cos(θ),//y
+			Math.cos(ψ),//x
 		];
+/*		
+		const vector = [
+			Math.cos(ψ),//x
+			sinψ * Math.cos(θ),//y
+			sinψ * sinθ * Math.cos(φ),//z
+			sinψ * sinθ * Math.sin(φ),//w
+		];
+*/  
 /*		
 		let sum = 0;
 		vector.forEach(axis => sum += axis * axis);
