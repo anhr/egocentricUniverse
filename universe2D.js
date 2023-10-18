@@ -45,9 +45,18 @@ class Universe2D extends Universe1D {
 	defaultAngles() { return { count: 4, } }//random pyramid
 	pushRandomAngle(verticeAngles) {
 
-		verticeAngles.push(super.randomAngle());//θ
+//		verticeAngles.push(super.randomAngle());//θ
+//		verticeAngles.push(Math.acos(Math.random()) * (Math.random() > 0.5 ? 1: -1));//θ
+//		verticeAngles.push(Math.acos(Math.random()) + (Math.random() > 0.5 ? 0: Math.PI /2));//θ
+
+		//добиваемся равномерного распределения вершин по поверхности сферы
+		verticeAngles.push((Math.random() > 0.5 ? Math.acos(-Math.random()): Math.acos(Math.random())));//θ
+		
+//		verticeAngles.push(Math.acos(Math.random()));//θ
+		console.log('θ = ' + verticeAngles[0])
 //verticeAngles.push(Math.PI * 1 / 4);
 		verticeAngles.push(super.randomAngle());//φ
+//		verticeAngles.push(Math.acos(Math.random()) * Math.random());//φ
 //verticeAngles.push(Math.PI * 1 / 4);
 /*		
 		super.pushRandomAngle(verticeAngles);
