@@ -190,7 +190,7 @@ class Universe {
 	 *			Math.cos(θ),//z
 	 *		]</b>
 	 *		as described in [Cartesian coordinates]{@link https://en.wikipedia.org/wiki/Spherical_coordinate_system#Cartesian_coordinates}.
-	 *		<b>θ</b> angle is first vertex angle and <b>φ</b> is second vertex angle.
+	 *		<b>θ</b> is first angle of the vertex and <b>φ</b> is second angle of the vertex.
 	 *		
 	 *		Example of 2D universe with 4 vertices is pyramid:
 	 *		<b>classSettings.settings.object.geometry.angles: [
@@ -218,9 +218,9 @@ class Universe {
 	 *			Math.cos(ψ),//w
 	 *		]</b>
 	 *		as described in [Hyperspherical coordinates]{@link https://en.wikipedia.org/wiki/3-sphere#Hyperspherical_coordinates}.
-	 *		<b>ψ</b> is first vertex angle.
-	 *		<b>θ</b> is second vertex angle.
-	 *		<b>φ</b> is three vertex angle.
+	 *		<b>ψ</b> is first angle of the vertex.
+	 *		<b>θ</b> is second angle of the vertex.
+	 *		<b>φ</b> is third angle of the vertex.
 	 *		
 	 *		Example of 3D universe with 5 vertices is [pentahedroid]{@link https://en.wikipedia.org/wiki/5-cell}:
 	 *		<b>classSettings.settings.object.geometry.angles: [
@@ -245,9 +245,9 @@ class Universe {
 	 * @param {number} [classSettings.settings.object.geometry.angles.count=3|4|5] Count of vertices with random position.
 	 * <pre>
 	 * Default values:
-	 *	3 for <b><a href="module-Universe1D.html" target="_blank">Universe1D</a> - triangle.
-	 *	4 for <b><a href="module-Universe2D.html" target="_blank">Universe2D</a> - pyramid.
-	 *	5 for <b><a href="module-Universe3D.html" target="_blank">Universe3D</a> - [pentahedroid]{@link https://en.wikipedia.org/wiki/5-cell}.
+	 *	3 for <b><a href="module-Universe1D.html" target="_blank">Universe1D</a></b> - triangle.
+	 *	4 for <b><a href="module-Universe2D.html" target="_blank">Universe2D</a></b> - pyramid.
+	 *	5 for <b><a href="module-Universe3D.html" target="_blank">Universe3D</a></b> - [pentahedroid]{@link https://en.wikipedia.org/wiki/5-cell}.
 	 * </pre>
 	 * @param {array} [classSettings.settings.object.geometry.opacity] array of opacities of each vertice. Each item of array is float value in the range of 0.0 - 1.0 indicating how transparent the material is. A value of 0.0 indicates fully transparent, 1.0 is fully opaque.
 	 * @param {object} [classSettings.settings.object.geometry.indices] Array of <b>indices</b> of edges of universe.
