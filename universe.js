@@ -174,7 +174,8 @@ class Universe {
 	 *			[Math.PI * 2 *2 / 3]//vertice[2] = [-0.5000000000000004,-0.8660254037844384]
 	 *		]</b>,
 	 *	For <b><a href="module-Universe2D.html" target="_blank">Universe2D</a></b> every item is array of two vertex angle.
-	 *		The first vertex angle <b>θ</b> is a cross section of the 2D universe in the XY plane in the range from <b>0</b> to <b>2 * Math.PI</b>.
+	 *		The first vertex angle <b>θ</b> is a cross section of the 2D universe
+	 *		in the XY plane in the range from <b>0</b> to <b>2 * Math.PI</b>.
 	 *		
 	 *		The second vertex angle <b>φ</b> is a cross section of the 2D universe across the center of the universe
 	 *		in the range from <b>0</b> to <b>2 * Math.PI</b>.
@@ -193,10 +194,18 @@ class Universe {
 	 *		
 	 *		Example of 2D universe with 4 vertices is pyramid:
 	 *		<b>classSettings.settings.object.geometry.angles: [
-	 *			[Math.PI * 0 * 1 / 3, Math.PI * 0 * 2 / 3],//vertice[0] = [0,0,1]
-	 *			[Math.PI * 2 * 1 / 3, Math.PI * 0 * 2 / 3],//vertice[1] = [0.8660254037844387,0,-0.4999999999999998]
-	 *			[Math.PI * 2 * 1 / 3, Math.PI * 1 * 2 / 3],//vertice[2] = [-0.4330127018922192,0.7500000000000001,-0.4999999999999998]
-	 *			[Math.PI * 2 * 1 / 3, Math.PI * 2 * 2 / 3],//vertice[3] = [-0.43301270189221974,-0.7499999999999998,-0.4999999999999998]
+	 *		
+	 *			//vertice[0] = [0,0,1]
+	 *			[Math.PI * 0 * 1 / 3, Math.PI * 0 * 2 / 3],
+	 *			
+	 *			//vertice[1] = [0.8660254037844387,0,-0.4999999999999998]
+	 *			[Math.PI * 2 * 1 / 3, Math.PI * 0 * 2 / 3],
+	 *			
+	 *			//vertice[2] = [-0.4330127018922192,0.7500000000000001,-0.4999999999999998]
+	 *			[Math.PI * 2 * 1 / 3, Math.PI * 1 * 2 / 3],
+	 *			
+	 *			//vertice[3] = [-0.43301270189221974,-0.7499999999999998,-0.4999999999999998]
+	 *			[Math.PI * 2 * 1 / 3, Math.PI * 2 * 2 / 3],
 	 *		]</b>,
 	 *	For <b><a href="module-Universe3D.html" target="_blank">Universe3D</a></b> every item is array of three vertex angle.
 	 *		The first vertex angle <b>ψ</b> defines the sphere that across the 3D universe in the range from <b>0</b> to <b>Math.PI</b>.
@@ -215,14 +224,31 @@ class Universe {
 	 *		
 	 *		Example of 3D universe with 5 vertices is [pentahedroid]{@link https://en.wikipedia.org/wiki/5-cell}:
 	 *		<b>classSettings.settings.object.geometry.angles: [
-	 *			[Math.PI * 0 * 1 / 3, Math.PI * 0 * 2 / 3],//vertice[0] = [0,0,1]
-	 *			[Math.PI * 2 * 1 / 3, Math.PI * 0 * 2 / 3],//vertice[1] = [0.8660254037844387,0,-0.4999999999999998]
-	 *			[Math.PI * 2 * 1 / 3, Math.PI * 1 * 2 / 3],//vertice[2] = [-0.4330127018922192,0.7500000000000001,-0.4999999999999998]
-	 *			[Math.PI * 2 * 1 / 3, Math.PI * 2 * 2 / 3],//vertice[3] = [-0.43301270189221974,-0.7499999999999998,-0.4999999999999998]
+	 *		
+	 *			//vertice[0] = [0,0,0,1]
+	 *			[],
+	 *			
+	 *			//vertice[1] = [0,0,0.8660254037844387,-0.4999999999999998]
+	 *			[Math.PI * 2 * 1 / 3],
+	 *			
+	 *			//vertice[2] = [0.6495190528383291,-0.3749999999999999,-0.4330127018922192,-0.4999999999999998]
+	 *			[Math.PI * 2 * 1 / 3, Math.PI * 1 * 2 / 3, Math.PI * 2 * 1 / 3],
+	 *			
+	 *			//vertice[3] = [-0.6495190528383288,-0.37499999999999994,-0.43301270189221974,-0.4999999999999998]
+	 *			[Math.PI * 2 * 1 / 3, Math.PI * 2 * 2 / 3, Math.PI * 2 * 1 / 6],
+	 *			
+	 *			//vertice[4] = [-9.184850993605146e-17,0.7499999999999998,-0.43301270189221974,-0.4999999999999998]
+	 *			[Math.PI * 2 * 1 / 3, Math.PI * 2 * 2 / 3, Math.PI * 2 * 3 / 6],
 	 *		]</b>,
 	 * object - see below:
 	 * </pre>
-	 * @param {number} [classSettings.settings.object.geometry.position.count=3] vertices count.
+	 * @param {number} [classSettings.settings.object.geometry.angles.count=3|4|5] Count of vertices with random position.
+	 * <pre>
+	 * Default values:
+	 *	3 for <b><a href="module-Universe1D.html" target="_blank">Universe1D</a> - triangle.
+	 *	4 for <b><a href="module-Universe2D.html" target="_blank">Universe2D</a> - pyramid.
+	 *	5 for <b><a href="module-Universe3D.html" target="_blank">Universe3D</a> - [pentahedroid]{@link https://en.wikipedia.org/wiki/5-cell}.
+	 * </pre>
 	 * @param {array} [classSettings.settings.object.geometry.opacity] array of opacities of each vertice. Each item of array is float value in the range of 0.0 - 1.0 indicating how transparent the material is. A value of 0.0 indicates fully transparent, 1.0 is fully opaque.
 	 * @param {object} [classSettings.settings.object.geometry.indices] Array of <b>indices</b> of edges of universe.
 	 * @param {array|object} [classSettings.settings.object.geometry.indices.edges] Universe edges.
@@ -406,7 +432,23 @@ class Universe {
 //					const angle = _position[i], t = classSettings.t;
 					const angle2Vertice = () => {
 
-						const vertice = _this.angle2Vertice(_position[i]), r = classSettings.t;
+						const vertice = _this.angle2Vertice(
+//							_position[i]
+							new Proxy(_position[i], {
+
+								get: (angles, name) => {
+
+									const i = parseInt(name);
+									if (!isNaN(i)) {
+
+										if (i >= angles.length) return 0.0;
+										
+									}
+									return angles[name];
+
+								},
+							})							
+						), r = classSettings.t;
 						//Эта прверка не проходит для Universe3D
 						if (classSettings.debug) {
 

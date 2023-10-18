@@ -69,7 +69,7 @@ class Universe2D extends Universe1D {
 			vertice[0],//Math.cos(teta),// * r,//z
 		];
 */  
-		const θ = angle[0], sinθ = Math.sin(θ), φ = angle[1] === undefined ? 0 : angle[1];
+		const θ = angle[0], sinθ = Math.sin(θ), φ = angle[1];// === undefined ? 0 : angle[1];
 		return [
 			sinθ * Math.cos(φ),//x
 			sinθ * Math.sin(φ),//y
