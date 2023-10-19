@@ -168,6 +168,14 @@ class Universe2D extends Universe1D {
 
 							}
 							break;
+						case 5://
+							if (edges.length >= 10) {
+
+								stop();
+								return;
+
+							}
+							break;
 						case 6://устраняет ошибку
 							//Universe: edges[12]. Duplicate edge[3,0]
 							if (edges.length >= 15) {
