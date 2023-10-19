@@ -50,7 +50,8 @@ class Universe2D extends Universe1D {
 //		verticeAngles.push(Math.acos(Math.random()) + (Math.random() > 0.5 ? 0: Math.PI /2));//θ
 
 		//добиваемся равномерного распределения вершин по поверхности сферы
-		verticeAngles.push((Math.random() > 0.5 ? Math.acos(-Math.random()): Math.acos(Math.random())));//θ
+		verticeAngles.push(Math.acos(Math.random() * (Math.random() > 0.5 ? 1: -1)));//θ
+//		verticeAngles.push((Math.random() > 0.5 ? Math.acos(-Math.random()): Math.acos(Math.random())));//θ
 		
 //		verticeAngles.push(Math.acos(Math.random()));//θ
 		console.log('θ = ' + verticeAngles[0])
