@@ -65,9 +65,18 @@ class Universe3D extends Universe2D {
 
 //		super.pushRandomAngle(verticeAngles);
 		//https://en.wikipedia.org/wiki/3-sphere#Hyperspherical_coordinates
-		verticeAngles.push(this.randomAngle());//ψ range 0 to π,
+		//verticeAngles.push(this.randomAngle());//ψ range 0 to π,
+		
+		//добиваемся равномерного распределения вершин в объеме шара
+		//исчезло уплотнение в ядре шара
+		verticeAngles.push(Math.acos(Math.random() * (Math.random() > 0.5 ? 1: -1)));//ψ
+		
 //verticeAngles.push(Math.PI * 7 /8);//сфера
-		verticeAngles.push(this.randomAngle(1));//θ range 0 to π,
+		//verticeAngles.push(this.randomAngle(1));//θ range 0 to π,
+		
+		//добиваемся равномерного распределения вершин в объеме шара
+		//исчезло уплотнение на оси через полюса по оси Z
+		verticeAngles.push(Math.acos(Math.random() * (Math.random() > 0.5 ? 1: -1)));//θ
 //verticeAngles.push(Math.PI * 4 /8);//два конуса
 		verticeAngles.push(this.randomAngle());//φ range 0 to 2π,
 //verticeAngles.push(Math.PI * 1 /8);//блин
