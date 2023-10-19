@@ -168,7 +168,7 @@ class Universe2D extends Universe1D {
 
 							}
 							break;
-						case 5://
+						case 5://pentahedroid https://en.wikipedia.org/wiki/5-cell
 							if (edges.length >= 10) {
 
 								stop();
