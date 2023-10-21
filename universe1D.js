@@ -78,6 +78,12 @@ class Universe1D extends Universe {
 		];
 
 	}
+	vertice2angle(vertice){
+
+		//тангенс — отношение стороны противолежащего катета vertice[1] к стороне прилежащегоvertice[0], (tg или tan);
+		return [Math.atan(vertice[1] / vertice[0])];
+		
+	}
 /*	
 	randomPosition(params) {
 		

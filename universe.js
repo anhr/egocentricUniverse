@@ -544,6 +544,7 @@ class Universe {
 						},
 						set: (vertice, name, value) => {
 
+/*							
 							switch (name) {
 
 								case 'angles':
@@ -552,6 +553,7 @@ console.error('Under constraction');
 									return true;
 
 							}
+*/							
 							vertice[name] = value;
 							return true;
 
@@ -731,12 +733,16 @@ console.error('Under constraction');
 
 					if (value instanceof Array === true) {//для совместимости с Player.getPoints. Туда попадает когда хочу вывести на холст точки вместо ребер и использую дя этого MyPoints вместо ND
 
+						console.warn(sUniverse + ': Set vertice was deprecated. Use set angle instead.')
+						_position[i] = this.vertice2angle(value);
+/*						
 						const vertice = _position[i];
 						vertice.forEach((axis, axisId) => {
 
 							vertice[axisId] = value[axisId];
 
 						});
+*/						
 
 					}
 
@@ -1123,20 +1129,13 @@ console.error('Under constraction');
 
 								progressBar.remove();
 
-								for (verticeId = 0; verticeId < (position.length - 1); verticeId++) {
-
+								for (verticeId = 0; verticeId < (position.length - 1); verticeId++) 
 									position[verticeId] = vertices[verticeId];//Обновление текущей верщины без обновления холста для экономии времени								
-
-								}
 
 								//Последнюю вершину обновляю отдельно по каждой оси, потому что так ND обновляет холст
 								verticeId = position.length - 1;
 								const vertice = position[verticeId];
-								vertice.forEach((axis, axisId) => {
-
-									vertice[axisId] = vertices[verticeId][axisId];
-
-								});
+								vertice.forEach((axis, axisId) => { vertice[axisId] = vertices[verticeId][axisId]; });
 
 								if (classSettings.debug) console.log('time: ' + ((window.performance.now() - timestamp) / 1000) + ' sec.');
 								options.player.continue();
