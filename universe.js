@@ -429,12 +429,9 @@ class Universe {
 
 					if (i > _position.length) console.error(sUniverse + ': position get. Invalid index = ' + i + ' position.length = ' + _position.length);
 					else if (i === _position.length) settings.object.geometry.position.push();
-//					const angle = _position[i], t = classSettings.t;
 					const angle2Vertice = () => {
 
-						const vertice = _this.angle2Vertice(
-//							_position[i]
-							new Proxy(_position[i], {
+						const vertice = _this.angle2Vertice(new Proxy(_position[i], {
 
 								get: (angles, name) => {
 
@@ -449,7 +446,7 @@ class Universe {
 								},
 							})							
 						), r = classSettings.t;
-						//Эта прверка не проходит для Universe3D
+						//Эта проверка не проходит для Universe3D
 						if (classSettings.debug) {
 
 							let sum = 0;
@@ -461,14 +458,7 @@ class Universe {
 						return vertice;
 						
 					}
-					return new Proxy(angle2Vertice()
-/*						
-						[
-							Math.cos(angle[0]) * t,//x
-							Math.sin(angle[0]) * t//y
-						]
-*/						
-						, {
+					return new Proxy(angle2Vertice(), {
 
 						get: (vertice, name) => {
 
