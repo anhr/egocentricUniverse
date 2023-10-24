@@ -111,7 +111,9 @@ class Universe {
 						if (i >= edges.length) {
 							
 							progressBar.remove();
-							if (this.classSettings.debug) console.log('time: Geometry log. ' + ((window.performance.now() - this.timestamp) / 1000) + ' sec.');
+							if (this.classSettings.debug)
+								this.classSettings.debug.logTimestamp('Geometry log. ');
+								//console.log('time: Geometry log. ' + ((window.performance.now() - this.classSettings.debug.timestamp) / 1000) + ' sec.');
 							
 						} else progressBar.step();
 						break;
@@ -288,13 +290,30 @@ class Universe {
 	 * object - see below:
 	 * &lt;/pre>
 	 * @param {number} [classSettings.settings.object.geometry.indices.edges.count=3] edges count.
-	 * @param {boolean} [classSettings.debug=false] Debug mode. Diagnoses your code and display detected errors in console
+	 * @param {boolean|object} [classSettings.debug=false] Debug mode.
+	 * &lt;pre>
+	 *	true - Diagnoses your code and display detected errors to console.
+	 *	object - Diagnoses your code and display detected errors to console.
+	 * &lt;/pre>
+	 * @param {boolean|Array} [classSettings.debug.probabilityDensity=[]] Probability density of distribution of vertices over the surface of the universe.
+	 * &lt;pre>
+	 *	false - do not calculate probability density.
+	 *	[] - calculate probability density.
+	 * &lt;/pre>
 	 * @param {function} [classSettings.continue] Callback function that called after universe edges was created.
 	 **/
 	constructor(options, classSettings={}) {
 
 		const _this = this, THREE = three.THREE;
-		if (classSettings.debug) this.timestamp = window.performance.now();
+		if (classSettings.debug === true) classSettings.debug = {};
+//		if (classSettings.debug) this.timestamp = window.performance.now();
+		if (classSettings.debug) {
+			
+			classSettings.debug.timestamp = window.performance.now();
+			classSettings.debug.logTimestamp = (text = '', timestamp) =>
+				console.log('time: ' + text + ((window.performance.now() - (timestamp ? timestamp : classSettings.debug.timestamp)) / 1000) + ' sec.');;
+
+		}
 		this.classSettings = classSettings;
 
 		const cookie = options.dat.cookie,
@@ -316,76 +335,9 @@ class Universe {
 		//if (options.scales.w.name === 'w') options.scales.w.name = 't';
   
 		settings.object.geometry = settings.object.geometry || {};
-/*
-		const randomPosition = () => {
-
-			const ret = [],
-				x = [];//random array
-			let sum;
-
-			const
-				randomArray = (length = (_this.dimension - 1) * 2, array) => {
-
-					//Если не делать этот цикл, то некоторые вершины будут иметь значения NaN и появится ошибка:
-					//THREE.BufferGeometry.computeBoundingSphere(): Computed radius is NaN. The "position" attribute is likely to have NaN values. 
-					//но при этом распределение вершин по вселенной все равно будет равномерным.
-					//Не разобрался почему так происходит.
-					do {
-
-						if (!array) x.length = 0;
-						sum = 0;
-						if (array) array.length = 0;
-						//picking x1 and x2 from independent uniform distributions on(-1, 1)
-						for (let i = 0;
-							i &lt; length;
-							//					i &lt; 2;
-							i++) {
-
-							const random = Math.random() * 2 - 1;
-							sum += random * random;
-							(array || x).push(random);
-
-						}
-
-					} while (sum >= 1);//rejecting points for which x1^2+x2^2>=1
-					return sum;
-
-				},
-				push0 = () => {
-
-					randomArray();
-
-					let positive = x[0] * x[0], negative = x[1] * x[1];
-					for (let i = 0; i &lt; (_this.dimension - 2); i++) {
-
-						const p = x[_this.dimension - i], n = x[2 + i];
-						positive += p * p;
-						negative += n * n;
-
-					}
-					ret.push((positive - negative) / sum);
-					return { ret: ret, sum: sum };
-
-				}
-
-			this.randomPosition({ push0: push0, x: x, randomArray: randomArray, ret: ret });
-			sum = 0;
-			ret.forEach((axis, i) => {
-
-				sum += ret[i] * ret[i]; 
-				ret[i] *= classSettings.t
-			
-			});
-			if (classSettings.debug &amp;&amp; (Math.abs(sum - 1) > 7.0e-16)) console.error(sUniverse + ': randomPosition. Vertice[' + ret + '] is not situated at a constant distance 1. Real distance is ' + sum)
-			return ret;
-			
-		}
-*/
-
-//		settings.object.geometry.position = settings.object.geometry.position || {};
 
 		//for debug
-		//для 2D вселенной это плотность вероятности распределения вершин по поверхости сферы в зависимости от третьей координаты вершины z = vertice.[2]
+		//для 2D вселенной это плотность вероятности распределения вершин по поверхности сферы в зависимости от третьей координаты вершины z = vertice.[2]
 		//Плотности разбил на несколько диапазонов в зависимости от третьей координаты вершины z = vertice.[2]
 		//Разбил сферу на sc = 5 сегментов от 0 до 4.
 		//Границы сегментов вычисляю по фомулам:
@@ -393,8 +345,8 @@ class Universe {
 		//Нижняя граница сегмента hb = hs * i - r
 		//Верхняя граница сегмента ht = hs * (i + 1) - r
 		//где r = 1 - радиус сферыб d = 2 * r = 2 - диаметр сферы, i - индекс сегмента
-		const probabilityDensity = classSettings.debug ?
-			[
+		if (classSettings.debug &amp;&amp; (classSettings.debug.probabilityDensity != false)) classSettings.debug.probabilityDensity = [
+			
 				/*
 				{ count: 0, },//0. From -1 to -0.6
 				{ count: 0, },//1. From -0.6 to -0.2
@@ -402,7 +354,10 @@ class Universe {
 				{ count: 0, },//3. From 0.2 to 0.6
 				{ count: 0, },//4. From 0.6 to 1
 				*/
-			] : undefined;
+			
+		];
+//		const probabilityDensity = classSettings.debug ? [] : undefined;
+		const probabilityDensity = classSettings.debug.probabilityDensity;
 		if (probabilityDensity) {
 			
 			for (let i = 0; i &lt; 5; i++) probabilityDensity.push({ count: 0, });
@@ -457,12 +412,10 @@ class Universe {
 
 					if (i > _position.length) console.error(sUniverse + ': position get. Invalid index = ' + i + ' position.length = ' + _position.length);
 					else if (i === _position.length) settings.object.geometry.position.push();
-//					const angle = _position[i], t = classSettings.t;
+					const _vertice = _position[i];
 					const angle2Vertice = () => {
 
-						const vertice = _this.angle2Vertice(
-//							_position[i]
-							new Proxy(_position[i], {
+						const vertice = _this.angle2Vertice(new Proxy(_vertice, {
 
 								get: (angles, name) => {
 
@@ -477,7 +430,7 @@ class Universe {
 								},
 							})							
 						), r = classSettings.t;
-						//Эта прверка не проходит для Universe3D
+						//Эта проверка не проходит для Universe3D
 						if (classSettings.debug) {
 
 							let sum = 0;
@@ -489,14 +442,7 @@ class Universe {
 						return vertice;
 						
 					}
-					return new Proxy(angle2Vertice()
-/*						
-						[
-							Math.cos(angle[0]) * t,//x
-							Math.sin(angle[0]) * t//y
-						]
-*/						
-						, {
+					return new Proxy(angle2Vertice(), {
 
 						get: (vertice, name) => {
 
@@ -510,7 +456,7 @@ class Universe {
 										return;
 
 									}
-									vertice.edges = vertice.edges || new Proxy([], {
+									_vertice.edges = _vertice.edges || new Proxy([], {
 
 										get: (edges, name) => {
 
@@ -547,11 +493,11 @@ class Universe {
 
 										},
 									});
-									return vertice.edges;
+									return _vertice.edges;
 
 								case 'oppositeVerticesId':
-									vertice.oppositeVerticesId = vertice.oppositeVerticesId || [];
-									break;
+									_vertice.oppositeVerticesId = _vertice.oppositeVerticesId || [];
+									return _vertice.oppositeVerticesId;
 								case 'vector':
 									//для совместимости с Player.getPoints. Туда попадает когда хочу вывести на холст точки вместо ребер и использую дя этого MyPoints вместо ND
 									const vertice2 = vertice[2], vertice3 = vertice[3];
@@ -572,6 +518,7 @@ class Universe {
 						},
 						set: (vertice, name, value) => {
 
+/*							
 							switch (name) {
 
 								case 'angles':
@@ -580,6 +527,7 @@ console.error('Under constraction');
 									return true;
 
 							}
+*/							
 							vertice[name] = value;
 							return true;
 
@@ -759,12 +707,16 @@ console.error('Under constraction');
 
 					if (value instanceof Array === true) {//для совместимости с Player.getPoints. Туда попадает когда хочу вывести на холст точки вместо ребер и использую дя этого MyPoints вместо ND
 
+						console.warn(sUniverse + ': Set vertice was deprecated. Use set angle instead.')
+						_position[i] = this.vertice2angle(value);
+/*						
 						const vertice = _position[i];
 						vertice.forEach((axis, axisId) => {
 
 							vertice[axisId] = value[axisId];
 
 						});
+*/						
 
 					}
 
@@ -1151,22 +1103,17 @@ console.error('Under constraction');
 
 								progressBar.remove();
 
-								for (verticeId = 0; verticeId &lt; (position.length - 1); verticeId++) {
-
+								for (verticeId = 0; verticeId &lt; (position.length - 1); verticeId++) 
 									position[verticeId] = vertices[verticeId];//Обновление текущей верщины без обновления холста для экономии времени								
-
-								}
 
 								//Последнюю вершину обновляю отдельно по каждой оси, потому что так ND обновляет холст
 								verticeId = position.length - 1;
 								const vertice = position[verticeId];
-								vertice.forEach((axis, axisId) => {
+								vertice.forEach((axis, axisId) => { vertice[axisId] = vertices[verticeId][axisId]; });
 
-									vertice[axisId] = vertices[verticeId][axisId];
-
-								});
-
-								if (classSettings.debug) console.log('time: ' + ((window.performance.now() - timestamp) / 1000) + ' sec.');
+								if (classSettings.debug)
+									classSettings.debug.logTimestamp('Play step. ', timestamp);
+//									console.log('time: ' + ((window.performance.now() - timestamp) / 1000) + ' sec.');
 								options.player.continue();
 								return true;
 
@@ -1186,7 +1133,9 @@ console.error('Under constraction');
 
 			}
 
-			if (classSettings.debug) console.log('time: Project. ' + ((window.performance.now() - this.timestamp) / 1000) + ' sec.');
+			if (classSettings.debug)
+				classSettings.debug.logTimestamp('Project. ');
+				//console.log('time: Project. ' + ((window.performance.now() - this.classSettings.debug.timestamp) / 1000) + ' sec.');
 
 		}
 		if (classSettings.mode === undefined) classSettings.mode = 0;//решил оставить режим, в котором сначала добавляются ребра а потом уже создаются вершины для них
@@ -1241,8 +1190,9 @@ console.error('Under constraction');
 					console.table(table, ['count', 'hb', 'ht', 'height',
 						sectorValueName,
 						'density']);
-					console.log('');		   
-					console.log('time: Push positions. ' + ((window.performance.now() - this.timestamp) / 1000) + ' sec.');
+					console.log('');
+					classSettings.debug.logTimestamp('Push positions. ');
+//					console.log('time: Push positions. ' + ((window.performance.now() - this.timestamp) / 1000) + ' sec.');
 
 				}				
 				if (classSettings.edges)//Для экономии времени не добавляю ребра если на холст вывожу только вершины
@@ -1360,7 +1310,7 @@ export default Universe;
 <br class="clear">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 3.6.11</a> on Wed Oct 18 2023 15:51:51 GMT+0700 (Красноярск, стандартное время)
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 3.6.11</a> on Tue Oct 24 2023 11:17:26 GMT+0700 (Красноярск, стандартное время)
 </footer>
 
 <script> prettyPrint(); </script>

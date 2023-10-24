@@ -262,7 +262,16 @@ class Universe {
 	 * object - see below:
 	 * </pre>
 	 * @param {number} [classSettings.settings.object.geometry.indices.edges.count=3] edges count.
-	 * @param {boolean} [classSettings.debug=false] Debug mode. Diagnoses your code and display detected errors in console
+	 * @param {boolean|object} [classSettings.debug=false] Debug mode.
+	 * <pre>
+	 *	true - Diagnoses your code and display detected errors to console.
+	 *	object - Diagnoses your code and display detected errors to console.
+	 * </pre>
+	 * @param {boolean|Array} [classSettings.debug.probabilityDensity=[]] Probability density of distribution of vertices over the surface of the universe.
+	 * <pre>
+	 *	false - do not calculate probability density.
+	 *	[] - calculate probability density.
+	 * </pre>
 	 * @param {function} [classSettings.continue] Callback function that called after universe edges was created.
 	 **/
 	constructor(options, classSettings={}) {
@@ -300,7 +309,7 @@ class Universe {
 		settings.object.geometry = settings.object.geometry || {};
 
 		//for debug
-		//для 2D вселенной это плотность вероятности распределения вершин по поверхости сферы в зависимости от третьей координаты вершины z = vertice.[2]
+		//для 2D вселенной это плотность вероятности распределения вершин по поверхности сферы в зависимости от третьей координаты вершины z = vertice.[2]
 		//Плотности разбил на несколько диапазонов в зависимости от третьей координаты вершины z = vertice.[2]
 		//Разбил сферу на sc = 5 сегментов от 0 до 4.
 		//Границы сегментов вычисляю по фомулам:
