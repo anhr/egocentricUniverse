@@ -266,6 +266,7 @@ class Universe {
 	constructor(options, classSettings={}) {
 
 		const _this = this, THREE = three.THREE;
+		if (classSettings.debug === true) classSettings.debug = {};
 		if (classSettings.debug) this.timestamp = window.performance.now();
 		this.classSettings = classSettings;
 
@@ -288,73 +289,6 @@ class Universe {
 		//if (options.scales.w.name === 'w') options.scales.w.name = 't';
   
 		settings.object.geometry = settings.object.geometry || {};
-/*
-		const randomPosition = () => {
-
-			const ret = [],
-				x = [];//random array
-			let sum;
-
-			const
-				randomArray = (length = (_this.dimension - 1) * 2, array) => {
-
-					//Если не делать этот цикл, то некоторые вершины будут иметь значения NaN и появится ошибка:
-					//THREE.BufferGeometry.computeBoundingSphere(): Computed radius is NaN. The "position" attribute is likely to have NaN values. 
-					//но при этом распределение вершин по вселенной все равно будет равномерным.
-					//Не разобрался почему так происходит.
-					do {
-
-						if (!array) x.length = 0;
-						sum = 0;
-						if (array) array.length = 0;
-						//picking x1 and x2 from independent uniform distributions on(-1, 1)
-						for (let i = 0;
-							i < length;
-							//					i < 2;
-							i++) {
-
-							const random = Math.random() * 2 - 1;
-							sum += random * random;
-							(array || x).push(random);
-
-						}
-
-					} while (sum >= 1);//rejecting points for which x1^2+x2^2>=1
-					return sum;
-
-				},
-				push0 = () => {
-
-					randomArray();
-
-					let positive = x[0] * x[0], negative = x[1] * x[1];
-					for (let i = 0; i < (_this.dimension - 2); i++) {
-
-						const p = x[_this.dimension - i], n = x[2 + i];
-						positive += p * p;
-						negative += n * n;
-
-					}
-					ret.push((positive - negative) / sum);
-					return { ret: ret, sum: sum };
-
-				}
-
-			this.randomPosition({ push0: push0, x: x, randomArray: randomArray, ret: ret });
-			sum = 0;
-			ret.forEach((axis, i) => {
-
-				sum += ret[i] * ret[i]; 
-				ret[i] *= classSettings.t
-			
-			});
-			if (classSettings.debug && (Math.abs(sum - 1) > 7.0e-16)) console.error(sUniverse + ': randomPosition. Vertice[' + ret + '] is not situated at a constant distance 1. Real distance is ' + sum)
-			return ret;
-			
-		}
-*/
-
-//		settings.object.geometry.position = settings.object.geometry.position || {};
 
 		//for debug
 		//для 2D вселенной это плотность вероятности распределения вершин по поверхости сферы в зависимости от третьей координаты вершины z = vertice.[2]
@@ -365,8 +299,8 @@ class Universe {
 		//Нижняя граница сегмента hb = hs * i - r
 		//Верхняя граница сегмента ht = hs * (i + 1) - r
 		//где r = 1 - радиус сферыб d = 2 * r = 2 - диаметр сферы, i - индекс сегмента
-		const probabilityDensity = classSettings.debug ?
-			[
+		if (classSettings.debug && (classSettings.debug.probabilityDensity != false)) classSettings.debug.probabilityDensity = [
+			
 				/*
 				{ count: 0, },//0. From -1 to -0.6
 				{ count: 0, },//1. From -0.6 to -0.2
@@ -374,7 +308,10 @@ class Universe {
 				{ count: 0, },//3. From 0.2 to 0.6
 				{ count: 0, },//4. From 0.6 to 1
 				*/
-			] : undefined;
+			
+		];
+//		const probabilityDensity = classSettings.debug ? [] : undefined;
+		const probabilityDensity = classSettings.debug.probabilityDensity;
 		if (probabilityDensity) {
 			
 			for (let i = 0; i < 5; i++) probabilityDensity.push({ count: 0, });
