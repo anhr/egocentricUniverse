@@ -140,7 +140,9 @@ class Universe2D extends Universe1D {
 
 				edges.push([position.length - 1, 0]);
 
-				if (this.classSettings.debug) console.log('time: Push edges. phase ' + phase + '. ' + ((window.performance.now() - this.timestamp) / 1000) + ' sec.');
+				if (this.classSettings.debug)
+					this.classSettings.debug.logTimestamp('Push edges. phase ' + phase + '. ');
+//					console.log('time: Push edges. phase ' + phase + '. ' + ((window.performance.now() - this.timestamp) / 1000) + ' sec.');
 
 				phase++;
 				progressBar.title(lang.progressTitle.replace('%s', phase));
@@ -190,7 +192,9 @@ class Universe2D extends Universe1D {
 					verticeId++;
 					if (verticeId === position.length) {
 
-						if (this.classSettings.debug) console.log('time: Push edges. phase ' + phase + '. ' + ((window.performance.now() - this.timestamp) / 1000) + ' sec.');
+						if (this.classSettings.debug)
+							this.classSettings.debug.logTimestamp('Push edges. phase ' + phase + '. ');
+//							console.log('time: Push edges. phase ' + phase + '. ' + ((window.performance.now() - this.timestamp) / 1000) + ' sec.');
 
 						phase++;
 						if (phase > 3) stop();

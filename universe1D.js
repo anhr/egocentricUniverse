@@ -101,7 +101,9 @@ class Universe1D extends Universe {
 		edges.push([position.length - 1, 0]);
 		if (this.projectGeometry) this.projectGeometry();
 		
-		if (this.classSettings.debug) console.log('time: Push edges. ' + ((window.performance.now() - this.timestamp) / 1000) + ' sec.');
+		if (this.classSettings.debug)
+			this.classSettings.debug.logTimestamp('Push edges. ');
+			//console.log('time: Push edges. ' + ((window.performance.now() - this.classSettings.debug.timestamp) / 1000) + ' sec.');
 		
 	}
 	name(getLanguageCode) {

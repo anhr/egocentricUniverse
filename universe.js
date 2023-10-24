@@ -83,7 +83,9 @@ class Universe {
 						if (i >= edges.length) {
 							
 							progressBar.remove();
-							if (this.classSettings.debug) console.log('time: Geometry log. ' + ((window.performance.now() - this.timestamp) / 1000) + ' sec.');
+							if (this.classSettings.debug)
+								this.classSettings.debug.logTimestamp('Geometry log. ');
+								//console.log('time: Geometry log. ' + ((window.performance.now() - this.classSettings.debug.timestamp) / 1000) + ' sec.');
 							
 						} else progressBar.step();
 						break;
@@ -267,7 +269,14 @@ class Universe {
 
 		const _this = this, THREE = three.THREE;
 		if (classSettings.debug === true) classSettings.debug = {};
-		if (classSettings.debug) this.timestamp = window.performance.now();
+//		if (classSettings.debug) this.timestamp = window.performance.now();
+		if (classSettings.debug) {
+			
+			classSettings.debug.timestamp = window.performance.now();
+			classSettings.debug.logTimestamp = (text = '', timestamp) =>
+				console.log('time: ' + text + ((window.performance.now() - (timestamp ? timestamp : classSettings.debug.timestamp)) / 1000) + ' sec.');;
+
+		}
 		this.classSettings = classSettings;
 
 		const cookie = options.dat.cookie,
@@ -1065,7 +1074,9 @@ console.error('Under constraction');
 								const vertice = position[verticeId];
 								vertice.forEach((axis, axisId) => { vertice[axisId] = vertices[verticeId][axisId]; });
 
-								if (classSettings.debug) console.log('time: ' + ((window.performance.now() - timestamp) / 1000) + ' sec.');
+								if (classSettings.debug)
+									classSettings.debug.logTimestamp('Play step. ', timestamp);
+//									console.log('time: ' + ((window.performance.now() - timestamp) / 1000) + ' sec.');
 								options.player.continue();
 								return true;
 
@@ -1085,7 +1096,9 @@ console.error('Under constraction');
 
 			}
 
-			if (classSettings.debug) console.log('time: Project. ' + ((window.performance.now() - this.timestamp) / 1000) + ' sec.');
+			if (classSettings.debug)
+				classSettings.debug.logTimestamp('Project. ');
+				//console.log('time: Project. ' + ((window.performance.now() - this.classSettings.debug.timestamp) / 1000) + ' sec.');
 
 		}
 		if (classSettings.mode === undefined) classSettings.mode = 0;//решил оставить режим, в котором сначала добавляются ребра а потом уже создаются вершины для них
@@ -1140,8 +1153,9 @@ console.error('Under constraction');
 					console.table(table, ['count', 'hb', 'ht', 'height',
 						sectorValueName,
 						'density']);
-					console.log('');		   
-					console.log('time: Push positions. ' + ((window.performance.now() - this.timestamp) / 1000) + ' sec.');
+					console.log('');
+					classSettings.debug.logTimestamp('Push positions. ');
+//					console.log('time: Push positions. ' + ((window.performance.now() - this.timestamp) / 1000) + ' sec.');
 
 				}				
 				if (classSettings.edges)//Для экономии времени не добавляю ребра если на холст вывожу только вершины
