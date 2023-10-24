@@ -429,9 +429,10 @@ class Universe {
 
 					if (i > _position.length) console.error(sUniverse + ': position get. Invalid index = ' + i + ' position.length = ' + _position.length);
 					else if (i === _position.length) settings.object.geometry.position.push();
+					const _vertice = _position[i];
 					const angle2Vertice = () => {
 
-						const vertice = _this.angle2Vertice(new Proxy(_position[i], {
+						const vertice = _this.angle2Vertice(new Proxy(_vertice, {
 
 								get: (angles, name) => {
 
@@ -472,7 +473,7 @@ class Universe {
 										return;
 
 									}
-									vertice.edges = vertice.edges || new Proxy([], {
+									_vertice.edges = _vertice.edges || new Proxy([], {
 
 										get: (edges, name) => {
 
@@ -509,11 +510,11 @@ class Universe {
 
 										},
 									});
-									return vertice.edges;
+									return _vertice.edges;
 
 								case 'oppositeVerticesId':
-									vertice.oppositeVerticesId = vertice.oppositeVerticesId || [];
-									break;
+									_vertice.oppositeVerticesId = _vertice.oppositeVerticesId || [];
+									return _vertice.oppositeVerticesId;
 								case 'vector':
 									//для совместимости с Player.getPoints. Туда попадает когда хочу вывести на холст точки вместо ребер и использую дя этого MyPoints вместо ND
 									const vertice2 = vertice[2], vertice3 = vertice[3];
