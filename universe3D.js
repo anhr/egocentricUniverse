@@ -19,6 +19,8 @@ import Universe2D from './universe2D.js';
 import three from '../../commonNodeJS/master/three.js'
 import FibonacciSphereGeometry from '../../commonNodeJS/master/FibonacciSphere/FibonacciSphereGeometry.js'
 
+const sUniverse3D = 'Universe3D';
+
 class Universe3D extends Universe2D {
 
 	//base methods
@@ -88,87 +90,22 @@ class Universe3D extends Universe2D {
 */  
 
 	}
-	angle2Vertice(angle) {
+/*	
+	angles2Vertice(angles) {
 
-//		const t = this.classSettings.t;
+		if (angles.length > 3) console.error(sUniverse3D + ': Angles to vertice. Invalid angles.length = ' + angles.length);
+		
 		//https://en.wikipedia.org/wiki/3-sphere#Hyperspherical_coordinates
-/*		
-		const vertice = super.angle2Vertice(angle);
-		const //teta = angle[0],
-			fi = angle[1];//, r = t;
+		const ψ = angles[0], sinψ = Math.sin(ψ), θ = angles[1], sinθ = Math.sin(θ), φ = angles[2];
 		return [
-			vertice[1] * Math.cos(fi),//Math.sin(teta) * Math.cos(fi),// * r,//x
-			vertice[1] * Math.sin(fi),//Math.sin(teta) * Math.sin(fi),// * r,//y
-			vertice[0],//Math.cos(teta),// * r,//z
-		];
-*/		
-		const ψ = angle[0], sinψ = Math.sin(ψ), θ = angle[1], sinθ = Math.sin(θ), φ = angle[2];
-		const vector = [
 			sinψ * sinθ * Math.sin(φ),//x
 			sinψ * sinθ * Math.cos(φ),//y
 			sinψ * Math.cos(θ),//z
 			Math.cos(ψ),//w
 		];
-/*		
-		const vector = [
-			Math.cos(ψ),//x
-			sinψ * Math.cos(θ),//y
-			sinψ * sinθ * Math.cos(φ),//z
-			sinψ * sinθ * Math.sin(φ),//w
-		];
-*/  
-/*		
-		let sum = 0;
-		vector.forEach(axis => sum += axis * axis);
-//		vector.push(Math.sqrt(1 - sum) * 2 - 1);
-		vector.push(Math.sqrt(1 - sum));
-*/  
-		return vector;
-/*		
-		return [
-			Math.sin(psi) * Math.cos(teta),//z
-			Math.sin(psi) * Math.sin(teta) * Math.cos(fi),//y
-			Math.cos(psi),//w
-			Math.sin(psi) * Math.sin(teta) * Math.cos(fi),//x
-		];
-*/  
-/*вселенная в виде плоскости, перпендикулядной плоскости xy	
-		return [
-			Math.sin(psi) * Math.sin(teta) * Math.cos(fi),//x
-			Math.sin(psi) * Math.sin(teta) * Math.cos(fi),//y
-			Math.sin(psi) * Math.cos(teta),//z
-			Math.cos(psi),//w
-		];
-*/		
 
 	}
-/*
-	randomPosition(params) {
-
-		//Hypersphere Point Picking
-		//https://mathworld.wolfram.com/HyperspherePointPicking.html
-		//Marsaglia (1972)
-		const ret = params.ret, x = params.x, randomArray = params.randomArray;
-
-		//set x - random array
-		let sum = randomArray(2);
-		const sum1 = sum, x2 = [];
-		sum = randomArray(2, x2);
-		x2.forEach(item => x.push(item));
-
-		ret.push(x[0]);//x	=	x_1	
-		ret.push(x[1]);//y	=	x_2	
-		const sqrt = Math.sqrt((1 - sum1) / sum);//sqrt((1-x_1^2-x_2^2)/(x_3^2+x_4^2)
-		ret.push(x[2] * sqrt);//z	=	x_3sqrt((1-x_1^2-x_2^2)/(x_3^2+x_4^2))
-
-		//решил что цвета всех точек или цвет каждой точки будут в приоритете перед цветом из палитры цветов
-		//Получаю ошибку
-		//Universe: randomPosition. Vertice[-0.13316564278446008,0.14970979415607943,-0.18131373233337517] is not situated at a constant distance 1. Real distance is 0.2920831216684517
-		if ((this.classSettings.settings.object.color === undefined) && (this.classSettings.settings.object.geometry.colors === undefined))
-			ret.push(x[3] * sqrt);;//w	=	x_4sqrt((1-x_1^2-x_2^2)/(x_3^2+x_4^2))
-
-	}
-*/
+*/	
 	color() {}
 	name( getLanguageCode ) {
 

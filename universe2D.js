@@ -19,6 +19,8 @@ import Universe1D from './universe1D.js';
 import ProgressBar from '../../commonNodeJS/master/ProgressBar/ProgressBar.js'
 import three from '../../commonNodeJS/master/three.js'
 
+const sUniverse2D = 'Universe2D';
+
 class Universe2D extends Universe1D {
 
 	//base methods
@@ -45,74 +47,54 @@ class Universe2D extends Universe1D {
 	defaultAngles() { return { count: 4, } }//random pyramid
 	pushRandomAngle(verticeAngles) {
 
-//		verticeAngles.push(super.randomAngle());//θ
-//		verticeAngles.push(Math.acos(Math.random()) * (Math.random() > 0.5 ? 1: -1));//θ
-//		verticeAngles.push(Math.acos(Math.random()) + (Math.random() > 0.5 ? 0: Math.PI /2));//θ
 
 		//добиваемся равномерного распределения вершин по поверхности сферы
 		verticeAngles.push(Math.acos(Math.random() * (Math.random() > 0.5 ? 1: -1)));//θ
-//		verticeAngles.push((Math.random() > 0.5 ? Math.acos(-Math.random()): Math.acos(Math.random())));//θ
 		
-//		verticeAngles.push(Math.acos(Math.random()));//θ
-//verticeAngles.push(Math.PI * 1 / 4);
 		verticeAngles.push(super.randomAngle());//φ
-//		verticeAngles.push(Math.acos(Math.random()) * Math.random());//φ
-//verticeAngles.push(Math.PI * 1 / 4);
-/*		
-		super.pushRandomAngle(verticeAngles);
-		super.pushRandomAngle(verticeAngles);
-*/  
 
 	}
-	angle2Vertice(angle) {
+/*	
+	angles2Vertice(angles) {
 
-//		const t = this.classSettings.t;
+		if (angles.length > 2) console.error(sUniverse2D + ': Angles to vertice. Invalid angles.length = ' + angles.length);
+		
 		//https://en.wikipedia.org/wiki/Spherical_coordinate_system#Cartesian_coordinates
-/*		
-		const vertice = super.angle2Vertice(angle);
-		const //teta = angle[0],
-			fi = angle[1];//, r = t;
-		return [
-			vertice[1] * Math.cos(fi),//Math.sin(teta) * Math.cos(fi),// * r,//x
-			vertice[1] * Math.sin(fi),//Math.sin(teta) * Math.sin(fi),// * r,//y
-			vertice[0],//Math.cos(teta),// * r,//z
-		];
-*/  
-		const θ = angle[0], sinθ = Math.sin(θ), φ = angle[1];// === undefined ? 0 : angle[1];
+		const θ = angles[0], sinθ = Math.sin(θ), φ = angles[1];
 		return [
 			sinθ * Math.cos(φ),//x
 			sinθ * Math.sin(φ),//y
 			Math.cos(θ),//z
 		];
-/*		
-		return [
-			Math.sin(teta) * Math.cos(fi),// * r,//x
-			Math.sin(teta) * Math.sin(fi),// * r,//y
-			Math.cos(teta),// * r,//z
-		];
-*/  
-		/*
-			Math.cos(teta),// * r,//x
-			Math.sin(teta)// * r//y
-		*/
-
-	}
-/*
-	randomPosition(params) {
-
-		//Sphere Point Picking
-		//https://mathworld.wolfram.com/SpherePointPicking.html
-		//Cook (1957) extended a method of von Neumann (1951)
-		const res = params.push0(), ret = res.ret, x = params.x, sum = res.sum;
-		ret.push(2 * (x[0] * x[1] - x[2] * x[3]) / sum);//y	=	(2(x_2x_3-x_0x_1))/(x_0^2+x_1^2+x_2^2+x_3^2)	
-		ret.push(2 * (x[1] * x[3] + x[0] * x[2]) / sum);//x	=	(2(x_1x_3+x_0x_2))/(x_0^2+x_1^2+x_2^2+x_3^2)	
-	
-		//Marsaglia (1972) method
-//		for (let i = 0; i < (_this.dimension - 1); i++) ret.push(2 * x[i] * Math.sqrt(1 - sum));
-//		ret.push(1 - 2 * sum);
 
 	}
 */
+/*	
+	vertice2angles(vertice){
+
+		if (vertice.length != 3) console.error(sUniverse2D + ': Vertice to angles. Invalid vertice.length = ' + vertice.length);
+		//https://en.wikipedia.org/wiki/Spherical_coordinate_system#Cartesian_coordinates
+		//тангенс — отношение стороны противолежащего катета vertice[1] к стороне прилежащегоvertice[0], (tg или tan);
+		const x = vertice[0], y = vertice[1], z = vertice[2], r = Math.sqrt(x * x + y * y + z * z),
+			atanXYdZ = Math.atan(Math.sqrt(x * x + y * y) / z),
+			atanYdX = Math.atan(y / x),
+			π = Math.PI,
+			θ =
+				z > 0 ? atanXYdZ :
+					z < 0 ? π + atanXYdZ :
+						(z === 0) && (x * y != 0) ? π / 2 :
+							undefined,
+			φ =
+				x > 0 ? atanYdX :
+					(x < 0) && (y >= 0) ? atanYdX + π :
+						(x < 0) && (y < 0) ? atanYdX - π :
+							(x === 0) && (y > 0) ? π / 2:
+								(x === 0) && (y < 0) ? - π / 2:
+									undefined;
+		return [θ, φ];
+		
+	}
+*/ 
 	pushEdges() {
 
 		const settings = this.classSettings.settings, geometry = settings.object.geometry, position = geometry.position, edges = geometry.indices.edges;

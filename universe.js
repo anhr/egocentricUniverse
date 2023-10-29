@@ -117,6 +117,173 @@ class Universe {
 			console.error(sUniverse + ': Test(). Invalid ' + strVerticeId + '.edges.length = ' + vertice.edges.length);
 		
 	}
+	angles2Vertice(angles) {
+
+		const a2v = (angles) => {
+
+/*
+			//1D universe			
+			const θ = angles[0];//, r = this.classSettings.t;//радиус потом вычисляю
+			return [
+				Math.cos(θ),// * r,//x
+				Math.sin(θ)// * r//y
+			];
+
+			//3D universe
+			//angles2Vertice from Universe3D
+			vertice[0] = [0,0,0,1]
+			vertice[1] = [0,0,0.8660254037844387,-0.4999999999999998]
+			vertice[2] = [0.6495190528383291,-0.3749999999999999,-0.4330127018922192,-0.4999999999999998]
+			vertice[3] = [-0.6495190528383288,-0.37499999999999994,-0.43301270189221974,-0.4999999999999998]
+			vertice[4] = [-9.184850993605146e-17,0.7499999999999998,-0.43301270189221974,-0.4999999999999998]
+
+			//angles2Vertice from Universe
+			vertice[0] = [1,0,0,0]
+		   vertice[1] = [-0.4999999999999998,0.8660254037844387,0,0]
+		   vertice[2] = [-0.4999999999999998,-0.4330127018922192,-0.3749999999999999,0.6495190528383291]
+		   vertice[3] = [-0.4999999999999998,-0.43301270189221974,-0.37499999999999994,-0.6495190528383288]
+		   vertice[4] = [-0.4999999999999998,-0.43301270189221974,0.7499999999999998,-9.184850993605146e-17]
+*/   
+			//https://en.wikipedia.org/wiki/N-sphere#Spherical_coordinates
+			const n = this.dimension, φ = angles, x = [], cos = Math.cos, sin = Math.sin;
+
+			//добавляем оси
+//			for (let i = 0; i < n; i++)
+			//поменял расположение осей в массиве x
+			//для того что бы в 3D последняя ось указывала на цвет точки
+			for (let i = n - 1; i >= 0; i--) {
+
+				let axis = 1.0;
+
+				const mulCount = //количество множителей для данной оси
+					i < (n - 1) ?
+						i + 1: //на один больше порядкового номера оси
+						i;//или равно порядковому номеру оси если это последняя ось
+				for (let j = 0; j < mulCount; j++) {
+
+					if(j === (mulCount - 1)){
+
+						//Это последний множитель для текущей оси
+						if (i != (n - 1)) {
+							
+							//Это не последняя ось
+							axis *= cos(φ[j]);
+							continue;
+
+						}
+						
+					}
+					axis *= sin(φ[j]);
+/*					
+					axis *= (j != (n - 1)) &&//Это последний множитель
+						(j != i) ?//и это не последняя ось
+					cos(φ[j]) ://косинус только если это последний множитель и не последняя ось
+					sin(φ[j]);
+*/	 
+
+				}
+				x.push(axis);
+
+			}
+/*
+			for(let i = 0; i < n; i++) {
+	
+				let axis = i < (n - 1) ? cos(φ[i]) : sin(φ[i - 1]);
+				let mul = 1;
+				if (i > 0) {
+					
+					for(let j = 0; j < i; j++) mul *= 1;
+
+				}
+				x.push(axis * mul);
+				
+			}
+*/
+			return x;
+
+		}
+		const vertice = a2v(angles);
+		if (this.classSettings.debug && this.classSettings.debug.testVertice){
+
+			const vertice2angles = this.vertice2angles(vertice),
+				angles2vertice = a2v(vertice2angles);
+			const value = vertice;
+			if (angles2vertice.length != value.length) console.error(sUniverse + ': Set vertice failed. angles2vertice.length = ' + angles2vertice.length + ' is not equal value.length = ' + value.length);
+			const d = 6e-16;
+			angles2vertice.forEach((axis, i) => { if(Math.abs(axis - value[i]) > d) console.error(sUniverse + ': Set vertice failed. axis = ' + axis + ' is not equal to value[' + i + '] = ' + value[i]) } );
+			
+		}
+		return vertice;
+
+	}
+	vertice2angles(vertice) {
+
+		if (!this.classSettings.debug) console.warn(sUniverse + ': Use vertice2angles in debug version only');
+		//https://en.wikipedia.org/wiki/N-sphere#Spherical_coordinates
+		//тангенс — отношение стороны противолежащего катета vertice[1] к стороне прилежащегоvertice[0], (tg или tan);
+		const x = [], n = this.dimension - 1, φ = [], atan2 = Math.atan2, sqrt = Math.sqrt;
+
+		//меняем местами оси координат, потому что в 3D последняя кооддината должна указывать на цвет точки
+		for (let k = (vertice.length - 1); k >= 0; k--) x.push(vertice[k]);
+		
+		for (let i = 0; i < n; i++) {
+
+			const axes = {};
+			if (i === (n - 1)) {
+				
+				axes.y = x[n]; axes.x = x[n - 1];
+				
+			} else {
+				
+				let sum = 0;
+				for(let j = (i + 1); j <= n; j++) sum += x[j] * x[j];
+				axes.y = sqrt(sum); axes.x = x[i];
+
+			}
+			φ.push(atan2(axes.y, axes.x));
+			
+		}
+/*		
+		for(let i = 0; i < n; i++) {
+
+			const axes = {};
+			if (i === (n - 1)) {
+
+//				φ.push(atan2(x[n], x[n - 1]));
+//				continue;
+				axes.y = x[n]; axes.x = x[n - 1];
+				
+			} else {
+				
+				let sum = 0;
+				for(let j = (i + 1); j <= n; j++) sum += x[j] * x[j];
+//				φ.push(atan2(sqrt(sum), x[i]));
+				axes.y = sqrt(sum); axes.x = x[i];
+
+			}
+			φ.push(atan2(axes.y, axes.x));
+//			φ.push(atan2(axes.x, axes.y));
+			
+		}
+*/  
+/*
+		for(let i = 0; i < n; i++) {
+
+			if (i === (n - 1)) {
+
+				φ.push(atan2(x[n], x[n - 1]));
+				continue;
+				
+			}
+			let sum = 0;
+			for(let j = (i + 1); j <= n; j++) sum += x[j] * x[j];
+			φ.push(atan2(sqrt(sum), x[i]));
+			
+		}
+*/		
+		return φ;
+
+	}
 
 	/**
 	 * Base class for n dimensional universe.
@@ -283,7 +450,8 @@ class Universe {
 			
 			classSettings.debug.timestamp = window.performance.now();
 			classSettings.debug.logTimestamp = (text = '', timestamp) =>
-				console.log('time: ' + text + ((window.performance.now() - (timestamp ? timestamp : classSettings.debug.timestamp)) / 1000) + ' sec.');;
+				console.log('time: ' + text + ((window.performance.now() - (timestamp ? timestamp : classSettings.debug.timestamp)) / 1000) + ' sec.');
+			if (classSettings.debug.testVertice != false) classSettings.debug.testVertice = true;
 
 		}
 		this.classSettings = classSettings;
@@ -387,7 +555,7 @@ class Universe {
 					const _vertice = _position[i];
 					const angle2Vertice = () => {
 
-						const vertice = _this.angle2Vertice(new Proxy(_vertice, {
+						const vertice = _this.angles2Vertice(new Proxy(_vertice, {
 
 								get: (angles, name) => {
 
@@ -470,6 +638,8 @@ class Universe {
 								case 'oppositeVerticesId':
 									_vertice.oppositeVerticesId = _vertice.oppositeVerticesId || [];
 									return _vertice.oppositeVerticesId;
+								case 'angles':
+									return (angles) => angles.forEach((angle, i) => _vertice[i] = angle);
 								case 'vector':
 									//для совместимости с Player.getPoints. Туда попадает когда хочу вывести на холст точки вместо ребер и использую дя этого MyPoints вместо ND
 									const vertice2 = vertice[2], vertice3 = vertice[3];
@@ -680,15 +850,35 @@ console.error('Under constraction');
 					if (value instanceof Array === true) {//для совместимости с Player.getPoints. Туда попадает когда хочу вывести на холст точки вместо ребер и использую дя этого MyPoints вместо ND
 
 						console.warn(sUniverse + ': Set vertice was deprecated. Use set angle instead.')
-						_position[i] = this.vertice2angle(value);
 /*						
-						const vertice = _position[i];
-						vertice.forEach((axis, axisId) => {
+						//https://en.wikipedia.org/wiki/N-sphere#Spherical_coordinates
+						const x = value, n = this.dimension - 1, φ = [], atan2 = Math.atan2, sqrt = Math.sqrt;
+						for(let i = 0; i < n; i++) {
 
-							vertice[axisId] = value[axisId];
+							if (i === (n - 1)) {
 
-						});
-*/						
+								φ.push(atan2(x[n], x[n - 1]));
+								continue;
+								
+							}
+							let sum = 0;
+							for(let j = (i + 1); j <= n; j++) sum += x[j] * x[j];
+							φ.push(atan2(sqrt(sum), x[i]));
+							
+						}
+*/
+						const angles = this.vertice2angles(value);
+						if(classSettings.debug) {
+
+							const angles2vertice = this.angles2Vertice(angles);
+//							const vertice2angles = this.vertice2angles(value);
+							if (angles2vertice.length != value.length) console.error(sUniverse + ': Set vertice failed. angles2vertice.length = ' + angles2vertice.length + ' is not equal value.length = ' + value.length);
+							const d = 0;
+							angles2vertice.forEach((axis, i) => { if(Math.abs(axis - value[i]) > d) console.error(sUniverse + ': Set vertice failed. axis = ' + axis + ' is not equal to value[' + i + '] = ' + value[i]) } );
+							
+						}
+						settings.object.geometry.position[i].angles(φ);
+//						settings.object.geometry.position[i].angles(this.vertice2angles(value));
 
 					}
 

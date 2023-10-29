@@ -68,32 +68,28 @@ class Universe1D extends Universe {
 	}
 	defaultAngles() { return { count: 3, } }//random triangle
 	pushRandomAngle(verticeAngles) { verticeAngles.push(this.randomAngle()); }
-	angle2Vertice(angle) {
+/*	
+	angles2Vertice(angles) {
 
-//		const t = this.classSettings.t;
-		const θ = angle[0];//, r = t;
+		if (angles.length != 1) console.error(sUniverse1D + ': Angles to vertice. Invalid angles.length = ' + angles.length);
+		const θ = angles[0];//, r = t;
 		return [
 			Math.cos(θ),// * r,//x
 			Math.sin(θ)// * r//y
 		];
 
 	}
-	vertice2angle(vertice){
-
-		//тангенс — отношение стороны противолежащего катета vertice[1] к стороне прилежащегоvertice[0], (tg или tan);
-		return [Math.atan(vertice[1] / vertice[0])];
-		
-	}
-/*	
-	randomPosition(params) {
-		
-		//Circle Point Picking
-		//https://mathworld.wolfram.com/CirclePointPicking.html
-		const res = params.push0(), ret = res.ret, x = params.x, sum = res.sum;
-		ret.push(2 * x[0] * x[1] / sum);//y	=	(2x_1x_2)/(x_1^2+x_2^2)
-		
-	}
 */ 
+/*	
+	vertice2angles(vertice){
+
+		if (vertice.length != 2) console.error(sUniverse1D + ': Vertice to angles. Invalid vertice.length = ' + vertice.length);
+		//тангенс — отношение стороны противолежащего катета vertice[1] к стороне прилежащегоvertice[0], (tg или tan);
+		const x = vertice[0], y = vertice[1], π = Math.PI;
+		return [Math.atan(y / x) + (x > 0 ? 0 : π)];
+		
+	}
+*/
 	pushEdges() {
 
 		const geometry = this.classSettings.settings.object.geometry, edges = geometry.indices.edges, position = geometry.position;
