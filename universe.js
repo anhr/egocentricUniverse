@@ -892,7 +892,7 @@ console.error('Under constraction');
 							angles2vertice.forEach((axis, i) => { if(Math.abs(axis - value[i]) > d) console.error(sUniverse + ': Set vertice failed. axis = ' + axis + ' is not equal to value[' + i + '] = ' + value[i]) } );
 							
 						}
-						settings.object.geometry.position[i].angles(φ);
+						settings.object.geometry.position[i].angles(angles);
 //						settings.object.geometry.position[i].angles(this.vertice2angles(value));
 
 					}
