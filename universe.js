@@ -216,9 +216,22 @@ class Universe {
 		return vertice;
 
 	}
+	testVerticeAxes(vertice)
+	{
+	
+		if (!this.classSettings.debug) return;
+
+		let sum = 0;
+		vertice.forEach(axis => sum += axis * axis);
+		if (Math.abs((sum - 1)) > 6e-16) console.error(sUniverse + ': Invalid vertice. sum = ' + sum);
+	
+	}
 	vertice2angles(vertice) {
 
 		if (!this.classSettings.debug) console.warn(sUniverse + ': Use vertice2angles in debug version only');
+
+		this.testVerticeAxes(vertice);
+		
 		//https://en.wikipedia.org/wiki/N-sphere#Spherical_coordinates
 		//тангенс — отношение стороны противолежащего катета vertice[1] к стороне прилежащегоvertice[0], (tg или tan);
 		const x = [], n = this.dimension - 1, φ = [], atan2 = Math.atan2, sqrt = Math.sqrt;
@@ -570,6 +583,8 @@ class Universe {
 								},
 							})							
 						), r = classSettings.t;
+						this.testVerticeAxes(vertice);
+/*						
 						if (classSettings.debug) {
 
 							let sum = 0;
@@ -577,6 +592,7 @@ class Universe {
 							if (Math.abs((sum - 1)) > 6e-16) console.error(sUniverse + ': Invalid vertice[' + i + '] sum = ' + sum);
 							
 						}
+*/						
 						vertice.forEach((axis, i) => vertice[i] *= r);
 						return vertice;
 						
