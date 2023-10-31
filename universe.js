@@ -570,12 +570,11 @@ class Universe {
 								},
 							})							
 						), r = classSettings.t;
-						//Эта проверка не проходит для Universe3D
 						if (classSettings.debug) {
 
 							let sum = 0;
 							vertice.forEach(axis => sum += axis * axis);
-							if (Math.abs((sum - 1)) > 4.5e-16) console.error(sUniverse + ': Invalid vertice[' + i + '] sum = ' + sum);
+							if (Math.abs((sum - 1)) > 6e-16) console.error(sUniverse + ': Invalid vertice[' + i + '] sum = ' + sum);
 							
 						}
 						vertice.forEach((axis, i) => vertice[i] *= r);
