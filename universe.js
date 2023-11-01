@@ -216,22 +216,9 @@ class Universe {
 		return vertice;
 
 	}
-	testVerticeAxes(vertice)
-	{
-	
-		if (!this.classSettings.debug) return;
-
-		let sum = 0;
-		vertice.forEach(axis => sum += axis * axis);
-		if (Math.abs((sum - 1)) > 6e-16) console.error(sUniverse + ': Invalid vertice. sum = ' + sum);
-	
-	}
 	vertice2angles(vertice) {
 
 		if (!this.classSettings.debug) console.warn(sUniverse + ': Use vertice2angles in debug version only');
-
-		this.testVerticeAxes(vertice);
-		
 		//https://en.wikipedia.org/wiki/N-sphere#Spherical_coordinates
 		//тангенс — отношение стороны противолежащего катета vertice[1] к стороне прилежащегоvertice[0], (tg или tan);
 		const x = [], n = this.dimension - 1, φ = [], atan2 = Math.atan2, sqrt = Math.sqrt;
@@ -583,16 +570,14 @@ class Universe {
 								},
 							})							
 						), r = classSettings.t;
-						this.testVerticeAxes(vertice);
-/*						
+						//Эта проверка не проходит для Universe3D
 						if (classSettings.debug) {
 
 							let sum = 0;
 							vertice.forEach(axis => sum += axis * axis);
-							if (Math.abs((sum - 1)) > 6e-16) console.error(sUniverse + ': Invalid vertice[' + i + '] sum = ' + sum);
+							if (Math.abs((sum - 1)) > 4.5e-16) console.error(sUniverse + ': Invalid vertice[' + i + '] sum = ' + sum);
 							
 						}
-*/						
 						vertice.forEach((axis, i) => vertice[i] *= r);
 						return vertice;
 						
@@ -650,9 +635,11 @@ class Universe {
 									});
 									return _vertice.edges;
 
+/*
 								case 'oppositeVerticesId':
 									_vertice.oppositeVerticesId = _vertice.oppositeVerticesId || [];
 									return _vertice.oppositeVerticesId;
+*/
 								case 'angles':
 									return (angles) => angles.forEach((angle, i) => _vertice[i] = angle);
 								case 'vector':
@@ -675,16 +662,6 @@ class Universe {
 						},
 						set: (vertice, name, value) => {
 
-/*							
-							switch (name) {
-
-								case 'angles':
-console.error('Under constraction');
-									vertice.angles = value;
-									return true;
-
-							}
-*/							
 							vertice[name] = value;
 							return true;
 
@@ -695,143 +672,54 @@ console.error('Under constraction');
 				}
 				switch (name) {
 
-					case 'count': return _position.count === undefined ? _position.length : _position.count;
-					case 'push': return (position = randomPosition()) =>//(angles = randomPosition()) =>
-					{
-
-						console.error(sUniverse + ': deprecated push vertice');
-/*
-						const proxy = new Proxy(position, {
-
-							get: (vertice, name) => {
-
-								switch (name) {
-
-									case 'edges':
-
-										if (!classSettings.debug) {
-
-											console.error(sUniverse + ': vertice.edges. Set debug = true first.');
-											return;
-
-										}
-										vertice.edges = vertice.edges || new Proxy([], {
-
-											get: (edges, name) => {
-
-												switch (name) {
-
-													case 'push': return (edgeId, verticeId) => {
-
-														const sPush = sUniverse + ': Vertice' + (verticeId === undefined ? '' : '[' + verticeId + ']') + '.edges.push(' + edgeId + '):';
-
-														if (edges.length >= _this.verticeEdgesLengthMax) {
-
-															console.error(sPush + ' invalid edges.length = ' + edges.length);
-															return;
-
-														}
-														//find for duplicate edgeId
-														for (let j = 0; j < edges.length; j++) {
-
-															if (edges[j] === edgeId) {
-
-																console.error(sPush + ' duplicate edgeId: ' + edgeId);
-																return;
-
-															}
-
-														}
-
-														edges.push(edgeId);
-
-													}
-
-												}
-												return edges[name];
-
-											},
-										});
-										return vertice.edges;
-
-									case 'oppositeVerticesId':
-										vertice.oppositeVerticesId = vertice.oppositeVerticesId || [];
-										break;
-									case 'vector':
-										//для совместимости с Player.getPoints. Туда попадает когда хочу вывести на холст точки вместо ребер и использую дя этого MyPoints вместо ND
-										const vertice2 = vertice[2], vertice3 = vertice[3];
-										//Если вернуть THREE.Vector4 то будет неправильно отображаться цвет точки
-										if (vertice3 === undefined)
-											return new three.THREE.Vector3(vertice[0], vertice[1], vertice2 === undefined ? 0 : vertice2);
-										return new three.THREE.Vector4(vertice[0], vertice[1], vertice2 === undefined ? 0 : vertice2, vertice3 === undefined ? 1 : vertice3);
-									case 'x': return vertice[0];
-									case 'y': return vertice[1];
-									case 'z': return vertice[2];
-									case 'w':
-										//для совместимости с Player.getColors. Туда попадает когда хочу вывести на холст точки вместо ребер и использую дя этого MyPoints вместо ND
-										return vertice[3];
-
+					case 'angles': return new Proxy(_position, {
+						
+						get: (angles, name) => {
+							
+							return new Proxy(angles[name], {
+								
+								get: (angles, name) => {
+		
+									switch (name) {
+											
+										case 'oppositeVerticesId':
+											angles.oppositeVerticesId = angles.oppositeVerticesId || [];
+											return angles.oppositeVerticesId;
+											
+									}
+									return angles[name];
+									
+								},
+/*								
+								set: (angles, name, value) => {
+		
+									angles[name] = value;
+									return true;
+		
 								}
-								return vertice[name];
+*/								
+							
+							});
+							
+						},
+						set: (angles, name, value) => {
 
-							},
-							set: (vertice, name, value) => {
+							const i = parseInt(name);
+							if (!isNaN(i)) {
+								
+								const verticeAngles = angles[i];
+								if (classSettings.debug && ((verticeAngles.length != (_this.dimension - 1)) || (value.length != (_this.dimension - 1)))) console.error(sUniverse + ': Set vertice[' + i + '] angles failed. Invalid angles count.')
+								for(let j = 0; j < value.length; j++) verticeAngles[j] = value[j];
 
-								switch (name) {
-
-									case 'angles':
-										vertice.angles = value;
-										return true;
-
-								}
-								vertice[name] = value;
-								return true;
-
-							}
-
-						});
-
-						if (probabilityDensity) {
-
-							//Для 2D вселенной.
-							//Плотность вероятности распределения вершин по поверхости сферы в зависимости от третьей координаты вершины z = vertice.[2]
-							//Плотности разбил на несколько диапазонов в зависимости от третьей координаты вершины z = vertice.[2]
-							//Разбил сферу на sc = probabilityDensity.length = 5 сегментов от 0 до 4.
-							//Границы сегментов вычисляю по фомулам:
-							//Высота сегмента hs = d / sc = 2 / 5 = 0.4
-							//Нижняя граница сегмента hb = hs * i - r
-							//Верхняя граница сегмента ht = hs * (i + 1) - r
-							//где r = 1 - радиус сферы, d = 2 * r = 2 - диаметр сферы, i - индекс сегмента
-							const z = position[position.length - 1];
-							let boDetected = false;
-							for (let i = 0; i < probabilityDensity.options.sc; i++) {
-
-								const segment = probabilityDensity[i];
-								if (
-									(
-										(segment.hb <= z) &&//Нижняя граница сегмента
-										(segment.ht > z)//Верхняя граница сегмента
-									) ||
-									(i === (probabilityDensity.options.sc - 1) && (segment.ht === z))//вершина находится на краю последнего сегмента
-								) {
-
-									segment.count++;
-									boDetected = true;
-									break;
-
-								}
-
-							}
-							if (!boDetected) {
-
-								console.error(sUniverse + ': add vertice. Probability density. z = ' + z + '. Segment is not detected');
-
-							}
+							} else angles[name] = value;
+							return true;
 
 						}
+					});
+					case 'count': return _position.count === undefined ? _position.length : _position.count;
+					case 'push': return (position = randomPosition()) => {
 
-						return _position.push(proxy);
-*/
+						console.error(sUniverse + ': deprecated push vertice');
 
 					};
 
@@ -1261,18 +1149,18 @@ console.error('Under constraction');
 						progressBar.value = verticeId;
 						const stepItem = () => {
 
-							const vertice = position[verticeId];
+							const vertice = position.angles[verticeId];
 							vertices.push([]);
 							const oppositeVerticesId = vertice.oppositeVerticesId;
 
 							//find middle point between opposite vertices
 							const middlePoint = [];
-							vertice.forEach((axis, axisId) => {
+							vertice.forEach((angle, angleId) => {
 
 								middlePoint.push(0);
-								const middlePointAxisId = middlePoint.length - 1;
-								oppositeVerticesId.forEach(verticeIdOpposite => middlePoint[middlePointAxisId] += position[verticeIdOpposite][axisId]);
-								vertices[verticeId][axisId] = middlePoint[middlePointAxisId] / vertice.length;
+								const middlePointAngleId = middlePoint.length - 1;
+								oppositeVerticesId.forEach(verticeIdOpposite => middlePoint[middlePointAngleId] += position[verticeIdOpposite][angleId]);
+								vertices[verticeId][angleId] = middlePoint[middlePointAngleId] / vertice.length;
 
 							});
 							verticeId += 1;
@@ -1281,11 +1169,13 @@ console.error('Under constraction');
 								progressBar.remove();
 
 								for (verticeId = 0; verticeId < (position.length - 1); verticeId++) 
-									position[verticeId] = vertices[verticeId];//Обновление текущей верщины без обновления холста для экономии времени								
+									position.angles[verticeId] = vertices[verticeId];//Обновление текущей верщины без обновления холста для экономии времени								
+//									position[verticeId] = vertices[verticeId];//Обновление текущей верщины без обновления холста для экономии времени								
 
 								//Последнюю вершину обновляю отдельно по каждой оси, потому что так ND обновляет холст
 								verticeId = position.length - 1;
-								const vertice = position[verticeId];
+								//const vertice = position.angles[verticeId];
+const vertice = position[verticeId];
 								vertice.forEach((axis, axisId) => { vertice[axisId] = vertices[verticeId][axisId]; });
 
 								if (classSettings.debug)
