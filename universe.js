@@ -695,20 +695,21 @@ class Universe {
 									switch (name) {
 											
 										//идентификаторы всех вершин, которые связаны с текущей вершиной через ребра
-										case 'oppositeVerticesId': return new Proxy(angles, {
+										case 'oppositeVerticesId': return new Proxy(angles.edges, {
 
-											get: (vertice, name) => {
+											get: (verticeEdges, name) => {
 
 												const i = parseInt(name);
 												if (!isNaN(i)) {
 			
-													const edge = settings.object.geometry.indices.edges[vertice.edges[i]];
+													const edge = settings.object.geometry.indices.edges[verticeEdges[i]];
 													if (verticeId === edge[0]) return edge[1];
 													if (verticeId === edge[1]) return edge[0];
 													console.error(sUniverse + ': Get oppositeVerticesId failed.');
 													return;
 													
 												}
+/*												
 												switch (name) {
 
 													//почему то не работает
@@ -717,7 +718,8 @@ class Universe {
 													case 'length': return vertice.edges.length;
 														
 												}
-												return vertice[name];
+*/												
+												return verticeEdges[name];
 											
 											}
 												
@@ -1200,13 +1202,15 @@ class Universe {
 
 								middlePoint.push(0);
 								const middlePointAngleId = middlePoint.length - 1;
+/*								
 								for (let i = 0; i < oppositeVerticesId.length; i ++) {
 
 									const verticeIdOpposite = oppositeVerticesId[i];
 									middlePoint[middlePointAngleId] += position[verticeIdOpposite].angles[angleId];
 									
 								}
-//								oppositeVerticesId.forEach(verticeIdOpposite => middlePoint[middlePointAngleId] += position[verticeIdOpposite].angles[angleId]);
+*/								
+								oppositeVerticesId.forEach(verticeIdOpposite => middlePoint[middlePointAngleId] += position[verticeIdOpposite].angles[angleId]);
 								vertices[verticeId][angleId] = middlePoint[middlePointAngleId] / oppositeVerticesId.length;
 
 							});
