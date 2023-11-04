@@ -58,7 +58,7 @@ class Universe {
 				switch (log){
 					case 0://position log
 						const vertice = position[i];
-						console.log('vertice[' + i + '] = ' + JSON.stringify(vertice) + ' edges = ' + JSON.stringify(vertice.edges));
+						console.log('vertice[' + i + '] = ' + JSON.stringify(vertice) + ' angles = ' + JSON.stringify(vertice.angles) + ' edges = ' + JSON.stringify(vertice.edges));
 						break;
 					case 1://edges log
 						const edge = edges[i];
@@ -548,11 +548,13 @@ class Universe {
 			get: (_position, name) => {
 
 				const i = parseInt(name);
+//				let verticeId;
 				if (!isNaN(i)) {
 
 					if (i > _position.length) console.error(sUniverse + ': position get. Invalid index = ' + i + ' position.length = ' + _position.length);
 					else if (i === _position.length) settings.object.geometry.position.push();
 					const _vertice = _position[i];
+//					verticeId = i;
 					const angle2Vertice = () => {
 
 						const vertice = _this.angles2Vertice(new Proxy(_vertice, {
@@ -640,8 +642,11 @@ class Universe {
 									_vertice.oppositeVerticesId = _vertice.oppositeVerticesId || [];
 									return _vertice.oppositeVerticesId;
 */
+/*									
 								case 'angles':
 									return (angles) => angles.forEach((angle, i) => _vertice[i] = angle);
+*/		 
+								case 'angles': return _vertice;
 								case 'vector':
 									//для совместимости с Player.getPoints. Туда попадает когда хочу вывести на холст точки вместо ребер и использую дя этого MyPoints вместо ND
 									const vertice2 = vertice[2], vertice3 = vertice[3];
@@ -673,31 +678,65 @@ class Universe {
 				switch (name) {
 
 					case 'angles': return new Proxy(_position, {
-						
+
 						get: (angles, name) => {
-							
+
+							const verticeId = parseInt(name);
+							if (isNaN(verticeId)) {
+
+								console.error(sUniverse + ': Get vertice angles failed. Invalid verticeId = ' + verticeId);
+								return;
+								
+							}
 							return new Proxy(angles[name], {
 								
 								get: (angles, name) => {
 		
 									switch (name) {
 											
-										case 'oppositeVerticesId':
+										//идентификаторы всех вершин, которые связаны с текущей вершиной через ребра
+										case 'oppositeVerticesId': return new Proxy(angles, {
+
+											get: (vertice, name) => {
+
+												const i = parseInt(name);
+												if (!isNaN(i)) {
+			
+													const edge = settings.object.geometry.indices.edges[vertice.edges[i]];
+													if (verticeId === edge[0]) return edge[1];
+													if (verticeId === edge[1]) return edge[0];
+													console.error(sUniverse + ': Get oppositeVerticesId failed.');
+													return;
+													
+												}
+												switch (name) {
+
+													//почему то не работает
+													//case 'forEach': return vertice.edges.forEach;
+														
+													case 'length': return vertice.edges.length;
+														
+												}
+												return vertice[name];
+											
+											}
+												
+										});
+/*											
 											angles.oppositeVerticesId = angles.oppositeVerticesId || [];
 											return angles.oppositeVerticesId;
+*/		   
 											
 									}
 									return angles[name];
 									
 								},
-/*								
-								set: (angles, name, value) => {
+//								set: (angles, name, value) => {
 		
-									angles[name] = value;
-									return true;
+//									angles[name] = value;
+//									return true;
 		
-								}
-*/								
+//								}
 							
 							});
 							
@@ -862,13 +901,15 @@ class Universe {
 
 					case 'push': return (edge=[]) => {
 
-						const position = settings.object.geometry.position;
 						setVertice(edge, 0, edge[0] === undefined ? _edges.length : edge[0]);
 						setVertice(edge, 1, edge[1] === undefined ? _edges.length + 1 : edge[1]);
 						if (classSettings.debug) _edges.forEach((edgeCur, i) => { if (((edgeCur[0] === edge[0]) && (edgeCur[1] === edge[1])) || ((edgeCur[0] === edge[1]) && (edgeCur[1] === edge[0]))) console.error(sUniverse + ': edges[' + i + ']. Duplicate edge[' + edge + ']') });
 
+/*						
+						const position = settings.object.geometry.position;
 						position[edge[0]].oppositeVerticesId.push(edge[1]);
 						position[edge[1]].oppositeVerticesId.push(edge[0]);
+*/	  
 
 						return _edges.push(edge);
 
@@ -1159,8 +1200,14 @@ class Universe {
 
 								middlePoint.push(0);
 								const middlePointAngleId = middlePoint.length - 1;
-								oppositeVerticesId.forEach(verticeIdOpposite => middlePoint[middlePointAngleId] += position[verticeIdOpposite][angleId]);
-								vertices[verticeId][angleId] = middlePoint[middlePointAngleId] / vertice.length;
+								for (let i = 0; i < oppositeVerticesId.length; i ++) {
+
+									const verticeIdOpposite = oppositeVerticesId[i];
+									middlePoint[middlePointAngleId] += position[verticeIdOpposite].angles[angleId];
+									
+								}
+//								oppositeVerticesId.forEach(verticeIdOpposite => middlePoint[middlePointAngleId] += position[verticeIdOpposite].angles[angleId]);
+								vertices[verticeId][angleId] = middlePoint[middlePointAngleId] / oppositeVerticesId.length;
 
 							});
 							verticeId += 1;
@@ -1178,9 +1225,13 @@ class Universe {
 const vertice = position[verticeId];
 								vertice.forEach((axis, axisId) => { vertice[axisId] = vertices[verticeId][axisId]; });
 
-								if (classSettings.debug)
+								if (classSettings.debug) {
+									
 									classSettings.debug.logTimestamp('Play step. ', timestamp);
 //									console.log('time: ' + ((window.performance.now() - timestamp) / 1000) + ' sec.');
+									this.logUniverse();
+
+								}
 								options.player.continue();
 								return true;
 
