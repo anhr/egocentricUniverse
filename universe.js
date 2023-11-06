@@ -1055,6 +1055,8 @@ class Universe {
 							
 							intersection(nd.object3D);
 
+							if (this.onSelectScene) this.onSelectScene();
+
 						}
 
 					}
@@ -1140,18 +1142,26 @@ class Universe {
 			options.onSelectScene = (index, t) => {
 
 				if (index === 0) return;
-				let progressBar, verticeId = 0;
 				const geometry = settings.object.geometry, position = geometry.position, edges = geometry.indices.edges;
 				if (edges.length === 0) {
-					
-					classSettings.edges = { project: true };//edgesOld;
+
+					//Create edges
+//console.log(cEdges);
+					classSettings.edges = cookieOptions.edgesOld;//{ project: true };//edgesOld;
 //					this.pushEdges();
 //					displayEdge();
+					this.onSelectScene = () => {
+						
+						options.onSelectScene(index, t);
+						delete this.onSelectScene;
+					
+					}
 					_this.projectGeometry();
 //					setCockie();
 					return;
 
 				}
+				let progressBar, verticeId = 0;
 				if ((typeof WebGPU != 'undefined') && WebGPU.isSupportWebGPU()) {
 
 					const firstMatrix = [
