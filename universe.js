@@ -592,12 +592,14 @@ class Universe {
 
 								case 'edges':
 
+/*//vertice.edges используется во время обновления сцены options.onSelectScene
 									if (!classSettings.debug) {
 
 										console.error(sUniverse + ': vertice.edges. Set debug = true first.');
 										return;
 
 									}
+*/		 
 									_vertice.edges = _vertice.edges || new Proxy([], {
 
 										get: (edges, name) => {
@@ -895,7 +897,9 @@ class Universe {
 
 					const vertice = position[verticeId];//push random vertice if not exists
 					edge[edgeVerticeId] = verticeId;
-					if (classSettings.debug)
+
+					//vertice.edges используется во время обновления сцены options.onSelectScene
+//					if (classSettings.debug)
 						vertice.edges.push(edgeId === undefined ? _edges.length : edgeId, verticeId);
 					
 				}
@@ -1210,8 +1214,16 @@ class Universe {
 									
 								}
 */								
-								oppositeVerticesId.forEach(verticeIdOpposite => middlePoint[middlePointAngleId] += position[verticeIdOpposite].angles[angleId]);
-								vertices[verticeId][angleId] = middlePoint[middlePointAngleId] / oppositeVerticesId.length;
+								oppositeVerticesId.forEach(verticeIdOpposite => {
+									
+//									middlePoint[middlePointAngleId] += position[verticeIdOpposite].angles[angleId];
+									let angle2OppositeVertice = position[verticeIdOpposite].angles[angleId] - angle;
+									while(angle2OppositeVertice < -Math.PI) angle2OppositeVertice += 2 * Math.PI;
+									while(angle2OppositeVertice > Math.PI) angle2OppositeVertice -= 2 * Math.PI;
+									middlePoint[middlePointAngleId] += angle2OppositeVertice;
+										
+								});
+								vertices[verticeId][angleId] = middlePoint[middlePointAngleId] / oppositeVerticesId.length + angle;
 
 							});
 							verticeId += 1;
@@ -1219,15 +1231,19 @@ class Universe {
 
 								progressBar.remove();
 
-								for (verticeId = 0; verticeId < (position.length - 1); verticeId++) 
+								for (verticeId = 0; verticeId < position.length; verticeId++) 
 									position.angles[verticeId] = vertices[verticeId];//Обновление текущей верщины без обновления холста для экономии времени								
 //									position[verticeId] = vertices[verticeId];//Обновление текущей верщины без обновления холста для экономии времени								
 
+								//обновляю позицию первой вершины что бы обновить холст
+								position[0][0] = position[0][0];
+/*								
 								//Последнюю вершину обновляю отдельно по каждой оси, потому что так ND обновляет холст
 								verticeId = position.length - 1;
 								//const vertice = position.angles[verticeId];
 const vertice = position[verticeId];
 								vertice.forEach((axis, axisId) => { vertice[axisId] = vertices[verticeId][axisId]; });
+*/		
 
 								if (classSettings.debug) {
 									
