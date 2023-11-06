@@ -1142,6 +1142,16 @@ class Universe {
 				if (index === 0) return;
 				let progressBar, verticeId = 0;
 				const geometry = settings.object.geometry, position = geometry.position, edges = geometry.indices.edges;
+				if (edges.length === 0) {
+					
+					classSettings.edges = { project: true };//edgesOld;
+//					this.pushEdges();
+//					displayEdge();
+					_this.projectGeometry();
+//					setCockie();
+					return;
+
+				}
 				if ((typeof WebGPU != 'undefined') && WebGPU.isSupportWebGPU()) {
 
 					const firstMatrix = [
@@ -1352,13 +1362,13 @@ const vertice = position[verticeId];
 			
 			const lang = {
 	
-				edges: "Edges",
-				edgesTitle: "Create Edges",
+				edges: 'Edges',
+				edgesTitle: 'Create Edges',
 	
-				edge: "Edge",
+				edge: 'Edge',
 	
-				project: "Project",
-				projectTitle: "Project edges onto canvas",
+				project: 'Project',
+				projectTitle: 'Project edges onto canvas',
 
 			};
 	
@@ -1368,13 +1378,13 @@ const vertice = position[verticeId];
 	
 				case 'ru'://Russian language
 	
-					lang.edges = "Ребра";
-					lang.edgesTitle = "Создать ребра";
+					lang.edges = 'Ребра';
+					lang.edgesTitle = 'Создать ребра';
 	
-					lang.edge = "Ребро";
+					lang.edge = 'Ребро';
 					
-					lang.project = "Отображать";
-					lang.projectTitle = "Отображать ребра на холсте";
+					lang.project = 'Отображать';
+					lang.projectTitle = 'Отображать ребра на холсте';
 
 					break;
 	
