@@ -1146,18 +1146,20 @@ class Universe {
 				if (edges.length === 0) {
 
 					//Create edges
-//console.log(cEdges);
-					classSettings.edges = cookieOptions.edgesOld;//{ project: true };//edgesOld;
-//					this.pushEdges();
-//					displayEdge();
 					this.onSelectScene = () => {
 						
 						options.onSelectScene(index, t);
 						delete this.onSelectScene;
 					
 					}
+					cEdges.setValue(true);
+/*
+					classSettings.edges = cookieOptions.edgesOld;//{ project: true };//edgesOld;
+//					this.pushEdges();
+//					displayEdge();
 					_this.projectGeometry();
 //					setCockie();
+*/					
 					return;
 
 				}
@@ -1363,7 +1365,8 @@ const vertice = position[verticeId];
 			default: console.error(sUniverse + ': Unknown mode: ' + classSettings.mode); return;
 				
 		}
-		
+
+		let cEdges;
 		if ( options.dat.gui ) {
 
 			const getLanguageCode = options.getLanguageCode;
@@ -1407,8 +1410,8 @@ const vertice = position[verticeId];
 			
 			const fUniverse = options.dat.gui.addFolder(this.name( getLanguageCode )),
 				objectEdges = { boEdges: ((typeof classSettings.edges) === 'object') || (classSettings.edges === true) ? true : false},
-				setCockie = () => { cookie.setObject(cookieName, { edges: classSettings.edges, edgesOld: edgesOld, }); },
-				cEdges = fUniverse.add( objectEdges, 'boEdges' ).onChange((boEdges) => {
+				setCockie = () => { cookie.setObject(cookieName, { edges: classSettings.edges, edgesOld: edgesOld, }); };
+			cEdges = fUniverse.add( objectEdges, 'boEdges' ).onChange((boEdges) => {
 
 					if (boEdges) {
 						
@@ -1426,8 +1429,8 @@ const vertice = position[verticeId];
 					_this.projectGeometry();
 					setCockie();
 				
-				} ),
-				fEdge = fUniverse.addFolder(lang.edge),
+				} );
+			const fEdge = fUniverse.addFolder(lang.edge),
 				objectEdge = { boProject: ((typeof classSettings.edges) === 'object') ? classSettings.edges.project : false},
 				cProject = fEdge.add( objectEdge, 'boProject' ).onChange((boProject) => {
 
