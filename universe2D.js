@@ -25,6 +25,7 @@ class Universe2D extends Universe1D {
 
 	//base methods
 	
+	get cookieName(){ return '2DUniverse'; }
 	get probabilityDensity() {
 
 		return {

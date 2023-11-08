@@ -457,12 +457,15 @@ class Universe {
 		this.classSettings = classSettings;
 
 		const cookieOptions = {};
-		let cookie, cookieName;
+//		let cookieName, cookie;
 		if (options.dat) {
-			
+
+/*			
 			cookie = options.dat.cookie;
 			cookieName = options.dat.getCookieName(sUniverse);
 			cookie.getObject(cookieName, cookieOptions);
+*/   
+			options.dat.cookie.getObject(this.cookieName, cookieOptions);
 
 		}
 		let edgesOld = cookieOptions.edgesOld || { project: true, };
@@ -1418,7 +1421,7 @@ const vertice = position[verticeId];
 			
 			const fUniverse = options.dat.gui.addFolder(this.name( getLanguageCode )),
 				objectEdges = { boEdges: ((typeof classSettings.edges) === 'object') || (classSettings.edges === true) ? true : false},
-				setCockie = () => { cookie.setObject(cookieName, { edges: classSettings.edges, edgesOld: edgesOld, }); };
+				setCockie = () => { options.dat.cookie.setObject(_this.cookieName, { edges: classSettings.edges, edgesOld: edgesOld, }); };
 			cEdges = fUniverse.add( objectEdges, 'boEdges' ).onChange((boEdges) => {
 
 					if (boEdges) {

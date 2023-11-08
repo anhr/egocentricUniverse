@@ -25,6 +25,7 @@ class Universe3D extends Universe2D {
 
 	//base methods
 
+	get cookieName(){ return '3DUniverse'; }
 	setW() {
 
 		const classSettings = this.classSettings, w = classSettings.settings.options.scales.w;

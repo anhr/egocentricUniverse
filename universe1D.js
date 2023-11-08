@@ -23,6 +23,7 @@ class Universe1D extends Universe {
 
 	//base methods
 
+	get cookieName(){ return '1DUniverse'; }
 	get probabilityDensity(){
 		
 //		const _this = this;
