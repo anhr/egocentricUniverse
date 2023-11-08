@@ -456,10 +456,16 @@ class Universe {
 		}
 		this.classSettings = classSettings;
 
-		const cookie = options.dat.cookie,
-			cookieName = options.dat.getCookieName(sUniverse),
-			cookieOptions = {};
-		cookie.getObject(cookieName, cookieOptions);
+		const cookieOptions = {};
+		let cookie, cookieName;
+		if (options.dat) {
+			
+			cookie = options.dat.cookie;
+			cookieName = options.dat.getCookieName(sUniverse);
+			cookie.getObject(cookieName, cookieOptions);
+
+		}
+		let edgesOld = cookieOptions.edgesOld || { project: true, };
 		classSettings.edges = cookieOptions.edges === false ? false : cookieOptions.edges || classSettings.edges;
 		if (classSettings.edges != false) classSettings.edges = classSettings.edges || {};
 		if ((classSettings.edges != false) && (classSettings.edges.project === undefined)) classSettings.edges.project = true;
@@ -1152,14 +1158,14 @@ class Universe {
 						delete this.onSelectScene;
 					
 					}
-					cEdges.setValue(true);
-/*
-					classSettings.edges = cookieOptions.edgesOld;//{ project: true };//edgesOld;
-//					this.pushEdges();
-//					displayEdge();
-					_this.projectGeometry();
-//					setCockie();
-*/					
+					if (cEdges) cEdges.setValue(true);
+					else {
+
+						//нет ручной настройки
+						classSettings.edges = cookieOptions.edgesOld || edgesOld;//{ project: true };
+						_this.projectGeometry();
+
+					}
 					return;
 
 				}
@@ -1403,9 +1409,11 @@ const vertice = position[verticeId];
 	
 			}
 			
+/*			
 			const cookieOptions = {};
 			cookie.getObject(cookieName, cookieOptions);
 			let edgesOld = cookieOptions.edgesOld || { project: true, };
+*/   
 			classSettings.edges = cookieOptions === false ? false : cookieOptions.edges || classSettings.edges;
 			
 			const fUniverse = options.dat.gui.addFolder(this.name( getLanguageCode )),
