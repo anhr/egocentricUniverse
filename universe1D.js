@@ -26,41 +26,20 @@ class Universe1D extends Universe {
 	get cookieName(){ return '1DUniverse'; }
 	get probabilityDensity(){
 		
-//		const _this = this;
 		return {
 
 			sectorValueName: 'sectorLength',
 			sectorValue: (probabilityDensity, i) => {
 				
-//				const sector = probabilityDensity[i], r = probabilityDensity.options.r, hb = sector.hb, ht = sector.ht,
 				const sector = probabilityDensity[i], r = this.classSettings.t, hb = sector.hb, ht = sector.ht,
 					angle = (hb) => {
 
 						const M = Math.sqrt(r * r - hb * hb);//Прилежащий катет прямоугольного треугольника
 							return Math.atan(hb / M);//угол прямоугольного треугольника https://poschitat.online/ugly-pryamougolnogo-treugolnika						
-/*							
-							l = r * alpha;//Длинна дуги
-						return Math.abs(l * 2);//Длинна дуги сектора
-*/	  
 						
 					}
-//				sector.sectorLength = Math.abs(r * (angle(hb) - angle(ht)) * 2);//длинна дуги сектора https://mnogoformul.ru/dlina-dugi#:~:text=%D0%94%D0%BB%D0%B8%D0%BD%D0%B0%20%D0%B4%D1%83%D0%B3%D0%B8%20%D0%BF%D0%BE%D0%BB%D0%BD%D0%BE%D0%B9%20%D0%BE%D0%BA%D1%80%D1%83%D0%B6%D0%BD%D0%BE%D1%81%D1%82%D0%B8%20%D1%80%D0%B0%D0%B2%D0%BD%D0%B0,%2C%20%D0%B3%D0%B4%D0%B5%20r%20%2D%20%D1%80%D0%B0%D0%B4%D0%B8%D1%83%D1%81%20%D0%BE%D0%BA%D1%80%D1%83%D0%B6%D0%BD%D0%BE%D1%81%D1%82%D0%B8.
 				sector[this.probabilityDensity.sectorValueName] = Math.abs(r * (angle(hb) - angle(ht)) * 2);//длинна дуги сектора https://mnogoformul.ru/dlina-dugi#:~:text=%D0%94%D0%BB%D0%B8%D0%BD%D0%B0%20%D0%B4%D1%83%D0%B3%D0%B8%20%D0%BF%D0%BE%D0%BB%D0%BD%D0%BE%D0%B9%20%D0%BE%D0%BA%D1%80%D1%83%D0%B6%D0%BD%D0%BE%D1%81%D1%82%D0%B8%20%D1%80%D0%B0%D0%B2%D0%BD%D0%B0,%2C%20%D0%B3%D0%B4%D0%B5%20r%20%2D%20%D1%80%D0%B0%D0%B4%D0%B8%D1%83%D1%81%20%D0%BE%D0%BA%D1%80%D1%83%D0%B6%D0%BD%D0%BE%D1%81%D1%82%D0%B8.
 				return sector[this.probabilityDensity.sectorValueName];
-/*					
-					arcLength = (hb) => {
-
-						//Длинна дуги сегмента по формуле Гюйгенса
-						const M = Math.sqrt(r * r - hb * hb) * 2,
-							abs = r - Math.abs(hb),
-	//						abs = r - hb,
-							m = Math.sqrt((M * M) / 4 + abs * abs);
-						return 2 * m + ((2 * m - M) / 3);
-						
-					}
-				sector.arcLength = Math.abs(arcLength(hb) - arcLength(ht));
-				return sector.arcLength;
-*/				
 				
 			},
 			
@@ -69,28 +48,6 @@ class Universe1D extends Universe {
 	}
 	defaultAngles() { return { count: 3, } }//random triangle
 	pushRandomAngle(verticeAngles) { verticeAngles.push(this.randomAngle()); }
-/*	
-	angles2Vertice(angles) {
-
-		if (angles.length != 1) console.error(sUniverse1D + ': Angles to vertice. Invalid angles.length = ' + angles.length);
-		const θ = angles[0];//, r = t;
-		return [
-			Math.cos(θ),// * r,//x
-			Math.sin(θ)// * r//y
-		];
-
-	}
-*/ 
-/*	
-	vertice2angles(vertice){
-
-		if (vertice.length != 2) console.error(sUniverse1D + ': Vertice to angles. Invalid vertice.length = ' + vertice.length);
-		//тангенс — отношение стороны противолежащего катета vertice[1] к стороне прилежащегоvertice[0], (tg или tan);
-		const x = vertice[0], y = vertice[1], π = Math.PI;
-		return [Math.atan(y / x) + (x > 0 ? 0 : π)];
-		
-	}
-*/
 	pushEdges() {
 
 		const geometry = this.classSettings.settings.object.geometry, edges = geometry.indices.edges, position = geometry.position;
@@ -100,7 +57,6 @@ class Universe1D extends Universe {
 		
 		if (this.classSettings.debug)
 			this.classSettings.debug.logTimestamp('Push edges. ');
-			//console.log('time: Push edges. ' + ((window.performance.now() - this.classSettings.debug.timestamp) / 1000) + ' sec.');
 		
 	}
 	name(getLanguageCode) {
@@ -122,37 +78,15 @@ class Universe1D extends Universe {
 				lang.name = 'Одномерная вселенная';
 
 				break;
-			/*guiParams is undefined
-			default://Custom language
-				if ((guiParams.lang === undefined) || (guiParams.lang.languageCode != _languageCode))
-					break;
-
-				Object.keys(guiParams.lang).forEach((key) => {
-
-					if (lang[key] === undefined)
-						return;
-					lang[key] = guiParams.lang[key];
-
-				});
-			*/
 
 		}
 		return lang.name;
 		
 	}
-/*
-	Indices() {
-
-		const settings = this.classSettings.settings,
-			debug = this.classSettings.debug;//_this = this, 
-
-	}
-*/
 	logUniverse1D() {
 
 		if (!this.classSettings.debug) return;
 		this.logUniverse();
-//		this.classSettings.settings.object.geometry.indices.bodies.forEach((body, i) => console.log('indices.bodies[' + i + '] = ' + JSON.stringify( body )));
 		
 	}
 

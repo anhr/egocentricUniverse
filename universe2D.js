@@ -55,47 +55,6 @@ class Universe2D extends Universe1D {
 		verticeAngles.push(super.randomAngle());//φ
 
 	}
-/*	
-	angles2Vertice(angles) {
-
-		if (angles.length > 2) console.error(sUniverse2D + ': Angles to vertice. Invalid angles.length = ' + angles.length);
-		
-		//https://en.wikipedia.org/wiki/Spherical_coordinate_system#Cartesian_coordinates
-		const θ = angles[0], sinθ = Math.sin(θ), φ = angles[1];
-		return [
-			sinθ * Math.cos(φ),//x
-			sinθ * Math.sin(φ),//y
-			Math.cos(θ),//z
-		];
-
-	}
-*/
-/*	
-	vertice2angles(vertice){
-
-		if (vertice.length != 3) console.error(sUniverse2D + ': Vertice to angles. Invalid vertice.length = ' + vertice.length);
-		//https://en.wikipedia.org/wiki/Spherical_coordinate_system#Cartesian_coordinates
-		//тангенс — отношение стороны противолежащего катета vertice[1] к стороне прилежащегоvertice[0], (tg или tan);
-		const x = vertice[0], y = vertice[1], z = vertice[2], r = Math.sqrt(x * x + y * y + z * z),
-			atanXYdZ = Math.atan(Math.sqrt(x * x + y * y) / z),
-			atanYdX = Math.atan(y / x),
-			π = Math.PI,
-			θ =
-				z > 0 ? atanXYdZ :
-					z < 0 ? π + atanXYdZ :
-						(z === 0) && (x * y != 0) ? π / 2 :
-							undefined,
-			φ =
-				x > 0 ? atanYdX :
-					(x < 0) && (y >= 0) ? atanYdX + π :
-						(x < 0) && (y < 0) ? atanYdX - π :
-							(x === 0) && (y > 0) ? π / 2:
-								(x === 0) && (y < 0) ? - π / 2:
-									undefined;
-		return [θ, φ];
-		
-	}
-*/ 
 	pushEdges() {
 
 		const settings = this.classSettings.settings, geometry = settings.object.geometry, position = geometry.position, edges = geometry.indices.edges;
@@ -125,7 +84,6 @@ class Universe2D extends Universe1D {
 
 				if (this.classSettings.debug)
 					this.classSettings.debug.logTimestamp('Push edges. phase ' + phase + '. ');
-//					console.log('time: Push edges. phase ' + phase + '. ' + ((window.performance.now() - this.timestamp) / 1000) + ' sec.');
 
 				phase++;
 				progressBar.title(lang.progressTitle.replace('%s', phase));
@@ -177,7 +135,6 @@ class Universe2D extends Universe1D {
 
 						if (this.classSettings.debug)
 							this.classSettings.debug.logTimestamp('Push edges. phase ' + phase + '. ');
-//							console.log('time: Push edges. phase ' + phase + '. ' + ((window.performance.now() - this.timestamp) / 1000) + ' sec.');
 
 						phase++;
 						if (phase > 3) stop();
@@ -223,32 +180,11 @@ class Universe2D extends Universe1D {
 				lang.name = 'Двумерная вселенная';
 
 				break;
-			/*guiParams is undefined
-			default://Custom language
-				if ((guiParams.lang === undefined) || (guiParams.lang.languageCode != _languageCode))
-					break;
-
-				Object.keys(guiParams.lang).forEach((key) => {
-
-					if (lang[key] === undefined)
-						return;
-					lang[key] = guiParams.lang[key];
-
-				});
-			*/
 
 		}
 		return lang.name;
 		
 	}
-/*
-	Indices() {
-
-		const settings = this.classSettings.settings,
-			debug = this.classSettings.debug;//_this = this, 
-
-	}
-*/
 	logUniverse2D() {
 
 		if (!this.classSettings.debug) return;

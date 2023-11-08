@@ -121,34 +121,10 @@ class Universe {
 
 		const a2v = (angles) => {
 
-/*
-			//1D universe			
-			const θ = angles[0];//, r = this.classSettings.t;//радиус потом вычисляю
-			return [
-				Math.cos(θ),// * r,//x
-				Math.sin(θ)// * r//y
-			];
-
-			//3D universe
-			//angles2Vertice from Universe3D
-			vertice[0] = [0,0,0,1]
-			vertice[1] = [0,0,0.8660254037844387,-0.4999999999999998]
-			vertice[2] = [0.6495190528383291,-0.3749999999999999,-0.4330127018922192,-0.4999999999999998]
-			vertice[3] = [-0.6495190528383288,-0.37499999999999994,-0.43301270189221974,-0.4999999999999998]
-			vertice[4] = [-9.184850993605146e-17,0.7499999999999998,-0.43301270189221974,-0.4999999999999998]
-
-			//angles2Vertice from Universe
-			vertice[0] = [1,0,0,0]
-		   vertice[1] = [-0.4999999999999998,0.8660254037844387,0,0]
-		   vertice[2] = [-0.4999999999999998,-0.4330127018922192,-0.3749999999999999,0.6495190528383291]
-		   vertice[3] = [-0.4999999999999998,-0.43301270189221974,-0.37499999999999994,-0.6495190528383288]
-		   vertice[4] = [-0.4999999999999998,-0.43301270189221974,0.7499999999999998,-9.184850993605146e-17]
-*/   
 			//https://en.wikipedia.org/wiki/N-sphere#Spherical_coordinates
 			const n = this.dimension, φ = angles, x = [], cos = Math.cos, sin = Math.sin;
 
 			//добавляем оси
-//			for (let i = 0; i < n; i++)
 			//поменял расположение осей в массиве x
 			//для того что бы в 3D последняя ось указывала на цвет точки
 			for (let i = n - 1; i >= 0; i--) {
@@ -174,31 +150,11 @@ class Universe {
 						
 					}
 					axis *= sin(φ[j]);
-/*					
-					axis *= (j != (n - 1)) &&//Это последний множитель
-						(j != i) ?//и это не последняя ось
-					cos(φ[j]) ://косинус только если это последний множитель и не последняя ось
-					sin(φ[j]);
-*/	 
 
 				}
 				x.push(axis);
 
 			}
-/*
-			for(let i = 0; i < n; i++) {
-	
-				let axis = i < (n - 1) ? cos(φ[i]) : sin(φ[i - 1]);
-				let mul = 1;
-				if (i > 0) {
-					
-					for(let j = 0; j < i; j++) mul *= 1;
-
-				}
-				x.push(axis * mul);
-				
-			}
-*/
 			return x;
 
 		}
@@ -243,44 +199,6 @@ class Universe {
 			φ.push(atan2(axes.y, axes.x));
 			
 		}
-/*		
-		for(let i = 0; i < n; i++) {
-
-			const axes = {};
-			if (i === (n - 1)) {
-
-//				φ.push(atan2(x[n], x[n - 1]));
-//				continue;
-				axes.y = x[n]; axes.x = x[n - 1];
-				
-			} else {
-				
-				let sum = 0;
-				for(let j = (i + 1); j <= n; j++) sum += x[j] * x[j];
-//				φ.push(atan2(sqrt(sum), x[i]));
-				axes.y = sqrt(sum); axes.x = x[i];
-
-			}
-			φ.push(atan2(axes.y, axes.x));
-//			φ.push(atan2(axes.x, axes.y));
-			
-		}
-*/  
-/*
-		for(let i = 0; i < n; i++) {
-
-			if (i === (n - 1)) {
-
-				φ.push(atan2(x[n], x[n - 1]));
-				continue;
-				
-			}
-			let sum = 0;
-			for(let j = (i + 1); j <= n; j++) sum += x[j] * x[j];
-			φ.push(atan2(sqrt(sum), x[i]));
-			
-		}
-*/		
 		return φ;
 
 	}
@@ -445,7 +363,6 @@ class Universe {
 
 		const _this = this, THREE = three.THREE;
 		if (classSettings.debug === true) classSettings.debug = {};
-//		if (classSettings.debug) this.timestamp = window.performance.now();
 		if (classSettings.debug) {
 			
 			classSettings.debug.timestamp = window.performance.now();
@@ -457,17 +374,8 @@ class Universe {
 		this.classSettings = classSettings;
 
 		const cookieOptions = {};
-//		let cookieName, cookie;
-		if (options.dat) {
+		if (options.dat) options.dat.cookie.getObject(this.cookieName, cookieOptions);
 
-/*			
-			cookie = options.dat.cookie;
-			cookieName = options.dat.getCookieName(sUniverse);
-			cookie.getObject(cookieName, cookieOptions);
-*/   
-			options.dat.cookie.getObject(this.cookieName, cookieOptions);
-
-		}
 		let edgesOld = cookieOptions.edgesOld || { project: true, };
 		classSettings.edges = cookieOptions.edges === false ? false : cookieOptions.edges || classSettings.edges;
 		if (classSettings.edges != false) classSettings.edges = classSettings.edges || {};
@@ -505,7 +413,6 @@ class Universe {
 				*/
 			
 		];
-//		const probabilityDensity = classSettings.debug ? [] : undefined;
 		const probabilityDensity = classSettings.debug.probabilityDensity;
 		if (probabilityDensity) {
 			
@@ -533,7 +440,6 @@ class Universe {
 		
 		}
 
-//		settings.object.geometry.angles = settings.object.geometry.angles || { count: 3, };
 		settings.object.geometry.angles = settings.object.geometry.angles || this.defaultAngles();
 		if(!(settings.object.geometry.angles instanceof Array)) {
 
@@ -547,7 +453,6 @@ class Universe {
 			for (let i = angles.length; i < angles.count; i++){
 	
 				const verticeAngles = [];
-//				verticeAngles.push(Math.random() * Math.PI * 2);
 				this.pushRandomAngle(verticeAngles);
 				angles.push(verticeAngles);
 				
@@ -557,13 +462,11 @@ class Universe {
 			get: (_position, name) => {
 
 				const i = parseInt(name);
-//				let verticeId;
 				if (!isNaN(i)) {
 
 					if (i > _position.length) console.error(sUniverse + ': position get. Invalid index = ' + i + ' position.length = ' + _position.length);
 					else if (i === _position.length) settings.object.geometry.position.push();
 					const _vertice = _position[i];
-//					verticeId = i;
 					const angle2Vertice = () => {
 
 						const vertice = _this.angles2Vertice(new Proxy(_vertice, {
@@ -601,14 +504,6 @@ class Universe {
 
 								case 'edges':
 
-/*//vertice.edges используется во время обновления сцены options.onSelectScene
-									if (!classSettings.debug) {
-
-										console.error(sUniverse + ': vertice.edges. Set debug = true first.');
-										return;
-
-									}
-*/		 
 									_vertice.edges = _vertice.edges || new Proxy([], {
 
 										get: (edges, name) => {
@@ -648,15 +543,6 @@ class Universe {
 									});
 									return _vertice.edges;
 
-/*
-								case 'oppositeVerticesId':
-									_vertice.oppositeVerticesId = _vertice.oppositeVerticesId || [];
-									return _vertice.oppositeVerticesId;
-*/
-/*									
-								case 'angles':
-									return (angles) => angles.forEach((angle, i) => _vertice[i] = angle);
-*/		 
 								case 'angles': return _vertice;
 								case 'vector':
 									//для совместимости с Player.getPoints. Туда попадает когда хочу вывести на холст точки вместо ребер и использую дя этого MyPoints вместо ND
@@ -720,36 +606,16 @@ class Universe {
 													return;
 													
 												}
-/*												
-												switch (name) {
-
-													//почему то не работает
-													//case 'forEach': return vertice.edges.forEach;
-														
-													case 'length': return vertice.edges.length;
-														
-												}
-*/												
 												return verticeEdges[name];
 											
 											}
 												
 										});
-/*											
-											angles.oppositeVerticesId = angles.oppositeVerticesId || [];
-											return angles.oppositeVerticesId;
-*/		   
 											
 									}
 									return angles[name];
 									
 								},
-//								set: (angles, name, value) => {
-		
-//									angles[name] = value;
-//									return true;
-		
-//								}
 							
 							});
 							
@@ -805,35 +671,16 @@ class Universe {
 					if (value instanceof Array === true) {//для совместимости с Player.getPoints. Туда попадает когда хочу вывести на холст точки вместо ребер и использую дя этого MyPoints вместо ND
 
 						console.warn(sUniverse + ': Set vertice was deprecated. Use set angle instead.')
-/*						
-						//https://en.wikipedia.org/wiki/N-sphere#Spherical_coordinates
-						const x = value, n = this.dimension - 1, φ = [], atan2 = Math.atan2, sqrt = Math.sqrt;
-						for(let i = 0; i < n; i++) {
-
-							if (i === (n - 1)) {
-
-								φ.push(atan2(x[n], x[n - 1]));
-								continue;
-								
-							}
-							let sum = 0;
-							for(let j = (i + 1); j <= n; j++) sum += x[j] * x[j];
-							φ.push(atan2(sqrt(sum), x[i]));
-							
-						}
-*/
 						const angles = this.vertice2angles(value);
 						if(classSettings.debug) {
 
 							const angles2vertice = this.angles2Vertice(angles);
-//							const vertice2angles = this.vertice2angles(value);
 							if (angles2vertice.length != value.length) console.error(sUniverse + ': Set vertice failed. angles2vertice.length = ' + angles2vertice.length + ' is not equal value.length = ' + value.length);
 							const d = 0;
 							angles2vertice.forEach((axis, i) => { if(Math.abs(axis - value[i]) > d) console.error(sUniverse + ': Set vertice failed. axis = ' + axis + ' is not equal to value[' + i + '] = ' + value[i]) } );
 							
 						}
 						settings.object.geometry.position[i].angles(angles);
-//						settings.object.geometry.position[i].angles(this.vertice2angles(value));
 
 					}
 
@@ -847,25 +694,6 @@ class Universe {
 			}
 
 		});
-/*
-		if(!(settings.object.geometry.position instanceof Array))
-			Object.keys(settings.object.geometry.position).forEach((key) => position[key] = settings.object.geometry.position[key]);
-		else settings.object.geometry.position.forEach(vertice => {
-
-			const newVertice = [], bColor = (this.classSettings.settings.object.color != undefined) || (this.classSettings.settings.object.geometry.colors != undefined);
-			vertice.forEach((axis, i) => {
-				
-				//решил что цвета всех точек или цвет каждой точки будут в приоритете перед цветом из палитры цветов
-				if (!bColor || (i < 3))
-					newVertice.push(axis * classSettings.t);//scale vertice
-				
-			});
-			position.push(newVertice);
-		
-		});//scale and convert vertices to Proxy
-
-		settings.object.geometry.position = position;
-*/		
 		const position = settings.object.geometry.position;
 		
 		settings.object.geometry.indices = settings.object.geometry.indices || [];
@@ -907,9 +735,7 @@ class Universe {
 					const vertice = position[verticeId];//push random vertice if not exists
 					edge[edgeVerticeId] = verticeId;
 
-					//vertice.edges используется во время обновления сцены options.onSelectScene
-//					if (classSettings.debug)
-						vertice.edges.push(edgeId === undefined ? _edges.length : edgeId, verticeId);
+					vertice.edges.push(edgeId === undefined ? _edges.length : edgeId, verticeId);
 					
 				}
 				switch (name) {
@@ -919,12 +745,6 @@ class Universe {
 						setVertice(edge, 0, edge[0] === undefined ? _edges.length : edge[0]);
 						setVertice(edge, 1, edge[1] === undefined ? _edges.length + 1 : edge[1]);
 						if (classSettings.debug) _edges.forEach((edgeCur, i) => { if (((edgeCur[0] === edge[0]) && (edgeCur[1] === edge[1])) || ((edgeCur[0] === edge[1]) && (edgeCur[1] === edge[0]))) console.error(sUniverse + ': edges[' + i + ']. Duplicate edge[' + edge + ']') });
-
-/*						
-						const position = settings.object.geometry.position;
-						position[edge[0]].oppositeVerticesId.push(edge[1]);
-						position[edge[1]].oppositeVerticesId.push(edge[0]);
-*/	  
 
 						return _edges.push(edge);
 
@@ -1237,17 +1057,8 @@ class Universe {
 
 								middlePoint.push(0);
 								const middlePointAngleId = middlePoint.length - 1;
-/*								
-								for (let i = 0; i < oppositeVerticesId.length; i ++) {
-
-									const verticeIdOpposite = oppositeVerticesId[i];
-									middlePoint[middlePointAngleId] += position[verticeIdOpposite].angles[angleId];
-									
-								}
-*/								
 								oppositeVerticesId.forEach(verticeIdOpposite => {
 									
-//									middlePoint[middlePointAngleId] += position[verticeIdOpposite].angles[angleId];
 									let angle2OppositeVertice = position[verticeIdOpposite].angles[angleId] - angle;
 									while(angle2OppositeVertice < -Math.PI) angle2OppositeVertice += 2 * Math.PI;
 									while(angle2OppositeVertice > Math.PI) angle2OppositeVertice -= 2 * Math.PI;
@@ -1263,23 +1074,14 @@ class Universe {
 								progressBar.remove();
 
 								for (verticeId = 0; verticeId < position.length; verticeId++) 
-									position.angles[verticeId] = vertices[verticeId];//Обновление текущей верщины без обновления холста для экономии времени								
-//									position[verticeId] = vertices[verticeId];//Обновление текущей верщины без обновления холста для экономии времени								
+									position.angles[verticeId] = vertices[verticeId];//Обновление текущей верщины без обновления холста для экономии времени
 
 								//обновляю позицию первой вершины что бы обновить холст
 								position[0][0] = position[0][0];
-/*								
-								//Последнюю вершину обновляю отдельно по каждой оси, потому что так ND обновляет холст
-								verticeId = position.length - 1;
-								//const vertice = position.angles[verticeId];
-const vertice = position[verticeId];
-								vertice.forEach((axis, axisId) => { vertice[axisId] = vertices[verticeId][axisId]; });
-*/		
 
 								if (classSettings.debug) {
 									
 									classSettings.debug.logTimestamp('Play step. ', timestamp);
-//									console.log('time: ' + ((window.performance.now() - timestamp) / 1000) + ' sec.');
 									this.logUniverse();
 
 								}
@@ -1304,7 +1106,6 @@ const vertice = position[verticeId];
 
 			if (classSettings.debug)
 				classSettings.debug.logTimestamp('Project. ');
-				//console.log('time: Project. ' + ((window.performance.now() - this.classSettings.debug.timestamp) / 1000) + ' sec.');
 
 		}
 		if (classSettings.mode === undefined) classSettings.mode = 0;//решил оставить режим, в котором сначала добавляются ребра а потом уже создаются вершины для них
@@ -1327,7 +1128,6 @@ const vertice = position[verticeId];
 					return;
 
 				}
-//				for (let i = 0; i < count; i++) position[i];//push vertice if not exists
 				
 				if (probabilityDensity) {
 					
@@ -1361,9 +1161,8 @@ const vertice = position[verticeId];
 						'density']);
 					console.log('');
 					classSettings.debug.logTimestamp('Push positions. ');
-//					console.log('time: Push positions. ' + ((window.performance.now() - this.timestamp) / 1000) + ' sec.');
 
-				}				
+				}
 				if (classSettings.edges)//Для экономии времени не добавляю ребра если на холст вывожу только вершины
 					this.pushEdges();
 				else if (this.classSettings.projectParams) this.project(this.classSettings.projectParams.scene, this.classSettings.projectParams.params);
@@ -1412,11 +1211,6 @@ const vertice = position[verticeId];
 	
 			}
 			
-/*			
-			const cookieOptions = {};
-			cookie.getObject(cookieName, cookieOptions);
-			let edgesOld = cookieOptions.edgesOld || { project: true, };
-*/   
 			classSettings.edges = cookieOptions === false ? false : cookieOptions.edges || classSettings.edges;
 			
 			const fUniverse = options.dat.gui.addFolder(this.name( getLanguageCode )),
