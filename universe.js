@@ -611,6 +611,17 @@ class Universe {
 											}
 												
 										});
+										case 'distanceTo': return (vertice) => {
+
+											console.warn(sUniverse + ': angles. distanceTo. не проверено')
+											//https://osiktakan.ru/geo_koor.htm Определение расстояний на поверхности Земли
+											const
+												φА = angles[1], φB = vertice[1],
+												λА = angles[0], λB = vertice[0],
+												sin = Math.sin, cos = Math.cos, acos = Math.acos;
+											return acos(sin(φА) * sin(φB) + cos(φА) * cos(φB) * cos(λА - λB));
+											
+										}
 											
 									}
 									return angles[name];
@@ -1050,6 +1061,19 @@ class Universe {
 							const vertice = position.angles[verticeId];
 							vertices.push([]);
 							const oppositeVerticesId = vertice.oppositeVerticesId;
+							/*
+							oppositeVerticesId.forEach(verticeIdOpposite => {
+								
+								const oppositeVertice = position.angles[verticeIdOpposite],
+									distance = vertice.distanceTo(oppositeVertice);
+								if(classSettings.debug) {
+
+									const v1 = position[verticeId], v2 = position[verticeIdOpposite], d = v1.distanceTo(v2)
+									console.log('distance = ' + distance + ' d = ' + d + ' distance - d = ' + (distance - d));
+								}
+									
+							});
+							*/
 
 							//find middle point between opposite vertices
 							const middlePoint = [];
