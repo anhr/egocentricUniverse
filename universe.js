@@ -439,8 +439,6 @@ class Universe {
 			if (unverseValue != sectorsValue) console.error(sUniverse + ': Unverse value = ' + unverseValue + '. Sectors value = ' + sectorsValue);
 		
 		}
-
-		settings.object.geometry.angles = settings.object.geometry.angles || this.defaultAngles();
 		if(!(settings.object.geometry.angles instanceof Array)) {
 
 			const angles = [];
@@ -448,6 +446,63 @@ class Universe {
 			settings.object.geometry.angles = angles;
 			
 		}
+
+		settings.object.geometry.angles = new Proxy(settings.object.geometry.angles || this.defaultAngles(), {
+
+			get: (angles, name) => {
+
+				const verticeId = parseInt(name);
+				if (!isNaN(verticeId)) {
+
+					return new Proxy(angles[verticeId], {
+
+						get: (verticeAngles, name) => {
+
+							const angleId = parseInt(name);
+							if (!isNaN(angleId)) {
+
+								if (angleId >= verticeAngles.length) return 0.0;
+								let angle = verticeAngles[angleId];
+
+								//Normalize angle to value from -Math.PI to Math.PI
+								while (angle > Math.PI) angle -= 2 * Math.PI;
+								while (angle < - Math.PI) angle += 2 * Math.PI;
+
+								return angle;
+
+							}
+							switch (name) {
+
+								case 'length': return _this.dimension - 1;
+
+							}
+							return verticeAngles[name];
+
+						},
+						set: (verticeAngles, name, value) => {
+
+							const angleId = parseInt(name);
+							if (!isNaN(angleId)) {
+
+								if (verticeAngles[angleId] != value) {
+
+									verticeAngles[angleId] = value;
+									_this.update(verticeId);
+
+								}
+
+							} else verticeAngles[name] = value;
+							return true;
+
+						}
+
+					});
+
+				}
+				return angles[name];
+
+			},
+		});
 		const angles = settings.object.geometry.angles;
 		if (angles.count != undefined)
 			for (let i = angles.length; i < angles.count; i++){
@@ -469,7 +524,9 @@ class Universe {
 					const _vertice = _position[i];
 					const angle2Vertice = () => {
 
-						const vertice = _this.angles2Vertice(new Proxy(_vertice, {
+						const vertice = _this.angles2Vertice(_vertice
+/*							
+							new Proxy(_vertice, {
 
 								get: (angles, name) => {
 
@@ -482,7 +539,8 @@ class Universe {
 									return angles[name];
 
 								},
-							})							
+							})
+*/							
 						), r = classSettings.t;
 						//Эта проверка не проходит для Universe3D
 						if (classSettings.debug) {
@@ -554,9 +612,8 @@ class Universe {
 								case 'x': return vertice[0];
 								case 'y': return vertice[1];
 								case 'z': return vertice[2];
-								case 'w':
-									//для совместимости с Player.getColors. Туда попадает когда хочу вывести на холст точки вместо ребер и использую дя этого MyPoints вместо ND
-									return vertice[3];
+								case 'w': return vertice[3];//для совместимости с Player.getColors. Туда попадает когда хочу вывести на холст точки вместо ребер и использую для этого MyPoints вместо ND
+									
 
 							}
 							return vertice[name];
@@ -823,6 +880,29 @@ class Universe {
 
 			if (this.setW) this.setW();
 			let nd, myPoints;
+			this.update = (verticeId) => {
+
+				const points = nd && (nd.object3D.visible === true) ? nd.object3D : myPoints,
+					vertice = settings.object.geometry.position[verticeId];
+/*				
+				console.log(nd + '' + myPoints);
+*/		 
+				const itemSize = points.geometry.attributes.position.itemSize;
+				for (let axesId = 0; axesId < itemSize; axesId++)
+					points.geometry.attributes.position.array [axesId + verticeId * itemSize] = vertice[axesId] != undefined ? vertice[axesId] : 0.0;
+				points.geometry.attributes.position.needsUpdate = true;
+				if (settings.options.axesHelper)
+					settings.options.axesHelper.updateAxes();
+				const guiSelectPoint = settings.options.guiSelectPoint;
+				if (guiSelectPoint) {
+					
+					guiSelectPoint.setReadOnlyPosition(false);
+					settings.options.guiSelectPoint.update(true);
+					guiSelectPoint.setReadOnlyPosition(true);
+
+				}
+				
+			}
 			this.projectGeometry = () => {
 
 				const intersection = (parent) => {
@@ -854,9 +934,107 @@ class Universe {
 					parent.add(mesh);
 					if (options.guiSelectPoint) options.guiSelectPoint.addMesh(mesh);
 
-				}
+				},
+					guiSelectPoint = settings.options.guiSelectPoint,
+					gui = (object) => {
 
-				const guiSelectPoint = settings.options.guiSelectPoint;
+						const aAngleControls = [], anglesDefault = [];
+//						let boUpdateAngle = false;
+						object.userData.gui = {
+							
+							get isLocalPositionReadOnly(){
+								
+								return true;//!boUpdateAngle;
+							
+							},
+							setValues: (verticeId) => {
+
+								anglesDefault.length = 0;
+								const angles = settings.object.geometry.angles[verticeId];
+								aAngleControls.verticeId = verticeId;
+								for (let i = 0; i < angles.length; i++){
+
+									const angle = angles[i];
+									aAngleControls[i].setValue(angle);
+									anglesDefault.push(angle);
+									
+								}
+/*непонятно почему не поучается если в массисве углов вершины не хватает угла								
+								angles.forEach((angle, i) => {
+
+									console.log(angle);
+									
+								});
+*/		
+							},
+							addControllers: (fParent) => {
+
+								//Localization
+	
+								const getLanguageCode = options.getLanguageCode;
+	
+								const lang = {
+	
+									angles: 'Angles',
+									anglesTitle: 'Polar coordinates.',
+									
+									angle: 'Angle',
+									
+									defaultButton: 'Default',
+									defaultAnglesTitle: 'Restore default angles.',
+	
+								};
+	
+								const _languageCode = getLanguageCode();
+	
+								switch (_languageCode) {
+	
+									case 'ru'://Russian language
+	
+										lang.angles = 'Углы';
+										lang.anglesTitle = 'Полярные координаты.';
+										
+										lang.angle = 'Угол';
+
+										lang.defaultButton = 'Восстановить';
+										lang.defaultAnglesTitle = 'Восстановить углы по умолчанию';
+										
+										break;
+									default://Custom language
+	
+								}
+								const dat = three.dat,
+									fCustomPoint = fParent.addFolder(lang.angles);
+								dat.folderNameAndTitle(fCustomPoint, lang.angles, lang.anglesTitle);
+								for (let i = 0; i < (_this.dimension - 1); i++) {
+
+									const cAngle = fCustomPoint.add({ angle: 0, }, 'angle', -Math.PI, Math.PI, 2 * Math.PI / 360).onChange((angle) => {
+
+//										boUpdateAngle = true;
+										settings.object.geometry.angles[aAngleControls.verticeId][i] = angle;
+//										boUpdateAngle = false;
+											
+									});
+									dat.controllerNameAndTitle(cAngle, lang.angle + ' ' + i);
+									aAngleControls.push(cAngle);
+									
+								}
+								
+								//Restore default local position.
+								const cRestoreDefaultAngles = fCustomPoint.add( {
+					
+									defaultF: () => { aAngleControls.forEach((cAngle, i) => cAngle.setValue(anglesDefault[i])); },
+					
+								}, 'defaultF' );
+								dat.controllerNameAndTitle( cRestoreDefaultAngles, lang.defaultButton, lang.defaultAnglesTitle );
+								
+								return fCustomPoint;
+	
+							},
+
+						}
+
+					};
 				if ((classSettings.edges != false) && classSettings.edges.project) {
 	
 					if (myPoints) {
@@ -892,6 +1070,8 @@ class Universe {
 							nd.object3D.position.x = params.center.x || 0;
 							nd.object3D.position.y = params.center.y || 0;
 							nd.object3D.position.z = params.center.z || 0;
+
+							gui(nd.object3D);
 							
 							intersection(nd.object3D);
 
@@ -963,6 +1143,8 @@ class Universe {
 								onReady: (points) => {
 									
 									myPoints = points;
+//									myPoints.userData.geometry = settings.object.geometry;
+									gui(myPoints);
 									intersection(points);
 								
 								}
