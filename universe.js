@@ -616,7 +616,8 @@ class Universe {
 
 													const sPush = sUniverse + ': Vertice' + (verticeId === undefined ? '' : '[' + verticeId + ']') + '.edges.push(' + edgeId + '):';
 
-													if (edges.length >= _this.verticeEdgesLengthMax) {
+//													if (edges.length >= _this.verticeEdgesLengthMax)
+													if (edges.length >= _this.verticeEdgesLength) {
 
 														console.error(sPush + ' invalid edges.length = ' + edges.length);
 														return;
@@ -1445,6 +1446,7 @@ class Universe {
 					classSettings.debug.logTimestamp('Push positions. ');
 
 				}
+				this.verticeEdgesLength = this.verticeEdgesLengthMax;
 				if (classSettings.edges)//Для экономии времени не добавляю ребра если на холст вывожу только вершины
 					this.pushEdges();
 				else if (this.classSettings.projectParams) this.project(this.classSettings.projectParams.scene, this.classSettings.projectParams.params);

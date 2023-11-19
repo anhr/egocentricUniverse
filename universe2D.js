@@ -207,7 +207,7 @@ class Universe2D extends Universe1D {
 	//Overridden methods from base class
 
 	get verticeEdgesLengthMax() { return 6; }//нельзя добавлть новое ребро если у вершины уже 6 ребра
-	TestVerticeEdges(vertice){ return (vertice.length === this.verticeEdgesLengthMax) || (vertice.length === 3) ? true : false; }
+	TestVerticeEdges(vertice){ return (vertice.length === this.verticeEdgesLength) || (vertice.length === 3) ? true : false; }
 	get dimension() { return 3; }//space dimension
 	get verticesCountMin() { return 4; }
 
