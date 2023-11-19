@@ -35,6 +35,7 @@ import three from '../../commonNodeJS/master/three.js'
 
 import ProgressBar from '../../commonNodeJS/master/ProgressBar/ProgressBar.js'
 //import WebGPU from '../../WebGPU/master/WebGPU.js';
+import PositionController from '../../commonNodeJS/master/PositionController.js';
 
 const sUniverse = 'Universe', sOverride = sUniverse + ': Please override the %s method in your child class.';
 //	verticeEdges = true;//Эту константу добавил на случай если захочу не включать индексы ребер в вершину если classSettings.debug != true
@@ -499,17 +500,60 @@ class Universe {
 					});
 
 				}
+				switch(name){
+
+					case 'pushRandomAngle': return () => {
+						
+						const verticeAngles = [];
+						_this.pushRandomAngle(verticeAngles);
+						angles.push(verticeAngles);
+
+					}
+					case 'guiLength': return angles.length;
+						
+				}
 				return angles[name];
 
 			},
+			set: (aAngles, name, value) => {
+
+				switch(name){
+
+					case 'guiLength'://изменилось количество вершин
+						for (let i = aAngles.length; i < value; i++) angles.pushRandomAngle();//add vertices
+						aAngles.length = value;//remove vrtices
+						if (classSettings.edges) {//Для экономии времени не добавляю ребра если на холст вывожу только вершины
+
+//const length = settings.object.geometry.indices.edges.length;
+							settings.object.geometry.indices.edges.length = 0;
+							_this.remove(_this.classSettings.projectParams.scene);
+							_this.removeMesh();
+							_this.pushEdges();
+
+						}
+						_this.project();
+						return true;
+					case 'length':
+						console.warn(sUniverse + ': set geometry.angles.length. Use guiLength instead')
+						return true;
+						
+				}
+				aAngles[name] = value;
+				return true;
+				
+			}
+			
 		});
 		const angles = settings.object.geometry.angles;
 		if (angles.count != undefined)
 			for (let i = angles.length; i < angles.count; i++){
-	
+
+/*				
 				const verticeAngles = [];
 				this.pushRandomAngle(verticeAngles);
 				angles.push(verticeAngles);
+*/	
+				angles.pushRandomAngle();
 				
 			}
 		settings.object.geometry.position = new Proxy(angles, {
@@ -621,6 +665,14 @@ class Universe {
 						},
 						set: (vertice, name, value) => {
 
+							switch(name) {
+
+								case 'edges':
+									_vertice[name] = value;
+									if (value === undefined) delete _vertice[name];
+									return true;
+									
+							}
 							vertice[name] = value;
 							return true;
 
@@ -703,11 +755,7 @@ class Universe {
 						}
 					});
 					case 'count': return _position.count === undefined ? _position.length : _position.count;
-					case 'push': return (position = randomPosition()) => {
-
-						console.error(sUniverse + ': deprecated push vertice');
-
-					};
+					case 'push': return (position = randomPosition()) => { console.error(sUniverse + ': deprecated push vertice'); };
 
 					//for debug
 					case 'test': return () => {
@@ -842,6 +890,20 @@ class Universe {
 				}
 				return _edges[name];
 
+			},
+			set: (_edges, name, value) => {
+
+				switch(name){
+
+					case 'length':
+						const position = settings.object.geometry.position;
+						for (let i = value; i < settings.object.geometry.position.length; i++) position[i].edges = undefined;//delete position[i].edges;
+						break;
+						
+				}
+				_edges[name] = value;
+				return true;
+				
 			}
 
 		});
@@ -859,6 +921,15 @@ class Universe {
 		 */
 		this.project = (scene, params = {}) => {
 
+			if (scene) {
+
+				_this.classSettings.projectParams = _this.classSettings.projectParams || {};
+				_this.classSettings.projectParams.scene = scene;
+				
+			} else scene = _this.classSettings.projectParams.scene;
+			
+			let nd, myPoints;
+			
 			//remove previous universe
 			this.remove = (scene) => {
 
@@ -873,13 +944,18 @@ class Universe {
 
 			}
 			this.remove(scene);
+			this.removeMesh = () => {
+
+				if (nd) nd = undefined;
+				if (myPoints) myPoints = undefined;
+
+			}
 
 			this.Test();
 
 			this.color();
 
 			if (this.setW) this.setW();
-			let nd, myPoints;
 			this.update = (verticeId) => {
 
 				const points = nd && (nd.object3D.visible === true) ? nd.object3D : myPoints,
@@ -1388,9 +1464,13 @@ class Universe {
 			//Localization
 			
 			const lang = {
+
+				vertices: 'Vertices',
+				verticesCount: 'Count',
+				verticesCountTitle: 'Vertices count',
 	
 				edges: 'Edges',
-				edgesTitle: 'Create Edges',
+				edgesTitle: 'Create edges',
 	
 				edge: 'Edge',
 	
@@ -1405,6 +1485,10 @@ class Universe {
 	
 				case 'ru'://Russian language
 	
+					lang.vertices = 'Вершины';
+					lang.verticesCount = 'Количество';
+					lang.verticesCountTitle = 'Количество вершин';
+
 					lang.edges = 'Ребра';
 					lang.edgesTitle = 'Создать ребра';
 	
@@ -1416,11 +1500,26 @@ class Universe {
 					break;
 	
 			}
+
+			const fUniverse = options.dat.gui.addFolder(this.name( getLanguageCode )), dat = three.dat;
+			
+			//vertices
+
+			const fVertices = fUniverse.addFolder(lang.vertices);
+			fVertices.add( new PositionController((shift) => { cVerticesCount.setValue(settings.object.geometry.angles.length + shift); },
+				{ settings: { offset: 1, }, min: 1, max: 1000, step: 1, getLanguageCode: options.getLanguageCode}));
+			
+			//Vertices count
+//const length = settings.object.geometry.angles.guiLength;
+//settings.object.geometry.angles.length = 5;
+			const cVerticesCount = dat.controllerZeroStep(fVertices, settings.object.geometry.angles, 'guiLength');
+			dat.controllerNameAndTitle(cVerticesCount, lang.verticesCount, lang.verticesCountTitle);
+
+			//edges
 			
 			classSettings.edges = cookieOptions === false ? false : cookieOptions.edges || classSettings.edges;
 			
-			const fUniverse = options.dat.gui.addFolder(this.name( getLanguageCode )),
-				objectEdges = { boEdges: ((typeof classSettings.edges) === 'object') || (classSettings.edges === true) ? true : false},
+			const objectEdges = { boEdges: ((typeof classSettings.edges) === 'object') || (classSettings.edges === true) ? true : false},
 				setCockie = () => { options.dat.cookie.setObject(_this.cookieName, { edges: classSettings.edges, edgesOld: edgesOld, }); };
 			cEdges = fUniverse.add( objectEdges, 'boEdges' ).onChange((boEdges) => {
 
@@ -1453,8 +1552,8 @@ class Universe {
 				} ),
 				displayEdge = () => { fEdge.domElement.style.display = classSettings.edges === false ? 'none' : 'block'; };
 			displayEdge();
-			three.dat.controllerNameAndTitle( cEdges, lang.edges, lang.edgesTitle );
-			three.dat.controllerNameAndTitle( cProject, lang.project, lang.projectTitle );
+			dat.controllerNameAndTitle( cEdges, lang.edges, lang.edgesTitle );
+			dat.controllerNameAndTitle( cProject, lang.project, lang.projectTitle );
 			
 		}
 		
