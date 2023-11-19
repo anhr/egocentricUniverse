@@ -756,7 +756,7 @@ class Universe {
 						}
 					});
 					case 'count': return _position.count === undefined ? _position.length : _position.count;
-					case 'push': return (position = randomPosition()) => { console.error(sUniverse + ': deprecated push vertice'); };
+					case 'push': return (position/* = randomPosition()*/) => { console.error(sUniverse + ': deprecated push vertice'); };
 
 					//for debug
 					case 'test': return () => {
