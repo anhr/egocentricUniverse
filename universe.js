@@ -42,6 +42,17 @@ const sUniverse = 'Universe', sOverride = sUniverse + ': Please override the %s 
 
 class Universe {
 
+	#verticeEdgesLength;
+	get verticeEdgesLength() { return this.#verticeEdgesLength; }
+	set verticeEdgesLength(length) {
+
+		this.#verticeEdgesLength = length;
+		this.removeMesh();
+		this.pushEdges();
+		this.project();
+
+	}
+
 	//base methods
 
 	randomAngle(n=2) { return Math.random() * Math.PI * n; }
@@ -525,10 +536,12 @@ class Universe {
 						if (classSettings.edges) {//Для экономии времени не добавляю ребра если на холст вывожу только вершины
 
 //const length = settings.object.geometry.indices.edges.length;
+/*							
 							settings.object.geometry.indices.edges.length = 0;
 							_this.remove(_this.classSettings.projectParams.scene);
+*/	   
 							_this.removeMesh();
-							_this.pushEdges();
+//							_this.pushEdges();
 
 						}
 						_this.project();
@@ -947,8 +960,11 @@ class Universe {
 			this.remove(scene);
 			this.removeMesh = () => {
 
+				settings.object.geometry.indices.edges.length = 0;
+				_this.remove(classSettings.projectParams.scene);
 				if (nd) nd = undefined;
 				if (myPoints) myPoints = undefined;
+//				_this.pushEdges();
 
 			}
 
@@ -1446,7 +1462,27 @@ class Universe {
 					classSettings.debug.logTimestamp('Push positions. ');
 
 				}
-				this.verticeEdgesLength = this.verticeEdgesLengthMax;
+				this.#verticeEdgesLength = this.verticeEdgesLengthMax;
+/*				
+				this.verticeEdgesLength = new Proxy(this.verticeEdgesLengthMax, {
+
+					get: (verticeEdgesLength, name) => {
+
+						return verticeEdgesLength;
+
+					},
+					set: (verticeEdgesLength, name, value) => {
+
+						const i = parseInt(name);
+						if (!isNaN(i)) console.error(sUniverse + ': set vertice edges count failed. Invalid name = ' + name);
+						verticeEdgesLength = value;
+						return true;
+
+					}
+
+				});
+*/				
+			
 				if (classSettings.edges)//Для экономии времени не добавляю ребра если на холст вывожу только вершины
 					this.pushEdges();
 				else if (this.classSettings.projectParams) this.project(this.classSettings.projectParams.scene, this.classSettings.projectParams.params);
@@ -1476,6 +1512,8 @@ class Universe {
 	
 				edge: 'Edge',
 	
+				verticeEdgesCountTitle: 'Количество ребер у вершины',
+
 				project: 'Project',
 				projectTitle: 'Project edges onto canvas',
 
@@ -1495,6 +1533,8 @@ class Universe {
 					lang.edgesTitle = 'Создать ребра';
 	
 					lang.edge = 'Ребро';
+
+					lang.verticeEdgesCountTitle = 'Количество ребер у вершины';
 					
 					lang.project = 'Отображать';
 					lang.projectTitle = 'Отображать ребра на холсте';
@@ -1516,6 +1556,16 @@ class Universe {
 //settings.object.geometry.angles.length = 5;
 			const cVerticesCount = dat.controllerZeroStep(fVertices, settings.object.geometry.angles, 'guiLength');
 			dat.controllerNameAndTitle(cVerticesCount, lang.verticesCount, lang.verticesCountTitle);
+
+			//vertice edges
+
+			const fVerticeEdges = fVertices.addFolder(lang.edges);
+			fVerticeEdges.add(new PositionController((shift) => { cVerticeEdgesCount.setValue(this.verticeEdgesLength + shift); },
+				{ settings: { offset: 1, }, min: 1, max: 10, step: 1, getLanguageCode: options.getLanguageCode }));
+
+			//Vertice edges count
+			const cVerticeEdgesCount = dat.controllerZeroStep(fVerticeEdges, this, 'verticeEdgesLength');
+			dat.controllerNameAndTitle(cVerticeEdgesCount, lang.verticesCount, lang.verticeEdgesCountTitle);
 
 			//edges
 			
