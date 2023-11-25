@@ -125,7 +125,8 @@ class Universe {
 	}
 	TestVertice(vertice, strVerticeId){
 		
-		if (!this.TestVerticeEdges(vertice))
+//		if (!this.TestVerticeEdges(vertice))
+		if (vertice.edges.length != this.verticeEdgesLength)
 			console.error(sUniverse + ': Test(). Invalid ' + strVerticeId + '.edges.length = ' + vertice.edges.length);
 		
 	}
@@ -541,7 +542,7 @@ class Universe {
 							_this.remove(_this.classSettings.projectParams.scene);
 */	   
 							_this.removeMesh();
-//							_this.pushEdges();
+							_this.pushEdges();
 
 						}
 						_this.project();
@@ -630,6 +631,7 @@ class Universe {
 													const sPush = sUniverse + ': Vertice' + (verticeId === undefined ? '' : '[' + verticeId + ']') + '.edges.push(' + edgeId + '):';
 
 //													if (edges.length >= _this.verticeEdgesLengthMax)
+//console.log('edges.length = ' + edges.length)
 													if (edges.length >= _this.verticeEdgesLength) {
 
 														console.error(sPush + ' invalid edges.length = ' + edges.length);
@@ -862,6 +864,7 @@ class Universe {
 				}
 				const setVertice = (edge, edgeVerticeId, verticeId, edgeId) => {
 
+					if (verticeId >= position.length) verticeId = 0;
 					const vertice = position[verticeId];//push random vertice if not exists
 					edge[edgeVerticeId] = verticeId;
 
@@ -872,9 +875,21 @@ class Universe {
 
 					case 'push': return (edge=[]) => {
 
-						setVertice(edge, 0, edge[0] === undefined ? _edges.length : edge[0]);
-						setVertice(edge, 1, edge[1] === undefined ? _edges.length + 1 : edge[1]);
-						if (classSettings.debug) _edges.forEach((edgeCur, i) => { if (((edgeCur[0] === edge[0]) && (edgeCur[1] === edge[1])) || ((edgeCur[0] === edge[1]) && (edgeCur[1] === edge[0]))) console.error(sUniverse + ': edges[' + i + ']. Duplicate edge[' + edge + ']') });
+						let vertice0Id = edge[0] === undefined ? _edges.length : edge[0],
+							  vertice1Id = edge[1] === undefined ? _edges.length + 1 : edge[1];
+						if (vertice1Id >= position.length) vertice1Id = vertice1Id - position.length;//перенести индекс вершины в начало если индекс вершины больша количества вершин
+						if ((position[vertice0Id].edges.length >= _this.verticeEdgesLength) || (position[vertice1Id].edges.length >= _this.verticeEdgesLength))
+							return;//Не добавлять новое ребро если у его вершин количество ребер больше или равно _this.verticeEdgesLength
+						setVertice(edge, 0, vertice0Id);
+						setVertice(edge, 1, vertice1Id);
+						if (classSettings.debug) {
+							
+							const sPushEdge = ': Push edge. '
+							if (edge.length != 2) console.error(sUniverse + sPushEdge + 'Invalid edge.length = ' + edge.length);
+							else if (edge[0] === edge[1]) console.error(sUniverse + sPushEdge + 'edge = [' + edge + '] Duplicate vertices.');
+							_edges.forEach((edgeCur, i) => { if (((edgeCur[0] === edge[0]) && (edgeCur[1] === edge[1])) || ((edgeCur[0] === edge[1]) && (edgeCur[1] === edge[0]))) console.error(sUniverse + sPushEdge + 'edges[' + i + ']. Duplicate edge[' + edge + ']') });
+
+						}
 
 						return _edges.push(edge);
 
@@ -1483,9 +1498,100 @@ class Universe {
 				});
 */				
 			
-				if (classSettings.edges)//Для экономии времени не добавляю ребра если на холст вывожу только вершины
+				if (classSettings.edges) {//Для экономии времени не добавляю ребра если на холст вывожу только вершины
+					
+					this.pushEdges = () => {
+				
+						const geometry = this.classSettings.settings.object.geometry, edges = geometry.indices.edges, position = geometry.position;
+/*						
+						for (let verticeId = 1; verticeId < position.length; verticeId++) edges.push();
+						edges.push([position.length - 1, 0]);
+*/
+//						position.forEach(() => edges.push());
+						let phase = 1;
+//						while (position[0].edges.length < this.verticeEdgesLength)
+						while (phase < this.verticeEdgesLength) {
+							
+//							position.forEach((vertice, i) => edges.push([i, i + phase]));
+							for (let verticeId = 0; verticeId < position.length; verticeId++) {
+
+								let oppositeVerticeId = verticeId + 1;
+								if (phase > 1) {
+
+									//Поиск вершины у которой ребер меньше максимального количества ребер и у которой нет нового ребра
+									for (; oppositeVerticeId < position.length; oppositeVerticeId++) {
+
+										const oppositeVerticeEdges= position[oppositeVerticeId].edges;
+										if (oppositeVerticeEdges.length < this.verticeEdgesLength) {
+											
+											//поиск нового ребра в списке ребер этой вершины
+											let boContinue = false;
+											for (let oppositeVerticeEdgeId = 0; oppositeVerticeEdgeId < oppositeVerticeEdges.length; oppositeVerticeEdgeId++){
+
+												const oppositeVerticeEdge = edges[oppositeVerticeEdges[oppositeVerticeEdgeId]];
+												if (
+													(oppositeVerticeEdge[0] === verticeId) && (oppositeVerticeEdge[1] === oppositeVerticeId) ||
+													(oppositeVerticeEdge[1] === verticeId) && (oppositeVerticeEdge[0] === oppositeVerticeId)
+												) {
+													
+													boContinue = true;//это ребро уже существует
+													break;
+
+												}
+												
+											}
+											if (boContinue) continue;//Новое ребро уже есть в текущей вершине. Перейти на следующую вершину
+											break;//нашел противоположное ребро
+
+										}
+											
+									}
+										
+								}
+								edges.push([verticeId, oppositeVerticeId]);
+/*								
+								if ((phase > 1) && ((i + phase) >= position.length)) break;
+								else edges.push([verticeId, verticeId + phase]);
+*/		
+
+							}
+							phase++;
+
+						}
+/*						
+						for (let verticeId = 0; verticeId < position.length; verticeId++) {
+
+							const vertice = position[verticeId];
+								
+							for (let iEdge = 1; iEdge <= this.verticeEdgesLength; iEdge++) {
+
+								if (vertice.edges.length >= this.verticeEdgesLength) break;
+								
+								let verticeIdOpposite = verticeId + iEdge;
+								if (verticeIdOpposite >= position.length) {
+
+									verticeIdOpposite = 0;
+									while ( (verticeIdOpposite < verticeId) && (position[verticeIdOpposite].edges.length >= this.verticeEdgesLength)) verticeIdOpposite++;
+									
+								}
+								const verticeOpposite = position[verticeIdOpposite];
+								if (verticeOpposite.edges.length < this.verticeEdgesLength)
+									edges.push([verticeId, verticeIdOpposite]);
+								else console.error(sUniverse + ': pushEdges. verticeOpposite.edges.length >= this.verticeEdgesLength');
+
+							}
+
+						}
+*/						
+						if (this.projectGeometry) this.projectGeometry();
+						
+						if (this.classSettings.debug)
+							this.classSettings.debug.logTimestamp('Push edges. ');
+						
+					}
 					this.pushEdges();
-				else if (this.classSettings.projectParams) this.project(this.classSettings.projectParams.scene, this.classSettings.projectParams.params);
+					
+				} else if (this.classSettings.projectParams) this.project(this.classSettings.projectParams.scene, this.classSettings.projectParams.params);
 				
 				break;
 				

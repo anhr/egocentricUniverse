@@ -55,6 +55,7 @@ class Universe2D extends Universe1D {
 		verticeAngles.push(super.randomAngle());//φ
 
 	}
+/*
 	pushEdges() {
 
 		const settings = this.classSettings.settings, geometry = settings.object.geometry, position = geometry.position, edges = geometry.indices.edges;
@@ -161,6 +162,7 @@ class Universe2D extends Universe1D {
 		});
 
 	}
+*/
 	name( getLanguageCode ) {
 
 		//Localization
@@ -207,7 +209,7 @@ class Universe2D extends Universe1D {
 	//Overridden methods from base class
 
 	get verticeEdgesLengthMax() { return 6; }//нельзя добавлть новое ребро если у вершины уже 6 ребра
-	TestVerticeEdges(vertice){ return (vertice.length === this.verticeEdgesLength) || (vertice.length === 3) ? true : false; }
+//	TestVerticeEdges(vertice){ return (vertice.length === this.verticeEdgesLength) || (vertice.length === 3) ? true : false; }
 	get dimension() { return 3; }//space dimension
 	get verticesCountMin() { return 4; }
 
