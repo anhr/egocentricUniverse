@@ -126,7 +126,7 @@ class Universe {
 	TestVertice(vertice, strVerticeId){
 		
 //		if (!this.TestVerticeEdges(vertice))
-		if (vertice.edges.length != this.verticeEdgesLength)
+		if (vertice.edges.length < (this.verticeEdgesLength - 1))//Допускается количество ребер на одно меньше максимального значения потому что при опреденном количестве вершин для некоротых вершин не хватает противоположных вершин
 			console.error(sUniverse + ': Test(). Invalid ' + strVerticeId + '.edges.length = ' + vertice.edges.length);
 		
 	}
@@ -560,16 +560,7 @@ class Universe {
 		});
 		const angles = settings.object.geometry.angles;
 		if (angles.count != undefined)
-			for (let i = angles.length; i < angles.count; i++){
-
-/*				
-				const verticeAngles = [];
-				this.pushRandomAngle(verticeAngles);
-				angles.push(verticeAngles);
-*/	
-				angles.pushRandomAngle();
-				
-			}
+			for (let i = angles.length; i < angles.count; i++) angles.pushRandomAngle();
 		settings.object.geometry.position = new Proxy(angles, {
 
 			get: (_position, name) => {
@@ -578,7 +569,12 @@ class Universe {
 				if (!isNaN(i)) {
 
 					if (i > _position.length) console.error(sUniverse + ': position get. Invalid index = ' + i + ' position.length = ' + _position.length);
-					else if (i === _position.length) settings.object.geometry.position.push();
+					else if (i === _position.length) {
+						
+//						settings.object.geometry.position.push();
+						settings.object.geometry.angles.pushRandomAngle();
+
+					}
 					const _vertice = _position[i];
 					const angle2Vertice = () => {
 
@@ -771,7 +767,7 @@ class Universe {
 						}
 					});
 					case 'count': return _position.count === undefined ? _position.length : _position.count;
-					case 'push': return (position/* = randomPosition()*/) => { console.error(sUniverse + ': deprecated push vertice'); };
+					case 'push': return (position/* = randomPosition()*/) => { console.error(sUniverse + ': deprecated push vertice. Use "settings.object.geometry.angles.pushRandomAngle()" instead.'); };
 
 					//for debug
 					case 'test': return () => {
@@ -1524,10 +1520,6 @@ class Universe {
 //									for (; oppositeVerticeId < position.length; oppositeVerticeId++)
 								while(true){
 
-/*
-if ((verticeEdgesCur === 2) && (verticeId === 5) && (oppositeVerticeId === 0))
-console.log('break point');
-*/
 									const oppositeVerticeEdges= position[oppositeVerticeId].edges;
 									if (oppositeVerticeEdges.length < this.verticeEdgesLength) {
 											
@@ -1556,11 +1548,25 @@ console.log('break point');
 										}
 										break;//нашел противоположное ребро
 
-									} else oppositeVerticeId++;
+									} else {
+										
+										oppositeVerticeId++;
+										if (oppositeVerticeId >= position.length) oppositeVerticeId = 0;
+
+									}
 											
 								}
-								if (verticeId != oppositeVerticeId)//Возможно был пройден полный круг поиска противолположной вершины и ничего найдено не было
+
+								//Возможно был пройден полный круг поиска противолположной вершины и ничего найдено не было
+								if (verticeId != oppositeVerticeId) {
+
+/*									
+if ((verticeId === 6) && (oppositeVerticeId === 9))
+	console.log('break point');
+*/ 
 									edges.push([verticeId, oppositeVerticeId]);
+
+								}
 								//else console.log(sUniverse + '.pushEdges. Opposite vertice was not found.')
 
 							}
