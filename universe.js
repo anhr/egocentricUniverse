@@ -877,14 +877,20 @@ class Universe {
 
 						let vertice0Id = edge[0] === undefined ? _edges.length : edge[0],
 							  vertice1Id = edge[1] === undefined ? _edges.length + 1 : edge[1];
-						if (vertice1Id >= position.length) vertice1Id = vertice1Id - position.length;//перенести индекс вершины в начало если индекс вершины больша количества вершин
+						const sPushEdge = ': Push edge. '
+						if ((vertice0Id >= position.length) || (vertice1Id >= position.length)) {
+
+							console.error(sUniverse + sPushEdge + 'edge[' + vertice0Id + ', ' + vertice1Id + ']. Invalid vertice range from 0 to ' + (position.length - 1));
+							return;
+//							vertice1Id = vertice1Id - position.length;//перенести индекс вершины в начало если индекс вершины больша количества вершин
+
+						}
 						if ((position[vertice0Id].edges.length >= _this.verticeEdgesLength) || (position[vertice1Id].edges.length >= _this.verticeEdgesLength))
 							return;//Не добавлять новое ребро если у его вершин количество ребер больше или равно _this.verticeEdgesLength
 						setVertice(edge, 0, vertice0Id);
 						setVertice(edge, 1, vertice1Id);
 						if (classSettings.debug) {
 							
-							const sPushEdge = ': Push edge. '
 							if (edge.length != 2) console.error(sUniverse + sPushEdge + 'Invalid edge.length = ' + edge.length);
 							else if (edge[0] === edge[1]) console.error(sUniverse + sPushEdge + 'edge = [' + edge + '] Duplicate vertices.');
 							_edges.forEach((edgeCur, i) => { if (((edgeCur[0] === edge[0]) && (edgeCur[1] === edge[1])) || ((edgeCur[0] === edge[1]) && (edgeCur[1] === edge[0]))) console.error(sUniverse + sPushEdge + 'edges[' + i + ']. Duplicate edge[' + edge + ']') });
@@ -1511,16 +1517,23 @@ class Universe {
 						let phase = 1;
 //						while (position[0].edges.length < this.verticeEdgesLength)
 						while (phase < this.verticeEdgesLength) {
-							
+
+							//console.log(sUniverse + '.pushEdges. phase = ' + phase);
 //							position.forEach((vertice, i) => edges.push([i, i + phase]));
 							for (let verticeId = 0; verticeId < position.length; verticeId++) {
 
+								if (position[verticeId].edges.length >= this.verticeEdgesLength) continue;//У этой вершины уже максимальное количество ребер
 								let oppositeVerticeId = verticeId + 1;
-								if (phase > 1) {
+								if (oppositeVerticeId >= position.length) oppositeVerticeId = 0;
+//								if (phase > 1)
+								{
 
 									//Поиск вершины у которой ребер меньше максимального количества ребер и у которой нет нового ребра
-									for (; oppositeVerticeId < position.length; oppositeVerticeId++) {
+//									for (; oppositeVerticeId < position.length; oppositeVerticeId++)
+									while(true){
 
+if ((phase === 2) && (verticeId === 5) && (oppositeVerticeId === 0))
+	console.log('break point');
 										const oppositeVerticeEdges= position[oppositeVerticeId].edges;
 										if (oppositeVerticeEdges.length < this.verticeEdgesLength) {
 											
@@ -1540,10 +1553,16 @@ class Universe {
 												}
 												
 											}
-											if (boContinue) continue;//Новое ребро уже есть в текущей вершине. Перейти на следующую вершину
+											if (boContinue) {
+												
+												oppositeVerticeId++;
+												if (oppositeVerticeId >= position.length) oppositeVerticeId = 0;
+												continue;//Новое ребро уже есть в текущей вершине. Перейти на следующую вершину
+
+											}
 											break;//нашел противоположное ребро
 
-										}
+										} else oppositeVerticeId++;
 											
 									}
 										
