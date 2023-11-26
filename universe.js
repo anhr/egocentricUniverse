@@ -1509,99 +1509,64 @@ class Universe {
 					this.pushEdges = () => {
 				
 						const geometry = this.classSettings.settings.object.geometry, edges = geometry.indices.edges, position = geometry.position;
-/*						
-						for (let verticeId = 1; verticeId < position.length; verticeId++) edges.push();
-						edges.push([position.length - 1, 0]);
-*/
-//						position.forEach(() => edges.push());
-						let phase = 1;
-//						while (position[0].edges.length < this.verticeEdgesLength)
-						while (phase < this.verticeEdgesLength) {
 
-							//console.log(sUniverse + '.pushEdges. phase = ' + phase);
-//							position.forEach((vertice, i) => edges.push([i, i + phase]));
+						let verticeEdgesCur = 1;
+						while (verticeEdgesCur < this.verticeEdgesLength) {
+
+							//console.log(sUniverse + '.pushEdges. verticeEdgesCur = ' + verticeEdgesCur);
+//							position.forEach((vertice, i) => edges.push([i, i + verticeEdgesCur]));
 							for (let verticeId = 0; verticeId < position.length; verticeId++) {
 
 								if (position[verticeId].edges.length >= this.verticeEdgesLength) continue;//У этой вершины уже максимальное количество ребер
 								let oppositeVerticeId = verticeId + 1;
 								if (oppositeVerticeId >= position.length) oppositeVerticeId = 0;
-//								if (phase > 1)
-								{
-
-									//Поиск вершины у которой ребер меньше максимального количества ребер и у которой нет нового ребра
+								//Поиск вершины у которой ребер меньше максимального количества ребер и у которой нет нового ребра
 //									for (; oppositeVerticeId < position.length; oppositeVerticeId++)
-									while(true){
+								while(true){
 
-if ((phase === 2) && (verticeId === 5) && (oppositeVerticeId === 0))
-	console.log('break point');
-										const oppositeVerticeEdges= position[oppositeVerticeId].edges;
-										if (oppositeVerticeEdges.length < this.verticeEdgesLength) {
+/*
+if ((verticeEdgesCur === 2) && (verticeId === 5) && (oppositeVerticeId === 0))
+console.log('break point');
+*/
+									const oppositeVerticeEdges= position[oppositeVerticeId].edges;
+									if (oppositeVerticeEdges.length < this.verticeEdgesLength) {
 											
-											//поиск нового ребра в списке ребер этой вершины
-											let boContinue = false;
-											for (let oppositeVerticeEdgeId = 0; oppositeVerticeEdgeId < oppositeVerticeEdges.length; oppositeVerticeEdgeId++){
+										//поиск нового ребра в списке ребер этой вершины
+										let boContinue = false;
+										for (let oppositeVerticeEdgeId = 0; oppositeVerticeEdgeId < oppositeVerticeEdges.length; oppositeVerticeEdgeId++){
 
-												const oppositeVerticeEdge = edges[oppositeVerticeEdges[oppositeVerticeEdgeId]];
-												if (
-													(oppositeVerticeEdge[0] === verticeId) && (oppositeVerticeEdge[1] === oppositeVerticeId) ||
-													(oppositeVerticeEdge[1] === verticeId) && (oppositeVerticeEdge[0] === oppositeVerticeId)
-												) {
+											const oppositeVerticeEdge = edges[oppositeVerticeEdges[oppositeVerticeEdgeId]];
+											if (
+												(oppositeVerticeEdge[0] === verticeId) && (oppositeVerticeEdge[1] === oppositeVerticeId) ||
+												(oppositeVerticeEdge[1] === verticeId) && (oppositeVerticeEdge[0] === oppositeVerticeId)
+											) {
 													
-													boContinue = true;//это ребро уже существует
-													break;
-
-												}
-												
-											}
-											if (boContinue) {
-												
-												oppositeVerticeId++;
-												if (oppositeVerticeId >= position.length) oppositeVerticeId = 0;
-												continue;//Новое ребро уже есть в текущей вершине. Перейти на следующую вершину
+												boContinue = true;//это ребро уже существует
+												break;
 
 											}
-											break;//нашел противоположное ребро
+												
+										}
+										if (boContinue) {
+												
+											oppositeVerticeId++;
+											if (oppositeVerticeId >= position.length) oppositeVerticeId = 0;
+											continue;//Новое ребро уже есть в текущей вершине. Перейти на следующую вершину
 
-										} else oppositeVerticeId++;
+										}
+										break;//нашел противоположное ребро
+
+									} else oppositeVerticeId++;
 											
-									}
-										
 								}
-								edges.push([verticeId, oppositeVerticeId]);
-/*								
-								if ((phase > 1) && ((i + phase) >= position.length)) break;
-								else edges.push([verticeId, verticeId + phase]);
-*/		
+								if (verticeId != oppositeVerticeId)//Возможно был пройден полный круг поиска противолположной вершины и ничего найдено не было
+									edges.push([verticeId, oppositeVerticeId]);
+								//else console.log(sUniverse + '.pushEdges. Opposite vertice was not found.')
 
 							}
-							phase++;
+							verticeEdgesCur++;
 
 						}
-/*						
-						for (let verticeId = 0; verticeId < position.length; verticeId++) {
-
-							const vertice = position[verticeId];
-								
-							for (let iEdge = 1; iEdge <= this.verticeEdgesLength; iEdge++) {
-
-								if (vertice.edges.length >= this.verticeEdgesLength) break;
-								
-								let verticeIdOpposite = verticeId + iEdge;
-								if (verticeIdOpposite >= position.length) {
-
-									verticeIdOpposite = 0;
-									while ( (verticeIdOpposite < verticeId) && (position[verticeIdOpposite].edges.length >= this.verticeEdgesLength)) verticeIdOpposite++;
-									
-								}
-								const verticeOpposite = position[verticeIdOpposite];
-								if (verticeOpposite.edges.length < this.verticeEdgesLength)
-									edges.push([verticeId, verticeIdOpposite]);
-								else console.error(sUniverse + ': pushEdges. verticeOpposite.edges.length >= this.verticeEdgesLength');
-
-							}
-
-						}
-*/						
 						if (this.projectGeometry) this.projectGeometry();
 						
 						if (this.classSettings.debug)
