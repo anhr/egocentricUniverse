@@ -1580,6 +1580,9 @@ if ((verticeId === 6) && (oppositeVerticeId === 9))
 						
 					}
 					this.pushEdges();
+
+					//Эта строка нужна когда создание ребер проходи в однм потоке(не используется ProgressBar)
+					if (this.classSettings.projectParams) this.project(this.classSettings.projectParams.scene, this.classSettings.projectParams.params);
 					
 				} else if (this.classSettings.projectParams) this.project(this.classSettings.projectParams.scene, this.classSettings.projectParams.params);
 				
