@@ -45,7 +45,7 @@
 		new MyThree( (scene, options) => {
 
 			//divide hupersphere to segments
-			const anglesCount = 100, angle = Math.PI * 2 / anglesCount, angles = [];
+			const anglesCount = 1000, angle = Math.PI * 2 / anglesCount, angles = [];
 			for (let angleId = 0; angleId < anglesCount; angleId++) angles.push([angle * angleId, angle * angleId * angleId, angle * angleId * angleId * angleId]);
 			
 			const universe = new Universe3D(options,
@@ -104,8 +104,8 @@
 								[Math.PI * 2 * 1 / 3, Math.PI * 2 * 2 / 3, Math.PI * 2 * 1 / 6],//vertice[3] = [-0.6495190528383288,-0.37499999999999994,-0.43301270189221974,-0.4999999999999998]
 								[Math.PI * 2 * 1 / 3, Math.PI * 2 * 2 / 3, Math.PI * 2 * 3 / 6],//vertice[4] = [-9.184850993605146e-17,0.7499999999999998,-0.43301270189221974,-0.4999999999999998]
 							],
-							angles: { count: 300, },
-							//angles: angles,
+							//angles: { count: 300, },
+							angles: angles,
 /*							
 							position: [
 	   

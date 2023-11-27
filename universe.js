@@ -49,7 +49,7 @@ class Universe {
 		this.#verticeEdgesLength = length;
 		this.removeMesh();
 		this.pushEdges();
-		this.project();
+//		this.project();
 
 	}
 
@@ -1487,7 +1487,124 @@ class Universe {
 				
 						const geometry = this.classSettings.settings.object.geometry, edges = geometry.indices.edges, position = geometry.position;
 
-						let verticeEdgesCur = 1;
+						//Localization
+						
+						const lang = { progressTitle: "Creating edges.<br>Vertice's edges %s from " + this.verticeEdgesLength, };
+				
+						switch (settings.options.getLanguageCode()) {
+				
+							case 'ru'://Russian language
+				
+								lang.progressTitle = 'Создание ребер.<br>Ребер у вершины %s из ' + this.verticeEdgesLength;
+				
+								break;
+				
+						}
+						
+						let verticeEdgesCur = 1, verticeId = 0, boCompleted = false;
+						const progressBar = new ProgressBar(settings.options.renderer.domElement.parentElement, () => {
+
+							const nextVertice = () => {
+
+								progressBar.value = verticeId;
+								verticeId++;
+								if (verticeId >= position.length){
+
+									verticeEdgesCur++;
+									progressBar.title(lang.progressTitle.replace('%s', verticeEdgesCur + 1));
+									if (verticeEdgesCur >= this.verticeEdgesLength) {
+										
+										if (this.projectGeometry) this.projectGeometry();
+										if (this.classSettings.debug) this.classSettings.debug.logTimestamp('Push edges. ');
+										progressBar.remove();
+										if (this.classSettings.projectParams) this.project(this.classSettings.projectParams.scene, this.classSettings.projectParams.params);
+										boCompleted = true;
+										return true;
+		
+									}
+									verticeId = 0;
+									
+								}
+								progressBar.step();
+								
+							}
+							if (boCompleted) return;
+							if (position[verticeId].edges.length >= this.verticeEdgesLength) 
+								//У этой вершины уже максимальное количество ребер
+								if (nextVertice()) return;//все ребра добавлены
+							let oppositeVerticeId = verticeId + 1;
+							if (oppositeVerticeId >= position.length) oppositeVerticeId = 0;
+							//Поиск вершины у которой ребер меньше максимального количества ребер и у которой нет нового ребра
+							const oppositeVerticeIdFirst = oppositeVerticeId;
+							while(true){
+
+								const oppositeVerticeEdges= position[oppositeVerticeId].edges;
+								if (oppositeVerticeEdges.length < this.verticeEdgesLength) {
+										
+									//поиск нового ребра в списке ребер этой вершины
+									let boContinue = false;
+									for (let oppositeVerticeEdgeId = 0; oppositeVerticeEdgeId < oppositeVerticeEdges.length; oppositeVerticeEdgeId++){
+
+										const oppositeVerticeEdge = edges[oppositeVerticeEdges[oppositeVerticeEdgeId]];
+										if (
+											(oppositeVerticeEdge[0] === verticeId) && (oppositeVerticeEdge[1] === oppositeVerticeId) ||
+											(oppositeVerticeEdge[1] === verticeId) && (oppositeVerticeEdge[0] === oppositeVerticeId)
+										) {
+												
+											boContinue = true;//это ребро уже существует
+											break;
+
+										}
+											
+									}
+									if (boContinue) {
+											
+										oppositeVerticeId++;
+										if (oppositeVerticeId >= position.length) oppositeVerticeId = 0;
+										continue;//Новое ребро уже есть в текущей вершине. Перейти на следующую вершину
+
+									}
+									break;//нашел противоположное ребро
+
+								} else {
+									
+									oppositeVerticeId++;
+									if (oppositeVerticeId >= position.length) oppositeVerticeId = 0;
+
+								}
+								if (oppositeVerticeIdFirst === oppositeVerticeId) break;
+										
+							}
+
+							//Возможно был пройден полный круг поиска противолположной вершины и ничего найдено не было
+							if (verticeId != oppositeVerticeId) {
+
+								edges.push([verticeId, oppositeVerticeId]);
+
+							}
+							//else console.log(sUniverse + '.pushEdges. Opposite vertice was not found.')
+
+							nextVertice();
+/*							
+							verticeEdgesCur++;
+							if (verticeEdgesCur < this.verticeEdgesLength) progressBar.step();
+							else {
+								
+								if (this.classSettings.debug) this.classSettings.debug.logTimestamp('Push edges. ');
+								progressBar.remove();
+								if (this.classSettings.projectParams) this.project(this.classSettings.projectParams.scene, this.classSettings.projectParams.params);
+
+							}
+*/								
+
+						}, {
+
+							sTitle: lang.progressTitle.replace('%s', verticeEdgesCur + 1),
+							max: position.length,
+
+						});
+
+/*
 						while (verticeEdgesCur < this.verticeEdgesLength) {
 
 							for (let verticeId = 0; verticeId < position.length; verticeId++) {
@@ -1551,12 +1668,13 @@ class Universe {
 						
 						if (this.classSettings.debug)
 							this.classSettings.debug.logTimestamp('Push edges. ');
+*/
 						
 					}
 					this.pushEdges();
 
 					//Эта строка нужна когда создание ребер проходи в однм потоке(не используется ProgressBar)
-					if (this.classSettings.projectParams) this.project(this.classSettings.projectParams.scene, this.classSettings.projectParams.params);
+//					if (this.classSettings.projectParams) this.project(this.classSettings.projectParams.scene, this.classSettings.projectParams.params);
 					
 				} else if (this.classSettings.projectParams) this.project(this.classSettings.projectParams.scene, this.classSettings.projectParams.params);
 				

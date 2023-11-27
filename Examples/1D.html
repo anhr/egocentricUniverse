@@ -44,7 +44,7 @@
 		new MyThree( (scene, options) => {
 
 			//divide circle to segments
-			const anglesCount = 100, angle = Math.PI * 2 / anglesCount, angles = [];
+			const anglesCount = 110, angle = Math.PI * 2 / anglesCount, angles = [];
 			for (let angleId = 0; angleId < anglesCount; angleId++) angles.push([angle * angleId]);
 			
 			const universe = new Universe1D(options, {
@@ -56,6 +56,18 @@
 					
 				},
 				edges: false,
+				projectParams:{
+					
+					scene: scene,
+					/*
+					params: {
+						
+						//center: {x: 0.5, y: 0.3},
+					
+					}
+					 */
+					
+				},
 				//t: 0.5,
 				debug: {
 
@@ -77,8 +89,8 @@
 
 							//angles: [[], [Math.PI * 2 / 3], [Math.PI * 2 *2 / 3]],//triangle
 							//angles: [[Math.PI * 1 / 4], [Math.PI * 3 / 4], [Math.PI * 5 / 4], [Math.PI * 7 / 4], ],//Square
-							//angles: angles,
-							angles: { count: 300, },
+							angles: angles,
+							//angles: { count: 300, },
 
 /*
 							position: [
@@ -113,10 +125,12 @@
 				
 				
 			});
-			
+
+/*			
 			universe.project( scene,
 				//{ center: {x: 0.5, y: 0.3},}
 			);
+*/   
 
 		}, {
 
