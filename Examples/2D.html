@@ -45,7 +45,7 @@
 		new MyThree( (scene, options) => {
 
 			//divide sphere to segments
-			const anglesCount = 1000, angle = Math.PI * 2 / anglesCount, angles = [];
+			const anglesCount = 10, angle = Math.PI * 2 / anglesCount, angles = [];
 			for (let angleId = 0; angleId < anglesCount; angleId++) angles.push([angle * angleId, angle * angleId * angleId]);
 			
 			const universe = new Universe2D(options,
@@ -77,7 +77,7 @@
 					probabilityDensity: false,
 					
 				},
-				//debug: true,
+				debug: false,
 				settings: {
 					
 					object: {
