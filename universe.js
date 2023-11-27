@@ -1480,25 +1480,6 @@ class Universe {
 
 				}
 				this.#verticeEdgesLength = this.verticeEdgesLengthMax;
-/*				
-				this.verticeEdgesLength = new Proxy(this.verticeEdgesLengthMax, {
-
-					get: (verticeEdgesLength, name) => {
-
-						return verticeEdgesLength;
-
-					},
-					set: (verticeEdgesLength, name, value) => {
-
-						const i = parseInt(name);
-						if (!isNaN(i)) console.error(sUniverse + ': set vertice edges count failed. Invalid name = ' + name);
-						verticeEdgesLength = value;
-						return true;
-
-					}
-
-				});
-*/				
 			
 				if (classSettings.edges) {//Для экономии времени не добавляю ребра если на холст вывожу только вершины
 					
@@ -1509,15 +1490,12 @@ class Universe {
 						let verticeEdgesCur = 1;
 						while (verticeEdgesCur < this.verticeEdgesLength) {
 
-							//console.log(sUniverse + '.pushEdges. verticeEdgesCur = ' + verticeEdgesCur);
-//							position.forEach((vertice, i) => edges.push([i, i + verticeEdgesCur]));
 							for (let verticeId = 0; verticeId < position.length; verticeId++) {
 
 								if (position[verticeId].edges.length >= this.verticeEdgesLength) continue;//У этой вершины уже максимальное количество ребер
 								let oppositeVerticeId = verticeId + 1;
 								if (oppositeVerticeId >= position.length) oppositeVerticeId = 0;
 								//Поиск вершины у которой ребер меньше максимального количества ребер и у которой нет нового ребра
-//									for (; oppositeVerticeId < position.length; oppositeVerticeId++)
 								while(true){
 
 									const oppositeVerticeEdges= position[oppositeVerticeId].edges;
@@ -1560,10 +1538,6 @@ class Universe {
 								//Возможно был пройден полный круг поиска противолположной вершины и ничего найдено не было
 								if (verticeId != oppositeVerticeId) {
 
-/*									
-if ((verticeId === 6) && (oppositeVerticeId === 9))
-	console.log('break point');
-*/ 
 									edges.push([verticeId, oppositeVerticeId]);
 
 								}
