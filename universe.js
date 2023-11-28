@@ -1501,37 +1501,56 @@ class Universe {
 				
 						}
 						
-						let verticeEdgesCur = 1, verticeId = 0, boCompleted = false;
+						let verticeEdgesCur = 1, verticeId = 0,
+							boCompleted = false;//Кажется это не нужно
 						const progressBar = new ProgressBar(settings.options.renderer.domElement.parentElement, () => {
 
 							const nextVertice = () => {
 
 								progressBar.value = verticeId;
-								verticeId++;
-								if (verticeId >= position.length){
-
-									verticeEdgesCur++;
-									progressBar.title(lang.progressTitle.replace('%s', verticeEdgesCur + 1));
-									if (verticeEdgesCur >= this.verticeEdgesLength) {
-										
-										if (this.projectGeometry) this.projectGeometry();
-										if (this.classSettings.debug) this.classSettings.debug.logTimestamp('Push edges. ');
-										progressBar.remove();
-										if (this.classSettings.projectParams) this.project(this.classSettings.projectParams.scene, this.classSettings.projectParams.params);
-										boCompleted = true;
-										return true;
-		
-									}
-									verticeId = 0;
+/*								
+if(edges.length === 30)								
+	console.log(edges.length);
+*/
+								//цикл поиска вершины, в которую можно добавить еще одно ребро
+								const verticeIdStart = verticeId;
+								do {
 									
-								}
+									verticeId++;
+									if (verticeId >= position.length){
+	
+										verticeEdgesCur++;
+										progressBar.title(lang.progressTitle.replace('%s', verticeEdgesCur + 1));
+										if (verticeEdgesCur >= this.verticeEdgesLength) {
+											
+											if (this.projectGeometry) this.projectGeometry();
+											if (this.classSettings.debug) this.classSettings.debug.logTimestamp('Push edges. ');
+											progressBar.remove();
+											if (this.classSettings.projectParams) this.project(this.classSettings.projectParams.scene, this.classSettings.projectParams.params);
+											boCompleted = true;
+											return;// true;
+			
+										}
+										verticeId = 0;
+										
+									}
+
+								} while((position[verticeId].edges.length >= this.verticeEdgesLength)  && (verticeIdStart != verticeId));
+//console.log('edges.length = ' + edges.length)
 								progressBar.step();
 								
 							}
 							if (boCompleted) return;
-							if (position[verticeId].edges.length >= this.verticeEdgesLength) 
+/*							
+							if (position[verticeId].edges.length >= this.verticeEdgesLength) {
+								
 								//У этой вершины уже максимальное количество ребер
-								if (nextVertice()) return;//все ребра добавлены
+//								if (nextVertice()) return;//все ребра добавлены
+								nextVertice();
+								return;
+
+							}
+*/	   
 							let oppositeVerticeId = verticeId + 1;
 							if (oppositeVerticeId >= position.length) oppositeVerticeId = 0;
 							//Поиск вершины у которой ребер меньше максимального количества ребер и у которой нет нового ребра

@@ -44,7 +44,7 @@
 		new MyThree( (scene, options) => {
 
 			//divide circle to segments
-			const anglesCount = 110, angle = Math.PI * 2 / anglesCount, angles = [];
+			const anglesCount = 4, angle = Math.PI * 2 / anglesCount, angles = [];
 			for (let angleId = 0; angleId < anglesCount; angleId++) angles.push([angle * angleId]);
 			
 			const universe = new Universe1D(options, {
@@ -76,7 +76,7 @@
 					//testVertice: false,
 					
 				},
-				//debug: false,
+				debug: false,
 				//mode: 1,
 				settings: {
 					
