@@ -126,6 +126,7 @@ class Universe {
 	TestVertice(vertice, strVerticeId){
 		
 //		if (!this.TestVerticeEdges(vertice))
+		if (this.classSettings.edges === false) return;
 		if (vertice.edges.length < (this.verticeEdgesLength - 1))//Допускается количество ребер на одно меньше максимального значения потому что при опреденном количестве вершин для некоротых вершин не хватает противоположных вершин
 			console.error(sUniverse + ': Test(). Invalid ' + strVerticeId + '.edges.length = ' + vertice.edges.length);
 		
@@ -960,6 +961,13 @@ class Universe {
 			} else scene = _this.classSettings.projectParams.scene;
 			
 			let nd, myPoints;
+
+			this.opacity = () => {
+
+				const d3Object = nd || myPoints;
+				console.log('d3Object: ' + d3Object)
+					
+			}
 			
 			//remove previous universe
 			this.remove = (scene) => {
@@ -1089,6 +1097,9 @@ class Universe {
 									anglesTitle: 'Polar coordinates.',
 									
 									angle: 'Angle',
+
+									middleVertice: 'Middle vertice',
+									middleVerticeTitle: 'Find middle vertice between opposite vertices.',
 									
 									defaultButton: 'Default',
 									defaultAnglesTitle: 'Restore default angles.',
@@ -1105,6 +1116,9 @@ class Universe {
 										lang.anglesTitle = 'Полярные координаты.';
 										
 										lang.angle = 'Угол';
+
+										lang.middleVertice = 'Средняя вершина';
+										lang.middleVerticeTitle = 'Найти среднюю вершину меду противоположными вершинами.';
 
 										lang.defaultButton = 'Восстановить';
 										lang.defaultAnglesTitle = 'Восстановить углы по умолчанию';
@@ -1137,6 +1151,17 @@ class Universe {
 					
 								}, 'defaultF' );
 								dat.controllerNameAndTitle( cRestoreDefaultAngles, lang.defaultButton, lang.defaultAnglesTitle );
+
+								if (classSettings.debug){
+
+									const cMiddleVertice = fCustomPoint.add( { boMiddleVertice: false }, 'boMiddleVertice' ).onChange((boMiddleVertice) => {
+
+										_this.opacity();
+										
+									} );
+									dat.controllerNameAndTitle( cMiddleVertice, lang.middleVertice, lang.middleVerticeTitle );
+									
+								}
 								
 								return fCustomPoint;
 	
