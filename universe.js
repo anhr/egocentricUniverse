@@ -1620,6 +1620,7 @@ if(edges.length === 30)
 
 							sTitle: lang.progressTitle.replace('%s', verticeEdgesCur + 1),
 							max: position.length,
+							timeoutPeriod: 3,
 
 						});
 
