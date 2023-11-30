@@ -962,10 +962,13 @@ class Universe {
 			
 			let nd, myPoints;
 
-			this.opacity = () => {
+			this.opacity = (transparent, opacity = 0.3) => {
 
-				const d3Object = nd || myPoints;
-				console.log('d3Object: ' + d3Object)
+				if (!nd) return;
+				const object3D = nd.object3D;
+				object3D.material.transparent = transparent;
+				object3D.material.opacity = transparent ? opacity : 1;
+				object3D.material.needsUpdate = true;//for THREE.REVISION = "145dev"
 					
 			}
 			
@@ -1154,9 +1157,27 @@ class Universe {
 
 								if (classSettings.debug){
 
+									let oppositeVerticeEdges;
 									const cMiddleVertice = fCustomPoint.add( { boMiddleVertice: false }, 'boMiddleVertice' ).onChange((boMiddleVertice) => {
 
-										_this.opacity();
+										_this.opacity(boMiddleVertice);
+										if (boMiddleVertice) {
+											
+											const buffer = new THREE.BufferGeometry().setFromPoints( [
+												new THREE.Vector3( 0.0, -1.0, 0.0 ),
+												new THREE.Vector3( 0.8660254037844388, 0.5, 0 ),
+												new THREE.Vector3( -0.8660254037844388, 0.5, 0 ),
+											] );
+											buffer.setIndex( [0, 1, 1, 2, 2, 0] );
+											oppositeVerticeEdges = new THREE.LineSegments( buffer, new THREE.LineBasicMaterial( { color: 'white', } ) );
+											classSettings.projectParams.scene.add(oppositeVerticeEdges);
+											
+										} else {
+
+											if (oppositeVerticeEdges) classSettings.projectParams.scene.remove(oppositeVerticeEdges);
+											oppositeVerticeEdges = undefined;
+											
+										}
 										
 									} );
 									dat.controllerNameAndTitle( cMiddleVertice, lang.middleVertice, lang.middleVerticeTitle );
@@ -1378,19 +1399,6 @@ class Universe {
 							const vertice = position.angles[verticeId];
 							vertices.push([]);
 							const oppositeVerticesId = vertice.oppositeVerticesId;
-							/*
-							oppositeVerticesId.forEach(verticeIdOpposite => {
-								
-								const oppositeVertice = position.angles[verticeIdOpposite],
-									distance = vertice.distanceTo(oppositeVertice);
-								if(classSettings.debug) {
-
-									const v1 = position[verticeId], v2 = position[verticeIdOpposite], d = v1.distanceTo(v2)
-									console.log('distance = ' + distance + ' d = ' + d + ' distance - d = ' + (distance - d));
-								}
-									
-							});
-							*/
 
 							//find middle point between opposite vertices
 							const middlePoint = [];
