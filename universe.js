@@ -707,12 +707,37 @@ class Universe {
 								return;
 								
 							}
-							return new Proxy(angles[name], {
+							const vertice = new Proxy(angles[name], {
 								
 								get: (angles, name) => {
 		
 									switch (name) {
+
+										case 'middleVertice': return () => {
+
+											//find middle vertice between opposite vertices
 											
+											const oppositeVerticesId = vertice.oppositeVerticesId;
+											const middlePoint = [], muddleVertice = [];
+											vertice.forEach((angle, angleId) => {
+				
+												middlePoint.push(0);
+												const middlePointAngleId = middlePoint.length - 1;
+												oppositeVerticesId.forEach(verticeIdOpposite => {
+													
+													let angle2OppositeVertice = position[verticeIdOpposite].angles[angleId] - angle;
+													while(angle2OppositeVertice < -Math.PI) angle2OppositeVertice += 2 * Math.PI;
+													while(angle2OppositeVertice > Math.PI) angle2OppositeVertice -= 2 * Math.PI;
+													middlePoint[middlePointAngleId] += angle2OppositeVertice;
+														
+												});
+												muddleVertice[angleId] = middlePoint[middlePointAngleId] / oppositeVerticesId.length + angle;
+//												vertices[verticeId][angleId] = middlePoint[middlePointAngleId] / oppositeVerticesId.length + angle;
+				
+											});
+											return muddleVertice;
+											
+										}
 										//идентификаторы всех вершин, которые связаны с текущей вершиной через ребра
 										case 'oppositeVerticesId': return new Proxy(angles.edges, {
 
@@ -751,6 +776,7 @@ class Universe {
 								},
 							
 							});
+							return vertice;
 							
 						},
 						set: (angles, name, value) => {
@@ -1072,6 +1098,21 @@ class Universe {
 
 								anglesDefault.length = 0;
 								const angles = settings.object.geometry.angles[verticeId];
+
+								for (let i = (aAngleControls.cEdges.__select.length - 1); i > 0; i--)
+									aAngleControls.cEdges.__select.remove(i);
+
+								const edges = settings.object.geometry.indices.edges;
+								angles.edges.forEach(edgeId => {
+									
+									const opt = document.createElement('option'),
+										edge = edges[edgeId];
+									opt.innerHTML = edgeId + ': ' + verticeId + ', ' + (edge[0] === verticeId ? edge[1] : edge[1] === verticeId ? edge[0] : console.error(sUniverse + ': Vertice edges GUI. Invalid edge vertices: ' + edge));
+									opt.setAttribute('value', edgeId);
+									aAngleControls.cEdges.__select.appendChild(opt);
+									
+								});
+								
 								aAngleControls.verticeId = verticeId;
 								for (let i = 0; i < angles.length; i++){
 
@@ -1096,16 +1137,24 @@ class Universe {
 	
 								const lang = {
 	
+									advansed: 'Advansed',
+									
 									angles: 'Angles',
 									anglesTitle: 'Polar coordinates.',
 									
 									angle: 'Angle',
+
+									edges: 'Edges',
+									edgesTitle: 'Edges indexes of the vertice',
+									oppositeVertice: 'Opposite vertice',
 
 									middleVertice: 'Middle vertice',
 									middleVerticeTitle: 'Find middle vertice between opposite vertices.',
 									
 									defaultButton: 'Default',
 									defaultAnglesTitle: 'Restore default angles.',
+
+									notSelected: 'not selected',
 	
 								};
 	
@@ -1115,76 +1164,130 @@ class Universe {
 	
 									case 'ru'://Russian language
 	
+										lang.advansed = 'Дополнительно';
+										
 										lang.angles = 'Углы';
 										lang.anglesTitle = 'Полярные координаты.';
 										
 										lang.angle = 'Угол';
 
+										lang.edges = 'Ребра';
+										lang.edgesTitle = 'Индексы ребер, имеющих эту вершину';
+										lang.oppositeVertice = 'Противоположная вершина';
+
 										lang.middleVertice = 'Средняя вершина';
-										lang.middleVerticeTitle = 'Найти среднюю вершину меду противоположными вершинами.';
+										lang.middleVerticeTitle = 'Найти среднюю вершину между противоположными вершинами.';
 
 										lang.defaultButton = 'Восстановить';
 										lang.defaultAnglesTitle = 'Восстановить углы по умолчанию';
+										
+										lang.notSelected = 'Не выбрано';
 										
 										break;
 									default://Custom language
 	
 								}
-								const dat = three.dat,
-									fCustomPoint = fParent.addFolder(lang.angles);
-								dat.folderNameAndTitle(fCustomPoint, lang.angles, lang.anglesTitle);
-								for (let i = 0; i < (_this.dimension - 1); i++) {
+								const geometry = settings.object.geometry,
+									position = geometry.position,
+									edges = geometry.indices.edges,
+									dat = three.dat,
+									fAdvansed = fParent.addFolder(lang.advansed);
 
-									const cAngle = fCustomPoint.add({ angle: 0, }, 'angle', -Math.PI, Math.PI, 2 * Math.PI / 360).onChange((angle) => {
+									//Angles
 
-//										boUpdateAngle = true;
-										settings.object.geometry.angles[aAngleControls.verticeId][i] = angle;
-//										boUpdateAngle = false;
-											
-									});
-									dat.controllerNameAndTitle(cAngle, lang.angle + ' ' + i);
-									aAngleControls.push(cAngle);
+								const createAnglesControls = (fParent, aAngleControls) => {
 									
+									const fAngles = fParent.addFolder(lang.angles);
+									dat.folderNameAndTitle(fAngles, lang.angles, lang.anglesTitle);
+									for (let i = 0; i < (_this.dimension - 1); i++) {
+	
+										const cAngle = fAngles.add({ angle: 0, }, 'angle', -Math.PI, Math.PI, 2 * Math.PI / 360).onChange((angle) => {
+	
+											settings.object.geometry.angles[aAngleControls.verticeId][i] = angle;
+												
+										});
+										dat.controllerNameAndTitle(cAngle, lang.angle + ' ' + i);
+										aAngleControls.push(cAngle);
+										
+									}
+									return fAngles;
+
 								}
+								const fAngles = createAnglesControls(fAdvansed, aAngleControls);
 								
 								//Restore default local position.
-								const cRestoreDefaultAngles = fCustomPoint.add( {
+								const cRestoreDefaultAngles = fAngles.add( {
 					
 									defaultF: () => { aAngleControls.forEach((cAngle, i) => cAngle.setValue(anglesDefault[i])); },
 					
 								}, 'defaultF' );
 								dat.controllerNameAndTitle( cRestoreDefaultAngles, lang.defaultButton, lang.defaultAnglesTitle );
 
-								if (classSettings.debug){
-
-									let oppositeVerticeEdges;
-									const cMiddleVertice = fCustomPoint.add( { boMiddleVertice: false }, 'boMiddleVertice' ).onChange((boMiddleVertice) => {
-
-										_this.opacity(boMiddleVertice);
-										if (boMiddleVertice) {
-											
-											const buffer = new THREE.BufferGeometry().setFromPoints( [
-												new THREE.Vector3( 0.0, -1.0, 0.0 ),
-												new THREE.Vector3( 0.8660254037844388, 0.5, 0 ),
-												new THREE.Vector3( -0.8660254037844388, 0.5, 0 ),
-											] );
-											buffer.setIndex( [0, 1, 1, 2, 2, 0] );
-											oppositeVerticeEdges = new THREE.LineSegments( buffer, new THREE.LineBasicMaterial( { color: 'white', } ) );
-											classSettings.projectParams.scene.add(oppositeVerticeEdges);
-											
-										} else {
-
-											if (oppositeVerticeEdges) classSettings.projectParams.scene.remove(oppositeVerticeEdges);
-											oppositeVerticeEdges = undefined;
-											
-										}
-										
-									} );
-									dat.controllerNameAndTitle( cMiddleVertice, lang.middleVertice, lang.middleVerticeTitle );
-									
-								}
+								//Edges
 								
-								return fCustomPoint;
+								aAngleControls.cEdges = fAdvansed.add( { Edges: lang.notSelected }, 'Edges', { [lang.notSelected]: -1 } ).onChange((edgeId) => {
+
+									const sChangeVerticeEdge = ': Change vertice edge. ',
+										edge = edges[edgeId],
+										oppositeVerticeId = edge[0] === aAngleControls.verticeId ? edge[1] : edge[1] === aAngleControls.verticeId ? edge[0] : console.error(sUniverse + sChangeVerticeEdge + 'Invalid edge vertices: ' + edge),
+										oppositeVerticeAngles = position[oppositeVerticeId].angles;
+									if (oppositeVerticeAngles.length != aEdgeAngleControls.length) console.error(sUniverse + sChangeVerticeEdge + 'Invalid opposite vertice angles length = ' + oppositeVerticeAngles.length);
+									aEdgeAngleControls.verticeId = oppositeVerticeId;
+									oppositeVerticeAngles.forEach((angle, i) => aEdgeAngleControls[i].setValue(angle));
+					
+								});
+								aAngleControls.cEdges.__select[0].selected = true;
+								dat.controllerNameAndTitle(aAngleControls.cEdges, lang.edges, lang.edgesTitle);
+								const aEdgeAngleControls = [],
+									fOppositeVertice = fAdvansed.addFolder(lang.oppositeVertice),
+									fEdgeAngles = createAnglesControls(fOppositeVertice, aEdgeAngleControls);
+								
+								let oppositeVerticeEdges;
+								const cMiddleVertice = fAngles.add({ boMiddleVertice: false }, 'boMiddleVertice').onChange((boMiddleVertice) => {
+
+									_this.opacity(boMiddleVertice);
+									if (boMiddleVertice) {
+										
+										const verticeId = aAngleControls.verticeId,
+											angles = position.angles[verticeId],
+											middleVertice = angles.middleVertice(),
+											vertices = [];
+										let itemSize;
+										angles.edges.forEach(edgeId => {
+
+											const edge = geometry.indices.edges[edgeId];
+											edge.forEach(edgeVerticeId => {
+												
+												const vertice = position[edgeVerticeId];
+												if (itemSize === undefined) itemSize = vertice.length;
+												else if (itemSize != vertice.length) console.error(sUniverse + ': Middle vertice GUI. Invalid itemSize = ' + itemSize);
+												vertice.forEach(axis => vertices.push(axis))
+												
+											})
+										});
+										const buffer = new THREE.BufferGeometry().setAttribute( 'position', new THREE.BufferAttribute( new Float32Array(vertices), itemSize ) );
+/*											
+										const buffer = new THREE.BufferGeometry().setFromPoints( [
+											new THREE.Vector3( 0.0, -1.0, 0.0 ),
+											new THREE.Vector3( 0.8660254037844388, 0.5, 0 ),
+											new THREE.Vector3( -0.8660254037844388, 0.5, 0 ),
+										] );
+										buffer.setIndex( [0, 1, 1, 2, 2, 0] );
+*/		   
+										oppositeVerticeEdges = new THREE.LineSegments( buffer, new THREE.LineBasicMaterial( { color: 'white', } ) );
+										classSettings.projectParams.scene.add(oppositeVerticeEdges);
+										
+									} else {
+
+										if (oppositeVerticeEdges) classSettings.projectParams.scene.remove(oppositeVerticeEdges);
+										oppositeVerticeEdges = undefined;
+										
+									}
+									
+								} );
+								dat.controllerNameAndTitle( cMiddleVertice, lang.middleVertice, lang.middleVerticeTitle );
+								
+								return fAdvansed;
 	
 							},
 
@@ -1390,6 +1493,7 @@ class Universe {
 
 				}
 				const vertices = [],
+verticesDebug = [],
 					timestamp = classSettings.debug ? window.performance.now() : undefined,
 					step = () => {
 
@@ -1397,10 +1501,12 @@ class Universe {
 						const stepItem = () => {
 
 							const vertice = position.angles[verticeId];
+							const middleVertice = vertice.middleVertice();
+verticesDebug.push(middleVertice);
 							vertices.push([]);
 							const oppositeVerticesId = vertice.oppositeVerticesId;
 
-							//find middle point between opposite vertices
+							//find middle vertice between opposite vertices
 							const middlePoint = [];
 							vertice.forEach((angle, angleId) => {
 
