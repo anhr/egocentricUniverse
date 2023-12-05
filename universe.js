@@ -1086,7 +1086,7 @@ class Universe {
 					gui = (object) => {
 
 						const aAngleControls = [], anglesDefault = [];
-//						let boUpdateAngle = false;
+						let cMiddleVertice;
 						object.userData.gui = {
 							
 							get isLocalPositionReadOnly(){
@@ -1128,6 +1128,13 @@ class Universe {
 									
 								});
 */		
+							},
+							reset: (verticeId) => {
+
+								const boMiddleVertice = cMiddleVertice.getValue();
+								cMiddleVertice.setValue(false);//Убрать отображение средней вершины у предыдущей вершины.
+								if ((verticeId != -1) && boMiddleVertice) cMiddleVertice.setValue(boMiddleVertice);//если у предыдущей вершины отображалась средняя вершина, то и у новой вершины отображать среднюю вершину
+								
 							},
 							addControllers: (fParent) => {
 
@@ -1193,7 +1200,7 @@ class Universe {
 									dat = three.dat,
 									fAdvansed = fParent.addFolder(lang.advansed);
 
-									//Angles
+								//Angles
 
 								const createAnglesControls = (fParent, aAngleControls) => {
 									
@@ -1227,6 +1234,11 @@ class Universe {
 								
 								aAngleControls.cEdges = fAdvansed.add( { Edges: lang.notSelected }, 'Edges', { [lang.notSelected]: -1 } ).onChange((edgeId) => {
 
+									edgeId = parseInt(edgeId);
+									_display(fOppositeVertice.domElement, edgeId === -1 ? false : true);
+
+									
+									
 									const sChangeVerticeEdge = ': Change vertice edge. ',
 										edge = edges[edgeId],
 										oppositeVerticeId = edge[0] === aAngleControls.verticeId ? edge[1] : edge[1] === aAngleControls.verticeId ? edge[0] : console.error(sUniverse + sChangeVerticeEdge + 'Invalid edge vertices: ' + edge),
@@ -1239,18 +1251,19 @@ class Universe {
 								aAngleControls.cEdges.__select[0].selected = true;
 								dat.controllerNameAndTitle(aAngleControls.cEdges, lang.edges, lang.edgesTitle);
 								const aEdgeAngleControls = [],
-									fOppositeVertice = fAdvansed.addFolder(lang.oppositeVertice),
-									fEdgeAngles = createAnglesControls(fOppositeVertice, aEdgeAngleControls);
+									fOppositeVertice = fAdvansed.addFolder(lang.oppositeVertice);
+								_display(fOppositeVertice.domElement, false);
+								createAnglesControls(fOppositeVertice, aEdgeAngleControls);
 								
 								let oppositeVerticeEdges;
-								const cMiddleVertice = fAngles.add({ boMiddleVertice: false }, 'boMiddleVertice').onChange((boMiddleVertice) => {
+								cMiddleVertice = fAngles.add({ boMiddleVertice: false }, 'boMiddleVertice').onChange((boMiddleVertice) => {
 
 									_this.opacity(boMiddleVertice);
 									if (boMiddleVertice) {
 										
 										const verticeId = aAngleControls.verticeId,
 											angles = position.angles[verticeId],
-											middleVertice = angles.middleVertice(),
+//											middleVertice = angles.middleVertice(),
 											vertices = [];
 										let itemSize;
 										angles.edges.forEach(edgeId => {
@@ -1262,19 +1275,15 @@ class Universe {
 												if (itemSize === undefined) itemSize = vertice.length;
 												else if (itemSize != vertice.length) console.error(sUniverse + ': Middle vertice GUI. Invalid itemSize = ' + itemSize);
 												vertice.forEach(axis => vertices.push(axis))
+
+												//Каждая вершина должна иметь 3 координаты что бы не поучить ошибку:
+												//THREE.BufferGeometry.computeBoundingSphere(): Computed radius is NaN. The "position" attribute is likely to have NaN values. 
+												for (let i = 0; i < (3 - itemSize); i++) vertices.push(0);
 												
 											})
 										});
-										const buffer = new THREE.BufferGeometry().setAttribute( 'position', new THREE.BufferAttribute( new Float32Array(vertices), itemSize ) );
-/*											
-										const buffer = new THREE.BufferGeometry().setFromPoints( [
-											new THREE.Vector3( 0.0, -1.0, 0.0 ),
-											new THREE.Vector3( 0.8660254037844388, 0.5, 0 ),
-											new THREE.Vector3( -0.8660254037844388, 0.5, 0 ),
-										] );
-										buffer.setIndex( [0, 1, 1, 2, 2, 0] );
-*/		   
-										oppositeVerticeEdges = new THREE.LineSegments( buffer, new THREE.LineBasicMaterial( { color: 'white', } ) );
+										const buffer = new THREE.BufferGeometry().setAttribute('position', new THREE.BufferAttribute(new Float32Array(vertices), itemSize > 3 ? itemSize : 3));
+										oppositeVerticeEdges = new THREE.LineSegments(buffer, new THREE.LineBasicMaterial({ color: 'white', }));
 										classSettings.projectParams.scene.add(oppositeVerticeEdges);
 										
 									} else {
@@ -1856,7 +1865,12 @@ verticesDebug.push(middleVertice);
 					setCockie();
 				
 				} ),
-				displayEdge = () => { fEdge.domElement.style.display = classSettings.edges === false ? 'none' : 'block'; };
+				displayEdge = () => {
+
+					_display(fEdge.domElement, classSettings.edges);
+//					fEdge.domElement.style.display = classSettings.edges === false ? 'none' : 'block';
+
+				};
 			displayEdge();
 			dat.controllerNameAndTitle( cEdges, lang.edges, lang.edgesTitle );
 			dat.controllerNameAndTitle( cProject, lang.project, lang.projectTitle );
@@ -1870,4 +1884,6 @@ verticesDebug.push(middleVertice);
 Universe.ND = ND;
 
 export default Universe;
+
+const _display = (element, boDisplay) => { element.style.display = boDisplay === false ? 'none' : 'block'; }
 
