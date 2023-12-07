@@ -1228,16 +1228,24 @@ class Universe {
 								let itemSize;
 								const vertices = [],
 									pushVertice = (vertice) => {
-									
-									if (itemSize === undefined) itemSize = vertice.length;
-									else if (itemSize != vertice.length) console.error(sUniverse + ': Middle vertice GUI. Invalid itemSize = ' + itemSize);
-									vertice.forEach(axis => vertices.push(axis))
 
-									//Каждая вершина должна иметь не меньше 3 координат что бы не поучить ошибку:
-									//THREE.BufferGeometry.computeBoundingSphere(): Computed radius is NaN. The "position" attribute is likely to have NaN values. 
-									for (let i = 0; i < (3 - itemSize); i++) vertices.push(0);
-										
-								}
+										if (itemSize === undefined) itemSize = vertice.length;
+										else if (itemSize != vertice.length) console.error(sUniverse + ': Middle vertice GUI. Invalid itemSize = ' + itemSize);
+										vertice.forEach(axis => vertices.push(axis))
+
+										//Каждая вершина должна иметь не меньше 3 координат что бы не поучить ошибку:
+										//THREE.BufferGeometry.computeBoundingSphere(): Computed radius is NaN. The "position" attribute is likely to have NaN values. 
+										for (let i = 0; i < (3 - itemSize); i++) vertices.push(0);
+
+									},
+									addObject2Scene = (vertices, color) => {
+
+										const buffer = new THREE.BufferGeometry().setAttribute('position', new THREE.BufferAttribute(new Float32Array(vertices), itemSize > 3 ? itemSize : 3)),
+											lineSegments = new THREE.LineSegments(buffer, new THREE.LineBasicMaterial({ color: color, }));
+										classSettings.projectParams.scene.add(lineSegments);
+										return lineSegments;
+
+									}
 
 								//highlight edges Подсветить ребра для этой вершины
 								
@@ -1257,9 +1265,12 @@ class Universe {
 											edge.forEach(edgeVerticeId => { pushVertice(position[edgeVerticeId]); });
 
 										});
+										oppositeVerticeEdges = addObject2Scene(vertices, 'white');
+/*
 										const buffer = new THREE.BufferGeometry().setAttribute('position', new THREE.BufferAttribute(new Float32Array(vertices), itemSize > 3 ? itemSize : 3));
 										oppositeVerticeEdges = new THREE.LineSegments(buffer, new THREE.LineBasicMaterial({ color: 'white', }));
 										classSettings.projectParams.scene.add(oppositeVerticeEdges);
+*/
 										
 									} else {
 
@@ -1291,9 +1302,12 @@ class Universe {
 											pushVertice(position[oppositeVerticeId]);
 											
 										});
+										middleVerticeEdges = addObject2Scene(vertices, 'blue');
+/*
 										const buffer = new THREE.BufferGeometry().setAttribute('position', new THREE.BufferAttribute(new Float32Array(vertices), itemSize > 3 ? itemSize : 3));
 										middleVerticeEdges = new THREE.LineSegments(buffer, new THREE.LineBasicMaterial({ color: 'blue', }));
 										classSettings.projectParams.scene.add(middleVerticeEdges);
+*/
 										
 									} else {
 
