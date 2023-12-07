@@ -19,7 +19,7 @@ import Universe2D from './universe2D.js';
 import three from '../../commonNodeJS/master/three.js'
 import FibonacciSphereGeometry from '../../commonNodeJS/master/FibonacciSphere/FibonacciSphereGeometry.js'
 
-const sUniverse3D = 'Universe3D';
+//const sUniverse3D = 'Universe3D';
 
 class Universe3D extends Universe2D {
 
@@ -140,7 +140,6 @@ class Universe3D extends Universe2D {
 	//Overridden methods from base class
 
 	get verticeEdgesLengthMax() { return 6; }//нельзя добавлть новое ребро если у вершины уже 6 ребра
-//	TestVerticeEdges(vertice){ return (vertice.length === this.verticeEdgesLength) || (vertice.length === 3) || (vertice.length === 4) ? true : false; }
 	get dimension() { return 4; }//space dimension
 	get verticesCountMin() { return 4; }
 

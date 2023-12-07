@@ -14,12 +14,11 @@
 */
 
 
-//import Universe from './universe.js';
 import Universe1D from './universe1D.js';
-import ProgressBar from '../../commonNodeJS/master/ProgressBar/ProgressBar.js'
+//import ProgressBar from '../../commonNodeJS/master/ProgressBar/ProgressBar.js'
 import three from '../../commonNodeJS/master/three.js'
 
-const sUniverse2D = 'Universe2D';
+//const sUniverse2D = 'Universe2D';
 
 class Universe2D extends Universe1D {
 
@@ -55,114 +54,6 @@ class Universe2D extends Universe1D {
 		verticeAngles.push(super.randomAngle());//φ
 
 	}
-/*
-	pushEdges() {
-
-		const settings = this.classSettings.settings, geometry = settings.object.geometry, position = geometry.position, edges = geometry.indices.edges;
-			
-		//Localization
-		
-		const lang = { progressTitle: 'Creating edges.<br>Phase %s from 3', };
-
-		switch (settings.options.getLanguageCode()) {
-
-			case 'ru'://Russian language
-
-				lang.progressTitle = 'Создание ребер.<br>Фаза %s из 3';
-
-				break;
-
-		}
-		let phase = 1, verticeId = 1;
-		const progressBar = new ProgressBar(settings.options.renderer.domElement.parentElement, () => {
-
-			edges.push();
-			progressBar.value = verticeId;
-			verticeId++;
-			if (verticeId === position.length) {
-
-				edges.push([position.length - 1, 0]);
-
-				if (this.classSettings.debug)
-					this.classSettings.debug.logTimestamp('Push edges. phase ' + phase + '. ');
-
-				phase++;
-				progressBar.title(lang.progressTitle.replace('%s', phase));
-				verticeId = 0;
-				progressBar.newStep(() => {
-
-					let verticeIdOpposite = edges[position.length * (phase - 2) + verticeId][1] + 1;
-					if (verticeIdOpposite >= position.length) verticeIdOpposite = 0;
-					edges.push([verticeId, verticeIdOpposite]);
-					const stop = () => {
-
-						progressBar.remove();
-						if (this.classSettings.continue) this.classSettings.continue();
-						if (this.classSettings.projectParams) this.project(this.classSettings.projectParams.scene, this.classSettings.projectParams.params);
-
-					}
-					switch (position.length) {
-
-						case 4://tetraedr
-							if (edges.length >= 6) {
-
-								stop();
-								return;
-
-							}
-							break;
-						case 5://pentahedroid https://en.wikipedia.org/wiki/5-cell
-							if (edges.length >= 10) {
-
-								stop();
-								return;
-
-							}
-							break;
-						case 6://устраняет ошибку
-							//Universe: edges[12]. Duplicate edge[3,0]
-							if (edges.length >= 15) {
-
-								stop();
-								return;
-
-							}
-							break;
-					}
-
-					progressBar.value = verticeId;
-					verticeId++;
-					if (verticeId === position.length) {
-
-						if (this.classSettings.debug)
-							this.classSettings.debug.logTimestamp('Push edges. phase ' + phase + '. ');
-
-						phase++;
-						if (phase > 3) stop();
-						else {
-
-							progressBar.title(lang.progressTitle.replace('%s', phase));
-							verticeId = 0;
-							progressBar.step();
-
-						}
-
-					} else progressBar.step();
-
-				});
-
-			}
-			progressBar.step();
-
-		}, {
-
-			sTitle: lang.progressTitle.replace('%s', phase),
-			max: position.length,
-
-		});
-
-	}
-*/
 	name( getLanguageCode ) {
 
 		//Localization
@@ -209,7 +100,6 @@ class Universe2D extends Universe1D {
 	//Overridden methods from base class
 
 	get verticeEdgesLengthMax() { return 6; }//нельзя добавлть новое ребро если у вершины уже 6 ребра
-//	TestVerticeEdges(vertice){ return (vertice.length === this.verticeEdgesLength) || (vertice.length === 3) ? true : false; }
 	get dimension() { return 3; }//space dimension
 	get verticesCountMin() { return 4; }
 
@@ -222,7 +112,6 @@ class Universe2D extends Universe1D {
 
 		classSettings.continue = () => this.logUniverse2D();
 		super(options, classSettings);
-//		this.logUniverse2D();
 
 	}
 

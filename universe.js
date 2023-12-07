@@ -49,7 +49,6 @@ class Universe {
 		this.#verticeEdgesLength = length;
 		this.removeMesh();
 		this.pushEdges();
-//		this.project();
 
 	}
 
@@ -124,7 +123,6 @@ class Universe {
 	}
 	TestVertice(vertice, strVerticeId){
 		
-//		if (!this.TestVerticeEdges(vertice))
 		if (this.classSettings.edges === false) return;
 		if (vertice.edges.length < (this.verticeEdgesLength - 1))//Допускается количество ребер на одно меньше максимального значения потому что при опреденном количестве вершин для некоротых вершин не хватает противоположных вершин
 			console.error(sUniverse + ': Test(). Invalid ' + strVerticeId + '.edges.length = ' + vertice.edges.length);
@@ -527,6 +525,7 @@ class Universe {
 				return angles[name];
 
 			},
+			//set settings.object.geometry.angles
 			set: (aAngles, name, value) => {
 
 				switch(name){
