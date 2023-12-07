@@ -97,7 +97,6 @@ class Universe {
 							progressBar.remove();
 							if (this.classSettings.debug)
 								this.classSettings.debug.logTimestamp('Geometry log. ');
-								//console.log('time: Geometry log. ' + ((window.performance.now() - this.classSettings.debug.timestamp) / 1000) + ' sec.');
 							
 						} else progressBar.step();
 						break;
@@ -537,11 +536,6 @@ class Universe {
 						aAngles.length = value;//remove vrtices
 						if (classSettings.edges) {//Для экономии времени не добавляю ребра если на холст вывожу только вершины
 
-//const length = settings.object.geometry.indices.edges.length;
-/*							
-							settings.object.geometry.indices.edges.length = 0;
-							_this.remove(_this.classSettings.projectParams.scene);
-*/	   
 							_this.removeMesh();
 							_this.pushEdges();
 
@@ -570,12 +564,8 @@ class Universe {
 				if (!isNaN(i)) {
 
 					if (i > _position.length) console.error(sUniverse + ': position get. Invalid index = ' + i + ' position.length = ' + _position.length);
-					else if (i === _position.length) {
-						
-//						settings.object.geometry.position.push();
+					else if (i === _position.length)
 						settings.object.geometry.angles.pushRandomAngle();
-
-					}
 					const _vertice = _position[i];
 					const angle2Vertice = () => {
 
@@ -610,8 +600,6 @@ class Universe {
 
 													const sPush = sUniverse + ': Vertice' + (verticeId === undefined ? '' : '[' + verticeId + ']') + '.edges.push(' + edgeId + '):';
 
-//													if (edges.length >= _this.verticeEdgesLengthMax)
-//console.log('edges.length = ' + edges.length)
 													if (edges.length >= _this.verticeEdgesLength) {
 
 														console.error(sPush + ' invalid edges.length = ' + edges.length);
@@ -700,7 +688,6 @@ class Universe {
 
 											//find middle vertice between opposite vertices
 											
-//											const oppositeVerticesId = vertice.oppositeVerticesId;
 											const middlePoint = [], muddleVertice = [];
 											vertice.forEach((angle, angleId) => {
 				
@@ -715,7 +702,6 @@ class Universe {
 														
 												});
 												muddleVertice[angleId] = middlePoint[middlePointAngleId] / oppositeVerticesId.length + angle;
-//												vertices[verticeId][angleId] = middlePoint[middlePointAngleId] / oppositeVerticesId.length + angle;
 				
 											});
 											return muddleVertice;
@@ -777,7 +763,7 @@ class Universe {
 						}
 					});
 					case 'count': return _position.count === undefined ? _position.length : _position.count;
-					case 'push': return (position/* = randomPosition()*/) => { console.error(sUniverse + ': deprecated push vertice. Use "settings.object.geometry.angles.pushRandomAngle()" instead.'); };
+					case 'push': return (position) => { console.error(sUniverse + ': deprecated push vertice. Use "settings.object.geometry.angles.pushRandomAngle()" instead.'); };
 
 					//for debug
 					case 'test': return () => {
@@ -801,6 +787,7 @@ class Universe {
 				return _position[name];
 
 			},
+			//set settings.object.geometry.position
 			set: (_position, name, value) => {
 
 				const i = parseInt(name);
@@ -822,11 +809,7 @@ class Universe {
 
 					}
 
-				} else {
-
-					_position[name] = value;
-
-				}
+				} else _position[name] = value;
 				return true;
 
 			}
@@ -888,7 +871,6 @@ class Universe {
 
 							console.error(sUniverse + sPushEdge + 'edge[' + vertice0Id + ', ' + vertice1Id + ']. Invalid vertice range from 0 to ' + (position.length - 1));
 							return;
-//							vertice1Id = vertice1Id - position.length;//перенести индекс вершины в начало если индекс вершины больша количества вершин
 
 						}
 						if ((position[vertice0Id].edges.length >= _this.verticeEdgesLength) || (position[vertice1Id].edges.length >= _this.verticeEdgesLength))
@@ -932,6 +914,7 @@ class Universe {
 				return _edges[name];
 
 			},
+			//set indices.edges
 			set: (_edges, name, value) => {
 
 				switch(name){
@@ -1001,7 +984,6 @@ class Universe {
 				_this.remove(classSettings.projectParams.scene);
 				if (nd) nd = undefined;
 				if (myPoints) myPoints = undefined;
-//				_this.pushEdges();
 
 			}
 
@@ -1013,11 +995,8 @@ class Universe {
 			this.update = (verticeId) => {
 
 				const points = nd && (nd.object3D.visible === true) ? nd.object3D : myPoints,
-					vertice = settings.object.geometry.position[verticeId];
-/*				
-				console.log(nd + '' + myPoints);
-*/		 
-				const itemSize = points.geometry.attributes.position.itemSize;
+					vertice = settings.object.geometry.position[verticeId],
+					itemSize = points.geometry.attributes.position.itemSize;
 				for (let axesId = 0; axesId < itemSize; axesId++)
 					points.geometry.attributes.position.array [axesId + verticeId * itemSize] = vertice[axesId] != undefined ? vertice[axesId] : 0.0;
 				points.geometry.attributes.position.needsUpdate = true;
@@ -1069,14 +1048,9 @@ class Universe {
 					gui = (object) => {
 
 						const aAngleControls = [], anglesDefault = [];
-//						let cMiddleVertice;
 						object.userData.gui = {
 							
-							get isLocalPositionReadOnly(){
-								
-								return true;//!boUpdateAngle;
-							
-							},
+							get isLocalPositionReadOnly(){ return true; },
 							setValues: (verticeId) => {
 
 								anglesDefault.length = 0;
@@ -1124,16 +1098,6 @@ class Universe {
 									};
 								resetControl(aAngleControls.cHighlightEdges);
 								resetControl(aAngleControls.cMiddleVertice);
-/*								
-								const cHighlightEdges = aAngleControls.cHighlightEdges, boHighlightEdges = cHighlightEdges.getValue();
-								cHighlightEdges.setValue(false);//Убрать выделение ребер у предыдущей вершины.
-								if ((verticeId != -1) && boHighlightEdges) cHighlightEdges.setValue(boHighlightEdges);//если у предыдущей вершины выделялись ребра, то и у новой вершины выделять ребра
-*/								
-/*												   
-								const cMiddleVertice = aAngleControls.cMiddleVertice, boMiddleVertice = cMiddleVertice.getValue();
-								cMiddleVertice.setValue(false);//Убрать отображение средней вершины у предыдущей вершины.
-								if ((verticeId != -1) && boMiddleVertice) cMiddleVertice.setValue(boMiddleVertice);//если у предыдущей вершины отображалась средняя вершина, то и у новой вершины отображать среднюю вершину
-*/		
 								
 							},
 							addControllers: (fParent) => {
@@ -1269,13 +1233,13 @@ class Universe {
 									else if (itemSize != vertice.length) console.error(sUniverse + ': Middle vertice GUI. Invalid itemSize = ' + itemSize);
 									vertice.forEach(axis => vertices.push(axis))
 
-									//Каждая вершина должна иметь 3 координаты что бы не поучить ошибку:
+									//Каждая вершина должна иметь не меньше 3 координат что бы не поучить ошибку:
 									//THREE.BufferGeometry.computeBoundingSphere(): Computed radius is NaN. The "position" attribute is likely to have NaN values. 
 									for (let i = 0; i < (3 - itemSize); i++) vertices.push(0);
 										
 								}
 
-								//highlight edges
+								//highlight edges Подсветить ребра для этой вершины
 								
 								let oppositeVerticeEdges;
 								aAngleControls.cHighlightEdges = fAdvansed.add({ boHighlightEdges: false }, 'boHighlightEdges').onChange((boHighlightEdges) => {
@@ -1290,21 +1254,8 @@ class Universe {
 										angles.edges.forEach(edgeId => {
 
 											const edge = geometry.indices.edges[edgeId];
-											edge.forEach(edgeVerticeId => {
-												
-												pushVertice(position[edgeVerticeId]);
-/*												
-												const vertice = position[edgeVerticeId];
-												if (itemSize === undefined) itemSize = vertice.length;
-												else if (itemSize != vertice.length) console.error(sUniverse + ': Middle vertice GUI. Invalid itemSize = ' + itemSize);
-												vertice.forEach(axis => vertices.push(axis))
+											edge.forEach(edgeVerticeId => { pushVertice(position[edgeVerticeId]); });
 
-												//Каждая вершина должна иметь 3 координаты что бы не поучить ошибку:
-												//THREE.BufferGeometry.computeBoundingSphere(): Computed radius is NaN. The "position" attribute is likely to have NaN values. 
-												for (let i = 0; i < (3 - itemSize); i++) vertices.push(0);
-*/												
-												
-											})
 										});
 										const buffer = new THREE.BufferGeometry().setAttribute('position', new THREE.BufferAttribute(new Float32Array(vertices), itemSize > 3 ? itemSize : 3));
 										oppositeVerticeEdges = new THREE.LineSegments(buffer, new THREE.LineBasicMaterial({ color: 'white', }));
@@ -1340,24 +1291,6 @@ class Universe {
 											pushVertice(position[oppositeVerticeId]);
 											
 										});
-/*										
-										angles.edges.forEach(edgeId => {
-
-											const edge = geometry.indices.edges[edgeId];
-											edge.forEach(edgeVerticeId => {
-												
-												const vertice = position[edgeVerticeId];
-												if (itemSize === undefined) itemSize = vertice.length;
-												else if (itemSize != vertice.length) console.error(sUniverse + ': Middle vertice GUI. Invalid itemSize = ' + itemSize);
-												vertice.forEach(axis => vertices.push(axis))
-
-												//Каждая вершина должна иметь 3 координаты что бы не поучить ошибку:
-												//THREE.BufferGeometry.computeBoundingSphere(): Computed radius is NaN. The "position" attribute is likely to have NaN values. 
-												for (let i = 0; i < (3 - itemSize); i++) vertices.push(0);
-												
-											})
-										});
-*/										
 										const buffer = new THREE.BufferGeometry().setAttribute('position', new THREE.BufferAttribute(new Float32Array(vertices), itemSize > 3 ? itemSize : 3));
 										middleVerticeEdges = new THREE.LineSegments(buffer, new THREE.LineBasicMaterial({ color: 'blue', }));
 										classSettings.projectParams.scene.add(middleVerticeEdges);
@@ -1487,7 +1420,6 @@ class Universe {
 								onReady: (points) => {
 									
 									myPoints = points;
-//									myPoints.userData.geometry = settings.object.geometry;
 									gui(myPoints);
 									intersection(points);
 								
@@ -1505,6 +1437,8 @@ class Universe {
 			}
 			this.projectGeometry();
 
+			//шаг проигрывателя player
+			//Вычислем middle vertices
 			options.onSelectScene = (index, t) => {
 
 				if (index === 0) return;
@@ -1578,7 +1512,6 @@ class Universe {
 
 				}
 				const vertices = [],
-//verticesDebug = [],
 					timestamp = classSettings.debug ? window.performance.now() : undefined,
 					step = () => {
 
@@ -1586,31 +1519,6 @@ class Universe {
 						const stepItem = () => {
 
 							vertices.push(position.angles[verticeId].middleVertice());
-/*							
-							const vertice = position.angles[verticeId];
-							const middleVertice = vertice.middleVertice();
-verticesDebug.push(middleVertice);
-							vertices.push([]);
-							const oppositeVerticesId = vertice.oppositeVerticesId;
-
-							//find middle vertice between opposite vertices
-							const middlePoint = [];
-							vertice.forEach((angle, angleId) => {
-
-								middlePoint.push(0);
-								const middlePointAngleId = middlePoint.length - 1;
-								oppositeVerticesId.forEach(verticeIdOpposite => {
-									
-									let angle2OppositeVertice = position[verticeIdOpposite].angles[angleId] - angle;
-									while(angle2OppositeVertice < -Math.PI) angle2OppositeVertice += 2 * Math.PI;
-									while(angle2OppositeVertice > Math.PI) angle2OppositeVertice -= 2 * Math.PI;
-									middlePoint[middlePointAngleId] += angle2OppositeVertice;
-										
-								});
-								vertices[verticeId][angleId] = middlePoint[middlePointAngleId] / oppositeVerticesId.length + angle;
-
-							});
-*/							
 							verticeId += 1;
 							if (verticeId >= position.length) {
 
@@ -1894,8 +1802,6 @@ verticesDebug.push(middleVertice);
 				{ settings: { offset: 1, }, min: 1, max: 1000, step: 1, getLanguageCode: options.getLanguageCode}));
 			
 			//Vertices count
-//const length = settings.object.geometry.angles.guiLength;
-//settings.object.geometry.angles.length = 5;
 			const cVerticesCount = dat.controllerZeroStep(fVertices, settings.object.geometry.angles, 'guiLength');
 			dat.controllerNameAndTitle(cVerticesCount, lang.verticesCount, lang.verticesCountTitle);
 
@@ -1944,12 +1850,7 @@ verticesDebug.push(middleVertice);
 					setCockie();
 				
 				} ),
-				displayEdge = () => {
-
-					_display(fEdge.domElement, classSettings.edges);
-//					fEdge.domElement.style.display = classSettings.edges === false ? 'none' : 'block';
-
-				};
+				displayEdge = () => { _display(fEdge.domElement, classSettings.edges); };
 			displayEdge();
 			dat.controllerNameAndTitle( cEdges, lang.edges, lang.edgesTitle );
 			dat.controllerNameAndTitle( cProject, lang.project, lang.projectTitle );
