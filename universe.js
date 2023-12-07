@@ -579,24 +579,7 @@ class Universe {
 					const _vertice = _position[i];
 					const angle2Vertice = () => {
 
-						const vertice = _this.angles2Vertice(_vertice
-/*							
-							new Proxy(_vertice, {
-
-								get: (angles, name) => {
-
-									const i = parseInt(name);
-									if (!isNaN(i)) {
-
-										if (i >= angles.length) return 0.0;
-										
-									}
-									return angles[name];
-
-								},
-							})
-*/							
-						), r = classSettings.t;
+						const vertice = _this.angles2Vertice(_vertice), r = classSettings.t;
 						//Эта проверка не проходит для Universe3D
 						if (classSettings.debug) {
 
@@ -713,11 +696,11 @@ class Universe {
 		
 									switch (name) {
 
-										case 'middleVertice': return () => {
+										case 'middleVertice': return (oppositeVerticesId = vertice.oppositeVerticesId) => {
 
 											//find middle vertice between opposite vertices
 											
-											const oppositeVerticesId = vertice.oppositeVerticesId;
+//											const oppositeVerticesId = vertice.oppositeVerticesId;
 											const middlePoint = [], muddleVertice = [];
 											vertice.forEach((angle, angleId) => {
 				
@@ -1131,9 +1114,21 @@ class Universe {
 							},
 							reset: (verticeId) => {
 
+								const cHighlightEdges = aAngleControls.cHighlightEdges,
+									resetControl = (control) => {
+										
+										const boValue = control.getValue();
+										control.setValue(false);//Убрать выделенные ребра.
+										if ((verticeId != -1) && boValue) control.setValue(boValue);//если у предыдущей вершины выделялись ребра, то и у новой вершины выделять ребра
+										
+									};
+								resetControl(aAngleControls.cHighlightEdges);
+								resetControl(aAngleControls.cMiddleVertice);
+/*								
 								const cHighlightEdges = aAngleControls.cHighlightEdges, boHighlightEdges = cHighlightEdges.getValue();
 								cHighlightEdges.setValue(false);//Убрать выделение ребер у предыдущей вершины.
 								if ((verticeId != -1) && boHighlightEdges) cHighlightEdges.setValue(boHighlightEdges);//если у предыдущей вершины выделялись ребра, то и у новой вершины выделять ребра
+*/								
 /*												   
 								const cMiddleVertice = aAngleControls.cMiddleVertice, boMiddleVertice = cMiddleVertice.getValue();
 								cMiddleVertice.setValue(false);//Убрать отображение средней вершины у предыдущей вершины.
@@ -1266,6 +1261,20 @@ class Universe {
 								_display(fOppositeVertice.domElement, false);
 								createAnglesControls(fOppositeVertice, aEdgeAngleControls);
 
+								let itemSize;
+								const vertices = [],
+									pushVertice = (vertice) => {
+									
+									if (itemSize === undefined) itemSize = vertice.length;
+									else if (itemSize != vertice.length) console.error(sUniverse + ': Middle vertice GUI. Invalid itemSize = ' + itemSize);
+									vertice.forEach(axis => vertices.push(axis))
+
+									//Каждая вершина должна иметь 3 координаты что бы не поучить ошибку:
+									//THREE.BufferGeometry.computeBoundingSphere(): Computed radius is NaN. The "position" attribute is likely to have NaN values. 
+									for (let i = 0; i < (3 - itemSize); i++) vertices.push(0);
+										
+								}
+
 								//highlight edges
 								
 								let oppositeVerticeEdges;
@@ -1275,14 +1284,16 @@ class Universe {
 									if (boHighlightEdges) {
 										
 										const verticeId = aAngleControls.verticeId,
-											angles = position.angles[verticeId],
-											vertices = [];
-										let itemSize;
+											angles = position.angles[verticeId];
+										vertices.length = 0;
+										itemSize = undefined;
 										angles.edges.forEach(edgeId => {
 
 											const edge = geometry.indices.edges[edgeId];
 											edge.forEach(edgeVerticeId => {
 												
+												pushVertice(position[edgeVerticeId]);
+/*												
 												const vertice = position[edgeVerticeId];
 												if (itemSize === undefined) itemSize = vertice.length;
 												else if (itemSize != vertice.length) console.error(sUniverse + ': Middle vertice GUI. Invalid itemSize = ' + itemSize);
@@ -1291,6 +1302,7 @@ class Universe {
 												//Каждая вершина должна иметь 3 координаты что бы не поучить ошибку:
 												//THREE.BufferGeometry.computeBoundingSphere(): Computed radius is NaN. The "position" attribute is likely to have NaN values. 
 												for (let i = 0; i < (3 - itemSize); i++) vertices.push(0);
+*/												
 												
 											})
 										});
@@ -1310,6 +1322,7 @@ class Universe {
 
 								//Middle vertice
 								
+								let middleVerticeEdges;
 								aAngleControls.cMiddleVertice = fAdvansed.add({ boMiddleVertice: false }, 'boMiddleVertice').onChange((boMiddleVertice) => {
 
 									_this.opacity(boMiddleVertice);
@@ -1317,9 +1330,17 @@ class Universe {
 										
 										const verticeId = aAngleControls.verticeId,
 											angles = position.angles[verticeId],
-//											middleVertice = angles.middleVertice(),
-											vertices = [];
-										let itemSize;
+											oppositeVerticesId = angles.oppositeVerticesId,
+											middleVertice = _this.angles2Vertice(angles.middleVertice(oppositeVerticesId));
+										vertices.length = 0;
+										itemSize = undefined;
+										oppositeVerticesId.forEach(oppositeVerticeId => {
+											
+											pushVertice(middleVertice);
+											pushVertice(position[oppositeVerticeId]);
+											
+										});
+/*										
 										angles.edges.forEach(edgeId => {
 
 											const edge = geometry.indices.edges[edgeId];
@@ -1336,14 +1357,15 @@ class Universe {
 												
 											})
 										});
+*/										
 										const buffer = new THREE.BufferGeometry().setAttribute('position', new THREE.BufferAttribute(new Float32Array(vertices), itemSize > 3 ? itemSize : 3));
-										oppositeVerticeEdges = new THREE.LineSegments(buffer, new THREE.LineBasicMaterial({ color: 'white', }));
-										classSettings.projectParams.scene.add(oppositeVerticeEdges);
+										middleVerticeEdges = new THREE.LineSegments(buffer, new THREE.LineBasicMaterial({ color: 'blue', }));
+										classSettings.projectParams.scene.add(middleVerticeEdges);
 										
 									} else {
 
-										if (oppositeVerticeEdges) classSettings.projectParams.scene.remove(oppositeVerticeEdges);
-										oppositeVerticeEdges = undefined;
+										if (middleVerticeEdges) classSettings.projectParams.scene.remove(middleVerticeEdges);
+										middleVerticeEdges = undefined;
 										
 									}
 									
@@ -1556,13 +1578,15 @@ class Universe {
 
 				}
 				const vertices = [],
-verticesDebug = [],
+//verticesDebug = [],
 					timestamp = classSettings.debug ? window.performance.now() : undefined,
 					step = () => {
 
 						progressBar.value = verticeId;
 						const stepItem = () => {
 
+							vertices.push(position.angles[verticeId].middleVertice());
+/*							
 							const vertice = position.angles[verticeId];
 							const middleVertice = vertice.middleVertice();
 verticesDebug.push(middleVertice);
@@ -1586,6 +1610,7 @@ verticesDebug.push(middleVertice);
 								vertices[verticeId][angleId] = middlePoint[middlePointAngleId] / oppositeVerticesId.length + angle;
 
 							});
+*/							
 							verticeId += 1;
 							if (verticeId >= position.length) {
 
