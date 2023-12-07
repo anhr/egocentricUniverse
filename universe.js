@@ -1086,7 +1086,7 @@ class Universe {
 					gui = (object) => {
 
 						const aAngleControls = [], anglesDefault = [];
-						let cMiddleVertice;
+//						let cMiddleVertice;
 						object.userData.gui = {
 							
 							get isLocalPositionReadOnly(){
@@ -1131,9 +1131,14 @@ class Universe {
 							},
 							reset: (verticeId) => {
 
-								const boMiddleVertice = cMiddleVertice.getValue();
+								const cHighlightEdges = aAngleControls.cHighlightEdges, boHighlightEdges = cHighlightEdges.getValue();
+								cHighlightEdges.setValue(false);//Убрать выделение ребер у предыдущей вершины.
+								if ((verticeId != -1) && boHighlightEdges) cHighlightEdges.setValue(boHighlightEdges);//если у предыдущей вершины выделялись ребра, то и у новой вершины выделять ребра
+/*												   
+								const cMiddleVertice = aAngleControls.cMiddleVertice, boMiddleVertice = cMiddleVertice.getValue();
 								cMiddleVertice.setValue(false);//Убрать отображение средней вершины у предыдущей вершины.
 								if ((verticeId != -1) && boMiddleVertice) cMiddleVertice.setValue(boMiddleVertice);//если у предыдущей вершины отображалась средняя вершина, то и у новой вершины отображать среднюю вершину
+*/		
 								
 							},
 							addControllers: (fParent) => {
@@ -1155,6 +1160,9 @@ class Universe {
 									edgesTitle: 'Edges indexes of the vertice',
 									oppositeVertice: 'Opposite vertice',
 
+									highlightEdges: 'Highlight',
+									highlightEdgesTitle: 'Highlight edges of the vertice.',
+								
 									middleVertice: 'Middle vertice',
 									middleVerticeTitle: 'Find middle vertice between opposite vertices.',
 									
@@ -1181,6 +1189,9 @@ class Universe {
 										lang.edges = 'Ребра';
 										lang.edgesTitle = 'Индексы ребер, имеющих эту вершину';
 										lang.oppositeVertice = 'Противоположная вершина';
+
+										lang.highlightEdges = 'Выделить';
+										lang.highlightEdgesTitle = 'Выделить ребра этой вершины.';
 
 										lang.middleVertice = 'Средняя вершина';
 										lang.middleVerticeTitle = 'Найти среднюю вершину между противоположными вершинами.';
@@ -1254,9 +1265,52 @@ class Universe {
 									fOppositeVertice = fAdvansed.addFolder(lang.oppositeVertice);
 								_display(fOppositeVertice.domElement, false);
 								createAnglesControls(fOppositeVertice, aEdgeAngleControls);
+
+								//highlight edges
 								
 								let oppositeVerticeEdges;
-								cMiddleVertice = fAngles.add({ boMiddleVertice: false }, 'boMiddleVertice').onChange((boMiddleVertice) => {
+								aAngleControls.cHighlightEdges = fAdvansed.add({ boHighlightEdges: false }, 'boHighlightEdges').onChange((boHighlightEdges) => {
+
+									_this.opacity(boHighlightEdges);
+									if (boHighlightEdges) {
+										
+										const verticeId = aAngleControls.verticeId,
+											angles = position.angles[verticeId],
+											vertices = [];
+										let itemSize;
+										angles.edges.forEach(edgeId => {
+
+											const edge = geometry.indices.edges[edgeId];
+											edge.forEach(edgeVerticeId => {
+												
+												const vertice = position[edgeVerticeId];
+												if (itemSize === undefined) itemSize = vertice.length;
+												else if (itemSize != vertice.length) console.error(sUniverse + ': Middle vertice GUI. Invalid itemSize = ' + itemSize);
+												vertice.forEach(axis => vertices.push(axis))
+
+												//Каждая вершина должна иметь 3 координаты что бы не поучить ошибку:
+												//THREE.BufferGeometry.computeBoundingSphere(): Computed radius is NaN. The "position" attribute is likely to have NaN values. 
+												for (let i = 0; i < (3 - itemSize); i++) vertices.push(0);
+												
+											})
+										});
+										const buffer = new THREE.BufferGeometry().setAttribute('position', new THREE.BufferAttribute(new Float32Array(vertices), itemSize > 3 ? itemSize : 3));
+										oppositeVerticeEdges = new THREE.LineSegments(buffer, new THREE.LineBasicMaterial({ color: 'white', }));
+										classSettings.projectParams.scene.add(oppositeVerticeEdges);
+										
+									} else {
+
+										if (oppositeVerticeEdges) classSettings.projectParams.scene.remove(oppositeVerticeEdges);
+										oppositeVerticeEdges = undefined;
+										
+									}
+									
+								} );
+								dat.controllerNameAndTitle(aAngleControls.cHighlightEdges, lang.highlightEdges, lang.highlightEdgesTitle);
+
+								//Middle vertice
+								
+								aAngleControls.cMiddleVertice = fAdvansed.add({ boMiddleVertice: false }, 'boMiddleVertice').onChange((boMiddleVertice) => {
 
 									_this.opacity(boMiddleVertice);
 									if (boMiddleVertice) {
@@ -1294,7 +1348,7 @@ class Universe {
 									}
 									
 								} );
-								dat.controllerNameAndTitle( cMiddleVertice, lang.middleVertice, lang.middleVerticeTitle );
+								dat.controllerNameAndTitle(aAngleControls.cMiddleVertice, lang.middleVertice, lang.middleVerticeTitle);
 								
 								return fAdvansed;
 	
