@@ -952,6 +952,7 @@ class Universe {
 			} else scene = _this.classSettings.projectParams.scene;
 			
 			let nd, myPoints;
+			const aAngleControls = [];
 
 			this.opacity = (transparent, opacity = 0.3) => {
 
@@ -1007,6 +1008,23 @@ class Universe {
 					guiSelectPoint.setReadOnlyPosition(false);
 					settings.options.guiSelectPoint.update(true);
 					guiSelectPoint.setReadOnlyPosition(true);
+					const setControl = (control) => {
+
+						if (!control.getValue()) return;
+						control.setValue(false);
+						control.setValue(true);
+						
+					}
+					setControl(aAngleControls.cHighlightEdges);
+					setControl(aAngleControls.cMiddleVertice);
+/*					
+					if (aAngleControls.cHighlightEdges.getValue()) {
+
+						aAngleControls.cHighlightEdges.setValue(false);
+						aAngleControls.cHighlightEdges.setValue(true);
+						
+					}
+*/					
 
 				}
 				
@@ -1046,7 +1064,7 @@ class Universe {
 					guiSelectPoint = settings.options.guiSelectPoint,
 					gui = (object) => {
 
-						const aAngleControls = [], anglesDefault = [];
+						const anglesDefault = [];
 						object.userData.gui = {
 							
 							get isLocalPositionReadOnly(){ return true; },
@@ -1087,8 +1105,8 @@ class Universe {
 							},
 							reset: (verticeId) => {
 
-								const cHighlightEdges = aAngleControls.cHighlightEdges,
-									resetControl = (control) => {
+//								const cHighlightEdges = aAngleControls.cHighlightEdges,
+								const resetControl = (control) => {
 										
 										const boValue = control.getValue();
 										control.setValue(false);//Убрать выделенные ребра.
