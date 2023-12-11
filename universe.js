@@ -1214,7 +1214,7 @@ class Universe {
 
 								//Angles
 
-								const createAnglesControls = (fParent, aAngleControls) => {
+								const createAnglesControls = (fParent, aAngleControls, anglesDefault) => {
 									
 									const fAngles = fParent.addFolder(lang.angles);
 									dat.folderNameAndTitle(fAngles, lang.angles, lang.anglesTitle);
@@ -1229,11 +1229,21 @@ class Universe {
 										aAngleControls.push(cAngle);
 										
 									}
+								
+									//Restore default angles.
+									const cRestoreDefaultAngles = fAngles.add( {
+						
+										defaultF: () => { aAngleControls.forEach((cAngle, i) => cAngle.setValue(anglesDefault[i])); },
+						
+									}, 'defaultF' );
+									dat.controllerNameAndTitle( cRestoreDefaultAngles, lang.defaultButton, lang.defaultAnglesTitle );
+									
 									return fAngles;
 
 								}
-								const fAngles = createAnglesControls(fAdvansed, aAngleControls);
-								
+								const fAngles = createAnglesControls(fAdvansed, aAngleControls, anglesDefault);
+
+/*								
 								//Restore default local position.
 								const cRestoreDefaultAngles = fAngles.add( {
 					
@@ -1241,6 +1251,7 @@ class Universe {
 					
 								}, 'defaultF' );
 								dat.controllerNameAndTitle( cRestoreDefaultAngles, lang.defaultButton, lang.defaultAnglesTitle );
+*/								
 
 								//Edges
 								
@@ -1268,7 +1279,12 @@ class Universe {
 											oppositeVerticeAngles = position[oppositeVerticeId].angles;
 										if (oppositeVerticeAngles.length != aEdgeAngleControls.length) console.error(sUniverse + sChangeVerticeEdge + 'Invalid opposite vertice angles length = ' + oppositeVerticeAngles.length);
 										aEdgeAngleControls.verticeId = oppositeVerticeId;
-										oppositeVerticeAngles.forEach((angle, i) => aEdgeAngleControls[i].setValue(angle));
+										oppositeVerticeAngles.forEach((angle, i) => {
+											
+											aEdgeAngleControls[i].setValue(angle);
+											edgeAnglesDefault.push(angle);
+
+										});
 
 										//рисуем крестик на противоположной вершине выбранного ребра
 										aAngleControls.removeCross();
@@ -1304,9 +1320,10 @@ class Universe {
 								aAngleControls.cEdges.__select[0].selected = true;
 								dat.controllerNameAndTitle(aAngleControls.cEdges, lang.edges, lang.edgesTitle);
 								const aEdgeAngleControls = [],
-									fOppositeVertice = fAdvansed.addFolder(lang.oppositeVertice);
+									fOppositeVertice = fAdvansed.addFolder(lang.oppositeVertice),
+									edgeAnglesDefault = [];
 								_display(fOppositeVertice.domElement, false);
-								createAnglesControls(fOppositeVertice, aEdgeAngleControls);
+								createAnglesControls(fOppositeVertice, aEdgeAngleControls, edgeAnglesDefault);
 
 								let itemSize;
 								const vertices = [],
