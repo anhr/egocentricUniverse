@@ -1181,7 +1181,7 @@ class Universe {
 										lang.highlightEdges = 'Выделить';
 										lang.highlightEdgesTitle = 'Выделить ребра этой вершины.';
 
-										lang.middleVertice = 'Средняя вершина';
+										lang.middleVertice = 'Средняя';
 										lang.middleVerticeTitle = 'Найти среднюю вершину между противоположными вершинами.';
 
 										lang.defaultButton = 'Восстановить';
@@ -1336,11 +1336,6 @@ class Universe {
 
 										});
 										oppositeVerticeEdges = addObject2Scene(vertices, 'white');
-/*
-										const buffer = new THREE.BufferGeometry().setAttribute('position', new THREE.BufferAttribute(new Float32Array(vertices), itemSize > 3 ? itemSize : 3));
-										oppositeVerticeEdges = new THREE.LineSegments(buffer, new THREE.LineBasicMaterial({ color: 'white', }));
-										classSettings.projectParams.scene.add(oppositeVerticeEdges);
-*/
 										
 									} else {
 
@@ -1373,11 +1368,6 @@ class Universe {
 											
 										});
 										middleVerticeEdges = addObject2Scene(vertices, 'blue');
-/*
-										const buffer = new THREE.BufferGeometry().setAttribute('position', new THREE.BufferAttribute(new Float32Array(vertices), itemSize > 3 ? itemSize : 3));
-										middleVerticeEdges = new THREE.LineSegments(buffer, new THREE.LineBasicMaterial({ color: 'blue', }));
-										classSettings.projectParams.scene.add(middleVerticeEdges);
-*/
 										
 									} else {
 
