@@ -686,7 +686,19 @@ class Universe {
 										case 'middleVertice': return (oppositeVerticesId = vertice.oppositeVerticesId) => {
 
 											//find middle vertice between opposite vertices
-											
+
+											const muddleVertice = [];
+											for (let angleId = 0; angleId < vertice.length; angleId++) {
+
+												let middleAngle = 0;
+												oppositeVerticesId.forEach(oppositeVerticesId => { middleAngle += position[oppositeVerticesId].angles[angleId]; });
+												while(middleAngle < -Math.PI) middleAngle += 2 * Math.PI;
+												while(middleAngle > Math.PI) middleAngle -= 2 * Math.PI;
+												middleAngle = middleAngle / oppositeVerticesId.length;
+												muddleVertice.push(middleAngle);
+												
+											}
+/*не помню почему выбрал такой алгоритм
 											const middlePoint = [], muddleVertice = [];
 											vertice.forEach((angle, angleId) => {
 				
@@ -703,6 +715,7 @@ class Universe {
 												muddleVertice[angleId] = middlePoint[middlePointAngleId] / oppositeVerticesId.length + angle;
 				
 											});
+*/											
 											return muddleVertice;
 											
 										}
