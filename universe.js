@@ -954,13 +954,23 @@ class Universe {
 			let nd, myPoints;
 			const aAngleControls = [];
 
-			this.opacity = (transparent, opacity = 0.3) => {
+			this.opacityObject3D = (object3D, transparent, opacity = 0.3) => {
+
+				object3D.material.transparent = transparent;
+				object3D.material.opacity = transparent ? opacity : 1;
+				object3D.material.needsUpdate = true;//for THREE.REVISION = "145dev"
+					
+			}
+			this.opacity = (transparent, opacity) => {
 
 				if (!nd) return;
+				this.opacityObject3D(nd.object3D, transparent, opacity)
+/*				
 				const object3D = nd.object3D;
 				object3D.material.transparent = transparent;
 				object3D.material.opacity = transparent ? opacity : 1;
 				object3D.material.needsUpdate = true;//for THREE.REVISION = "145dev"
+*/				
 					
 			}
 			
@@ -1017,14 +1027,13 @@ class Universe {
 					}
 					setControl(aAngleControls.cHighlightEdges);
 					setControl(aAngleControls.cMiddleVertice);
-/*					
-					if (aAngleControls.cHighlightEdges.getValue()) {
-
-						aAngleControls.cHighlightEdges.setValue(false);
-						aAngleControls.cHighlightEdges.setValue(true);
+					
+					if (aAngleControls.cross) {
 						
+						aAngleControls.cross.position.copy(settings.object.geometry.position[aAngleControls.oppositeVerticeId]);
+						if (aAngleControls.cross.position.z === undefined) aAngleControls.cross.position.z = 0;
+
 					}
-*/					
 
 				}
 				
@@ -1081,7 +1090,7 @@ class Universe {
 									
 									const opt = document.createElement('option'),
 										edge = edges[edgeId];
-									opt.innerHTML = edgeId + ': ' + verticeId + ', ' + (edge[0] === verticeId ? edge[1] : edge[1] === verticeId ? edge[0] : console.error(sUniverse + ': Vertice edges GUI. Invalid edge vertices: ' + edge));
+									opt.innerHTML = '(' + edgeId + ') ' + verticeId + ', ' + (edge[0] === verticeId ? edge[1] : edge[1] === verticeId ? edge[0] : console.error(sUniverse + ': Vertice edges GUI. Invalid edge vertices: ' + edge));
 									opt.setAttribute('value', edgeId);
 									aAngleControls.cEdges.__select.appendChild(opt);
 									
@@ -1107,7 +1116,8 @@ class Universe {
 
 //								const cHighlightEdges = aAngleControls.cHighlightEdges,
 								const resetControl = (control) => {
-										
+
+										if (!control) return;
 										const boValue = control.getValue();
 										control.setValue(false);//Убрать выделенные ребра.
 										if ((verticeId != -1) && boValue) control.setValue(boValue);//если у предыдущей вершины выделялись ребра, то и у новой вершины выделять ребра
@@ -1115,6 +1125,8 @@ class Universe {
 									};
 								resetControl(aAngleControls.cHighlightEdges);
 								resetControl(aAngleControls.cMiddleVertice);
+
+								if (aAngleControls.removeCross) aAngleControls.removeCross();
 								
 							},
 							addControllers: (fParent) => {
@@ -1219,20 +1231,61 @@ class Universe {
 
 								//Edges
 								
+//								let cross;//крестик на противоположной вершине выбранного ребра
 								aAngleControls.cEdges = fAdvansed.add( { Edges: lang.notSelected }, 'Edges', { [lang.notSelected]: -1 } ).onChange((edgeId) => {
 
 									edgeId = parseInt(edgeId);
 									_display(fOppositeVertice.domElement, edgeId === -1 ? false : true);
+									aAngleControls.removeCross = () => {
+										
+										if (aAngleControls.cross) classSettings.projectParams.scene.remove(aAngleControls.cross);
+										aAngleControls.cross = undefined;
+										
+									}
+									if (edgeId === -1) {
+										
+										aAngleControls.removeCross();
+										aEdgeAngleControls.verticeId = undefined;
+										
+									} else {
+										
+										const sChangeVerticeEdge = ': Change vertice edge. ',
+											edge = edges[edgeId],
+											oppositeVerticeId = edge[0] === aAngleControls.verticeId ? edge[1] : edge[1] === aAngleControls.verticeId ? edge[0] : console.error(sUniverse + sChangeVerticeEdge + 'Invalid edge vertices: ' + edge),
+											oppositeVerticeAngles = position[oppositeVerticeId].angles;
+										if (oppositeVerticeAngles.length != aEdgeAngleControls.length) console.error(sUniverse + sChangeVerticeEdge + 'Invalid opposite vertice angles length = ' + oppositeVerticeAngles.length);
+										aEdgeAngleControls.verticeId = oppositeVerticeId;
+										oppositeVerticeAngles.forEach((angle, i) => aEdgeAngleControls[i].setValue(angle));
 
-									
-									
-									const sChangeVerticeEdge = ': Change vertice edge. ',
-										edge = edges[edgeId],
-										oppositeVerticeId = edge[0] === aAngleControls.verticeId ? edge[1] : edge[1] === aAngleControls.verticeId ? edge[0] : console.error(sUniverse + sChangeVerticeEdge + 'Invalid edge vertices: ' + edge),
-										oppositeVerticeAngles = position[oppositeVerticeId].angles;
-									if (oppositeVerticeAngles.length != aEdgeAngleControls.length) console.error(sUniverse + sChangeVerticeEdge + 'Invalid opposite vertice angles length = ' + oppositeVerticeAngles.length);
-									aEdgeAngleControls.verticeId = oppositeVerticeId;
-									oppositeVerticeAngles.forEach((angle, i) => aEdgeAngleControls[i].setValue(angle));
+										//рисуем крестик на противоположной вершине выбранного ребра
+										aAngleControls.removeCross();
+										vertices.length = 0;
+										itemSize = undefined;
+										const oppositeVertice = position[oppositeVerticeId],
+											crossSize = 0.05;
+/*										
+										pushVertice([oppositeVertice[0] - crossSize, oppositeVertice[1]]);
+										pushVertice([oppositeVertice[0] + crossSize, oppositeVertice[1]]);
+										pushVertice([oppositeVertice[0], oppositeVertice[1] - crossSize]);
+										pushVertice([oppositeVertice[0], oppositeVertice[1] + crossSize]);
+*/										
+										pushVertice([-crossSize, -crossSize]);
+										pushVertice([crossSize, crossSize]);
+										pushVertice([crossSize, -crossSize]);
+										pushVertice([-crossSize, crossSize]);
+										aAngleControls.cross = addObject2Scene(vertices, 'white');
+										aAngleControls.cross.position.copy(oppositeVertice);
+										if (aAngleControls.cross.position.z === undefined) aAngleControls.cross.position.z = 0;
+										aAngleControls.oppositeVerticeId = oppositeVerticeId;
+										
+									}
+/*									
+									if(oppositeVerticeEdges) {
+
+										this.opacityObject3D(oppositeVerticeEdges, true);
+										
+									}
+*/									
 					
 								});
 								aAngleControls.cEdges.__select[0].selected = true;
