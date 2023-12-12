@@ -688,16 +688,48 @@ class Universe {
 											//find middle vertice between opposite vertices
 
 											const muddleVertice = [];
+											const oppositeVerticeAngles0 = position[oppositeVerticesId[0]].angles, oppositeVerticeAngles1 = position[oppositeVerticesId[1]].angles;
+											for (let angleId = 0; angleId < vertice.length; angleId++) {
+
+												let angle0 = oppositeVerticeAngles0[angleId], angle1 = oppositeVerticeAngles1[angleId];
+												while(angle0 < 0) angle0 += 2 * Math.PI;
+												while(angle1 < 0) angle1 += 2 * Math.PI;
+												let x = (2 * Math.PI + (angle0 - angle1));
+												if (x > Math.PI) {
+													
+													x = 2 * Math.PI - x;
+													muddleVertice.push(angle0 + x / 2);
+
+												} else muddleVertice.push(angle1 + x / 2);
+/*												
+												const middleAngleAdd = (angle0 + angle1) / 2, middleAngleSub = (angle0 -  angle1) / 2;
+												muddleVertice.push((angle0 + angle1) / 2);
+*/												
+/*												
+												while(angle0 < 0) angle0 += 2 * Math.PI;
+												while(angle1 < 0) angle1 += 2 * Math.PI;
+												muddleVertice.push((angle0 + angle1) / 2);
+*/												
+												
+											}
+/*											
 											for (let angleId = 0; angleId < vertice.length; angleId++) {
 
 												let middleAngle = 0;
-												oppositeVerticesId.forEach(oppositeVerticesId => { middleAngle += position[oppositeVerticesId].angles[angleId]; });
-												while(middleAngle < -Math.PI) middleAngle += 2 * Math.PI;
-												while(middleAngle > Math.PI) middleAngle -= 2 * Math.PI;
+												oppositeVerticesId.forEach(oppositeVerticeId => {
+													
+													let angle = position[oppositeVerticeId].angles[angleId];
+													//while(angle < 0) angle += 2 * Math.PI;
+													middleAngle += angle;
+												
+												});
 												middleAngle = middleAngle / oppositeVerticesId.length;
+												//while(middleAngle < -Math.PI) middleAngle += 2 * Math.PI;
+												//while(middleAngle > Math.PI) middleAngle -= 2 * Math.PI;
 												muddleVertice.push(middleAngle);
 												
 											}
+*/											
 /*не помню почему выбрал такой алгоритм
 											const middlePoint = [], muddleVertice = [];
 											vertice.forEach((angle, angleId) => {
@@ -715,7 +747,21 @@ class Universe {
 												muddleVertice[angleId] = middlePoint[middlePointAngleId] / oppositeVerticesId.length + angle;
 				
 											});
-*/											
+*/
+											if (classSettings.debug) {
+
+//												let sLog = '';
+												console.log('');
+												oppositeVerticesId.forEach(oppositeVerticeId => {
+													
+													const verticeAngles = position[oppositeVerticeId].angles;
+													console.log('vertice[' + oppositeVerticeId + '] anlges: ' + JSON.stringify(verticeAngles));
+												
+												});
+												console.log('Middle vertice angles: ' + JSON.stringify(muddleVertice));
+//												console.log(sLog);
+												
+											}
 											return muddleVertice;
 											
 										}
@@ -1033,7 +1079,7 @@ class Universe {
 					guiSelectPoint.setReadOnlyPosition(true);
 					const setControl = (control) => {
 
-						if (!control.getValue()) return;
+						if (!control || !control.getValue()) return;
 						control.setValue(false);
 						control.setValue(true);
 						
