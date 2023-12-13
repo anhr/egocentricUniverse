@@ -693,13 +693,29 @@ class Universe {
 											for (let angleId = 0; angleId < vertice.length; angleId++) {
 
 												//https://wiki5.ru/wiki/Mean_of_circular_quantities#Mean_of_angles Среднее значение углов
-												const sin = Math.sin, cos = Math.cos, atan2 = Math.atan2, α = [];
+
+												//массив для хранения сумм декартовых координат прпотивоположных вершин
+												//для 1D вселенной это: aSum[0] = x, aSum[1] = y.
+												//для 2D вселенной это: aSum[0] = x, aSum[1] = y, aSum[2] = z.
+												//для 3D вселенной это: aSum[0] = x, aSum[1] = y, aSum[2] = z, aSum[3] = w.
+												const aSum = [];
+												for (let i = 0; i < _this.dimension; i++) aSum.push(0.0);
+												
+												oppositeVerticesId.forEach(oppositeAngleId => {
+
+													const oppositeVertice = position[oppositeAngleId];
+													oppositeVertice.forEach((axis, i) => aSum[i] += axis);
+												
+												});
+												muddleVertice.push(Math.atan2(aSum[0], aSum[1]));
+/*												
+												const sin = Math.sin, cos = Math.cos, atan2 = Math.atan2;//, α = [];
 												let sumSinα = 0, sumCosα = 0;
 												oppositeVerticesId.forEach(oppositeAngleId => {
 
 													let angle = position[oppositeAngleId].angles[angleId];
 													while(angle < 0) angle += 2 * Math.PI;
-													α.push(angle);
+//													α.push(angle);
 													sumSinα += sin(angle);
 													sumCosα += cos(angle);
 												
@@ -707,6 +723,7 @@ class Universe {
 												muddleVertice.push(atan2(sumSinα, sumCosα));
 												
 //console.log('α = ' + α);
+*/												
 /*												
 												//Перебираем противоположные вершины
 												//Берем две соседние противоположные вершины и вычисляем средний угол.
