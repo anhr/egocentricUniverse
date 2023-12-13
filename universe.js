@@ -688,6 +688,62 @@ class Universe {
 											//find middle vertice between opposite vertices
 
 											const muddleVertice = [];
+
+											//Перебираем углы вершины. Количество углов в вершине 1 для 1 мерной вселенной, 2 для 2D и 3 для 3D
+											for (let angleId = 0; angleId < vertice.length; angleId++) {
+
+												//https://wiki5.ru/wiki/Mean_of_circular_quantities#Mean_of_angles Среднее значение углов
+												const sin = Math.sin, cos = Math.cos, atan2 = Math.atan2, α = [];
+												let sumSinα = 0, sumCosα = 0;
+												oppositeVerticesId.forEach(oppositeAngleId => {
+
+													let angle = position[oppositeAngleId].angles[angleId];
+													while(angle < 0) angle += 2 * Math.PI;
+													α.push(angle);
+													sumSinα += sin(angle);
+													sumCosα += cos(angle);
+												
+												});
+												muddleVertice.push(atan2(sumSinα, sumCosα));
+												
+//console.log('α = ' + α);
+/*												
+												//Перебираем противоположные вершины
+												//Берем две соседние противоположные вершины и вычисляем средний угол.
+												//Потом находим средний угол между предыдущим средним уголом и углом следующей противоположной вершины.
+												//Поэтому перебираем не все противоположные вершины а на одну меньше
+												//ВИМАНИЕ!!! Седнее зачение между всеми углами не равно среднему значению между средним углом и углом следующей противоположной вершины
+												//Среднее зачение между всеми углами не вычисляю потому что постоянно нужно проверять чтобы среднее значение между углами не превышало 180 градусов
+												//Как это делать не стал пока разбираться.
+												for (let oppositeVerticeId = 0; oppositeVerticeId < (oppositeVerticesId.length - 1); oppositeVerticeId++) {
+													
+													const
+														oppositeVerticeAngles0 = oppositeVerticeId === 0 ?
+															//сначала находим средний угол между соседними протвоположными вершинами
+															position[oppositeVerticesId[oppositeVerticeId]].angles :
+															//а потом находим средний угол между предыдущим средним углом и углом следующей противоположной вершины
+															muddleVertice,
+														oppositeVerticeAngles1 = position[oppositeVerticesId[oppositeVerticeId + 1]].angles;
+													let angle0 = oppositeVerticeAngles0[angleId], angle1 = oppositeVerticeAngles1[angleId];
+													while(angle0 < 0) angle0 += 2 * Math.PI;
+													while(angle1 < 0) angle1 += 2 * Math.PI;
+													let x = (2 * Math.PI + (angle0 - angle1)), muddleAngle;
+													if (x > Math.PI) {
+														
+														x = 2 * Math.PI - x;
+														muddleAngle = angle0;
+	
+													} else muddleAngle = angle1;
+													muddleAngle = muddleAngle + x / 2;
+													if (oppositeVerticeId === 0)
+														muddleVertice.push(muddleAngle);
+													else muddleVertice[oppositeVerticeId - 1] = muddleAngle;
+
+												}
+*/												
+												
+											}
+/*											
 											const oppositeVerticeAngles0 = position[oppositeVerticesId[0]].angles, oppositeVerticeAngles1 = position[oppositeVerticesId[1]].angles;
 											for (let angleId = 0; angleId < vertice.length; angleId++) {
 
@@ -701,17 +757,9 @@ class Universe {
 													muddleVertice.push(angle0 + x / 2);
 
 												} else muddleVertice.push(angle1 + x / 2);
-/*												
-												const middleAngleAdd = (angle0 + angle1) / 2, middleAngleSub = (angle0 -  angle1) / 2;
-												muddleVertice.push((angle0 + angle1) / 2);
-*/												
-/*												
-												while(angle0 < 0) angle0 += 2 * Math.PI;
-												while(angle1 < 0) angle1 += 2 * Math.PI;
-												muddleVertice.push((angle0 + angle1) / 2);
-*/												
 												
 											}
+*/											
 /*											
 											for (let angleId = 0; angleId < vertice.length; angleId++) {
 
