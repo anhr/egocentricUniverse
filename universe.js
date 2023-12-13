@@ -1126,6 +1126,7 @@ class Universe {
 			this.color();
 
 			if (this.setW) this.setW();
+
 			this.update = (verticeId) => {
 
 				const points = nd && (nd.object3D.visible === true) ? nd.object3D : myPoints,
@@ -1368,7 +1369,7 @@ class Universe {
 								
 //								let cross;//крестик на противоположной вершине выбранного ребра
 								aAngleControls.cEdges = fAdvansed.add( { Edges: lang.notSelected }, 'Edges', { [lang.notSelected]: -1 } ).onChange((edgeId) => {
-
+									
 									edgeId = parseInt(edgeId);
 									_display(fOppositeVertice.domElement, edgeId === -1 ? false : true);
 									aAngleControls.removeCross = () => {
@@ -1390,6 +1391,7 @@ class Universe {
 											oppositeVerticeAngles = position[oppositeVerticeId].angles;
 										if (oppositeVerticeAngles.length != aEdgeAngleControls.length) console.error(sUniverse + sChangeVerticeEdge + 'Invalid opposite vertice angles length = ' + oppositeVerticeAngles.length);
 										aEdgeAngleControls.verticeId = oppositeVerticeId;
+										edgeAnglesDefault.length = 0;
 										oppositeVerticeAngles.forEach((angle, i) => {
 											
 											aEdgeAngleControls[i].setValue(angle);
