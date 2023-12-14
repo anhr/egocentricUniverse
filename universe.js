@@ -185,7 +185,9 @@ class Universe {
 	}
 	vertice2angles(vertice) {
 
-		if (!this.classSettings.debug) console.warn(sUniverse + ': Use vertice2angles in debug version only');
+		//Сейчас эта функция используется дл вычисления middle vertice
+		//if (!this.classSettings.debug) console.warn(sUniverse + ': Use vertice2angles in debug version only');
+		
 		//https://en.wikipedia.org/wiki/N-sphere#Spherical_coordinates
 		//тангенс — отношение стороны противолежащего катета vertice[1] к стороне прилежащегоvertice[0], (tg или tan);
 		const x = [], n = this.dimension - 1, φ = [], atan2 = Math.atan2, sqrt = Math.sqrt;
