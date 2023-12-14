@@ -1461,6 +1461,7 @@ class Universe {
 					if (myPoints) {
 						
 						myPoints.visible = false;
+						if (options.eventListeners) options.eventListeners.removeParticle(myPoints);
 						if (guiSelectPoint) {
 							
 							guiSelectPoint.removeMesh(myPoints, false);
@@ -1471,6 +1472,7 @@ class Universe {
 					if (nd) {
 						
 						nd.object3D.visible = true;
+						if (options.eventListeners) options.eventListeners.addParticle(nd.object3D);
 						if (guiSelectPoint) {
 							
 							guiSelectPoint.addMesh(nd.object3D);
@@ -1507,6 +1509,7 @@ class Universe {
 					if (nd) {
 	
 						nd.object3D.visible = false;
+						if (options.eventListeners) options.eventListeners.removeParticle(nd.object3D);
 						if (guiSelectPoint) {
 							
 							guiSelectPoint.removeMesh(nd.object3D);
@@ -1520,6 +1523,7 @@ class Universe {
 						if (myPoints.visible != true) {
 							
 							myPoints.visible = true;
+							if (options.eventListeners) options.eventListeners.addParticle(myPoints);
 							if (guiSelectPoint) {
 								
 								guiSelectPoint.addMesh(myPoints);
