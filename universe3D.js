@@ -139,7 +139,7 @@ class Universe3D extends Universe2D {
 
 	//Overridden methods from base class
 
-	get verticeEdgesLengthMax() { return 6; }//нельзя добавлть новое ребро если у вершины уже 6 ребра
+	get verticeEdgesLengthMax() { return 4/*6*/; }//нельзя добавлть новое ребро если у вершины уже 6 ребра
 	get dimension() { return 4; }//space dimension
 	get verticesCountMin() { return 4; }
 

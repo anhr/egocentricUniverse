@@ -687,8 +687,39 @@ class Universe {
 
 											//find middle vertice between opposite vertices
 
-											const muddleVertice = [];
+//											const muddleVertice = [];
+											
+											//https://wiki5.ru/wiki/Mean_of_circular_quantities#Mean_of_angles Среднее значение углов
 
+											//массив для хранения сумм декартовых координат прпотивоположных вершин
+											//для 1D вселенной это: aSum[0] = x, aSum[1] = y.
+											//для 2D вселенной это: aSum[0] = x, aSum[1] = y, aSum[2] = z.
+											//для 3D вселенной это: aSum[0] = x, aSum[1] = y, aSum[2] = z, aSum[3] = w.
+											const aSum = [];
+											for (let i = 0; i < _this.dimension; i++) aSum.push(0.0);
+											
+											oppositeVerticesId.forEach(oppositeAngleId => {
+
+												const oppositeVertice = position[oppositeAngleId];
+												oppositeVertice.forEach((axis, i) => aSum[i] += axis);
+											
+											});
+											const muddleVertice = _this.vertice2angles(aSum);
+/*											
+											for (let i = 0; i < (aSum.length - 1); i++) {
+
+												if (i === 0)
+													muddleVertice.push(Math.atan2(aSum[0], aSum[1]));
+												else if (i === 1)
+													muddleVertice.push(Math.atan2(muddleVertice[muddleVertice.length - 1], aSum[2] + Math.PI));
+												else console.error(sUniverse + ': middleVertice. Under constraction');
+												
+//												muddleVertice.push(Math.atan2(aSum[i], i === 0 ? aSum[i + 1] : muddleVertice[muddleVertice.length - 1]));
+//												muddleVertice.push(Math.atan2(i === 0 ? aSum[0] : muddleVertice[muddleVertice.length - 1], aSum[i + 1]));
+
+											}
+*/											
+/*
 											//Перебираем углы вершины. Количество углов в вершине 1 для 1 мерной вселенной, 2 для 2D и 3 для 3D
 											for (let angleId = 0; angleId < vertice.length; angleId++) {
 
@@ -708,114 +739,11 @@ class Universe {
 												
 												});
 												muddleVertice.push(Math.atan2(aSum[0], aSum[1]));
-/*												
-												const sin = Math.sin, cos = Math.cos, atan2 = Math.atan2;//, α = [];
-												let sumSinα = 0, sumCosα = 0;
-												oppositeVerticesId.forEach(oppositeAngleId => {
-
-													let angle = position[oppositeAngleId].angles[angleId];
-													while(angle < 0) angle += 2 * Math.PI;
-//													α.push(angle);
-													sumSinα += sin(angle);
-													sumCosα += cos(angle);
-												
-												});
-												muddleVertice.push(atan2(sumSinα, sumCosα));
-												
-//console.log('α = ' + α);
-*/												
-/*												
-												//Перебираем противоположные вершины
-												//Берем две соседние противоположные вершины и вычисляем средний угол.
-												//Потом находим средний угол между предыдущим средним уголом и углом следующей противоположной вершины.
-												//Поэтому перебираем не все противоположные вершины а на одну меньше
-												//ВИМАНИЕ!!! Седнее зачение между всеми углами не равно среднему значению между средним углом и углом следующей противоположной вершины
-												//Среднее зачение между всеми углами не вычисляю потому что постоянно нужно проверять чтобы среднее значение между углами не превышало 180 градусов
-												//Как это делать не стал пока разбираться.
-												for (let oppositeVerticeId = 0; oppositeVerticeId < (oppositeVerticesId.length - 1); oppositeVerticeId++) {
-													
-													const
-														oppositeVerticeAngles0 = oppositeVerticeId === 0 ?
-															//сначала находим средний угол между соседними протвоположными вершинами
-															position[oppositeVerticesId[oppositeVerticeId]].angles :
-															//а потом находим средний угол между предыдущим средним углом и углом следующей противоположной вершины
-															muddleVertice,
-														oppositeVerticeAngles1 = position[oppositeVerticesId[oppositeVerticeId + 1]].angles;
-													let angle0 = oppositeVerticeAngles0[angleId], angle1 = oppositeVerticeAngles1[angleId];
-													while(angle0 < 0) angle0 += 2 * Math.PI;
-													while(angle1 < 0) angle1 += 2 * Math.PI;
-													let x = (2 * Math.PI + (angle0 - angle1)), muddleAngle;
-													if (x > Math.PI) {
-														
-														x = 2 * Math.PI - x;
-														muddleAngle = angle0;
-	
-													} else muddleAngle = angle1;
-													muddleAngle = muddleAngle + x / 2;
-													if (oppositeVerticeId === 0)
-														muddleVertice.push(muddleAngle);
-													else muddleVertice[oppositeVerticeId - 1] = muddleAngle;
-
-												}
-*/												
-												
-											}
-/*											
-											const oppositeVerticeAngles0 = position[oppositeVerticesId[0]].angles, oppositeVerticeAngles1 = position[oppositeVerticesId[1]].angles;
-											for (let angleId = 0; angleId < vertice.length; angleId++) {
-
-												let angle0 = oppositeVerticeAngles0[angleId], angle1 = oppositeVerticeAngles1[angleId];
-												while(angle0 < 0) angle0 += 2 * Math.PI;
-												while(angle1 < 0) angle1 += 2 * Math.PI;
-												let x = (2 * Math.PI + (angle0 - angle1));
-												if (x > Math.PI) {
-													
-													x = 2 * Math.PI - x;
-													muddleVertice.push(angle0 + x / 2);
-
-												} else muddleVertice.push(angle1 + x / 2);
 												
 											}
 */											
-/*											
-											for (let angleId = 0; angleId < vertice.length; angleId++) {
-
-												let middleAngle = 0;
-												oppositeVerticesId.forEach(oppositeVerticeId => {
-													
-													let angle = position[oppositeVerticeId].angles[angleId];
-													//while(angle < 0) angle += 2 * Math.PI;
-													middleAngle += angle;
-												
-												});
-												middleAngle = middleAngle / oppositeVerticesId.length;
-												//while(middleAngle < -Math.PI) middleAngle += 2 * Math.PI;
-												//while(middleAngle > Math.PI) middleAngle -= 2 * Math.PI;
-												muddleVertice.push(middleAngle);
-												
-											}
-*/											
-/*не помню почему выбрал такой алгоритм
-											const middlePoint = [], muddleVertice = [];
-											vertice.forEach((angle, angleId) => {
-				
-												middlePoint.push(0);
-												const middlePointAngleId = middlePoint.length - 1;
-												oppositeVerticesId.forEach(verticeIdOpposite => {
-													
-													let angle2OppositeVertice = position[verticeIdOpposite].angles[angleId] - angle;
-													while(angle2OppositeVertice < -Math.PI) angle2OppositeVertice += 2 * Math.PI;
-													while(angle2OppositeVertice > Math.PI) angle2OppositeVertice -= 2 * Math.PI;
-													middlePoint[middlePointAngleId] += angle2OppositeVertice;
-														
-												});
-												muddleVertice[angleId] = middlePoint[middlePointAngleId] / oppositeVerticesId.length + angle;
-				
-											});
-*/
 											if (classSettings.debug) {
 
-//												let sLog = '';
 												console.log('');
 												oppositeVerticesId.forEach(oppositeVerticeId => {
 													
@@ -824,7 +752,6 @@ class Universe {
 												
 												});
 												console.log('Middle vertice angles: ' + JSON.stringify(muddleVertice));
-//												console.log(sLog);
 												
 											}
 											return muddleVertice;
