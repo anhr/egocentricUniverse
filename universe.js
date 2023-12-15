@@ -370,6 +370,13 @@ class Universe {
 	 *	false - do not calculate probability density.
 	 *	[] - calculate probability density.
 	 * </pre>
+	 * @param {boolean} [classSettings.debug.testVertice=true]
+	 * <pre>
+	 * Test of converting of the vertice coordinates from Cartesian Coordinates to Polar Coordinates
+	 * and Polar Coordinates to Cartesian Coordinates
+	 * and display detected errors to console.
+	 * </pre>
+	 * @param {boolean} [classSettings.debug.middleVertice=true] Log middle vertice.
 	 * @param {function} [classSettings.continue] Callback function that called after universe edges was created.
 	 **/
 	constructor(options, classSettings={}) {

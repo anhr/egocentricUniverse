@@ -51,43 +51,23 @@ class Universe1D extends Universe {
 
 	//base methods
 
+	get cookieName(){ return '1DUniverse'; }
 	get probabilityDensity(){
 		
-//		const _this = this;
 		return {
 
 			sectorValueName: 'sectorLength',
 			sectorValue: (probabilityDensity, i) => {
 				
-//				const sector = probabilityDensity[i], r = probabilityDensity.options.r, hb = sector.hb, ht = sector.ht,
 				const sector = probabilityDensity[i], r = this.classSettings.t, hb = sector.hb, ht = sector.ht,
 					angle = (hb) => {
 
 						const M = Math.sqrt(r * r - hb * hb);//Прилежащий катет прямоугольного треугольника
 							return Math.atan(hb / M);//угол прямоугольного треугольника https://poschitat.online/ugly-pryamougolnogo-treugolnika						
-/*							
-							l = r * alpha;//Длинна дуги
-						return Math.abs(l * 2);//Длинна дуги сектора
-*/	  
 						
 					}
-//				sector.sectorLength = Math.abs(r * (angle(hb) - angle(ht)) * 2);//длинна дуги сектора https://mnogoformul.ru/dlina-dugi#:~:text=%D0%94%D0%BB%D0%B8%D0%BD%D0%B0%20%D0%B4%D1%83%D0%B3%D0%B8%20%D0%BF%D0%BE%D0%BB%D0%BD%D0%BE%D0%B9%20%D0%BE%D0%BA%D1%80%D1%83%D0%B6%D0%BD%D0%BE%D1%81%D1%82%D0%B8%20%D1%80%D0%B0%D0%B2%D0%BD%D0%B0,%2C%20%D0%B3%D0%B4%D0%B5%20r%20%2D%20%D1%80%D0%B0%D0%B4%D0%B8%D1%83%D1%81%20%D0%BE%D0%BA%D1%80%D1%83%D0%B6%D0%BD%D0%BE%D1%81%D1%82%D0%B8.
 				sector[this.probabilityDensity.sectorValueName] = Math.abs(r * (angle(hb) - angle(ht)) * 2);//длинна дуги сектора https://mnogoformul.ru/dlina-dugi#:~:text=%D0%94%D0%BB%D0%B8%D0%BD%D0%B0%20%D0%B4%D1%83%D0%B3%D0%B8%20%D0%BF%D0%BE%D0%BB%D0%BD%D0%BE%D0%B9%20%D0%BE%D0%BA%D1%80%D1%83%D0%B6%D0%BD%D0%BE%D1%81%D1%82%D0%B8%20%D1%80%D0%B0%D0%B2%D0%BD%D0%B0,%2C%20%D0%B3%D0%B4%D0%B5%20r%20%2D%20%D1%80%D0%B0%D0%B4%D0%B8%D1%83%D1%81%20%D0%BE%D0%BA%D1%80%D1%83%D0%B6%D0%BD%D0%BE%D1%81%D1%82%D0%B8.
 				return sector[this.probabilityDensity.sectorValueName];
-/*					
-					arcLength = (hb) => {
-
-						//Длинна дуги сегмента по формуле Гюйгенса
-						const M = Math.sqrt(r * r - hb * hb) * 2,
-							abs = r - Math.abs(hb),
-	//						abs = r - hb,
-							m = Math.sqrt((M * M) / 4 + abs * abs);
-						return 2 * m + ((2 * m - M) / 3);
-						
-					}
-				sector.arcLength = Math.abs(arcLength(hb) - arcLength(ht));
-				return sector.arcLength;
-*/				
 				
 			},
 			
@@ -96,44 +76,6 @@ class Universe1D extends Universe {
 	}
 	defaultAngles() { return { count: 3, } }//random triangle
 	pushRandomAngle(verticeAngles) { verticeAngles.push(this.randomAngle()); }
-	angle2Vertice(angle) {
-
-//		const t = this.classSettings.t;
-		const θ = angle[0];//, r = t;
-		return [
-			Math.cos(θ),// * r,//x
-			Math.sin(θ)// * r//y
-		];
-
-	}
-	vertice2angle(vertice){
-
-		//тангенс — отношение стороны противолежащего катета vertice[1] к стороне прилежащегоvertice[0], (tg или tan);
-		return [Math.atan(vertice[1] / vertice[0])];
-		
-	}
-/*	
-	randomPosition(params) {
-		
-		//Circle Point Picking
-		//https://mathworld.wolfram.com/CirclePointPicking.html
-		const res = params.push0(), ret = res.ret, x = params.x, sum = res.sum;
-		ret.push(2 * x[0] * x[1] / sum);//y	=	(2x_1x_2)/(x_1^2+x_2^2)
-		
-	}
-*/ 
-	pushEdges() {
-
-		const geometry = this.classSettings.settings.object.geometry, edges = geometry.indices.edges, position = geometry.position;
-		for (let verticeId = 1; verticeId &lt; position.length; verticeId++) edges.push();
-		edges.push([position.length - 1, 0]);
-		if (this.projectGeometry) this.projectGeometry();
-		
-		if (this.classSettings.debug)
-			this.classSettings.debug.logTimestamp('Push edges. ');
-			//console.log('time: Push edges. ' + ((window.performance.now() - this.classSettings.debug.timestamp) / 1000) + ' sec.');
-		
-	}
 	name(getLanguageCode) {
 
 		//Localization
@@ -153,37 +95,15 @@ class Universe1D extends Universe {
 				lang.name = 'Одномерная вселенная';
 
 				break;
-			/*guiParams is undefined
-			default://Custom language
-				if ((guiParams.lang === undefined) || (guiParams.lang.languageCode != _languageCode))
-					break;
-
-				Object.keys(guiParams.lang).forEach((key) => {
-
-					if (lang[key] === undefined)
-						return;
-					lang[key] = guiParams.lang[key];
-
-				});
-			*/
 
 		}
 		return lang.name;
 		
 	}
-/*
-	Indices() {
-
-		const settings = this.classSettings.settings,
-			debug = this.classSettings.debug;//_this = this, 
-
-	}
-*/
 	logUniverse1D() {
 
 		if (!this.classSettings.debug) return;
 		this.logUniverse();
-//		this.classSettings.settings.object.geometry.indices.bodies.forEach((body, i) => console.log('indices.bodies[' + i + '] = ' + JSON.stringify( body )));
 		
 	}
 
@@ -216,7 +136,6 @@ class Universe1D extends Universe {
 	//Overridden methods from base class
 
 	get verticeEdgesLengthMax() { return 2; }//нельзя добавлть новое ребро если у вершины уже 2 ребра
-	TestVerticeEdges(vertice){ return vertice.length === this.verticeEdgesLengthMax ? true : false; }
 	get dimension() { return 2; }//space dimension
 	get verticesCountMin() { return 3; }
 
@@ -250,7 +169,7 @@ export default Universe1D;
 <br class="clear">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 3.6.11</a> on Tue Oct 24 2023 11:17:26 GMT+0700 (Красноярск, стандартное время)
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 3.6.11</a> on Fri Dec 15 2023 09:45:05 GMT+0700 (Красноярск, стандартное время)
 </footer>
 
 <script> prettyPrint(); </script>
