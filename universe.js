@@ -382,7 +382,9 @@ class Universe {
 			classSettings.debug.logTimestamp = (text = '', timestamp) =>
 				console.log('time: ' + text + ((window.performance.now() - (timestamp ? timestamp : classSettings.debug.timestamp)) / 1000) + ' sec.');
 			if (classSettings.debug.testVertice != false) classSettings.debug.testVertice = true;
-
+			if (classSettings.debug.middleVertice != false) classSettings.debug.middleVertice = true;
+			
+			
 		}
 		this.classSettings = classSettings;
 
@@ -744,7 +746,7 @@ class Universe {
 												
 											}
 */											
-											if (classSettings.debug) {
+											if (classSettings.debug && classSettings.debug.middleVertice) {
 
 												console.log('');
 												oppositeVerticesId.forEach(oppositeVerticeId => {
