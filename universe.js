@@ -1065,8 +1065,10 @@ class Universe {
 
 			if (this.setW) this.setW();
 
+			this.isUpdate = true;
 			this.update = (verticeId) => {
 
+				if (!this.isUpdate) return;
 				const points = nd && (nd.object3D.visible === true) ? nd.object3D : myPoints,
 					vertice = settings.object.geometry.position[verticeId],
 					itemSize = points.geometry.attributes.position.itemSize;
@@ -1683,15 +1685,23 @@ class Universe {
 
 								progressBar.remove();
 
+								if (classSettings.debug) {
+									
+									classSettings.debug.logTimestamp('Play step. ', timestamp);
+
+								}
+								
+								this.isUpdate = false;//для ускорения
 								for (verticeId = 0; verticeId < position.length; verticeId++) 
-									position.angles[verticeId] = vertices[verticeId];//Обновление текущей верщины без обновления холста для экономии времени
+									position.angles[verticeId] = vertices[verticeId];//Обновление текущей вершины без обновления холста для экономии времени
+								this.isUpdate = true;
 
 								//обновляю позицию первой вершины что бы обновить холст
 								position[0][0] = position[0][0];
 
 								if (classSettings.debug) {
 									
-									classSettings.debug.logTimestamp('Play step. ', timestamp);
+									classSettings.debug.logTimestamp('Copy vertices. ', timestamp);
 									this.logUniverse();
 
 								}
