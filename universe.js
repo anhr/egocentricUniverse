@@ -1345,29 +1345,18 @@ class Universe {
 										itemSize = undefined;
 										const oppositeVertice = position[oppositeVerticeId],
 											crossSize = 0.05;
-/*										
-										pushVertice([oppositeVertice[0] - crossSize, oppositeVertice[1]]);
-										pushVertice([oppositeVertice[0] + crossSize, oppositeVertice[1]]);
-										pushVertice([oppositeVertice[0], oppositeVertice[1] - crossSize]);
-										pushVertice([oppositeVertice[0], oppositeVertice[1] + crossSize]);
-*/										
-										pushVertice([-crossSize, -crossSize]);
-										pushVertice([crossSize, crossSize]);
-										pushVertice([crossSize, -crossSize]);
-										pushVertice([-crossSize, crossSize]);
+										pushVertice([0, 0, crossSize]);
+										pushVertice([0, 0, -crossSize]);
+										pushVertice([-crossSize, -crossSize, 0]);
+										pushVertice([crossSize, crossSize, 0]);
+										pushVertice([crossSize, -crossSize, 0]);
+										pushVertice([-crossSize, crossSize, 0]);
 										aAngleControls.cross = addObject2Scene(vertices, 'white');
 										aAngleControls.cross.position.copy(oppositeVertice);
 										if (aAngleControls.cross.position.z === undefined) aAngleControls.cross.position.z = 0;
 										aAngleControls.oppositeVerticeId = oppositeVerticeId;
 										
 									}
-/*									
-									if(oppositeVerticeEdges) {
-
-										this.opacityObject3D(oppositeVerticeEdges, true);
-										
-									}
-*/									
 					
 								});
 								aAngleControls.cEdges.__select[0].selected = true;
@@ -1905,6 +1894,7 @@ class Universe {
 
 							});
 							break;
+						/*
 						case edgesCreationMethod.NearestVertice: {
 							
 							let verticeId = 0;
@@ -1912,6 +1902,7 @@ class Universe {
 							break;
 
 						}
+						*/
 						default: console.error(sUniverse + ': pushEdges. Invalid classSettings.edges.creationMethod = ' + classSettings.edges.creationMethod);
 
 					}
