@@ -1748,9 +1748,9 @@ class Universe {
 					return;
 
 				}
-				
+
 				if (probabilityDensity) {
-					
+
 					//для 2D вселенной это плотность вероятности распределения вершин по поверхости сферы в зависимости от третьей координаты вершины z = vertice.[2]
 					//Плотности разбил на несколько диапазонов в зависимости от третьей координаты вершины z = vertice.[2]
 					//Разбил сферу на sc = 5 сегментов от 0 до 4.
@@ -1772,7 +1772,7 @@ class Universe {
 						segment.density = segment.count / segment[_this.probabilityDensity.sectorValueName];//segment.square;
 						segment.height = segment.ht - segment.hb;
 						table.push(segment);
-					
+
 					})
 					const sectorValueName = _this.probabilityDensity.sectorValueName;
 					if (!sectorValueName) console.error(sUniverse + ': Invalid sectorValueName = ' + sectorValueName);
@@ -1784,7 +1784,7 @@ class Universe {
 
 				}
 				this.#verticeEdgesLength = this.verticeEdgesLengthMax;
-			
+
 				this.pushEdges = () => {
 
 					const geometry = this.classSettings.settings.object.geometry, edges = geometry.indices.edges, position = geometry.position;
@@ -1803,103 +1803,118 @@ class Universe {
 
 					}
 
-					let verticeEdgesCur = 1, verticeId = 0,
-						boCompleted = false;//Кажется это не нужно
-					const progressBar = new ProgressBar(settings.options.renderer.domElement.parentElement, () => {
+					if (classSettings.edges.creationMethod === undefined) classSettings.edges.creationMethod = edgesCreationMethod.NearestVertice;
+					switch (classSettings.edges.creationMethod) {
 
-						const nextVertice = () => {
+						case edgesCreationMethod.Random:
+							let verticeEdgesCur = 1, verticeId = 0,
+								boCompleted = false;//Кажется это не нужно
+							const progressBar = new ProgressBar(settings.options.renderer.domElement.parentElement, () => {
 
-							progressBar.value = verticeId;
+								const nextVertice = () => {
 
-							//цикл поиска вершины, в которую можно добавить еще одно ребро
-							const verticeIdStart = verticeId;
-							do {
+									progressBar.value = verticeId;
 
-								verticeId++;
-								if (verticeId >= position.length) {
+									//цикл поиска вершины, в которую можно добавить еще одно ребро
+									const verticeIdStart = verticeId;
+									do {
 
-									verticeEdgesCur++;
-									progressBar.title(lang.progressTitle.replace('%s', verticeEdgesCur + 1));
-									if (verticeEdgesCur >= this.verticeEdgesLength) {
+										verticeId++;
+										if (verticeId >= position.length) {
 
-										if (this.projectGeometry) this.projectGeometry();
-										if (this.classSettings.debug) this.classSettings.debug.logTimestamp('Push edges. ');
-										progressBar.remove();
-										if (this.classSettings.projectParams) this.project(this.classSettings.projectParams.scene, this.classSettings.projectParams.params);
-										boCompleted = true;
-										return;// true;
+											verticeEdgesCur++;
+											progressBar.title(lang.progressTitle.replace('%s', verticeEdgesCur + 1));
+											if (verticeEdgesCur >= this.verticeEdgesLength) {
 
-									}
-									verticeId = 0;
+												if (this.projectGeometry) this.projectGeometry();
+												if (this.classSettings.debug) this.classSettings.debug.logTimestamp('Push edges. ');
+												progressBar.remove();
+												if (this.classSettings.projectParams) this.project(this.classSettings.projectParams.scene, this.classSettings.projectParams.params);
+												boCompleted = true;
+												return;// true;
 
-								}
+											}
+											verticeId = 0;
 
-							} while ((position[verticeId].edges.length >= this.verticeEdgesLength) && (verticeIdStart != verticeId));
-							progressBar.step();
+										}
 
-						}
-						if (boCompleted) return;
-						let oppositeVerticeId = verticeId + 1;
-						if (oppositeVerticeId >= position.length) oppositeVerticeId = 0;
-						//Поиск вершины у которой ребер меньше максимального количества ребер и у которой нет нового ребра
-						const oppositeVerticeIdFirst = oppositeVerticeId;
-						while (true) {
-
-							const oppositeVerticeEdges = position[oppositeVerticeId].edges;
-							if (oppositeVerticeEdges.length < this.verticeEdgesLength) {
-
-								//поиск нового ребра в списке ребер этой вершины
-								let boContinue = false;
-								for (let oppositeVerticeEdgeId = 0; oppositeVerticeEdgeId < oppositeVerticeEdges.length; oppositeVerticeEdgeId++) {
-
-									const oppositeVerticeEdge = edges[oppositeVerticeEdges[oppositeVerticeEdgeId]];
-									if (
-										(oppositeVerticeEdge[0] === verticeId) && (oppositeVerticeEdge[1] === oppositeVerticeId) ||
-										(oppositeVerticeEdge[1] === verticeId) && (oppositeVerticeEdge[0] === oppositeVerticeId)
-									) {
-
-										boContinue = true;//это ребро уже существует
-										break;
-
-									}
+									} while ((position[verticeId].edges.length >= this.verticeEdgesLength) && (verticeIdStart != verticeId));
+									progressBar.step();
 
 								}
-								if (boContinue) {
-
-									oppositeVerticeId++;
-									if (oppositeVerticeId >= position.length) oppositeVerticeId = 0;
-									continue;//Новое ребро уже есть в текущей вершине. Перейти на следующую вершину
-
-								}
-								break;//нашел противоположное ребро
-
-							} else {
-
-								oppositeVerticeId++;
+								if (boCompleted) return;
+								let oppositeVerticeId = verticeId + 1;
 								if (oppositeVerticeId >= position.length) oppositeVerticeId = 0;
+								//Поиск вершины у которой ребер меньше максимального количества ребер и у которой нет нового ребра
+								const oppositeVerticeIdFirst = oppositeVerticeId;
+								while (true) {
 
-							}
-							if (oppositeVerticeIdFirst === oppositeVerticeId) break;
+									const oppositeVerticeEdges = position[oppositeVerticeId].edges;
+									if (oppositeVerticeEdges.length < this.verticeEdgesLength) {
+
+										//поиск нового ребра в списке ребер этой вершины
+										let boContinue = false;
+										for (let oppositeVerticeEdgeId = 0; oppositeVerticeEdgeId < oppositeVerticeEdges.length; oppositeVerticeEdgeId++) {
+
+											const oppositeVerticeEdge = edges[oppositeVerticeEdges[oppositeVerticeEdgeId]];
+											if (
+												(oppositeVerticeEdge[0] === verticeId) && (oppositeVerticeEdge[1] === oppositeVerticeId) ||
+												(oppositeVerticeEdge[1] === verticeId) && (oppositeVerticeEdge[0] === oppositeVerticeId)
+											) {
+
+												boContinue = true;//это ребро уже существует
+												break;
+
+											}
+
+										}
+										if (boContinue) {
+
+											oppositeVerticeId++;
+											if (oppositeVerticeId >= position.length) oppositeVerticeId = 0;
+											continue;//Новое ребро уже есть в текущей вершине. Перейти на следующую вершину
+
+										}
+										break;//нашел противоположное ребро
+
+									} else {
+
+										oppositeVerticeId++;
+										if (oppositeVerticeId >= position.length) oppositeVerticeId = 0;
+
+									}
+									if (oppositeVerticeIdFirst === oppositeVerticeId) break;
+
+								}
+
+								//Возможно был пройден полный круг поиска противолположной вершины и ничего найдено не было
+								if (verticeId != oppositeVerticeId) {
+
+									edges.push([verticeId, oppositeVerticeId]);
+
+								}
+								//else console.log(sUniverse + '.pushEdges. Opposite vertice was not found.')
+
+								nextVertice();
+
+							}, {
+
+								sTitle: lang.progressTitle.replace('%s', verticeEdgesCur + 1),
+								max: position.length,
+								timeoutPeriod: 3,
+
+							});
+							break;
+						case edgesCreationMethod.NearestVertice: {
+							
+							let verticeId = 0;
+							position[verticeId].edges
+							break;
 
 						}
+						default: console.error(sUniverse + ': pushEdges. Invalid classSettings.edges.creationMethod = ' + classSettings.edges.creationMethod);
 
-						//Возможно был пройден полный круг поиска противолположной вершины и ничего найдено не было
-						if (verticeId != oppositeVerticeId) {
-
-							edges.push([verticeId, oppositeVerticeId]);
-
-						}
-						//else console.log(sUniverse + '.pushEdges. Opposite vertice was not found.')
-
-						nextVertice();
-
-					}, {
-
-						sTitle: lang.progressTitle.replace('%s', verticeEdgesCur + 1),
-						max: position.length,
-						timeoutPeriod: 3,
-
-					});
+					}
 
 				}
 
@@ -2029,6 +2044,15 @@ class Universe {
 	}
 
 }
+
+const edgesCreationMethod = {
+	
+	Random: 0,//'Random',
+	NearestVertice: 1,//'NearestVertice',
+	
+}
+Object.freeze(edgesCreationMethod);
+Universe.edgesCreationMethod = edgesCreationMethod;
 
 Universe.ND = ND;
 
