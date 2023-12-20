@@ -246,6 +246,7 @@ class Universe {
 	 *	false - Doesn't create edges to reduce the creation time of the universe
 	 * </pre>
 	 * @param {boolean} [classSettings.edges.project=true] false - Doesn't project edges onto canvas
+	 * @param {enum} [classSettings.edges.creationMethod=edgesCreationMethod.NearestVertice] method for creating edges. See <a href="./module-Universe-Universe.html#.edgesCreationMethod" target="_blank">edgesCreationMethod</a>
 	 * @param {object} [classSettings.settings] The following settings are available
 	 * @param {object} [classSettings.settings.object] Universe object.
 	 * @param {String} [classSettings.settings.object.name] name of universe.
@@ -378,6 +379,7 @@ class Universe {
 	 * </pre>
 	 * @param {boolean} [classSettings.debug.middleVertice=true] Log middle vertice.
 	 * @param {function} [classSettings.continue] Callback function that called after universe edges was created.
+	 * @param {boolean} [classSettings.boRemove] false - do not delete the previous universe while projecting a new universe on scene.
 	 **/
 	constructor(options, classSettings={}) {
 
@@ -2146,8 +2148,18 @@ const edgesCreationMethod = {
 	
 }
 Object.freeze(edgesCreationMethod);
+/**
+ * Enums a methods for creating edges:
+ * <pre>
+ * Random: every vertice of the edge have random position.
+ * NearestVertice: Vertices of the edge have nearest position.
+ * </pre>
+ * */
 Universe.edgesCreationMethod = edgesCreationMethod;
 
+/**
+ * <a href="../../../commonNodeJS/master/nD/jsdoc/" target="_blank">ND</a>
+ * */
 Universe.ND = ND;
 
 export default Universe;

@@ -274,6 +274,7 @@ class Universe {
 	 *	false - Doesn't create edges to reduce the creation time of the universe
 	 * &lt;/pre>
 	 * @param {boolean} [classSettings.edges.project=true] false - Doesn't project edges onto canvas
+	 * @param {enum} [classSettings.edges.creationMethod=edgesCreationMethod.NearestVertice] method for creating edges. See &lt;a href="./module-Universe-Universe.html#.edgesCreationMethod" target="_blank">edgesCreationMethod&lt;/a>
 	 * @param {object} [classSettings.settings] The following settings are available
 	 * @param {object} [classSettings.settings.object] Universe object.
 	 * @param {String} [classSettings.settings.object.name] name of universe.
@@ -406,6 +407,7 @@ class Universe {
 	 * &lt;/pre>
 	 * @param {boolean} [classSettings.debug.middleVertice=true] Log middle vertice.
 	 * @param {function} [classSettings.continue] Callback function that called after universe edges was created.
+	 * @param {boolean} [classSettings.boRemove] false - do not delete the previous universe while projecting a new universe on scene.
 	 **/
 	constructor(options, classSettings={}) {
 
@@ -744,43 +746,6 @@ class Universe {
 											
 											});
 											const muddleVertice = _this.vertice2angles(aSum);
-/*											
-											for (let i = 0; i &lt; (aSum.length - 1); i++) {
-
-												if (i === 0)
-													muddleVertice.push(Math.atan2(aSum[0], aSum[1]));
-												else if (i === 1)
-													muddleVertice.push(Math.atan2(muddleVertice[muddleVertice.length - 1], aSum[2] + Math.PI));
-												else console.error(sUniverse + ': middleVertice. Under constraction');
-												
-//												muddleVertice.push(Math.atan2(aSum[i], i === 0 ? aSum[i + 1] : muddleVertice[muddleVertice.length - 1]));
-//												muddleVertice.push(Math.atan2(i === 0 ? aSum[0] : muddleVertice[muddleVertice.length - 1], aSum[i + 1]));
-
-											}
-*/											
-/*
-											//Перебираем углы вершины. Количество углов в вершине 1 для 1 мерной вселенной, 2 для 2D и 3 для 3D
-											for (let angleId = 0; angleId &lt; vertice.length; angleId++) {
-
-												//https://wiki5.ru/wiki/Mean_of_circular_quantities#Mean_of_angles Среднее значение углов
-
-												//массив для хранения сумм декартовых координат прпотивоположных вершин
-												//для 1D вселенной это: aSum[0] = x, aSum[1] = y.
-												//для 2D вселенной это: aSum[0] = x, aSum[1] = y, aSum[2] = z.
-												//для 3D вселенной это: aSum[0] = x, aSum[1] = y, aSum[2] = z, aSum[3] = w.
-												const aSum = [];
-												for (let i = 0; i &lt; _this.dimension; i++) aSum.push(0.0);
-												
-												oppositeVerticesId.forEach(oppositeAngleId => {
-
-													const oppositeVertice = position[oppositeAngleId];
-													oppositeVertice.forEach((axis, i) => aSum[i] += axis);
-												
-												});
-												muddleVertice.push(Math.atan2(aSum[0], aSum[1]));
-												
-											}
-*/											
 											if (classSettings.debug &amp;&amp; classSettings.debug.middleVertice) {
 
 												console.log('');
@@ -1067,6 +1032,7 @@ class Universe {
 			//remove previous universe
 			this.remove = (scene) => {
 
+				if (classSettings.boRemove === false) return;
 				for (var i = scene.children.length - 1; i >= 0; i--) {
 
 					const child = scene.children[i];
@@ -1093,8 +1059,10 @@ class Universe {
 
 			if (this.setW) this.setW();
 
+			this.isUpdate = true;
 			this.update = (verticeId) => {
 
+				if (!this.isUpdate) return;
 				const points = nd &amp;&amp; (nd.object3D.visible === true) ? nd.object3D : myPoints,
 					vertice = settings.object.geometry.position[verticeId],
 					itemSize = points.geometry.attributes.position.itemSize;
@@ -1125,6 +1093,8 @@ class Universe {
 						if (aAngleControls.cross.position.z === undefined) aAngleControls.cross.position.z = 0;
 
 					}
+					
+					if (aAngleControls.distance) aAngleControls.distance([aAngleControls.verticeId, aAngleControls.oppositeVerticeId]);
 
 				}
 				
@@ -1249,6 +1219,7 @@ class Universe {
 									defaultAnglesTitle: 'Restore default angles.',
 
 									notSelected: 'not selected',
+									arc: 'Arc',
 	
 								};
 	
@@ -1279,6 +1250,7 @@ class Universe {
 										lang.defaultAnglesTitle = 'Восстановить углы по умолчанию';
 										
 										lang.notSelected = 'Не выбрано';
+										lang.arc = 'Дуга';
 										
 										break;
 									default://Custom language
@@ -1334,14 +1306,22 @@ class Universe {
 								//Edges
 								
 //								let cross;//крестик на противоположной вершине выбранного ребра
-								aAngleControls.cEdges = fAdvansed.add( { Edges: lang.notSelected }, 'Edges', { [lang.notSelected]: -1 } ).onChange((edgeId) => {
-									
+								aAngleControls.cEdges = fAdvansed.add({ Edges: lang.notSelected }, 'Edges', { [lang.notSelected]: -1 }).onChange((edgeId) => {
+
 									edgeId = parseInt(edgeId);
 									_display(fOppositeVertice.domElement, edgeId === -1 ? false : true);
+									aAngleControls.removeArc = () => {
+
+										if (aAngleControls.arc) classSettings.projectParams.scene.remove(aAngleControls.arc);
+										aAngleControls.arc = undefined;
+
+									}
 									aAngleControls.removeCross = () => {
-										
+
 										if (aAngleControls.cross) classSettings.projectParams.scene.remove(aAngleControls.cross);
 										aAngleControls.cross = undefined;
+
+										aAngleControls.removeArc();
 										
 									}
 									if (edgeId === -1) {
@@ -1371,29 +1351,145 @@ class Universe {
 										itemSize = undefined;
 										const oppositeVertice = position[oppositeVerticeId],
 											crossSize = 0.05;
-/*										
-										pushVertice([oppositeVertice[0] - crossSize, oppositeVertice[1]]);
-										pushVertice([oppositeVertice[0] + crossSize, oppositeVertice[1]]);
-										pushVertice([oppositeVertice[0], oppositeVertice[1] - crossSize]);
-										pushVertice([oppositeVertice[0], oppositeVertice[1] + crossSize]);
-*/										
-										pushVertice([-crossSize, -crossSize]);
-										pushVertice([crossSize, crossSize]);
-										pushVertice([crossSize, -crossSize]);
-										pushVertice([-crossSize, crossSize]);
+										pushVertice([0, 0, crossSize]);
+										pushVertice([0, 0, -crossSize]);
+										pushVertice([-crossSize, -crossSize, 0]);
+										pushVertice([crossSize, crossSize, 0]);
+										pushVertice([crossSize, -crossSize, 0]);
+										pushVertice([-crossSize, crossSize, 0]);
 										aAngleControls.cross = addObject2Scene(vertices, 'white');
 										aAngleControls.cross.position.copy(oppositeVertice);
 										if (aAngleControls.cross.position.z === undefined) aAngleControls.cross.position.z = 0;
 										aAngleControls.oppositeVerticeId = oppositeVerticeId;
-										
-									}
-/*									
-									if(oppositeVerticeEdges) {
 
-										this.opacityObject3D(oppositeVerticeEdges, true);
+										//Distance between edge vertices i.e between vertice and opposite vertice.
+										aAngleControls.distance = (edge) => {
+											
+											aAngleControls.removeArc();
+											const vertice = position[edge[0]],
+												oppositeVertice = position[edge[1]],
+												distance = vertice.distanceTo(oppositeVertice);
+//											aAngleControls.arc = new Universe();
+											aAngleControls.arc = this.newUniverse(
+//												classSettings.settings.options,
+												{
+													
+													getLanguageCode: classSettings.settings.options.getLanguageCode,
+													renderer: classSettings.settings.options.renderer,
+													setPalette: classSettings.settings.options.setPalette,
+													setW: classSettings.settings.options.setW,
+													scales: classSettings.settings.options.scales,
+													point: classSettings.settings.options.point,
+													playerOptions: classSettings.settings.options.playerOptions,
+													boOptions: true,
+												
+												},
+												{
+
+													boRemove: false,
+													edges: {
+									
+														creationMethod: Universe.edgesCreationMethod.Random,
+														
+													},
+													edges: false,
+													projectParams:{
+														
+														scene: classSettings.projectParams.scene,
+														/*
+														params: {
+															
+															//center: {x: 0.5, y: 0.3},
+														
+														}
+														 */
+														
+													},
+													//t: 0.5,
+													debug: {
+									
+														probabilityDensity: false,
+														//probabilityDensity: [],
+														//testVertice: false,
+														
+													},
+													//debug: false,
+													//mode: 1,
+													settings: {
+														
+														object: {
+										
+															name: lang.arc,
+															//color: 'red',
+															//color: 0x0000ff,//blue
+															geometry: {
+									
+																angles: [vertice.angles, [3.8], oppositeVertice.angles],
+									
+									/*
+																position: [
+																	//[-0.5, 0.5], [0.0, -0.6], [0.5, 0.7]
+																	//[0.0, -1.0], [0.8660254037844388, 0.5], [-0.8660254037844384, 0.5]//Triangle
+																	[-1, 0,], [0, 1], [-0.8660254037844384, 0.5]//Intersection test
+																],
+																position: { count: 3, },
+									*/							
+																/*
+																colors: [
+																	1, 0, 0,//red
+																	0, 1, 0,//green
+																	//0, 0, 1,//blue
+																	//0.6, 1, 0,
+																//	0, 0, 1,	0, 0.6, 1
+																],
+																*/
+																//opacity: [1, 0.5],
+																/*
+																indices: {
+																	
+																	//edges: { count: 5000 }
+																	//edges: [[0,1], [1,2], [2,0]],//triangle
+																
+																}
+																*/
+															
+															}
+									
+														}
+													
+													},
+													
+												});
+/*											
+											const arcWidth = 0.005;
+											let innerRadius = 1 + arcWidth, outerRadius = 1 - arcWidth,
+												thetaSegments = 360,
+												phiSegments = 1,
+												thetaStart = Math.PI / 2 - vertice.angles[0],
+												thetaLength = vertice.angles[0] > oppositeVertice.angles[0] ? distance : - distance;//Math.PI * 2;
+											aAngleControls.arc = new THREE.Mesh(new THREE.RingGeometry(innerRadius, outerRadius, thetaSegments, phiSegments, thetaStart, thetaLength),
+																		new THREE.MeshBasicMaterial( { color: 'yellow', side: THREE.DoubleSide } ));
+											scene.add(aAngleControls.arc);
+*/											
+											
+										}
+										aAngleControls.distance(edge);
+/*										
+										//Distance between edge vertices i.e between vertice and opposite vertice.
+										aAngleControls.removeArc();
+										const vertice = position[aAngleControls.verticeId], distance = vertice.distanceTo(oppositeVertice);
+										const arcWidth = 0.005;
+										let innerRadius = 1 + arcWidth, outerRadius = 1 - arcWidth,
+											thetaSegments = 360,
+											phiSegments = 1,
+											thetaStart = Math.PI / 2 - vertice.angles[0],
+											thetaLength = vertice.angles[0] > oppositeVertice.angles[0] ? distance : - distance;//Math.PI * 2;
+										aAngleControls.arc = new THREE.Mesh(new THREE.RingGeometry(innerRadius, outerRadius, thetaSegments, phiSegments, thetaStart, thetaLength),
+																	new THREE.MeshBasicMaterial( { color: 'yellow', side: THREE.DoubleSide } ));
+										scene.add(aAngleControls.arc);
+*/										
 										
 									}
-*/									
 					
 								});
 								aAngleControls.cEdges.__select[0].selected = true;
@@ -1711,15 +1807,23 @@ class Universe {
 
 								progressBar.remove();
 
+								if (classSettings.debug) {
+									
+									classSettings.debug.logTimestamp('Play step. ', timestamp);
+
+								}
+								
+								this.isUpdate = false;//для ускорения
 								for (verticeId = 0; verticeId &lt; position.length; verticeId++) 
-									position.angles[verticeId] = vertices[verticeId];//Обновление текущей верщины без обновления холста для экономии времени
+									position.angles[verticeId] = vertices[verticeId];//Обновление текущей вершины без обновления холста для экономии времени
+								this.isUpdate = true;
 
 								//обновляю позицию первой вершины что бы обновить холст
 								position[0][0] = position[0][0];
 
 								if (classSettings.debug) {
 									
-									classSettings.debug.logTimestamp('Play step. ', timestamp);
+									classSettings.debug.logTimestamp('Copy vertices. ', timestamp);
 									this.logUniverse();
 
 								}
@@ -1766,9 +1870,9 @@ class Universe {
 					return;
 
 				}
-				
+
 				if (probabilityDensity) {
-					
+
 					//для 2D вселенной это плотность вероятности распределения вершин по поверхости сферы в зависимости от третьей координаты вершины z = vertice.[2]
 					//Плотности разбил на несколько диапазонов в зависимости от третьей координаты вершины z = vertice.[2]
 					//Разбил сферу на sc = 5 сегментов от 0 до 4.
@@ -1790,7 +1894,7 @@ class Universe {
 						segment.density = segment.count / segment[_this.probabilityDensity.sectorValueName];//segment.square;
 						segment.height = segment.ht - segment.hb;
 						table.push(segment);
-					
+
 					})
 					const sectorValueName = _this.probabilityDensity.sectorValueName;
 					if (!sectorValueName) console.error(sUniverse + ': Invalid sectorValueName = ' + sectorValueName);
@@ -1802,7 +1906,7 @@ class Universe {
 
 				}
 				this.#verticeEdgesLength = this.verticeEdgesLengthMax;
-			
+
 				this.pushEdges = () => {
 
 					const geometry = this.classSettings.settings.object.geometry, edges = geometry.indices.edges, position = geometry.position;
@@ -1821,103 +1925,120 @@ class Universe {
 
 					}
 
-					let verticeEdgesCur = 1, verticeId = 0,
-						boCompleted = false;//Кажется это не нужно
-					const progressBar = new ProgressBar(settings.options.renderer.domElement.parentElement, () => {
+					if (classSettings.edges.creationMethod === undefined) classSettings.edges.creationMethod = edgesCreationMethod.NearestVertice;
+					switch (classSettings.edges.creationMethod) {
 
-						const nextVertice = () => {
+						case edgesCreationMethod.Random:
+							let verticeEdgesCur = 1, verticeId = 0,
+								boCompleted = false;//Кажется это не нужно
+							const progressBar = new ProgressBar(settings.options.renderer.domElement.parentElement, () => {
 
-							progressBar.value = verticeId;
+								const nextVertice = () => {
 
-							//цикл поиска вершины, в которую можно добавить еще одно ребро
-							const verticeIdStart = verticeId;
-							do {
+									progressBar.value = verticeId;
 
-								verticeId++;
-								if (verticeId >= position.length) {
+									//цикл поиска вершины, в которую можно добавить еще одно ребро
+									const verticeIdStart = verticeId;
+									do {
 
-									verticeEdgesCur++;
-									progressBar.title(lang.progressTitle.replace('%s', verticeEdgesCur + 1));
-									if (verticeEdgesCur >= this.verticeEdgesLength) {
+										verticeId++;
+										if (verticeId >= position.length) {
 
-										if (this.projectGeometry) this.projectGeometry();
-										if (this.classSettings.debug) this.classSettings.debug.logTimestamp('Push edges. ');
-										progressBar.remove();
-										if (this.classSettings.projectParams) this.project(this.classSettings.projectParams.scene, this.classSettings.projectParams.params);
-										boCompleted = true;
-										return;// true;
+											verticeEdgesCur++;
+											progressBar.title(lang.progressTitle.replace('%s', verticeEdgesCur + 1));
+											if (verticeEdgesCur >= this.verticeEdgesLength) {
 
-									}
-									verticeId = 0;
+												if (this.projectGeometry) this.projectGeometry();
+												if (this.classSettings.debug) this.classSettings.debug.logTimestamp('Push edges. ');
+												progressBar.remove();
+												if (this.classSettings.projectParams) this.project(this.classSettings.projectParams.scene, this.classSettings.projectParams.params);
+												boCompleted = true;
+												return;// true;
 
-								}
+											}
+											verticeId = 0;
 
-							} while ((position[verticeId].edges.length >= this.verticeEdgesLength) &amp;&amp; (verticeIdStart != verticeId));
-							progressBar.step();
+										}
 
-						}
-						if (boCompleted) return;
-						let oppositeVerticeId = verticeId + 1;
-						if (oppositeVerticeId >= position.length) oppositeVerticeId = 0;
-						//Поиск вершины у которой ребер меньше максимального количества ребер и у которой нет нового ребра
-						const oppositeVerticeIdFirst = oppositeVerticeId;
-						while (true) {
-
-							const oppositeVerticeEdges = position[oppositeVerticeId].edges;
-							if (oppositeVerticeEdges.length &lt; this.verticeEdgesLength) {
-
-								//поиск нового ребра в списке ребер этой вершины
-								let boContinue = false;
-								for (let oppositeVerticeEdgeId = 0; oppositeVerticeEdgeId &lt; oppositeVerticeEdges.length; oppositeVerticeEdgeId++) {
-
-									const oppositeVerticeEdge = edges[oppositeVerticeEdges[oppositeVerticeEdgeId]];
-									if (
-										(oppositeVerticeEdge[0] === verticeId) &amp;&amp; (oppositeVerticeEdge[1] === oppositeVerticeId) ||
-										(oppositeVerticeEdge[1] === verticeId) &amp;&amp; (oppositeVerticeEdge[0] === oppositeVerticeId)
-									) {
-
-										boContinue = true;//это ребро уже существует
-										break;
-
-									}
+									} while ((position[verticeId].edges.length >= this.verticeEdgesLength) &amp;&amp; (verticeIdStart != verticeId));
+									progressBar.step();
 
 								}
-								if (boContinue) {
-
-									oppositeVerticeId++;
-									if (oppositeVerticeId >= position.length) oppositeVerticeId = 0;
-									continue;//Новое ребро уже есть в текущей вершине. Перейти на следующую вершину
-
-								}
-								break;//нашел противоположное ребро
-
-							} else {
-
-								oppositeVerticeId++;
+								if (boCompleted) return;
+								let oppositeVerticeId = verticeId + 1;
 								if (oppositeVerticeId >= position.length) oppositeVerticeId = 0;
+								//Поиск вершины у которой ребер меньше максимального количества ребер и у которой нет нового ребра
+								const oppositeVerticeIdFirst = oppositeVerticeId;
+								while (true) {
 
-							}
-							if (oppositeVerticeIdFirst === oppositeVerticeId) break;
+									const oppositeVerticeEdges = position[oppositeVerticeId].edges;
+									if (oppositeVerticeEdges.length &lt; this.verticeEdgesLength) {
+
+										//поиск нового ребра в списке ребер этой вершины
+										let boContinue = false;
+										for (let oppositeVerticeEdgeId = 0; oppositeVerticeEdgeId &lt; oppositeVerticeEdges.length; oppositeVerticeEdgeId++) {
+
+											const oppositeVerticeEdge = edges[oppositeVerticeEdges[oppositeVerticeEdgeId]];
+											if (
+												(oppositeVerticeEdge[0] === verticeId) &amp;&amp; (oppositeVerticeEdge[1] === oppositeVerticeId) ||
+												(oppositeVerticeEdge[1] === verticeId) &amp;&amp; (oppositeVerticeEdge[0] === oppositeVerticeId)
+											) {
+
+												boContinue = true;//это ребро уже существует
+												break;
+
+											}
+
+										}
+										if (boContinue) {
+
+											oppositeVerticeId++;
+											if (oppositeVerticeId >= position.length) oppositeVerticeId = 0;
+											continue;//Новое ребро уже есть в текущей вершине. Перейти на следующую вершину
+
+										}
+										break;//нашел противоположное ребро
+
+									} else {
+
+										oppositeVerticeId++;
+										if (oppositeVerticeId >= position.length) oppositeVerticeId = 0;
+
+									}
+									if (oppositeVerticeIdFirst === oppositeVerticeId) break;
+
+								}
+
+								//Возможно был пройден полный круг поиска противолположной вершины и ничего найдено не было
+								if (verticeId != oppositeVerticeId) {
+
+									edges.push([verticeId, oppositeVerticeId]);
+
+								}
+								//else console.log(sUniverse + '.pushEdges. Opposite vertice was not found.')
+
+								nextVertice();
+
+							}, {
+
+								sTitle: lang.progressTitle.replace('%s', verticeEdgesCur + 1),
+								max: position.length,
+								timeoutPeriod: 3,
+
+							});
+							break;
+						/*
+						case edgesCreationMethod.NearestVertice: {
+							
+							let verticeId = 0;
+							position[verticeId].edges
+							break;
 
 						}
+						*/
+						default: console.error(sUniverse + ': pushEdges. Invalid classSettings.edges.creationMethod = ' + classSettings.edges.creationMethod);
 
-						//Возможно был пройден полный круг поиска противолположной вершины и ничего найдено не было
-						if (verticeId != oppositeVerticeId) {
-
-							edges.push([verticeId, oppositeVerticeId]);
-
-						}
-						//else console.log(sUniverse + '.pushEdges. Opposite vertice was not found.')
-
-						nextVertice();
-
-					}, {
-
-						sTitle: lang.progressTitle.replace('%s', verticeEdgesCur + 1),
-						max: position.length,
-						timeoutPeriod: 3,
-
-					});
+					}
 
 				}
 
@@ -1932,7 +2053,7 @@ class Universe {
 		}
 
 		let cEdges;
-		if ( options.dat.gui ) {
+		if (options.dat &amp;&amp; options.dat.gui) {
 
 			const getLanguageCode = options.getLanguageCode;
 			
@@ -2048,6 +2169,25 @@ class Universe {
 
 }
 
+const edgesCreationMethod = {
+	
+	Random: 0,//'Random',
+	NearestVertice: 1,//'NearestVertice',
+	
+}
+Object.freeze(edgesCreationMethod);
+/**
+ * Enums a methods for creating edges:
+ * &lt;pre>
+ * Random: every vertice of the edge have random position.
+ * NearestVertice: Vertices of the edge have nearest position.
+ * &lt;/pre>
+ * */
+Universe.edgesCreationMethod = edgesCreationMethod;
+
+/**
+ * &lt;a href="../../../commonNodeJS/master/nD/jsdoc/" target="_blank">ND&lt;/a>
+ * */
 Universe.ND = ND;
 
 export default Universe;
@@ -2070,7 +2210,7 @@ const _display = (element, boDisplay) => { element.style.display = boDisplay ===
 <br class="clear">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 3.6.11</a> on Fri Dec 15 2023 09:45:05 GMT+0700 (Красноярск, стандартное время)
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 3.6.11</a> on Wed Dec 20 2023 07:54:53 GMT+0700 (Красноярск, стандартное время)
 </footer>
 
 <script> prettyPrint(); </script>
