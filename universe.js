@@ -1343,7 +1343,8 @@ class Universe {
 												distance = vertice.distanceTo(oppositeVertice);
 //											aAngleControls.arc = new Universe();
 											aAngleControls.arc = this.newUniverse(
-//												classSettings.settings.options,
+												classSettings.settings.options,
+/*												
 												{
 													
 													getLanguageCode: classSettings.settings.options.getLanguageCode,
@@ -1356,9 +1357,11 @@ class Universe {
 													boOptions: true,
 												
 												},
+*/												
 												{
 
 													boRemove: false,
+													boGui: false,
 													edges: {
 									
 														creationMethod: Universe.edgesCreationMethod.Random,
@@ -2025,7 +2028,7 @@ class Universe {
 		}
 
 		let cEdges;
-		if (options.dat && options.dat.gui) {
+		if (options.dat && options.dat.gui && (classSettings.boGui != false)) {
 
 			const getLanguageCode = options.getLanguageCode;
 			
