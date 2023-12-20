@@ -716,43 +716,6 @@ class Universe {
 											
 											});
 											const muddleVertice = _this.vertice2angles(aSum);
-/*											
-											for (let i = 0; i < (aSum.length - 1); i++) {
-
-												if (i === 0)
-													muddleVertice.push(Math.atan2(aSum[0], aSum[1]));
-												else if (i === 1)
-													muddleVertice.push(Math.atan2(muddleVertice[muddleVertice.length - 1], aSum[2] + Math.PI));
-												else console.error(sUniverse + ': middleVertice. Under constraction');
-												
-//												muddleVertice.push(Math.atan2(aSum[i], i === 0 ? aSum[i + 1] : muddleVertice[muddleVertice.length - 1]));
-//												muddleVertice.push(Math.atan2(i === 0 ? aSum[0] : muddleVertice[muddleVertice.length - 1], aSum[i + 1]));
-
-											}
-*/											
-/*
-											//Перебираем углы вершины. Количество углов в вершине 1 для 1 мерной вселенной, 2 для 2D и 3 для 3D
-											for (let angleId = 0; angleId < vertice.length; angleId++) {
-
-												//https://wiki5.ru/wiki/Mean_of_circular_quantities#Mean_of_angles Среднее значение углов
-
-												//массив для хранения сумм декартовых координат прпотивоположных вершин
-												//для 1D вселенной это: aSum[0] = x, aSum[1] = y.
-												//для 2D вселенной это: aSum[0] = x, aSum[1] = y, aSum[2] = z.
-												//для 3D вселенной это: aSum[0] = x, aSum[1] = y, aSum[2] = z, aSum[3] = w.
-												const aSum = [];
-												for (let i = 0; i < _this.dimension; i++) aSum.push(0.0);
-												
-												oppositeVerticesId.forEach(oppositeAngleId => {
-
-													const oppositeVertice = position[oppositeAngleId];
-													oppositeVertice.forEach((axis, i) => aSum[i] += axis);
-												
-												});
-												muddleVertice.push(Math.atan2(aSum[0], aSum[1]));
-												
-											}
-*/											
 											if (classSettings.debug && classSettings.debug.middleVertice) {
 
 												console.log('');
@@ -1039,6 +1002,7 @@ class Universe {
 			//remove previous universe
 			this.remove = (scene) => {
 
+				if (classSettings.boRemove === false) return;
 				for (var i = scene.children.length - 1; i >= 0; i--) {
 
 					const child = scene.children[i];
@@ -1099,6 +1063,8 @@ class Universe {
 						if (aAngleControls.cross.position.z === undefined) aAngleControls.cross.position.z = 0;
 
 					}
+					
+					if (aAngleControls.distance) aAngleControls.distance([aAngleControls.verticeId, aAngleControls.oppositeVerticeId]);
 
 				}
 				
@@ -1223,6 +1189,7 @@ class Universe {
 									defaultAnglesTitle: 'Restore default angles.',
 
 									notSelected: 'not selected',
+									arc: 'Arc',
 	
 								};
 	
@@ -1253,6 +1220,7 @@ class Universe {
 										lang.defaultAnglesTitle = 'Восстановить углы по умолчанию';
 										
 										lang.notSelected = 'Не выбрано';
+										lang.arc = 'Дуга';
 										
 										break;
 									default://Custom language
@@ -1308,14 +1276,22 @@ class Universe {
 								//Edges
 								
 //								let cross;//крестик на противоположной вершине выбранного ребра
-								aAngleControls.cEdges = fAdvansed.add( { Edges: lang.notSelected }, 'Edges', { [lang.notSelected]: -1 } ).onChange((edgeId) => {
-									
+								aAngleControls.cEdges = fAdvansed.add({ Edges: lang.notSelected }, 'Edges', { [lang.notSelected]: -1 }).onChange((edgeId) => {
+
 									edgeId = parseInt(edgeId);
 									_display(fOppositeVertice.domElement, edgeId === -1 ? false : true);
+									aAngleControls.removeArc = () => {
+
+										if (aAngleControls.arc) classSettings.projectParams.scene.remove(aAngleControls.arc);
+										aAngleControls.arc = undefined;
+
+									}
 									aAngleControls.removeCross = () => {
-										
+
 										if (aAngleControls.cross) classSettings.projectParams.scene.remove(aAngleControls.cross);
 										aAngleControls.cross = undefined;
+
+										aAngleControls.removeArc();
 										
 									}
 									if (edgeId === -1) {
@@ -1355,6 +1331,133 @@ class Universe {
 										aAngleControls.cross.position.copy(oppositeVertice);
 										if (aAngleControls.cross.position.z === undefined) aAngleControls.cross.position.z = 0;
 										aAngleControls.oppositeVerticeId = oppositeVerticeId;
+
+										//Distance between edge vertices i.e between vertice and opposite vertice.
+										aAngleControls.distance = (edge) => {
+											
+											aAngleControls.removeArc();
+											const vertice = position[edge[0]],
+												oppositeVertice = position[edge[1]],
+												distance = vertice.distanceTo(oppositeVertice);
+//											aAngleControls.arc = new Universe();
+											aAngleControls.arc = this.newUniverse(
+//												classSettings.settings.options,
+												{
+													
+													getLanguageCode: classSettings.settings.options.getLanguageCode,
+													renderer: classSettings.settings.options.renderer,
+													setPalette: classSettings.settings.options.setPalette,
+													setW: classSettings.settings.options.setW,
+													scales: classSettings.settings.options.scales,
+													point: classSettings.settings.options.point,
+													playerOptions: classSettings.settings.options.playerOptions,
+													boOptions: true,
+												
+												},
+												{
+
+													boRemove: false,
+													edges: {
+									
+														creationMethod: Universe.edgesCreationMethod.Random,
+														
+													},
+													edges: false,
+													projectParams:{
+														
+														scene: classSettings.projectParams.scene,
+														/*
+														params: {
+															
+															//center: {x: 0.5, y: 0.3},
+														
+														}
+														 */
+														
+													},
+													//t: 0.5,
+													debug: {
+									
+														probabilityDensity: false,
+														//probabilityDensity: [],
+														//testVertice: false,
+														
+													},
+													//debug: false,
+													//mode: 1,
+													settings: {
+														
+														object: {
+										
+															name: lang.arc,
+															//color: 'red',
+															//color: 0x0000ff,//blue
+															geometry: {
+									
+																angles: [vertice.angles, [3.8], oppositeVertice.angles],
+									
+									/*
+																position: [
+																	//[-0.5, 0.5], [0.0, -0.6], [0.5, 0.7]
+																	//[0.0, -1.0], [0.8660254037844388, 0.5], [-0.8660254037844384, 0.5]//Triangle
+																	[-1, 0,], [0, 1], [-0.8660254037844384, 0.5]//Intersection test
+																],
+																position: { count: 3, },
+									*/							
+																/*
+																colors: [
+																	1, 0, 0,//red
+																	0, 1, 0,//green
+																	//0, 0, 1,//blue
+																	//0.6, 1, 0,
+																//	0, 0, 1,	0, 0.6, 1
+																],
+																*/
+																//opacity: [1, 0.5],
+																/*
+																indices: {
+																	
+																	//edges: { count: 5000 }
+																	//edges: [[0,1], [1,2], [2,0]],//triangle
+																
+																}
+																*/
+															
+															}
+									
+														}
+													
+													},
+													
+												});
+/*											
+											const arcWidth = 0.005;
+											let innerRadius = 1 + arcWidth, outerRadius = 1 - arcWidth,
+												thetaSegments = 360,
+												phiSegments = 1,
+												thetaStart = Math.PI / 2 - vertice.angles[0],
+												thetaLength = vertice.angles[0] > oppositeVertice.angles[0] ? distance : - distance;//Math.PI * 2;
+											aAngleControls.arc = new THREE.Mesh(new THREE.RingGeometry(innerRadius, outerRadius, thetaSegments, phiSegments, thetaStart, thetaLength),
+																		new THREE.MeshBasicMaterial( { color: 'yellow', side: THREE.DoubleSide } ));
+											scene.add(aAngleControls.arc);
+*/											
+											
+										}
+										aAngleControls.distance(edge);
+/*										
+										//Distance between edge vertices i.e between vertice and opposite vertice.
+										aAngleControls.removeArc();
+										const vertice = position[aAngleControls.verticeId], distance = vertice.distanceTo(oppositeVertice);
+										const arcWidth = 0.005;
+										let innerRadius = 1 + arcWidth, outerRadius = 1 - arcWidth,
+											thetaSegments = 360,
+											phiSegments = 1,
+											thetaStart = Math.PI / 2 - vertice.angles[0],
+											thetaLength = vertice.angles[0] > oppositeVertice.angles[0] ? distance : - distance;//Math.PI * 2;
+										aAngleControls.arc = new THREE.Mesh(new THREE.RingGeometry(innerRadius, outerRadius, thetaSegments, phiSegments, thetaStart, thetaLength),
+																	new THREE.MeshBasicMaterial( { color: 'yellow', side: THREE.DoubleSide } ));
+										scene.add(aAngleControls.arc);
+*/										
 										
 									}
 					
@@ -1920,7 +2023,7 @@ class Universe {
 		}
 
 		let cEdges;
-		if ( options.dat.gui ) {
+		if (options.dat && options.dat.gui) {
 
 			const getLanguageCode = options.getLanguageCode;
 			
