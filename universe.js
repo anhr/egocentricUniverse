@@ -553,7 +553,7 @@ class Universe {
 							_this.pushEdges();
 
 						}
-						_this.project();
+						else _this.project();
 						return true;
 					case 'length':
 						console.warn(sUniverse + ': set geometry.angles.length. Use guiLength instead')
