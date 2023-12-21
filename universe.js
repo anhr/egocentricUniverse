@@ -380,6 +380,7 @@ class Universe {
 	 * @param {boolean} [classSettings.debug.middleVertice=true] Log middle vertice.
 	 * @param {function} [classSettings.continue] Callback function that called after universe edges was created.
 	 * @param {boolean} [classSettings.boRemove] false - do not delete the previous universe while projecting a new universe on scene.
+	 * @param {boolean} [classSettings.boGui] false - do not include universe GUI.
 	 **/
 	constructor(options, classSettings={}) {
 
@@ -1085,7 +1086,7 @@ class Universe {
 
 					const lang = {
 
-						intersector: "Intersector",
+						intersector: 'Intersector',
 
 					};
 
@@ -1093,7 +1094,7 @@ class Universe {
 
 						case 'ru'://Russian language
 
-							lang.intersector = "Сечение";
+							lang.intersector = 'Сечение';
 
 							break;
 
@@ -1284,7 +1285,15 @@ class Universe {
 									_display(fOppositeVertice.domElement, edgeId === -1 ? false : true);
 									aAngleControls.removeArc = () => {
 
-										if (aAngleControls.arc) classSettings.projectParams.scene.remove(aAngleControls.arc);
+										if (aAngleControls.arc) {
+											
+//											classSettings.projectParams.scene.remove(aAngleControls.arc);
+											/*
+											classSettings.projectParams.scene.remove(child);
+											if (options.guiSelectPoint) options.guiSelectPoint.removeMesh(child);
+											*/
+
+										}
 										aAngleControls.arc = undefined;
 
 									}
@@ -1338,9 +1347,27 @@ class Universe {
 										aAngleControls.distance = (edge) => {
 											
 											aAngleControls.removeArc();
+											const vertice = position[edge[0]].angles,
+												oppositeVertice = position[edge[1]].angles,
+												angles = [],
+												
+												//если не копировать каждый угол в отделности, то в новой вершине останутся старые ребра
+												copyVertice = (vertice) => {
+
+													angles.push([]);
+													const verticeAngles = angles[angles.length - 1];
+													vertice.forEach(angle => verticeAngles.push(angle));
+													
+												};
+											copyVertice(vertice);
+											angles.push([3.8]);
+											copyVertice(oppositeVertice);
+//												distance = vertice.distanceTo(oppositeVertice);
+/*											
 											const vertice = position[edge[0]],
 												oppositeVertice = position[edge[1]],
 												distance = vertice.distanceTo(oppositeVertice);
+*/												
 //											aAngleControls.arc = new Universe();
 											aAngleControls.arc = this.newUniverse(
 												classSettings.settings.options,
@@ -1367,7 +1394,7 @@ class Universe {
 														creationMethod: Universe.edgesCreationMethod.Random,
 														
 													},
-													edges: false,
+													//edges: false,
 													projectParams:{
 														
 														scene: classSettings.projectParams.scene,
@@ -1395,11 +1422,11 @@ class Universe {
 														object: {
 										
 															name: lang.arc,
-															//color: 'red',
+															color: 'magenta',//'yellow',
 															//color: 0x0000ff,//blue
 															geometry: {
 									
-																angles: [vertice.angles, [3.8], oppositeVertice.angles],
+																angles: angles,//[vertice, [3.8], oppositeVertice],
 									
 									/*
 																position: [
