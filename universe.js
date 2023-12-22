@@ -1001,6 +1001,14 @@ class Universe {
 */				
 					
 			}
+
+			const removeObject = (object) => {
+
+				if (!object) return;
+				scene.remove(object);
+				if (options.guiSelectPoint) options.guiSelectPoint.removeMesh(object);
+				
+			}
 			
 			//remove previous universe
 			this.remove = (scene) => {
@@ -1010,13 +1018,26 @@ class Universe {
 
 					const child = scene.children[i];
 					this.remove(child);
+					removeObject(child);
+/*					
 					scene.remove(child);
 					if (options.guiSelectPoint) options.guiSelectPoint.removeMesh(child);
+*/					
 
 				}
 
 			}
 			this.remove(scene);
+			this.removeUniverse = () => {
+
+				let object;
+				if (nd && nd.object3D) object = nd.object3D;
+				if (myPoints) console.error('Under constraction');
+				if (nd) nd = undefined;
+				if (myPoints) myPoints = undefined;
+				removeObject(object);
+
+			}
 			this.removeMesh = () => {
 
 				settings.object.geometry.indices.edges.length = 0;
@@ -1285,8 +1306,9 @@ class Universe {
 									_display(fOppositeVertice.domElement, edgeId === -1 ? false : true);
 									aAngleControls.removeArc = () => {
 
-										if (aAngleControls.arc) {
-											
+										if (aAngleControls.arc && aAngleControls.arc.removeUniverse) {
+
+											aAngleControls.arc.removeUniverse();
 //											classSettings.projectParams.scene.remove(aAngleControls.arc);
 											/*
 											classSettings.projectParams.scene.remove(child);
