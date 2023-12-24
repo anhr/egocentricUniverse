@@ -560,7 +560,15 @@ class Universe {
 						return true;
 						
 				}
-				aAngles[name] = value;
+				const i = parseInt(name);
+				if (!isNaN(i)) {
+
+					const angle = aAngles[i];
+					Object.keys(angle).forEach((key) => value[key] = angle[key]);
+					aAngles[i] = value;
+					
+				}
+				else aAngles[name] = value;
 				return true;
 				
 			}
@@ -1038,6 +1046,27 @@ class Universe {
 				removeObject(object);
 
 			}
+			this.updateUniverse = (values) => {
+
+//if (!values) return;
+				let object;
+				if (nd && nd.object3D) object = nd.object3D;
+				if (myPoints) console.error('Under constraction');
+				object.geometry.attributes.position.count = values.angles.length;
+				values.angles.forEach((angles, i) => {
+					
+//					position[i].angles = angles
+//					angles.forEach((angle, j) => position[i].angles[j] = angle)
+					for (let j = 0; j < (_this.dimension - 1); j++) 
+						settings.object.geometry.angles[i][j] = angles[j] != undefined? angles[j] : 0.0
+//						position[i].angles[j] = angles[j] != undefined? angles[j] : 0.0
+//					position[i].angles.forEach((angle, j) => position[i].angles[j] = angles[j])
+//					angles.forEach((angle, j) => position[i].angles[j] = angle)
+					
+				});
+				object.geometry.attributes.position.needsUpdate = true;
+
+			}
 			this.removeMesh = () => {
 
 				settings.object.geometry.indices.edges.length = 0;
@@ -1088,7 +1117,8 @@ class Universe {
 
 					}
 					
-					if (aAngleControls.distance) aAngleControls.distance([aAngleControls.verticeId, aAngleControls.oppositeVerticeId]);
+//					if (aAngleControls.distance) aAngleControls.distance([aAngleControls.verticeId, aAngleControls.oppositeVerticeId]);
+					if (aAngleControls.arc) aAngleControls.distance([aAngleControls.verticeId, aAngleControls.oppositeVerticeId]);
 
 				}
 				
@@ -1264,11 +1294,8 @@ class Universe {
 									dat.folderNameAndTitle(fAngles, lang.angles, lang.anglesTitle);
 									for (let i = 0; i < (_this.dimension - 1); i++) {
 	
-										const cAngle = fAngles.add({ angle: 0, }, 'angle', -Math.PI, Math.PI, 2 * Math.PI / 360).onChange((angle) => {
-	
-											settings.object.geometry.angles[aAngleControls.verticeId][i] = angle;
-												
-										});
+										const cAngle = fAngles.add({ angle: 0, }, 'angle', -Math.PI, Math.PI, 2 * Math.PI / 360).onChange((angle) =>
+											settings.object.geometry.angles[aAngleControls.verticeId][i] = angle);
 										dat.controllerNameAndTitle(cAngle, lang.angle + ' ' + i);
 										aAngleControls.push(cAngle);
 										
@@ -1324,12 +1351,13 @@ class Universe {
 										if (aAngleControls.cross) classSettings.projectParams.scene.remove(aAngleControls.cross);
 										aAngleControls.cross = undefined;
 
-										aAngleControls.removeArc();
+//										aAngleControls.removeArc();
 										
 									}
 									if (edgeId === -1) {
 										
 										aAngleControls.removeCross();
+										aAngleControls.removeArc();
 										aEdgeAngleControls.verticeId = undefined;
 										
 									} else {
@@ -1368,7 +1396,7 @@ class Universe {
 										//Distance between edge vertices i.e between vertice and opposite vertice.
 										aAngleControls.distance = (edge) => {
 											
-											aAngleControls.removeArc();
+//											aAngleControls.removeArc();
 											const vertice = position[edge[0]].angles,
 												oppositeVertice = position[edge[1]].angles,
 												angles = [],
@@ -1376,22 +1404,33 @@ class Universe {
 												//если не копировать каждый угол в отделности, то в новой вершине останутся старые ребра
 												copyVertice = (vertice) => {
 
+/*													
 													angles.push([]);
 													const verticeAngles = angles[angles.length - 1];
+*/													
+													const verticeAngles = [];
 													vertice.forEach(angle => verticeAngles.push(angle));
+													angles.push(verticeAngles);
 													
 												};
-											copyVertice(vertice);
-											angles.push([3.8]);
-											copyVertice(oppositeVertice);
-//												distance = vertice.distanceTo(oppositeVertice);
+											const arcVericesCount = 3,
+												arcVerticeStep = [];//Шаги, с которым изменяются углы при построении дуги
+											for (let k = 0; k < (this.dimension - 1); k++) arcVerticeStep.push((oppositeVertice[k] - vertice[k]) / arcVericesCount);
+											for (let i = 0; i < arcVericesCount; i++) {
+
+												const arcVerice = [];
+												for (let j = 0; j < (this.dimension - 1); j++) arcVerice.push(vertice[j] + arcVerticeStep[j] * i);
+												copyVertice(arcVerice);
+												
+											}
 /*											
-											const vertice = position[edge[0]],
-												oppositeVertice = position[edge[1]],
-												distance = vertice.distanceTo(oppositeVertice);
-*/												
-//											aAngleControls.arc = new Universe();
-											aAngleControls.arc = this.newUniverse(
+											copyVertice(vertice);
+//angles.push([3.8]);
+//if (aAngleControls.arc) angles.push([4.1]);
+*/											
+											copyVertice(oppositeVertice);
+											if (aAngleControls.arc) aAngleControls.arc.updateUniverse({ angles: angles });
+											else aAngleControls.arc = this.newUniverse(
 												classSettings.settings.options,
 /*												
 												{
