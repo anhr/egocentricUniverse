@@ -402,7 +402,11 @@ class Universe {
 		if (options.dat) options.dat.cookie.getObject(this.cookieName, cookieOptions);
 
 		let edgesOld = cookieOptions.edgesOld || { project: true, };
-		if (classSettings.edges instanceof Array === false) classSettings.edges = cookieOptions.edges === false ? false : cookieOptions.edges || classSettings.edges;
+//		if (classSettings.edges instanceof Array === false) {
+		const boCurve = classSettings.edges.boCurve;
+		classSettings.edges = cookieOptions.edges === false ? false : cookieOptions.edges || classSettings.edges;
+		if (boCurve) classSettings.edges.boCurve = boCurve;
+//		}
 		if (classSettings.edges != false) classSettings.edges = classSettings.edges || {};
 		if ((classSettings.edges != false) && (classSettings.edges.project === undefined)) classSettings.edges.project = true;
 
@@ -1450,14 +1454,13 @@ class Universe {
 
 													boRemove: false,
 													boGui: false,
-													/*
 													edges: {
 									
 														creationMethod: Universe.edgesCreationMethod.Random,
+														boCurve: true,
 														
 													},
-													*/
-													edges: [[0,1]],
+													//edges: [[0,1]],
 													//edges: false,
 													projectParams:{
 														
@@ -1684,7 +1687,9 @@ class Universe {
 					} else {
 						
 						settings.scene = scene;
-						if ((settings.object.geometry.indices.edges.length === 0) && (classSettings.edges instanceof Array === false)) this.pushEdges();
+						if ((settings.object.geometry.indices.edges.length === 0)
+//							&& (classSettings.edges instanceof Array === false)
+						) this.pushEdges();
 						else {
 							
 							if ((settings.object.geometry.position[0].length > 3 ) && (!settings.object.color)) settings.object.color = {};//Color of vertice from palette
@@ -2035,7 +2040,18 @@ class Universe {
 								}
 								if (boCompleted) return;
 								let oppositeVerticeId = verticeId + 1;
-								if (oppositeVerticeId >= position.length) oppositeVerticeId = 0;
+								if (oppositeVerticeId >= position.length) {
+
+									if (classSettings.edges.boCurve) {
+
+										//Это кривая. Не надо соединять последнюю вершину с первой
+										nextVertice();
+										return;
+
+									}
+									oppositeVerticeId = 0;
+
+								}
 								//Поиск вершины у которой ребер меньше максимального количества ребер и у которой нет нового ребра
 								const oppositeVerticeIdFirst = oppositeVerticeId;
 								while (true) {
@@ -2079,11 +2095,8 @@ class Universe {
 								}
 
 								//Возможно был пройден полный круг поиска противолположной вершины и ничего найдено не было
-								if (verticeId != oppositeVerticeId) {
+								if (verticeId != oppositeVerticeId) edges.push([verticeId, oppositeVerticeId]);
 
-									edges.push([verticeId, oppositeVerticeId]);
-
-								}
 								//else console.log(sUniverse + '.pushEdges. Opposite vertice was not found.')
 
 								nextVertice();
@@ -2111,7 +2124,9 @@ class Universe {
 
 				}
 
-				if (classSettings.edges && (classSettings.edges instanceof Array === false)) this.pushEdges();//Для экономии времени не добавляю ребра если на холст вывожу только вершины
+				if (classSettings.edges
+//					&& (classSettings.edges instanceof Array === false)
+				) this.pushEdges();//Для экономии времени не добавляю ребра если на холст вывожу только вершины
 				else if (this.classSettings.projectParams) this.project(this.classSettings.projectParams.scene, this.classSettings.projectParams.params);
 				
 				break;
