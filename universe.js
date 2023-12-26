@@ -402,7 +402,7 @@ class Universe {
 		if (options.dat) options.dat.cookie.getObject(this.cookieName, cookieOptions);
 
 		let edgesOld = cookieOptions.edgesOld || { project: true, };
-		classSettings.edges = cookieOptions.edges === false ? false : cookieOptions.edges || classSettings.edges;
+		if (classSettings.edges instanceof Array === false) classSettings.edges = cookieOptions.edges === false ? false : cookieOptions.edges || classSettings.edges;
 		if (classSettings.edges != false) classSettings.edges = classSettings.edges || {};
 		if ((classSettings.edges != false) && (classSettings.edges.project === undefined)) classSettings.edges.project = true;
 
@@ -1450,11 +1450,14 @@ class Universe {
 
 													boRemove: false,
 													boGui: false,
+													/*
 													edges: {
 									
 														creationMethod: Universe.edgesCreationMethod.Random,
 														
 													},
+													*/
+													edges: [[0,1]],
 													//edges: false,
 													projectParams:{
 														
@@ -1681,11 +1684,14 @@ class Universe {
 					} else {
 						
 						settings.scene = scene;
-						if (settings.object.geometry.indices.edges.length === 0 ) this.pushEdges();
+						if ((settings.object.geometry.indices.edges.length === 0) && (classSettings.edges instanceof Array === false)) this.pushEdges();
 						else {
 							
 							if ((settings.object.geometry.position[0].length > 3 ) && (!settings.object.color)) settings.object.color = {};//Color of vertice from palette
+//settings.object.geometry.indices = undefined;
+//settings.object.geometry.indices.boAddIndices = false;
 							nd = new ND(this.dimension, settings);
+//nd.object3D.geometry.index = null;
 			
 							params.center = params.center || {}
 							nd.object3D.position.x = params.center.x || 0;
@@ -2105,7 +2111,7 @@ class Universe {
 
 				}
 
-				if (classSettings.edges) this.pushEdges();//Для экономии времени не добавляю ребра если на холст вывожу только вершины
+				if (classSettings.edges && (classSettings.edges instanceof Array === false)) this.pushEdges();//Для экономии времени не добавляю ребра если на холст вывожу только вершины
 				else if (this.classSettings.projectParams) this.project(this.classSettings.projectParams.scene, this.classSettings.projectParams.params);
 				
 				break;
