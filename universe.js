@@ -246,6 +246,11 @@ class Universe {
 	 *	false - Doesn't create edges to reduce the creation time of the universe
 	 * </pre>
 	 * @param {boolean} [classSettings.edges.project=true] false - Doesn't project edges onto canvas
+	 * @param {boolean} [classSettings.edges.boCurve]
+	 * <pre>
+	 * true - Chain of vertices connected by edges.
+	 *	First vertice is not connected with last vertice.
+	 * </pre>
 	 * @param {enum} [classSettings.edges.creationMethod=edgesCreationMethod.NearestVertice] method for creating edges. See <a href="./module-Universe-Universe.html#.edgesCreationMethod" target="_blank">edgesCreationMethod</a>
 	 * @param {object} [classSettings.settings] The following settings are available
 	 * @param {object} [classSettings.settings.object] Universe object.

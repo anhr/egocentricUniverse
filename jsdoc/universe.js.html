@@ -274,6 +274,11 @@ class Universe {
 	 *	false - Doesn't create edges to reduce the creation time of the universe
 	 * &lt;/pre>
 	 * @param {boolean} [classSettings.edges.project=true] false - Doesn't project edges onto canvas
+	 * @param {boolean} [classSettings.edges.boCurve]
+	 * &lt;pre>
+	 * true - Chain of vertices connected by edges.
+	 *	First vertice is not connected with last vertice.
+	 * &lt;/pre>
 	 * @param {enum} [classSettings.edges.creationMethod=edgesCreationMethod.NearestVertice] method for creating edges. See &lt;a href="./module-Universe-Universe.html#.edgesCreationMethod" target="_blank">edgesCreationMethod&lt;/a>
 	 * @param {object} [classSettings.settings] The following settings are available
 	 * @param {object} [classSettings.settings.object] Universe object.
@@ -430,7 +435,11 @@ class Universe {
 		if (options.dat) options.dat.cookie.getObject(this.cookieName, cookieOptions);
 
 		let edgesOld = cookieOptions.edgesOld || { project: true, };
+//		if (classSettings.edges instanceof Array === false) {
+		const boCurve = classSettings.edges.boCurve;
 		classSettings.edges = cookieOptions.edges === false ? false : cookieOptions.edges || classSettings.edges;
+		if (boCurve) classSettings.edges.boCurve = boCurve;
+//		}
 		if (classSettings.edges != false) classSettings.edges = classSettings.edges || {};
 		if ((classSettings.edges != false) &amp;&amp; (classSettings.edges.project === undefined)) classSettings.edges.project = true;
 
@@ -581,14 +590,22 @@ class Universe {
 							_this.pushEdges();
 
 						}
-						_this.project();
+						else _this.project();
 						return true;
 					case 'length':
 						console.warn(sUniverse + ': set geometry.angles.length. Use guiLength instead')
 						return true;
 						
 				}
-				aAngles[name] = value;
+				const i = parseInt(name);
+				if (!isNaN(i)) {
+
+					const angle = aAngles[i];
+					Object.keys(angle).forEach((key) => value[key] = angle[key]);
+					aAngles[i] = value;
+					
+				}
+				else aAngles[name] = value;
 				return true;
 				
 			}
@@ -1029,6 +1046,14 @@ class Universe {
 */				
 					
 			}
+
+			const removeObject = (object) => {
+
+				if (!object) return;
+				scene.remove(object);
+				if (options.guiSelectPoint) options.guiSelectPoint.removeMesh(object);
+				
+			}
 			
 			//remove previous universe
 			this.remove = (scene) => {
@@ -1038,13 +1063,47 @@ class Universe {
 
 					const child = scene.children[i];
 					this.remove(child);
+					removeObject(child);
+/*					
 					scene.remove(child);
 					if (options.guiSelectPoint) options.guiSelectPoint.removeMesh(child);
+*/					
 
 				}
 
 			}
 			this.remove(scene);
+			this.removeUniverse = () => {
+
+				let object;
+				if (nd &amp;&amp; nd.object3D) object = nd.object3D;
+				if (myPoints) console.error('Under constraction');
+				if (nd) nd = undefined;
+				if (myPoints) myPoints = undefined;
+				removeObject(object);
+
+			}
+			this.updateUniverse = (values) => {
+
+//if (!values) return;
+				let object;
+				if (nd &amp;&amp; nd.object3D) object = nd.object3D;
+				if (myPoints) console.error('Under constraction');
+				object.geometry.attributes.position.count = values.angles.length;
+				values.angles.forEach((angles, i) => {
+					
+//					position[i].angles = angles
+//					angles.forEach((angle, j) => position[i].angles[j] = angle)
+					for (let j = 0; j &lt; (_this.dimension - 1); j++) 
+						settings.object.geometry.angles[i][j] = angles[j] != undefined? angles[j] : 0.0
+//						position[i].angles[j] = angles[j] != undefined? angles[j] : 0.0
+//					position[i].angles.forEach((angle, j) => position[i].angles[j] = angles[j])
+//					angles.forEach((angle, j) => position[i].angles[j] = angle)
+					
+				});
+				object.geometry.attributes.position.needsUpdate = true;
+
+			}
 			this.removeMesh = () => {
 
 				settings.object.geometry.indices.edges.length = 0;
@@ -1095,7 +1154,8 @@ class Universe {
 
 					}
 					
-					if (aAngleControls.distance) aAngleControls.distance([aAngleControls.verticeId, aAngleControls.oppositeVerticeId]);
+//					if (aAngleControls.distance) aAngleControls.distance([aAngleControls.verticeId, aAngleControls.oppositeVerticeId]);
+					if (aAngleControls.arc) aAngleControls.distance([aAngleControls.verticeId, aAngleControls.oppositeVerticeId]);
 
 				}
 				
@@ -1114,7 +1174,7 @@ class Universe {
 
 					const lang = {
 
-						intersector: "Intersector",
+						intersector: 'Intersector',
 
 					};
 
@@ -1122,7 +1182,7 @@ class Universe {
 
 						case 'ru'://Russian language
 
-							lang.intersector = "Сечение";
+							lang.intersector = 'Сечение';
 
 							break;
 
@@ -1271,11 +1331,8 @@ class Universe {
 									dat.folderNameAndTitle(fAngles, lang.angles, lang.anglesTitle);
 									for (let i = 0; i &lt; (_this.dimension - 1); i++) {
 	
-										const cAngle = fAngles.add({ angle: 0, }, 'angle', -Math.PI, Math.PI, 2 * Math.PI / 360).onChange((angle) => {
-	
-											settings.object.geometry.angles[aAngleControls.verticeId][i] = angle;
-												
-										});
+										const cAngle = fAngles.add({ angle: 0, }, 'angle', -Math.PI, Math.PI, 2 * Math.PI / 360).onChange((angle) =>
+											settings.object.geometry.angles[aAngleControls.verticeId][i] = angle);
 										dat.controllerNameAndTitle(cAngle, lang.angle + ' ' + i);
 										aAngleControls.push(cAngle);
 										
@@ -1313,7 +1370,16 @@ class Universe {
 									_display(fOppositeVertice.domElement, edgeId === -1 ? false : true);
 									aAngleControls.removeArc = () => {
 
-										if (aAngleControls.arc) classSettings.projectParams.scene.remove(aAngleControls.arc);
+										if (aAngleControls.arc &amp;&amp; aAngleControls.arc.removeUniverse) {
+
+											aAngleControls.arc.removeUniverse();
+//											classSettings.projectParams.scene.remove(aAngleControls.arc);
+											/*
+											classSettings.projectParams.scene.remove(child);
+											if (options.guiSelectPoint) options.guiSelectPoint.removeMesh(child);
+											*/
+
+										}
 										aAngleControls.arc = undefined;
 
 									}
@@ -1322,12 +1388,13 @@ class Universe {
 										if (aAngleControls.cross) classSettings.projectParams.scene.remove(aAngleControls.cross);
 										aAngleControls.cross = undefined;
 
-										aAngleControls.removeArc();
+//										aAngleControls.removeArc();
 										
 									}
 									if (edgeId === -1) {
 										
 										aAngleControls.removeCross();
+										aAngleControls.removeArc();
 										aEdgeAngleControls.verticeId = undefined;
 										
 									} else {
@@ -1366,12 +1433,41 @@ class Universe {
 										//Distance between edge vertices i.e between vertice and opposite vertice.
 										aAngleControls.distance = (edge) => {
 											
-											aAngleControls.removeArc();
-											const vertice = position[edge[0]],
-												oppositeVertice = position[edge[1]],
-												distance = vertice.distanceTo(oppositeVertice);
-//											aAngleControls.arc = new Universe();
-											aAngleControls.arc = this.newUniverse(
+//											aAngleControls.removeArc();
+											const vertice = position[edge[0]].angles,
+												oppositeVertice = position[edge[1]].angles,
+												angles = [],
+												
+												//если не копировать каждый угол в отделности, то в новой вершине останутся старые ребра
+												copyVertice = (vertice) => {
+
+/*													
+													angles.push([]);
+													const verticeAngles = angles[angles.length - 1];
+*/													
+													const verticeAngles = [];
+													vertice.forEach(angle => verticeAngles.push(angle));
+													angles.push(verticeAngles);
+													
+												};
+											const arcVericesCount = 3,
+												arcVerticeStep = [];//Шаги, с которым изменяются углы при построении дуги
+											for (let k = 0; k &lt; (this.dimension - 1); k++) arcVerticeStep.push((oppositeVertice[k] - vertice[k]) / arcVericesCount);
+											for (let i = 0; i &lt; arcVericesCount; i++) {
+
+												const arcVerice = [];
+												for (let j = 0; j &lt; (this.dimension - 1); j++) arcVerice.push(vertice[j] + arcVerticeStep[j] * i);
+												copyVertice(arcVerice);
+												
+											}
+/*											
+											copyVertice(vertice);
+//angles.push([3.8]);
+//if (aAngleControls.arc) angles.push([4.1]);
+*/											
+											copyVertice(oppositeVertice);
+											if (aAngleControls.arc) aAngleControls.arc.updateUniverse({ angles: angles });
+											else aAngleControls.arc = this.newUniverse(
 												classSettings.settings.options,
 /*												
 												{
@@ -1394,9 +1490,11 @@ class Universe {
 													edges: {
 									
 														creationMethod: Universe.edgesCreationMethod.Random,
+														boCurve: true,
 														
 													},
-													edges: false,
+													//edges: [[0,1]],
+													//edges: false,
 													projectParams:{
 														
 														scene: classSettings.projectParams.scene,
@@ -1424,11 +1522,11 @@ class Universe {
 														object: {
 										
 															name: lang.arc,
-															//color: 'red',
+															color: 'magenta',//'yellow',
 															//color: 0x0000ff,//blue
 															geometry: {
 									
-																angles: [vertice.angles, [3.8], oppositeVertice.angles],
+																angles: angles,//[vertice, [3.8], oppositeVertice],
 									
 									/*
 																position: [
@@ -1622,11 +1720,16 @@ class Universe {
 					} else {
 						
 						settings.scene = scene;
-						if (settings.object.geometry.indices.edges.length === 0 ) this.pushEdges();
+						if ((settings.object.geometry.indices.edges.length === 0)
+//							&amp;&amp; (classSettings.edges instanceof Array === false)
+						) this.pushEdges();
 						else {
 							
 							if ((settings.object.geometry.position[0].length > 3 ) &amp;&amp; (!settings.object.color)) settings.object.color = {};//Color of vertice from palette
+//settings.object.geometry.indices = undefined;
+//settings.object.geometry.indices.boAddIndices = false;
 							nd = new ND(this.dimension, settings);
+//nd.object3D.geometry.index = null;
 			
 							params.center = params.center || {}
 							nd.object3D.position.x = params.center.x || 0;
@@ -1970,7 +2073,18 @@ class Universe {
 								}
 								if (boCompleted) return;
 								let oppositeVerticeId = verticeId + 1;
-								if (oppositeVerticeId >= position.length) oppositeVerticeId = 0;
+								if (oppositeVerticeId >= position.length) {
+
+									if (classSettings.edges.boCurve) {
+
+										//Это кривая. Не надо соединять последнюю вершину с первой
+										nextVertice();
+										return;
+
+									}
+									oppositeVerticeId = 0;
+
+								}
 								//Поиск вершины у которой ребер меньше максимального количества ребер и у которой нет нового ребра
 								const oppositeVerticeIdFirst = oppositeVerticeId;
 								while (true) {
@@ -2014,11 +2128,8 @@ class Universe {
 								}
 
 								//Возможно был пройден полный круг поиска противолположной вершины и ничего найдено не было
-								if (verticeId != oppositeVerticeId) {
+								if (verticeId != oppositeVerticeId) edges.push([verticeId, oppositeVerticeId]);
 
-									edges.push([verticeId, oppositeVerticeId]);
-
-								}
 								//else console.log(sUniverse + '.pushEdges. Opposite vertice was not found.')
 
 								nextVertice();
@@ -2046,7 +2157,9 @@ class Universe {
 
 				}
 
-				if (classSettings.edges) this.pushEdges();//Для экономии времени не добавляю ребра если на холст вывожу только вершины
+				if (classSettings.edges
+//					&amp;&amp; (classSettings.edges instanceof Array === false)
+				) this.pushEdges();//Для экономии времени не добавляю ребра если на холст вывожу только вершины
 				else if (this.classSettings.projectParams) this.project(this.classSettings.projectParams.scene, this.classSettings.projectParams.params);
 				
 				break;
@@ -2214,7 +2327,7 @@ const _display = (element, boDisplay) => { element.style.display = boDisplay ===
 <br class="clear">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 3.6.11</a> on Wed Dec 20 2023 09:28:17 GMT+0700 (Красноярск, стандартное время)
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 3.6.11</a> on Tue Dec 26 2023 12:22:01 GMT+0700 (Красноярск, стандартное время)
 </footer>
 
 <script> prettyPrint(); </script>
