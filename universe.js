@@ -1399,10 +1399,14 @@ class Universe {
 										aAngleControls.oppositeVerticeId = oppositeVerticeId;
 
 										//Distance between edge vertices i.e between vertice and opposite vertice.
-										aAngleControls.distance = (edge) => {
-											
+										aAngleControls.distance = (/*edge*/) => {
+
+/*											
 											const vertice = position[edge[0]].angles,
 												oppositeVertice = position[edge[1]].angles,
+*/												
+											const vertice = position[aAngleControls.oppositeVerticeId].angles,
+												oppositeVertice = position[aAngleControls.verticeId].angles,
 												angles = [],
 												
 												//если не копировать каждый угол в отделности, то в новой вершине останутся старые ребра
@@ -1413,16 +1417,21 @@ class Universe {
 													angles.push(verticeAngles);
 													
 												};
+											const π = Math.PI;//, m = distance > π ? distance / π - 2 : 1;  
 											let distance = 0;
-											for (let i = 0; i < vertice.length; i++) distance += Math.pow(vertice[i] - oppositeVertice[i], 2);
+											for (let i = 0; i < vertice.length; i++)
+												distance += Math.pow(vertice[i] - oppositeVertice[i], 2);
+//												distance += Math.pow((vertice[i] > 0 ? vertice[i] - oppositeVertice[i] : oppositeVertice[i] - vertice[i]), 2);
+//												distance += Math.pow((vertice[i] > 0 ? vertice[i] : vertice[i] + 2 * π) - oppositeVertice[i], 2);
 //											vertice.forEach((angle, i) => distance += Math.pow(angle - oppositeVertice[i], 2));//почемуто не работает когда угол пустой по умолчанию
 											distance = Math.sqrt(distance);
-											const π = Math.PI;//, m = distance > π ? distance / π - 2 : 1;  
 											const arcVericesCount = 3,
 												arcVerticeStep = [];//Шаги, с которым изменяются углы при построении дуги
 											for (let k = 0; k < (this.dimension - 1); k++)
-//												arcVerticeStep.push((Math.sqrt(Math.pow(oppositeVertice[k], 2) + (Math.pow(vertice[k], 2))) + (distance > π ? 2 * π : 0)) / arcVericesCount);
+//												arcVerticeStep.push(((vertice[k] > 0 ? oppositeVertice[k] - vertice[k] : vertice[k] - oppositeVertice[k]) + (distance > π ? 2 * π : 0)) / arcVericesCount);
+//												arcVerticeStep.push((((vertice[k] > 0 ? 1 : -1) * oppositeVertice[k] - vertice[k]) + (distance > π ? 2 * π : 0)) / arcVericesCount);
 												arcVerticeStep.push((oppositeVertice[k] - vertice[k] + (distance > π ? 2 * π : 0)) / arcVericesCount);
+//												arcVerticeStep.push((Math.sqrt(Math.pow(oppositeVertice[k], 2) + (Math.pow(vertice[k], 2))) + (distance > π ? 2 * π : 0)) / arcVericesCount);
 //												arcVerticeStep.push((distance > π ? oppositeVertice[k] - vertice[k] + 2 * π : oppositeVertice[k] - vertice[k]) / arcVericesCount);
 //												arcVerticeStep.push((distance > π ? - (vertice[k] - oppositeVertice[k] - 2 * π) : oppositeVertice[k] - vertice[k]) / arcVericesCount);
 //												arcVerticeStep.push(m * (oppositeVertice[k] - vertice[k]) / arcVericesCount);
@@ -1433,8 +1442,9 @@ class Universe {
 
 												const arcVerice = [];
 												for (let j = 0; j < (this.dimension - 1); j++)
-//													arcVerice.push(vertice[j] + (distance > Math.PI ? - arcVerticeStep[j] * i : arcVerticeStep[j] * i));
 													arcVerice.push(vertice[j] + arcVerticeStep[j] * i);
+//													arcVerice.push(vertice[j] > 0 ? vertice[j] + arcVerticeStep[j] * i : arcVerticeStep[j] + vertice[j] * i);
+//													arcVerice.push(vertice[j] + (distance > Math.PI ? - arcVerticeStep[j] * i : arcVerticeStep[j] * i));
 												copyVertice(arcVerice);
 												
 											}
