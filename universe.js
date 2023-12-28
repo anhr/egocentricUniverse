@@ -246,11 +246,7 @@ class Universe {
 	 *	false - Doesn't create edges to reduce the creation time of the universe
 	 * </pre>
 	 * @param {boolean} [classSettings.edges.project=true] false - Doesn't project edges onto canvas
-	 * @param {boolean} [classSettings.edges.boCurve]
-	 * <pre>
-	 * true - Chain of vertices connected by edges.
-	 *	First vertice is not connected with last vertice.
-	 * </pre>
+	 * @param {boolean} [classSettings.edges.boCurve] true - Chain of vertices connected by edges. First vertice is not connected with last vertice.
 	 * @param {enum} [classSettings.edges.creationMethod=edgesCreationMethod.NearestVertice] method for creating edges. See <a href="./module-Universe-Universe.html#.edgesCreationMethod" target="_blank">edgesCreationMethod</a>
 	 * @param {object} [classSettings.settings] The following settings are available
 	 * @param {object} [classSettings.settings.object] Universe object.
@@ -1405,7 +1401,6 @@ class Universe {
 										//Distance between edge vertices i.e between vertice and opposite vertice.
 										aAngleControls.distance = (edge) => {
 											
-//											aAngleControls.removeArc();
 											const vertice = position[edge[0]].angles,
 												oppositeVertice = position[edge[1]].angles,
 												angles = [],
@@ -1413,48 +1408,40 @@ class Universe {
 												//если не копировать каждый угол в отделности, то в новой вершине останутся старые ребра
 												copyVertice = (vertice) => {
 
-/*													
-													angles.push([]);
-													const verticeAngles = angles[angles.length - 1];
-*/													
 													const verticeAngles = [];
 													vertice.forEach(angle => verticeAngles.push(angle));
 													angles.push(verticeAngles);
 													
 												};
+											let distance = 0;
+											for (let i = 0; i < vertice.length; i++) distance += Math.pow(vertice[i] - oppositeVertice[i], 2);
+//											vertice.forEach((angle, i) => distance += Math.pow(angle - oppositeVertice[i], 2));//почемуто не работает когда угол пустой по умолчанию
+											distance = Math.sqrt(distance);
+											const π = Math.PI;//, m = distance > π ? distance / π - 2 : 1;  
 											const arcVericesCount = 3,
 												arcVerticeStep = [];//Шаги, с которым изменяются углы при построении дуги
-											for (let k = 0; k < (this.dimension - 1); k++) arcVerticeStep.push((oppositeVertice[k] - vertice[k]) / arcVericesCount);
+											for (let k = 0; k < (this.dimension - 1); k++)
+//												arcVerticeStep.push((Math.sqrt(Math.pow(oppositeVertice[k], 2) + (Math.pow(vertice[k], 2))) + (distance > π ? 2 * π : 0)) / arcVericesCount);
+												arcVerticeStep.push((oppositeVertice[k] - vertice[k] + (distance > π ? 2 * π : 0)) / arcVericesCount);
+//												arcVerticeStep.push((distance > π ? oppositeVertice[k] - vertice[k] + 2 * π : oppositeVertice[k] - vertice[k]) / arcVericesCount);
+//												arcVerticeStep.push((distance > π ? - (vertice[k] - oppositeVertice[k] - 2 * π) : oppositeVertice[k] - vertice[k]) / arcVericesCount);
+//												arcVerticeStep.push(m * (oppositeVertice[k] - vertice[k]) / arcVericesCount);
+//												arcVerticeStep.push(((distance > π ? -π : 0) + oppositeVertice[k] - vertice[k]) / arcVericesCount);
+//												arcVerticeStep.push((oppositeVertice[k] - vertice[k]) / arcVericesCount);
+//												arcVerticeStep.push((distance > Math.PI ? vertice[k] - oppositeVertice[k] : oppositeVertice[k] - vertice[k]) / arcVericesCount);
 											for (let i = 0; i < arcVericesCount; i++) {
 
 												const arcVerice = [];
-												for (let j = 0; j < (this.dimension - 1); j++) arcVerice.push(vertice[j] + arcVerticeStep[j] * i);
+												for (let j = 0; j < (this.dimension - 1); j++)
+//													arcVerice.push(vertice[j] + (distance > Math.PI ? - arcVerticeStep[j] * i : arcVerticeStep[j] * i));
+													arcVerice.push(vertice[j] + arcVerticeStep[j] * i);
 												copyVertice(arcVerice);
 												
 											}
-/*											
-											copyVertice(vertice);
-//angles.push([3.8]);
-//if (aAngleControls.arc) angles.push([4.1]);
-*/											
 											copyVertice(oppositeVertice);
 											if (aAngleControls.arc) aAngleControls.arc.updateUniverse({ angles: angles });
 											else aAngleControls.arc = this.newUniverse(
 												classSettings.settings.options,
-/*												
-												{
-													
-													getLanguageCode: classSettings.settings.options.getLanguageCode,
-													renderer: classSettings.settings.options.renderer,
-													setPalette: classSettings.settings.options.setPalette,
-													setW: classSettings.settings.options.setW,
-													scales: classSettings.settings.options.scales,
-													point: classSettings.settings.options.point,
-													playerOptions: classSettings.settings.options.playerOptions,
-													boOptions: true,
-												
-												},
-*/												
 												{
 
 													boRemove: false,
@@ -1500,23 +1487,6 @@ class Universe {
 									
 																angles: angles,//[vertice, [3.8], oppositeVertice],
 									
-									/*
-																position: [
-																	//[-0.5, 0.5], [0.0, -0.6], [0.5, 0.7]
-																	//[0.0, -1.0], [0.8660254037844388, 0.5], [-0.8660254037844384, 0.5]//Triangle
-																	[-1, 0,], [0, 1], [-0.8660254037844384, 0.5]//Intersection test
-																],
-																position: { count: 3, },
-									*/							
-																/*
-																colors: [
-																	1, 0, 0,//red
-																	0, 1, 0,//green
-																	//0, 0, 1,//blue
-																	//0.6, 1, 0,
-																//	0, 0, 1,	0, 0.6, 1
-																],
-																*/
 																//opacity: [1, 0.5],
 																/*
 																indices: {
@@ -1534,34 +1504,9 @@ class Universe {
 													},
 													
 												});
-/*											
-											const arcWidth = 0.005;
-											let innerRadius = 1 + arcWidth, outerRadius = 1 - arcWidth,
-												thetaSegments = 360,
-												phiSegments = 1,
-												thetaStart = Math.PI / 2 - vertice.angles[0],
-												thetaLength = vertice.angles[0] > oppositeVertice.angles[0] ? distance : - distance;//Math.PI * 2;
-											aAngleControls.arc = new THREE.Mesh(new THREE.RingGeometry(innerRadius, outerRadius, thetaSegments, phiSegments, thetaStart, thetaLength),
-																		new THREE.MeshBasicMaterial( { color: 'yellow', side: THREE.DoubleSide } ));
-											scene.add(aAngleControls.arc);
-*/											
 											
 										}
 										aAngleControls.distance(edge);
-/*										
-										//Distance between edge vertices i.e between vertice and opposite vertice.
-										aAngleControls.removeArc();
-										const vertice = position[aAngleControls.verticeId], distance = vertice.distanceTo(oppositeVertice);
-										const arcWidth = 0.005;
-										let innerRadius = 1 + arcWidth, outerRadius = 1 - arcWidth,
-											thetaSegments = 360,
-											phiSegments = 1,
-											thetaStart = Math.PI / 2 - vertice.angles[0],
-											thetaLength = vertice.angles[0] > oppositeVertice.angles[0] ? distance : - distance;//Math.PI * 2;
-										aAngleControls.arc = new THREE.Mesh(new THREE.RingGeometry(innerRadius, outerRadius, thetaSegments, phiSegments, thetaStart, thetaLength),
-																	new THREE.MeshBasicMaterial( { color: 'yellow', side: THREE.DoubleSide } ));
-										scene.add(aAngleControls.arc);
-*/										
 										
 									}
 					
