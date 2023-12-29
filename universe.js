@@ -1401,22 +1401,28 @@ class Universe {
 										aAngleControls.distance = () => {
 
 /*											
-											const vertice = position[edge[0]].angles,
-												oppositeVertice = position[edge[1]].angles,
-*/												
 											const vertice = position[aAngleControls.verticeId].angles,
 												oppositeVertice = position[aAngleControls.oppositeVerticeId].angles,
 												angles = [],
+*/												
+											const vertice = position[aAngleControls.verticeId],
+												oppositeVertice = position[aAngleControls.oppositeVerticeId],
+												arcAngles = [],
 												
 												//если не копировать каждый угол в отделности, то в новой вершине останутся старые ребра
 												copyVertice = (vertice) => {
 
+													arcAngles.push(_this.vertice2angles(vertice));
+													
+/*													
 													const verticeAngles = [];
 													vertice.forEach(angle => verticeAngles.push(angle));
 													angles.push(verticeAngles);
+*/													
 													
 												};
-											const π = Math.PI;//, m = distance > π ? distance / π - 2 : 1;  
+//											const π = Math.PI;//, m = distance > π ? distance / π - 2 : 1;
+/*											
 											let distance = 0;
 											for (let i = 0; i < vertice.length; i++)
 												distance += Math.pow(vertice[i] - oppositeVertice[i], 2);
@@ -1424,8 +1430,12 @@ class Universe {
 //												distance += Math.pow((vertice[i] > 0 ? vertice[i] : vertice[i] + 2 * π) - oppositeVertice[i], 2);
 //											vertice.forEach((angle, i) => distance += Math.pow(angle - oppositeVertice[i], 2));//почемуто не работает когда угол пустой по умолчанию
 											distance = Math.sqrt(distance);
+*/											
 											const arcVericesCount = 3,
 												arcVerticeStep = [];//Шаги, с которым изменяются углы при построении дуги
+											for (let k = 0; k < vertice.length; k++)
+												arcVerticeStep.push((oppositeVertice[k] - vertice[k]) / arcVericesCount);
+/*
 											for (let k = 0; k < (this.dimension - 1); k++)
 //												arcVerticeStep.push(((vertice[k] > 0 ? oppositeVertice[k] - vertice[k] : vertice[k] - oppositeVertice[k]) + (distance > π ? 2 * π : 0)) / arcVericesCount);
 //												arcVerticeStep.push((((vertice[k] > 0 ? 1 : -1) * oppositeVertice[k] - vertice[k]) + (distance > π ? 2 * π : 0)) / arcVericesCount);
@@ -1437,10 +1447,12 @@ class Universe {
 //												arcVerticeStep.push(((distance > π ? -π : 0) + oppositeVertice[k] - vertice[k]) / arcVericesCount);
 //												arcVerticeStep.push((oppositeVertice[k] - vertice[k]) / arcVericesCount);
 //												arcVerticeStep.push((distance > Math.PI ? vertice[k] - oppositeVertice[k] : oppositeVertice[k] - vertice[k]) / arcVericesCount);
+*/											
 											for (let i = 0; i < arcVericesCount; i++) {
 
 												const arcVerice = [];
-												for (let j = 0; j < (this.dimension - 1); j++)
+//												for (let j = 0; j < (this.dimension - 1); j++)
+												for (let j = 0; j < vertice.length; j++)
 													arcVerice.push(vertice[j] + arcVerticeStep[j] * i);
 //													arcVerice.push(vertice[j] > 0 ? vertice[j] + arcVerticeStep[j] * i : arcVerticeStep[j] + vertice[j] * i);
 //													arcVerice.push(vertice[j] + (distance > Math.PI ? - arcVerticeStep[j] * i : arcVerticeStep[j] * i));
@@ -1448,7 +1460,7 @@ class Universe {
 												
 											}
 											copyVertice(oppositeVertice);
-											if (aAngleControls.arc) aAngleControls.arc.updateUniverse({ angles: angles });
+											if (aAngleControls.arc) aAngleControls.arc.updateUniverse({ angles: arcAngles });
 											else aAngleControls.arc = this.newUniverse(
 												classSettings.settings.options,
 												{
@@ -1494,7 +1506,7 @@ class Universe {
 															//color: 0x0000ff,//blue
 															geometry: {
 									
-																angles: angles,//[vertice, [3.8], oppositeVertice],
+																angles: arcAngles,//[vertice, [3.8], oppositeVertice],
 									
 																//opacity: [1, 0.5],
 																/*
