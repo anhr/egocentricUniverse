@@ -1122,8 +1122,7 @@ class Universe {
 
 					}
 					
-//					if (aAngleControls.distance) aAngleControls.distance([aAngleControls.verticeId, aAngleControls.oppositeVerticeId]);
-					if (aAngleControls.arc) aAngleControls.distance([aAngleControls.verticeId, aAngleControls.oppositeVerticeId]);
+					if (aAngleControls.arc) aAngleControls.distance();
 
 				}
 				
@@ -1399,14 +1398,14 @@ class Universe {
 										aAngleControls.oppositeVerticeId = oppositeVerticeId;
 
 										//Distance between edge vertices i.e between vertice and opposite vertice.
-										aAngleControls.distance = (/*edge*/) => {
+										aAngleControls.distance = () => {
 
 /*											
 											const vertice = position[edge[0]].angles,
 												oppositeVertice = position[edge[1]].angles,
 */												
-											const vertice = position[aAngleControls.oppositeVerticeId].angles,
-												oppositeVertice = position[aAngleControls.verticeId].angles,
+											const vertice = position[aAngleControls.verticeId].angles,
+												oppositeVertice = position[aAngleControls.oppositeVerticeId].angles,
 												angles = [],
 												
 												//если не копировать каждый угол в отделности, то в новой вершине останутся старые ребра
@@ -1516,7 +1515,7 @@ class Universe {
 												});
 											
 										}
-										aAngleControls.distance(edge);
+										aAngleControls.distance();
 										
 									}
 					
