@@ -1421,7 +1421,7 @@ class Universe {
 */													
 													
 												};
-//											const π = Math.PI;//, m = distance > π ? distance / π - 2 : 1;
+											const π = Math.PI;//, m = distance > π ? distance / π - 2 : 1;
 /*											
 											let distance = 0;
 											for (let i = 0; i < vertice.length; i++)
@@ -1431,8 +1431,8 @@ class Universe {
 //											vertice.forEach((angle, i) => distance += Math.pow(angle - oppositeVertice[i], 2));//почемуто не работает когда угол пустой по умолчанию
 											distance = Math.sqrt(distance);
 */											
-											const arcVericesCount = 3,
-												arcVerticeStep = [];//Шаги, с которым изменяются углы при построении дуги
+											const arcVericesCount = 4,
+												arcVerticeStep = [];//Шаги, с которым изменяются углы при построении дуги в полярной системе координат
 											for (let k = 0; k < vertice.length; k++)
 												arcVerticeStep.push((oppositeVertice[k] - vertice[k]) / arcVericesCount);
 /*
@@ -1448,14 +1448,26 @@ class Universe {
 //												arcVerticeStep.push((oppositeVertice[k] - vertice[k]) / arcVericesCount);
 //												arcVerticeStep.push((distance > Math.PI ? vertice[k] - oppositeVertice[k] : oppositeVertice[k] - vertice[k]) / arcVericesCount);
 */											
+											const d = π / arcVericesCount;
 											for (let i = 0; i < arcVericesCount; i++) {
 
-												const arcVerice = [];
+												const arcVerice = [],//Координаты вершины в полярной системе координат
+													cd = Math.sin(d * i);//Поправка для координат вершин что бы они равномерно располагались по дуге
+//													cd = i <= (arcVericesCount / 2) ? Math.sin(d * i) : 1 - Math.sin(d * i);
 //												for (let j = 0; j < (this.dimension - 1); j++)
-												for (let j = 0; j < vertice.length; j++)
-													arcVerice.push(vertice[j] + arcVerticeStep[j] * i);
+												for (let j = 0; j < vertice.length; j++) {
+
+													//Дугу делим на две части
+													if (i <= (arcVericesCount / 2))
+														//до середины к первой вкршине добавляем номер вершины умноженный на шаг и на попрроавку, которая нужна что бы вершины располагались равномерно
+														arcVerice.push(vertice[j] + arcVerticeStep[j] * i * cd);
+														//После середины дуги координату вершины вычисляем путем вычитания из послендей вершины кличества шагов от вычисляемой вершины до последней вершины
+													else arcVerice.push(oppositeVertice[j] - arcVerticeStep[j] * (arcVericesCount - i) * cd);
+//													arcVerice.push(vertice[j] + arcVerticeStep[j] * i);
 //													arcVerice.push(vertice[j] > 0 ? vertice[j] + arcVerticeStep[j] * i : arcVerticeStep[j] + vertice[j] * i);
 //													arcVerice.push(vertice[j] + (distance > Math.PI ? - arcVerticeStep[j] * i : arcVerticeStep[j] * i));
+
+												}
 												copyVertice(arcVerice);
 												
 											}
