@@ -1449,11 +1449,13 @@ class Universe {
 //												arcVerticeStep.push((distance > Math.PI ? vertice[k] - oppositeVertice[k] : oppositeVertice[k] - vertice[k]) / arcVericesCount);
 */											
 											const d = π / arcVericesCount;
-											for (let i = 0; i < arcVericesCount; i++) {
+											copyVertice(vertice);
+											for (let i = 1; i < arcVericesCount; i++) {
 
 												const arcVerice = [],//Координаты вершины в полярной системе координат
-													cd = Math.sin(d * i);//Поправка для координат вершин что бы они равномерно располагались по дуге
-//													cd = i <= (arcVericesCount / 2) ? Math.sin(d * i) : 1 - Math.sin(d * i);
+//													cd = 1 - Math.cos(d * i);//Поправка для координат вершин что бы они равномерно располагались по дуге
+													cd = 1 / Math.sin(d * i);//Поправка для координат вершин что бы они равномерно располагались по дуге
+//													cd = i <= (arcVericesCount / 2) ? Math.sin(d * i) : 1 - Math.sin(d * i);//Поправка для координат вершин что бы они равномерно располагались по дуге
 //												for (let j = 0; j < (this.dimension - 1); j++)
 												for (let j = 0; j < vertice.length; j++) {
 
