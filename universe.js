@@ -1411,7 +1411,7 @@ class Universe {
 												//Если начало и конец дуги расположены напротив друг друга на окружности или на сфере или на 4D hypersphere
 												//то все вершины стягиваются к началу и концу дуги за исключением вершины, расположенной посередине дуги
 												//Поэтому вершины на дуге получаю путем деления дуги на пополам. Полученные половинки снова делю пополам и т.д.
-												maxLevel = 2;//на сколько частей делить дугу.
+												maxLevel = 4;//на сколько частей делить дугу.
 													//если maxLevel = 1 то дуга делится на 2 части с одной вершиной посередине
 													//если maxLevel = 2 то дуга делится на 4 части с тремя вершинами посередине
 													//если maxLevel = 3 то дуга делится на 8 частей с 7 вершинами посередине
@@ -1419,7 +1419,7 @@ class Universe {
 											let level = 1;//текущий уровень деления дуги
 											
 											//делить дугу на две части
-											const halfArc = (vertice, oppositeVertice) => {
+											const halfArc = (vertice, oppositeVertice, level) => {
 
 /*											
 												let distance = 0;
@@ -1454,8 +1454,8 @@ class Universe {
 													//В этом случае все вершины дуги, кроме средней вершины, стягиваются к началу или концу дуги.
 													const halfVertice = _this.angles2Vertice(_this.vertice2angles(arcVerice));
 													
-													halfArc(vertice, halfVertice);
-													halfArc(halfVertice, oppositeVertice);
+													halfArc(vertice, halfVertice, level);
+													halfArc(halfVertice, oppositeVertice, level);
 													
 												} else {
 													
@@ -1466,7 +1466,7 @@ class Universe {
 											}
 											const vertice = position[aAngleControls.verticeId], oppositeVertice = position[aAngleControls.oppositeVerticeId];
 											copyVertice(vertice);
-											halfArc(vertice, oppositeVertice);
+											halfArc(vertice, oppositeVertice, level);
 //											copyVertice(oppositeVertice);
 											if (aAngleControls.arc) aAngleControls.arc.updateUniverse({ angles: arcAngles });
 											else aAngleControls.arc = this.newUniverse(
