@@ -1400,80 +1400,74 @@ class Universe {
 										//Distance between edge vertices i.e between vertice and opposite vertice.
 										aAngleControls.distance = () => {
 
-/*											
-											const vertice = position[aAngleControls.verticeId].angles,
-												oppositeVertice = position[aAngleControls.oppositeVerticeId].angles,
-												angles = [],
-*/												
-											const vertice = position[aAngleControls.verticeId],
-												oppositeVertice = position[aAngleControls.oppositeVerticeId],
-												arcAngles = [],
-												
+											const arcAngles = [],//массив вершин в полярной системе координат, которые образуют дугу
 												//если не копировать каждый угол в отделности, то в новой вершине останутся старые ребра
-												copyVertice = (vertice) => {
+												copyVertice = (vertice) => arcAngles.push(_this.vertice2angles(vertice)),
+												π = Math.PI,
+												arcVericesCount = 2,
+												d = π / arcVericesCount,
+												cd = 1 / Math.sin(d),//Поправка для координат вершин что бы они равномерно располагались по дуге
+												//Не получилось равномерно разделить дугу на части.
+												//Если начало и конец дуги расположены напротив друг друга на окружности или на сфере или на 4D hypersphere
+												//то все вершины стягиваются к началу и концу дуги за исключением вершины, расположенной посередине дуги
+												//Поэтому вершины на дуге получаю путем деления дуги на пополам. Полученные половинки снова делю пополам и т.д.
+												maxLevel = 2;//на сколько частей делить дугу.
+													//если maxLevel = 1 то дуга делится на 2 части с одной вершиной посередине
+													//если maxLevel = 2 то дуга делится на 4 части с тремя вершинами посередине
+													//если maxLevel = 3 то дуга делится на 8 частей с 7 вершинами посередине
+													//Таким образом дугу можно разделит только на 2 в степени maxLevel частей
+											let level = 1;//текущий уровень деления дуги
+											
+											//делить дугу на две части
+											const halfArc = (vertice, oppositeVertice) => {
 
-													arcAngles.push(_this.vertice2angles(vertice));
-													
-/*													
-													const verticeAngles = [];
-													vertice.forEach(angle => verticeAngles.push(angle));
-													angles.push(verticeAngles);
-*/													
-													
-												};
-											const π = Math.PI;//, m = distance > π ? distance / π - 2 : 1;
 /*											
-											let distance = 0;
-											for (let i = 0; i < vertice.length; i++)
-												distance += Math.pow(vertice[i] - oppositeVertice[i], 2);
-//												distance += Math.pow((vertice[i] > 0 ? vertice[i] - oppositeVertice[i] : oppositeVertice[i] - vertice[i]), 2);
-//												distance += Math.pow((vertice[i] > 0 ? vertice[i] : vertice[i] + 2 * π) - oppositeVertice[i], 2);
-//											vertice.forEach((angle, i) => distance += Math.pow(angle - oppositeVertice[i], 2));//почемуто не работает когда угол пустой по умолчанию
-											distance = Math.sqrt(distance);
-*/											
-											const arcVericesCount = 4,
-												arcVerticeStep = [];//Шаги, с которым изменяются углы при построении дуги в полярной системе координат
-											for (let k = 0; k < vertice.length; k++)
-												arcVerticeStep.push((oppositeVertice[k] - vertice[k]) / arcVericesCount);
-/*
-											for (let k = 0; k < (this.dimension - 1); k++)
-//												arcVerticeStep.push(((vertice[k] > 0 ? oppositeVertice[k] - vertice[k] : vertice[k] - oppositeVertice[k]) + (distance > π ? 2 * π : 0)) / arcVericesCount);
-//												arcVerticeStep.push((((vertice[k] > 0 ? 1 : -1) * oppositeVertice[k] - vertice[k]) + (distance > π ? 2 * π : 0)) / arcVericesCount);
-												arcVerticeStep.push((oppositeVertice[k] - vertice[k] + (distance > π ? 2 * π : 0)) / arcVericesCount);
-//												arcVerticeStep.push((Math.sqrt(Math.pow(oppositeVertice[k], 2) + (Math.pow(vertice[k], 2))) + (distance > π ? 2 * π : 0)) / arcVericesCount);
-//												arcVerticeStep.push((distance > π ? oppositeVertice[k] - vertice[k] + 2 * π : oppositeVertice[k] - vertice[k]) / arcVericesCount);
-//												arcVerticeStep.push((distance > π ? - (vertice[k] - oppositeVertice[k] - 2 * π) : oppositeVertice[k] - vertice[k]) / arcVericesCount);
-//												arcVerticeStep.push(m * (oppositeVertice[k] - vertice[k]) / arcVericesCount);
-//												arcVerticeStep.push(((distance > π ? -π : 0) + oppositeVertice[k] - vertice[k]) / arcVericesCount);
-//												arcVerticeStep.push((oppositeVertice[k] - vertice[k]) / arcVericesCount);
-//												arcVerticeStep.push((distance > Math.PI ? vertice[k] - oppositeVertice[k] : oppositeVertice[k] - vertice[k]) / arcVericesCount);
-*/											
-											const d = π / arcVericesCount;
-											copyVertice(vertice);
-											for (let i = 1; i < arcVericesCount; i++) {
-
-												const arcVerice = [],//Координаты вершины в полярной системе координат
-//													cd = 1 - Math.cos(d * i);//Поправка для координат вершин что бы они равномерно располагались по дуге
-													cd = 1 / Math.sin(d * i);//Поправка для координат вершин что бы они равномерно располагались по дуге
-//													cd = i <= (arcVericesCount / 2) ? Math.sin(d * i) : 1 - Math.sin(d * i);//Поправка для координат вершин что бы они равномерно располагались по дуге
-//												for (let j = 0; j < (this.dimension - 1); j++)
+												let distance = 0;
+												for (let i = 0; i < vertice.length; i++)
+													distance += Math.pow(vertice[i] - oppositeVertice[i], 2);
+												distance = Math.sqrt(distance);
+*/
+												const arcVerticeStep = [];//Шаги, с которым изменяются углы при построении дуги в полярной системе координат
+												for (let k = 0; k < vertice.length; k++)
+													arcVerticeStep.push((oppositeVertice[k] - vertice[k]) / arcVericesCount);
+												const arcVerice = [];//Координаты вершины в полярной системе координат
 												for (let j = 0; j < vertice.length; j++) {
 
+													arcVerice.push(vertice[j] + arcVerticeStep[j] * cd);
+/*														
 													//Дугу делим на две части
 													if (i <= (arcVericesCount / 2))
 														//до середины к первой вкршине добавляем номер вершины умноженный на шаг и на попрроавку, которая нужна что бы вершины располагались равномерно
 														arcVerice.push(vertice[j] + arcVerticeStep[j] * i * cd);
-														//После середины дуги координату вершины вычисляем путем вычитания из послендей вершины кличества шагов от вычисляемой вершины до последней вершины
+													//После середины дуги координату вершины вычисляем путем вычитания из послендей вершины кличества шагов от вычисляемой вершины до последней вершины
 													else arcVerice.push(oppositeVertice[j] - arcVerticeStep[j] * (arcVericesCount - i) * cd);
-//													arcVerice.push(vertice[j] + arcVerticeStep[j] * i);
-//													arcVerice.push(vertice[j] > 0 ? vertice[j] + arcVerticeStep[j] * i : arcVerticeStep[j] + vertice[j] * i);
-//													arcVerice.push(vertice[j] + (distance > Math.PI ? - arcVerticeStep[j] * i : arcVerticeStep[j] * i));
+*/														
 
 												}
-												copyVertice(arcVerice);
-												
+												level++;
+												if (level <= maxLevel) {
+
+													//если не делать это преобразование,
+													//то когда начало и конец дуги на ходятся на противоположных концах вселенной,
+													//средняя точка попадает в центр окружности или сферы или гиперсферы,
+													//а это находится вне вселенной.
+													//В этом случае все вершины дуги, кроме средней вершины, стягиваются к началу или концу дуги.
+													const halfVertice = _this.angles2Vertice(_this.vertice2angles(arcVerice));
+													
+													halfArc(vertice, halfVertice);
+													halfArc(halfVertice, oppositeVertice);
+													
+												} else {
+													
+													copyVertice(arcVerice);
+													copyVertice(oppositeVertice);
+												}
+
 											}
-											copyVertice(oppositeVertice);
+											const vertice = position[aAngleControls.verticeId], oppositeVertice = position[aAngleControls.oppositeVerticeId];
+											copyVertice(vertice);
+											halfArc(vertice, oppositeVertice);
+//											copyVertice(oppositeVertice);
 											if (aAngleControls.arc) aAngleControls.arc.updateUniverse({ angles: arcAngles });
 											else aAngleControls.arc = this.newUniverse(
 												classSettings.settings.options,
