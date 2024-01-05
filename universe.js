@@ -1396,6 +1396,59 @@ class Universe {
 										aAngleControls.cross.position.copy(oppositeVertice);
 										if (aAngleControls.cross.position.z === undefined) aAngleControls.cross.position.z = 0;
 										aAngleControls.oppositeVerticeId = oppositeVerticeId;
+										
+const array = [];
+/*										
+for (let i = 0; i < 10000; i++) {
+
+	let sum = 0;
+	for (let j = 0; j < i; j++) sum += array[j];
+	console.log('i = ' + i + ', sum = ' + sum);
+	array.push(Math.sin(i) + Math.cos(i));
+
+}
+array.length = 0;
+*/
+/*										
+let i = 0;
+new ProgressBar(settings.options.renderer.domElement.parentElement, (progressBar) =>{
+
+	let sum = 0;
+	for (let j = 0; j < i; j++) sum += array[j];
+	console.log('ProgressBar. i = ' + i + ', sum = ' + sum);
+	array.push(Math.sin(i) + Math.cos(i));
+	progressBar.value = i;
+	i++;
+	if (i < 10000)
+		progressBar.step();
+	else progressBar.remove();
+	
+}, {
+
+	sTitle: 'Long time iteration process',
+	max: 10000,
+
+});
+*/
+/*
+new ProgressBar(settings.options.renderer.domElement.parentElement, (progressBar, i) =>{
+
+	let sum = 0;
+	for (let j = 0; j < i; j++) sum += array[j];
+	console.log('ProgressBar. i = ' + i + ', sum = ' + sum);
+	array.push(Math.sin(i) + Math.cos(i));
+	
+}, {
+
+	sTitle: 'Long time iteration process',
+	//min: 5000,
+	iterationCount: 10000,
+	max: 6000,
+	//timeoutPeriod: 10,
+
+});	
+*/
+
 
 										//Distance between edge vertices i.e between vertice and opposite vertice.
 										aAngleControls.distance = () => {
