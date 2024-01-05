@@ -1472,31 +1472,19 @@ new ProgressBar(settings.options.renderer.domElement.parentElement, (progressBar
 											let level = 1;//текущий уровень деления дуги
 											
 											//делить дугу на две части
-											const halfArc = (vertice, oppositeVertice, level) => {
+//											const halfArc = (vertice, oppositeVertice, level) =>
+											const halfArc = (halfArcParams) => {
 
-/*											
-												let distance = 0;
-												for (let i = 0; i < vertice.length; i++)
-													distance += Math.pow(vertice[i] - oppositeVertice[i], 2);
-												distance = Math.sqrt(distance);
-*/
+												const vertice = halfArcParams.vertice,
+													oppositeVertice = halfArcParams.oppositeVertice;
+												let level = halfArcParams.level;
+												console.log('halfArc: ' + 'vertice = ' + vertice.toString() + ' oppositeVertice = ' + oppositeVertice.toString() + ' level = ' + level)
+
 												const arcVerticeStep = [];//Шаги, с которым изменяются углы при построении дуги в полярной системе координат
 												for (let k = 0; k < vertice.length; k++)
 													arcVerticeStep.push((oppositeVertice[k] - vertice[k]) / arcVericesCount);
 												const arcVerice = [];//Координаты вершины в полярной системе координат
-												for (let j = 0; j < vertice.length; j++) {
-
-													arcVerice.push(vertice[j] + arcVerticeStep[j] * cd);
-/*														
-													//Дугу делим на две части
-													if (i <= (arcVericesCount / 2))
-														//до середины к первой вкршине добавляем номер вершины умноженный на шаг и на попрроавку, которая нужна что бы вершины располагались равномерно
-														arcVerice.push(vertice[j] + arcVerticeStep[j] * i * cd);
-													//После середины дуги координату вершины вычисляем путем вычитания из послендей вершины кличества шагов от вычисляемой вершины до последней вершины
-													else arcVerice.push(oppositeVertice[j] - arcVerticeStep[j] * (arcVericesCount - i) * cd);
-*/														
-
-												}
+												for (let j = 0; j < vertice.length; j++) arcVerice.push(vertice[j] + arcVerticeStep[j] * cd);
 												level++;
 												if (level <= maxLevel) {
 
@@ -1507,8 +1495,10 @@ new ProgressBar(settings.options.renderer.domElement.parentElement, (progressBar
 													//В этом случае все вершины дуги, кроме средней вершины, стягиваются к началу или концу дуги.
 													const halfVertice = _this.angles2Vertice(_this.vertice2angles(arcVerice));
 													
-													halfArc(vertice, halfVertice, level);
-													halfArc(halfVertice, oppositeVertice, level);
+//													halfArc(vertice, halfVertice, level);
+													halfArc({ vertice: vertice, oppositeVertice: halfVertice, level: level });
+//													halfArc(halfVertice, oppositeVertice, level);
+													halfArc({ vertice: vertice, oppositeVertice: oppositeVertice, level: level });
 													
 												} else {
 													
@@ -1519,73 +1509,96 @@ new ProgressBar(settings.options.renderer.domElement.parentElement, (progressBar
 											}
 											const vertice = position[aAngleControls.verticeId], oppositeVertice = position[aAngleControls.oppositeVerticeId];
 											copyVertice(vertice);
-											halfArc(vertice, oppositeVertice, level);
-//											copyVertice(oppositeVertice);
-											if (aAngleControls.arc) aAngleControls.arc.updateUniverse({ angles: arcAngles });
-											else aAngleControls.arc = this.newUniverse(
-												classSettings.settings.options,
-												{
+//											halfArc(vertice, oppositeVertice, level);
+											let i = 0;
+											const halfArcParams = {};
+											const progressBar = new ProgressBar(settings.options.renderer.domElement.parentElement, (progressBar) => {
 
-													boRemove: false,
-													boGui: false,
-													edges: {
-									
-														creationMethod: Universe.edgesCreationMethod.Random,
-														boCurve: true,
-														
-													},
-													//edges: [[0,1]],
-													//edges: false,
-													projectParams:{
-														
-														scene: classSettings.projectParams.scene,
-														/*
-														params: {
-															
-															//center: {x: 0.5, y: 0.3},
-														
-														}
-														 */
-														
-													},
-													//t: 0.5,
-													debug: {
-									
-														probabilityDensity: false,
-														//probabilityDensity: [],
-														//testVertice: false,
-														
-													},
-													//debug: false,
-													//mode: 1,
-													settings: {
-														
-														object: {
-										
-															name: lang.arc,
-															color: 'magenta',//'yellow',
-															//color: 0x0000ff,//blue
-															geometry: {
-									
-																angles: arcAngles,//[vertice, [3.8], oppositeVertice],
-									
-																//opacity: [1, 0.5],
-																/*
-																indices: {
-																	
-																	//edges: { count: 5000 }
-																	//edges: [[0,1], [1,2], [2,0]],//triangle
+												halfArcParams.vertice = vertice;
+												halfArcParams.oppositeVertice = oppositeVertice;
+												halfArcParams.level = level;
+												halfArc(halfArcParams);
+//												halfArc(vertice, oppositeVertice, level);
+												if (aAngleControls.arc) aAngleControls.arc.updateUniverse({ angles: arcAngles });
+												else aAngleControls.arc = this.newUniverse(
+													classSettings.settings.options,
+													{
+
+														boRemove: false,
+														boGui: false,
+														edges: {
+
+															creationMethod: Universe.edgesCreationMethod.Random,
+															boCurve: true,
+
+														},
+														//edges: [[0,1]],
+														//edges: false,
+														projectParams: {
+
+															scene: classSettings.projectParams.scene,
+															/*
+															params: {
 																
-																}
-																*/
+																//center: {x: 0.5, y: 0.3},
 															
 															}
-									
-														}
-													
-													},
-													
-												});
+															 */
+
+														},
+														//t: 0.5,
+														debug: {
+
+															probabilityDensity: false,
+															//probabilityDensity: [],
+															//testVertice: false,
+
+														},
+														//debug: false,
+														//mode: 1,
+														settings: {
+
+															object: {
+
+																name: lang.arc,
+																color: 'magenta',//'yellow',
+																//color: 0x0000ff,//blue
+																geometry: {
+
+																	angles: arcAngles,//[vertice, [3.8], oppositeVertice],
+
+																	//opacity: [1, 0.5],
+																	/*
+																	indices: {
+																		
+																		//edges: { count: 5000 }
+																		//edges: [[0,1], [1,2], [2,0]],//triangle
+																	
+																	}
+																	*/
+
+																}
+
+															}
+
+														},
+
+													});
+												progressBar.value = i;
+/*
+												i++;
+												if (i < 10000)
+													progressBar.step();
+												else progressBar.remove();
+*/
+												progressBar.remove();
+
+											}, {
+
+												sTitle: 'Long time iteration process',
+												max: 10000,
+
+											});
 											
 										}
 										aAngleControls.distance();
