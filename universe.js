@@ -1494,11 +1494,13 @@ new ProgressBar(settings.options.renderer.domElement.parentElement, (progressBar
 													//а это находится вне вселенной.
 													//В этом случае все вершины дуги, кроме средней вершины, стягиваются к началу или концу дуги.
 													const halfVertice = _this.angles2Vertice(_this.vertice2angles(arcVerice));
-													
+
+//													progressBar.step(() => {});
+													progressBar.step({ vertice: halfVertice, oppositeVertice: oppositeVertice, level: level });
 //													halfArc(vertice, halfVertice, level);
-													halfArc({ vertice: vertice, oppositeVertice: halfVertice, level: level });
+//													halfArc({ vertice: vertice, oppositeVertice: halfVertice, level: level });
 //													halfArc(halfVertice, oppositeVertice, level);
-													halfArc({ vertice: vertice, oppositeVertice: oppositeVertice, level: level });
+//													halfArc({ vertice: halfVertice, oppositeVertice: oppositeVertice, level: level });
 													
 												} else {
 													
@@ -1512,13 +1514,14 @@ new ProgressBar(settings.options.renderer.domElement.parentElement, (progressBar
 //											halfArc(vertice, oppositeVertice, level);
 											let i = 0;
 											const halfArcParams = {};
-											const progressBar = new ProgressBar(settings.options.renderer.domElement.parentElement, (progressBar) => {
+											const progressBar = new ProgressBar(settings.options.renderer.domElement.parentElement, (progressBar, i, callback) => {
 
 												halfArcParams.vertice = vertice;
 												halfArcParams.oppositeVertice = oppositeVertice;
 												halfArcParams.level = level;
 												halfArc(halfArcParams);
 //												halfArc(vertice, oppositeVertice, level);
+												if (callback) callback();
 												if (aAngleControls.arc) aAngleControls.arc.updateUniverse({ angles: arcAngles });
 												else aAngleControls.arc = this.newUniverse(
 													classSettings.settings.options,
