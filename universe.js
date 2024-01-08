@@ -1383,7 +1383,9 @@ class Universe {
 											copyVertice(vertice);
 											let i = 0;
 											let halfArcParams = { vertice: vertice, oppositeVertice: oppositeVertice, level: level };
-											const progressBar = new ProgressBar(settings.options.renderer.domElement.parentElement, (progressBar, index, callback) => {
+											new ProgressBar(
+												undefined,//settings.options.renderer.domElement.parentElement,
+												(progressBar, index, callback) => {
 
 												progressBar.value = i;
 												i++;
