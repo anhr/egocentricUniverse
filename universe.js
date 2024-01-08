@@ -1496,7 +1496,12 @@ new ProgressBar(settings.options.renderer.domElement.parentElement, (progressBar
 													const halfVertice = _this.angles2Vertice(_this.vertice2angles(arcVerice));
 
 //													progressBar.step(() => {});
-													progressBar.step({ vertice: halfVertice, oppositeVertice: oppositeVertice, level: level });
+													progressBar.step({
+
+														vertice: vertice, oppositeVertice: halfVertice, level: level,
+														next: { vertice: halfVertice, oppositeVertice: oppositeVertice, level: level, next: halfArcParams.next }
+													
+													});
 //													halfArc(vertice, halfVertice, level);
 //													halfArc({ vertice: vertice, oppositeVertice: halfVertice, level: level });
 //													halfArc(halfVertice, oppositeVertice, level);
@@ -1504,8 +1509,73 @@ new ProgressBar(settings.options.renderer.domElement.parentElement, (progressBar
 													
 												} else {
 													
+													if (halfArcParams.next)
+														progressBar.step(halfArcParams.next);
 													copyVertice(arcVerice);
 													copyVertice(oppositeVertice);
+													if (!halfArcParams.next) {
+
+														if (aAngleControls.arc) aAngleControls.arc.updateUniverse({ angles: arcAngles });
+														else aAngleControls.arc = this.newUniverse(
+															classSettings.settings.options,
+															{
+
+																boRemove: false,
+																boGui: false,
+																edges: {
+
+																	creationMethod: Universe.edgesCreationMethod.Random,
+																	boCurve: true,
+
+																},
+																//edges: [[0,1]],
+																//edges: false,
+																projectParams: {
+
+																	scene: classSettings.projectParams.scene,
+																	/*
+																	params: {
+																		
+																		//center: {x: 0.5, y: 0.3},
+																	
+																	}
+																	 */
+
+																},
+																debug: {
+
+																	probabilityDensity: false,
+																	//probabilityDensity: [],
+																	//testVertice: false,
+
+																},
+																//debug: false,
+																//mode: 1,
+																settings: {
+
+																	object: {
+
+																		name: lang.arc,
+																		color: 'magenta',//'yellow',
+																		//color: 0x0000ff,//blue
+																		geometry: {
+
+																			angles: arcAngles,//[vertice, [3.8], oppositeVertice],
+
+																			//opacity: [1, 0.5],
+
+																		}
+
+																	}
+
+																},
+
+															});
+//														progressBar.value = i;
+														progressBar.remove();
+
+													}
+													
 												}
 
 											}
@@ -1513,88 +1583,17 @@ new ProgressBar(settings.options.renderer.domElement.parentElement, (progressBar
 											copyVertice(vertice);
 //											halfArc(vertice, oppositeVertice, level);
 											let i = 0;
-											const halfArcParams = {};
+											const halfArcParams = { vertice: vertice, oppositeVertice: oppositeVertice, level: level };
 											const progressBar = new ProgressBar(settings.options.renderer.domElement.parentElement, (progressBar, i, callback) => {
 
+/*												
 												halfArcParams.vertice = vertice;
 												halfArcParams.oppositeVertice = oppositeVertice;
 												halfArcParams.level = level;
-												halfArc(halfArcParams);
+*/												
+												halfArc(callback ? callback : halfArcParams);
 //												halfArc(vertice, oppositeVertice, level);
-												if (callback) callback();
-												if (aAngleControls.arc) aAngleControls.arc.updateUniverse({ angles: arcAngles });
-												else aAngleControls.arc = this.newUniverse(
-													classSettings.settings.options,
-													{
-
-														boRemove: false,
-														boGui: false,
-														edges: {
-
-															creationMethod: Universe.edgesCreationMethod.Random,
-															boCurve: true,
-
-														},
-														//edges: [[0,1]],
-														//edges: false,
-														projectParams: {
-
-															scene: classSettings.projectParams.scene,
-															/*
-															params: {
-																
-																//center: {x: 0.5, y: 0.3},
-															
-															}
-															 */
-
-														},
-														//t: 0.5,
-														debug: {
-
-															probabilityDensity: false,
-															//probabilityDensity: [],
-															//testVertice: false,
-
-														},
-														//debug: false,
-														//mode: 1,
-														settings: {
-
-															object: {
-
-																name: lang.arc,
-																color: 'magenta',//'yellow',
-																//color: 0x0000ff,//blue
-																geometry: {
-
-																	angles: arcAngles,//[vertice, [3.8], oppositeVertice],
-
-																	//opacity: [1, 0.5],
-																	/*
-																	indices: {
-																		
-																		//edges: { count: 5000 }
-																		//edges: [[0,1], [1,2], [2,0]],//triangle
-																	
-																	}
-																	*/
-
-																}
-
-															}
-
-														},
-
-													});
-												progressBar.value = i;
-/*
-												i++;
-												if (i < 10000)
-													progressBar.step();
-												else progressBar.remove();
-*/
-												progressBar.remove();
+//												if (callback) callback();
 
 											}, {
 
