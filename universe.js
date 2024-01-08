@@ -185,7 +185,7 @@ class Universe {
 	}
 	vertice2angles(vertice) {
 
-		//Сейчас эта функция используется дл вычисления middle vertice
+		//Сейчас эта функция используется для вычисления middle vertice
 		//if (!this.classSettings.debug) console.warn(sUniverse + ': Use vertice2angles in debug version only');
 		
 		//https://en.wikipedia.org/wiki/N-sphere#Spherical_coordinates
@@ -1006,12 +1006,6 @@ class Universe {
 
 				if (!nd) return;
 				this.opacityObject3D(nd.object3D, transparent, opacity)
-/*				
-				const object3D = nd.object3D;
-				object3D.material.transparent = transparent;
-				object3D.material.opacity = transparent ? opacity : 1;
-				object3D.material.needsUpdate = true;//for THREE.REVISION = "145dev"
-*/				
 					
 			}
 
@@ -1032,10 +1026,6 @@ class Universe {
 					const child = scene.children[i];
 					this.remove(child);
 					removeObject(child);
-/*					
-					scene.remove(child);
-					if (options.guiSelectPoint) options.guiSelectPoint.removeMesh(child);
-*/					
 
 				}
 
@@ -1053,20 +1043,14 @@ class Universe {
 			}
 			this.updateUniverse = (values) => {
 
-//if (!values) return;
 				let object;
 				if (nd && nd.object3D) object = nd.object3D;
 				if (myPoints) console.error('Under constraction');
 				object.geometry.attributes.position.count = values.angles.length;
 				values.angles.forEach((angles, i) => {
 					
-//					position[i].angles = angles
-//					angles.forEach((angle, j) => position[i].angles[j] = angle)
 					for (let j = 0; j < (_this.dimension - 1); j++) 
 						settings.object.geometry.angles[i][j] = angles[j] != undefined? angles[j] : 0.0
-//						position[i].angles[j] = angles[j] != undefined? angles[j] : 0.0
-//					position[i].angles.forEach((angle, j) => position[i].angles[j] = angles[j])
-//					angles.forEach((angle, j) => position[i].angles[j] = angle)
 					
 				});
 				object.geometry.attributes.position.needsUpdate = true;
@@ -1203,7 +1187,6 @@ class Universe {
 							},
 							reset: (verticeId) => {
 
-//								const cHighlightEdges = aAngleControls.cHighlightEdges,
 								const resetControl = (control) => {
 
 										if (!control) return;
@@ -1318,35 +1301,16 @@ class Universe {
 								}
 								const fAngles = createAnglesControls(fAdvansed, aAngleControls, anglesDefault);
 
-/*								
-								//Restore default local position.
-								const cRestoreDefaultAngles = fAngles.add( {
-					
-									defaultF: () => { aAngleControls.forEach((cAngle, i) => cAngle.setValue(anglesDefault[i])); },
-					
-								}, 'defaultF' );
-								dat.controllerNameAndTitle( cRestoreDefaultAngles, lang.defaultButton, lang.defaultAnglesTitle );
-*/								
 
 								//Edges
 								
-//								let cross;//крестик на противоположной вершине выбранного ребра
 								aAngleControls.cEdges = fAdvansed.add({ Edges: lang.notSelected }, 'Edges', { [lang.notSelected]: -1 }).onChange((edgeId) => {
 
 									edgeId = parseInt(edgeId);
 									_display(fOppositeVertice.domElement, edgeId === -1 ? false : true);
 									aAngleControls.removeArc = () => {
 
-										if (aAngleControls.arc && aAngleControls.arc.removeUniverse) {
-
-											aAngleControls.arc.removeUniverse();
-//											classSettings.projectParams.scene.remove(aAngleControls.arc);
-											/*
-											classSettings.projectParams.scene.remove(child);
-											if (options.guiSelectPoint) options.guiSelectPoint.removeMesh(child);
-											*/
-
-										}
+										if (aAngleControls.arc && aAngleControls.arc.removeUniverse) aAngleControls.arc.removeUniverse();
 										aAngleControls.arc = undefined;
 
 									}
@@ -1354,8 +1318,6 @@ class Universe {
 
 										if (aAngleControls.cross) classSettings.projectParams.scene.remove(aAngleControls.cross);
 										aAngleControls.cross = undefined;
-
-//										aAngleControls.removeArc();
 										
 									}
 									if (edgeId === -1) {
@@ -1397,59 +1359,6 @@ class Universe {
 										if (aAngleControls.cross.position.z === undefined) aAngleControls.cross.position.z = 0;
 										aAngleControls.oppositeVerticeId = oppositeVerticeId;
 										
-const array = [];
-/*										
-for (let i = 0; i < 10000; i++) {
-
-	let sum = 0;
-	for (let j = 0; j < i; j++) sum += array[j];
-	console.log('i = ' + i + ', sum = ' + sum);
-	array.push(Math.sin(i) + Math.cos(i));
-
-}
-array.length = 0;
-*/
-/*										
-let i = 0;
-new ProgressBar(settings.options.renderer.domElement.parentElement, (progressBar) =>{
-
-	let sum = 0;
-	for (let j = 0; j < i; j++) sum += array[j];
-	console.log('ProgressBar. i = ' + i + ', sum = ' + sum);
-	array.push(Math.sin(i) + Math.cos(i));
-	progressBar.value = i;
-	i++;
-	if (i < 10000)
-		progressBar.step();
-	else progressBar.remove();
-	
-}, {
-
-	sTitle: 'Long time iteration process',
-	max: 10000,
-
-});
-*/
-/*
-new ProgressBar(settings.options.renderer.domElement.parentElement, (progressBar, i) =>{
-
-	let sum = 0;
-	for (let j = 0; j < i; j++) sum += array[j];
-	console.log('ProgressBar. i = ' + i + ', sum = ' + sum);
-	array.push(Math.sin(i) + Math.cos(i));
-	
-}, {
-
-	sTitle: 'Long time iteration process',
-	//min: 5000,
-	iterationCount: 10000,
-	max: 6000,
-	//timeoutPeriod: 10,
-
-});	
-*/
-
-
 										//Distance between edge vertices i.e between vertice and opposite vertice.
 										aAngleControls.distance = () => {
 
@@ -1472,13 +1381,11 @@ new ProgressBar(settings.options.renderer.domElement.parentElement, (progressBar
 											let level = 1;//текущий уровень деления дуги
 											
 											//делить дугу на две части
-//											const halfArc = (vertice, oppositeVertice, level) =>
 											const halfArc = (halfArcParams) => {
 
 												const vertice = halfArcParams.vertice,
 													oppositeVertice = halfArcParams.oppositeVertice;
 												let level = halfArcParams.level;
-												console.log('halfArc: ' + 'vertice = ' + vertice.toString() + ' oppositeVertice = ' + oppositeVertice.toString() + ' level = ' + level)
 
 												const arcVerticeStep = [];//Шаги, с которым изменяются углы при построении дуги в полярной системе координат
 												for (let k = 0; k < vertice.length; k++)
@@ -1495,17 +1402,12 @@ new ProgressBar(settings.options.renderer.domElement.parentElement, (progressBar
 													//В этом случае все вершины дуги, кроме средней вершины, стягиваются к началу или концу дуги.
 													const halfVertice = _this.angles2Vertice(_this.vertice2angles(arcVerice));
 
-//													progressBar.step(() => {});
 													progressBar.step({
 
 														vertice: vertice, oppositeVertice: halfVertice, level: level,
 														next: { vertice: halfVertice, oppositeVertice: oppositeVertice, level: level, next: halfArcParams.next }
 													
 													});
-//													halfArc(vertice, halfVertice, level);
-//													halfArc({ vertice: vertice, oppositeVertice: halfVertice, level: level });
-//													halfArc(halfVertice, oppositeVertice, level);
-//													halfArc({ vertice: halfVertice, oppositeVertice: oppositeVertice, level: level });
 													
 												} else {
 													
@@ -1528,39 +1430,26 @@ new ProgressBar(settings.options.renderer.domElement.parentElement, (progressBar
 																	boCurve: true,
 
 																},
-																//edges: [[0,1]],
-																//edges: false,
 																projectParams: {
 
 																	scene: classSettings.projectParams.scene,
-																	/*
-																	params: {
-																		
-																		//center: {x: 0.5, y: 0.3},
-																	
-																	}
-																	 */
 
 																},
 																debug: {
 
 																	probabilityDensity: false,
-																	//probabilityDensity: [],
-																	//testVertice: false,
 
 																},
-																//debug: false,
-																//mode: 1,
+																debug: false,
 																settings: {
 
 																	object: {
 
 																		name: lang.arc,
 																		color: 'magenta',//'yellow',
-																		//color: 0x0000ff,//blue
 																		geometry: {
 
-																			angles: arcAngles,//[vertice, [3.8], oppositeVertice],
+																			angles: arcAngles,
 
 																			//opacity: [1, 0.5],
 
@@ -1571,7 +1460,6 @@ new ProgressBar(settings.options.renderer.domElement.parentElement, (progressBar
 																},
 
 															});
-//														progressBar.value = i;
 														progressBar.remove();
 
 													}
@@ -1581,24 +1469,18 @@ new ProgressBar(settings.options.renderer.domElement.parentElement, (progressBar
 											}
 											const vertice = position[aAngleControls.verticeId], oppositeVertice = position[aAngleControls.oppositeVerticeId];
 											copyVertice(vertice);
-//											halfArc(vertice, oppositeVertice, level);
 											let i = 0;
 											const halfArcParams = { vertice: vertice, oppositeVertice: oppositeVertice, level: level };
-											const progressBar = new ProgressBar(settings.options.renderer.domElement.parentElement, (progressBar, i, callback) => {
+											const progressBar = new ProgressBar(settings.options.renderer.domElement.parentElement, (progressBar, index, callback) => {
 
-/*												
-												halfArcParams.vertice = vertice;
-												halfArcParams.oppositeVertice = oppositeVertice;
-												halfArcParams.level = level;
-*/												
+												progressBar.value = i;
+												i++;
 												halfArc(callback ? callback : halfArcParams);
-//												halfArc(vertice, oppositeVertice, level);
-//												if (callback) callback();
 
 											}, {
 
 												sTitle: 'Long time iteration process',
-												max: 10000,
+												max: maxLevel * maxLevel - 2,
 
 											});
 											
@@ -1734,16 +1616,11 @@ new ProgressBar(settings.options.renderer.domElement.parentElement, (progressBar
 					} else {
 						
 						settings.scene = scene;
-						if ((settings.object.geometry.indices.edges.length === 0)
-//							&& (classSettings.edges instanceof Array === false)
-						) this.pushEdges();
+						if ((settings.object.geometry.indices.edges.length === 0)) this.pushEdges();
 						else {
 							
 							if ((settings.object.geometry.position[0].length > 3 ) && (!settings.object.color)) settings.object.color = {};//Color of vertice from palette
-//settings.object.geometry.indices = undefined;
-//settings.object.geometry.indices.boAddIndices = false;
 							nd = new ND(this.dimension, settings);
-//nd.object3D.geometry.index = null;
 			
 							params.center = params.center || {}
 							nd.object3D.position.x = params.center.x || 0;
@@ -1804,7 +1681,6 @@ new ProgressBar(settings.options.renderer.domElement.parentElement, (progressBar
 						if (
 							(classSettings.settings.object.color != undefined) &&
 							(typeof classSettings.settings.object.color != "object")
-							//&& (classSettings.settings.object.geometry.position[0].length < 4)//цвет для всех вершин одновременно задается только если коодинаты вершин не содержат индекс цвета палитры. Другими словами если нет координаты w
 						) {
 
 							const color = new three.THREE.Color(classSettings.settings.object.color);
@@ -1816,7 +1692,6 @@ new ProgressBar(settings.options.renderer.domElement.parentElement, (progressBar
 							
 							pointsOptions: {
 								
-								//shaderMaterial: false,
 								name: settings.object.name,
 								color: settings.object.color,
 								colors: settings.object.geometry.colors,
@@ -2171,9 +2046,7 @@ new ProgressBar(settings.options.renderer.domElement.parentElement, (progressBar
 
 				}
 
-				if (classSettings.edges
-//					&& (classSettings.edges instanceof Array === false)
-				) this.pushEdges();//Для экономии времени не добавляю ребра если на холст вывожу только вершины
+				if (classSettings.edges) this.pushEdges();//Для экономии времени не добавляю ребра если на холст вывожу только вершины
 				else if (this.classSettings.projectParams) this.project(this.classSettings.projectParams.scene, this.classSettings.projectParams.params);
 				
 				break;
