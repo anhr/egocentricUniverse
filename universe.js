@@ -1379,10 +1379,18 @@ class Universe {
 													//если maxLevel = 3 то дуга делится на 8 частей с 7 вершинами посередине
 													//Таким образом дугу можно разделит только на 2 в степени maxLevel частей
 											let level = 1;//текущий уровень деления дуги
-											
-											//делить дугу на две части
-											const halfArc = (halfArcParams) => {
+											const vertice = position[aAngleControls.verticeId], oppositeVertice = position[aAngleControls.oppositeVerticeId];
+											copyVertice(vertice);
+											let i = 0;
+											let halfArcParams = { vertice: vertice, oppositeVertice: oppositeVertice, level: level };
+											const progressBar = new ProgressBar(settings.options.renderer.domElement.parentElement, (progressBar, index, callback) => {
 
+												progressBar.value = i;
+												i++;
+
+												//делить дугу на две части
+
+												if (callback) halfArcParams = callback;
 												const vertice = halfArcParams.vertice,
 													oppositeVertice = halfArcParams.oppositeVertice;
 												let level = halfArcParams.level;
@@ -1406,11 +1414,11 @@ class Universe {
 
 														vertice: vertice, oppositeVertice: halfVertice, level: level,
 														next: { vertice: halfVertice, oppositeVertice: oppositeVertice, level: level, next: halfArcParams.next }
-													
+
 													});
-													
+
 												} else {
-													
+
 													if (halfArcParams.next)
 														progressBar.step(halfArcParams.next);
 													copyVertice(arcVerice);
@@ -1463,19 +1471,9 @@ class Universe {
 														progressBar.remove();
 
 													}
-													
+
 												}
-
-											}
-											const vertice = position[aAngleControls.verticeId], oppositeVertice = position[aAngleControls.oppositeVerticeId];
-											copyVertice(vertice);
-											let i = 0;
-											const halfArcParams = { vertice: vertice, oppositeVertice: oppositeVertice, level: level };
-											const progressBar = new ProgressBar(settings.options.renderer.domElement.parentElement, (progressBar, index, callback) => {
-
-												progressBar.value = i;
-												i++;
-												halfArc(callback ? callback : halfArcParams);
+//												halfArc(callback ? callback : halfArcParams);
 
 											}, {
 
