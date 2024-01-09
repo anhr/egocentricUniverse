@@ -1106,7 +1106,7 @@ class Universe {
 
 					}
 					
-					if (aAngleControls.arc) aAngleControls.distance();
+					if (aAngleControls.arc) aAngleControls.createArc();
 
 				}
 				
@@ -1359,8 +1359,8 @@ class Universe {
 										if (aAngleControls.cross.position.z === undefined) aAngleControls.cross.position.z = 0;
 										aAngleControls.oppositeVerticeId = oppositeVerticeId;
 										
-										//Distance between edge vertices i.e between vertice and opposite vertice.
-										aAngleControls.distance = () => {
+										//Create arc between edge's vertices i.e between vertice and opposite vertice.
+										aAngleControls.createArc = () => {
 
 											const arcAngles = [],//массив вершин в полярной системе координат, которые образуют дугу
 												//если не копировать каждый угол в отделности, то в новой вершине останутся старые ребра
@@ -1497,7 +1497,7 @@ class Universe {
 											
 										}
 										console.log('onChange edgeId = ' + edgeId)
-										aAngleControls.distance();
+										aAngleControls.createArc();
 										
 									}
 					
