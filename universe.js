@@ -1383,101 +1383,112 @@ class Universe {
 											copyVertice(vertice);
 											let i = 0;
 											let halfArcParams = { vertice: vertice, oppositeVertice: oppositeVertice, level: level };
-											new ProgressBar(
+											if (aAngleControls.progressBar) {
+
+												console.log('.progressBar')
+												aAngleControls.progressBar.boStop = true;
+												
+											}
+											console.log('new ProgressBar')
+											aAngleControls.progressBar = new ProgressBar(
 												undefined,//settings.options.renderer.domElement.parentElement,
 												(progressBar, index, callback) => {
 
-												progressBar.value = i;
-												i++;
+													if (progressBar.boStop) return;//Этот процес вычисления дуги нужно остановть потому что начался другой процесс вычисления дуги
 
-												//делить дугу на две части
+													progressBar.value = i;
+													i++;
 
-												if (callback) halfArcParams = callback;
-												const vertice = halfArcParams.vertice,
-													oppositeVertice = halfArcParams.oppositeVertice;
-												let level = halfArcParams.level;
+													//делить дугу на две части
 
-												const arcVerticeStep = [];//Шаги, с которым изменяются углы при построении дуги в полярной системе координат
-												for (let k = 0; k < vertice.length; k++)
-													arcVerticeStep.push((oppositeVertice[k] - vertice[k]) / arcVericesCount);
-												const arcVerice = [];//Координаты вершины в полярной системе координат
-												for (let j = 0; j < vertice.length; j++) arcVerice.push(vertice[j] + arcVerticeStep[j] * cd);
-												level++;
-												if (level <= maxLevel) {
+													if (callback) halfArcParams = callback;
+													const vertice = halfArcParams.vertice,
+														oppositeVertice = halfArcParams.oppositeVertice;
+													let level = halfArcParams.level;
 
-													//если не делать это преобразование,
-													//то когда начало и конец дуги на ходятся на противоположных концах вселенной,
-													//средняя точка попадает в центр окружности или сферы или гиперсферы,
-													//а это находится вне вселенной.
-													//В этом случае все вершины дуги, кроме средней вершины, стягиваются к началу или концу дуги.
-													const halfVertice = _this.angles2Vertice(_this.vertice2angles(arcVerice));
+													const arcVerticeStep = [];//Шаги, с которым изменяются углы при построении дуги в полярной системе координат
+													for (let k = 0; k < vertice.length; k++)
+														arcVerticeStep.push((oppositeVertice[k] - vertice[k]) / arcVericesCount);
+													const arcVerice = [];//Координаты вершины в полярной системе координат
+													for (let j = 0; j < vertice.length; j++) arcVerice.push(vertice[j] + arcVerticeStep[j] * cd);
+													level++;
+													if (level <= maxLevel) {
 
-													progressBar.step({
+														//если не делать это преобразование,
+														//то когда начало и конец дуги на ходятся на противоположных концах вселенной,
+														//средняя точка попадает в центр окружности или сферы или гиперсферы,
+														//а это находится вне вселенной.
+														//В этом случае все вершины дуги, кроме средней вершины, стягиваются к началу или концу дуги.
+														const halfVertice = _this.angles2Vertice(_this.vertice2angles(arcVerice));
 
-														vertice: vertice, oppositeVertice: halfVertice, level: level,
-														next: { vertice: halfVertice, oppositeVertice: oppositeVertice, level: level, next: halfArcParams.next }
+														progressBar.step({
 
-													});
+															vertice: vertice, oppositeVertice: halfVertice, level: level,
+															next: { vertice: halfVertice, oppositeVertice: oppositeVertice, level: level, next: halfArcParams.next }
 
-												} else {
+														});
 
-													if (halfArcParams.next)
-														progressBar.step(halfArcParams.next);
-													copyVertice(arcVerice);
-													copyVertice(oppositeVertice);
-													if (!halfArcParams.next) {
+													} else {
 
-														if (aAngleControls.arc) aAngleControls.arc.updateUniverse({ angles: arcAngles });
-														else aAngleControls.arc = this.newUniverse(
-															classSettings.settings.options,
-															{
+														if (halfArcParams.next)
+															progressBar.step(halfArcParams.next);
+														copyVertice(arcVerice);
+														copyVertice(oppositeVertice);
+														if (!halfArcParams.next) {
 
-																boRemove: false,
-																boGui: false,
-																edges: {
+															if (aAngleControls.arc) aAngleControls.arc.updateUniverse({ angles: arcAngles });
+															else aAngleControls.arc = this.newUniverse(
+																classSettings.settings.options,
+																{
 
-																	creationMethod: Universe.edgesCreationMethod.Random,
-																	boCurve: true,
+																	boRemove: false,
+																	boGui: false,
+																	edges: {
 
-																},
-																projectParams: {
+																		creationMethod: Universe.edgesCreationMethod.Random,
+																		boCurve: true,
 
-																	scene: classSettings.projectParams.scene,
+																	},
+																	projectParams: {
 
-																},
-																debug: {
+																		scene: classSettings.projectParams.scene,
 
-																	probabilityDensity: false,
+																	},
+																	debug: {
 
-																},
-																debug: false,
-																settings: {
+																		probabilityDensity: false,
 
-																	object: {
+																	},
+																	debug: false,
+																	settings: {
 
-																		name: lang.arc,
-																		color: 'magenta',//'yellow',
-																		geometry: {
+																		object: {
 
-																			angles: arcAngles,
+																			name: lang.arc,
+																			color: 'magenta',//'yellow',
+																			geometry: {
 
-																			//opacity: [1, 0.5],
+																				angles: arcAngles,
+
+																				//opacity: [1, 0.5],
+
+																			}
 
 																		}
 
-																	}
+																	},
 
-																},
+																});
+															console.log('progressBar.remove()')
+															progressBar.remove();
+															aAngleControls.progressBar = undefined;
 
-															});
-														progressBar.remove();
+														}
 
 													}
-
-												}
 //												halfArc(callback ? callback : halfArcParams);
 
-											}, {
+												}, {
 
 												sTitle: 'Long time iteration process',
 												max: maxLevel * maxLevel - 2,
@@ -1485,6 +1496,7 @@ class Universe {
 											});
 											
 										}
+										console.log('onChange edgeId = ' + edgeId)
 										aAngleControls.distance();
 										
 									}
