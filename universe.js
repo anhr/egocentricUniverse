@@ -1035,7 +1035,7 @@ class Universe {
 
 				let object;
 				if (nd && nd.object3D) object = nd.object3D;
-				if (myPoints) console.error('Under constraction');
+				if (myPoints) object = myPoints;
 				if (nd) nd = undefined;
 				if (myPoints) myPoints = undefined;
 				removeObject(object);
