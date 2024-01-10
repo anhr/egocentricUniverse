@@ -1045,7 +1045,7 @@ class Universe {
 
 				let object;
 				if (nd && nd.object3D) object = nd.object3D;
-				if (myPoints) console.error('Under constraction');
+				else if (myPoints) object = myPoints;
 				object.geometry.attributes.position.count = values.angles.length;
 				values.angles.forEach((angles, i) => {
 					
@@ -1383,18 +1383,18 @@ class Universe {
 											copyVertice(vertice);
 											let i = 0;
 											let halfArcParams = { vertice: vertice, oppositeVertice: oppositeVertice, level: level };
-											if (aAngleControls.progressBar) {
-
-												console.log('.progressBar')
-												aAngleControls.progressBar.boStop = true;
-												
-											}
-											console.log('new ProgressBar')
+											if (aAngleControls.progressBar) aAngleControls.progressBar.boStop = true;
 											aAngleControls.progressBar = new ProgressBar(
 												undefined,//settings.options.renderer.domElement.parentElement,
 												(progressBar, index, callback) => {
 
-													if (progressBar.boStop) return;//Этот процес вычисления дуги нужно остановть потому что начался другой процесс вычисления дуги
+													if (progressBar.boStop) {
+
+														//Этот процес вычисления дуги нужно остановть потому что начался другой процесс вычисления дуги
+														progressBar.remove();
+														return;
+
+													}
 
 													progressBar.value = i;
 													i++;
@@ -1479,7 +1479,6 @@ class Universe {
 																	},
 
 																});
-															console.log('progressBar.remove()')
 															progressBar.remove();
 															aAngleControls.progressBar = undefined;
 
@@ -1496,7 +1495,6 @@ class Universe {
 											});
 											
 										}
-										console.log('onChange edgeId = ' + edgeId)
 										aAngleControls.createArc();
 										
 									}

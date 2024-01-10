@@ -25,6 +25,7 @@ class Universe3D extends Universe2D {
 
 	//base methods
 
+	newUniverse(options, classSettings) { return new Universe3D(options, classSettings); }
 	get cookieName(){ return '3DUniverse'; }
 	setW() {
 
