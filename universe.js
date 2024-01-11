@@ -122,8 +122,10 @@ class Universe {
 		if (geometry.indices.faces) geometry.indices.faces.test();
 		
 	}
+	boTestVertice = true;
 	TestVertice(vertice, strVerticeId){
-		
+
+		if (!this.boTestVertice) return;
 		if (this.classSettings.edges === false) return;
 		if (vertice.edges.length < (this.verticeEdgesLength - 1))//Допускается количество ребер на одно меньше максимального значения потому что при опреденном количестве вершин для некоротых вершин не хватает противоположных вершин
 			console.error(sUniverse + ': Test(). Invalid ' + strVerticeId + '.edges.length = ' + vertice.edges.length);
@@ -896,13 +898,24 @@ class Universe {
 
 					if (verticeId >= position.length) verticeId = 0;
 					const vertice = position[verticeId];//push random vertice if not exists
-					edge[edgeVerticeId] = verticeId;
+					if (edgeVerticeId != undefined) edge[edgeVerticeId] = verticeId;
 
 					vertice.edges.push(edgeId === undefined ? _edges.length : edgeId, verticeId);
 					
 				}
 				switch (name) {
 
+					case 'setVertices': return () => {
+
+						if (_edges.length > 0) _this.boTestVertice = false;
+						_edges.forEach((edge, edgeId) => {
+
+							setVertice(edge, undefined, edge[0], edgeId);
+							setVertice(edge, undefined, edge[1], edgeId);
+							
+						})
+
+					}
 					case 'push': return (edge=[]) => {
 
 						let vertice0Id = edge[0] === undefined ? _edges.length : edge[0],
@@ -972,6 +985,7 @@ class Universe {
 			}
 
 		});
+		indices.edges.setVertices();
 
 		//Эту функцию надо содать до вызова this.pushEdges(); потому что когда используется MyPoints для вывода на холст вершин вместо ребер,
 		//вызывается this.project вместо this.pushEdges()
