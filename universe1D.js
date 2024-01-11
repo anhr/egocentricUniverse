@@ -24,7 +24,7 @@ class Universe1D extends Universe {
 	//base methods
 
 	newUniverse(options, classSettings) { return new Universe1D(options, classSettings); }
-	get cookieName(){ return '1DUniverse'; }
+	get cookieName(){ return '1DUniverse' + (this.classSettings.cookieName ? '_' + this.classSettings.cookieName : ''); }
 	get probabilityDensity(){
 		
 		return {

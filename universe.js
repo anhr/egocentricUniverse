@@ -60,6 +60,7 @@ class Universe {
 	logUniverse() {
 
 		if (!this.classSettings.debug) return;
+		console.log(this.cookieName);
 		let i = 0, progressBarValue = 0,
 			log = 0;//position log
 		const settings = this.classSettings.settings, geometry = settings.object.geometry, position = geometry.position, edges = geometry.indices.edges,
@@ -1437,48 +1438,67 @@ class Universe {
 														if (!halfArcParams.next) {
 
 															if (aAngleControls.arc) aAngleControls.arc.updateUniverse({ angles: arcAngles });
-															else aAngleControls.arc = this.newUniverse(
-																classSettings.settings.options,
-																{
+															else {
 
-																	boRemove: false,
-																	boGui: false,
-																	edges: {
+																const arcEdges = [];
+																for (let i = 0; i < (arcAngles.length - 1); i++) arcEdges.push([i, i + 1]);
+																aAngleControls.arc = this.newUniverse(
+																	classSettings.settings.options,
+																	{
 
-																		creationMethod: Universe.edgesCreationMethod.Random,
-																		boCurve: true,
+																		cookieName: 'arc',//если не задать cookieName, то настройки дуги будут браться из настроек вселенной
+																		boRemove: false,
+																		boGui: false,
+																		edges: {
 
-																	},
-																	projectParams: {
+																			project: true,//Если дуга создается в виде ребер, то отображать ребра на холсте
+																			creationMethod: Universe.edgesCreationMethod.Random,
+																			boCurve: true,
 
-																		scene: classSettings.projectParams.scene,
+																		},
+																		//edges: false,
+																		projectParams: {
 
-																	},
-																	debug: {
+																			scene: classSettings.projectParams.scene,
 
-																		probabilityDensity: false,
+																		},
+																		debug: {
 
-																	},
-																	debug: false,
-																	settings: {
+																			probabilityDensity: false,
 
-																		object: {
+																		},
+																		//debug: false,
+																		settings: {
 
-																			name: lang.arc,
-																			color: 'magenta',//'yellow',
-																			geometry: {
+																			object: {
 
-																				angles: arcAngles,
+																				name: lang.arc,
+																				color: 'magenta',//'yellow',
+																				geometry: {
 
-																				//opacity: [1, 0.5],
+																					angles: arcAngles,
+																					//opacity: [1, 0.5],
+																					indices: {
+
+																						/*
+																						edges: {
+																						
+																							count: 3,
+																					
+																						}
+																						*/
+																						edges: arcEdges,
+
+																					}
+
+																				}
 
 																			}
 
-																		}
+																		},
 
-																	},
-
-																});
+																	});
+															}
 															progressBar.remove();
 															aAngleControls.progressBar = undefined;
 
@@ -2056,7 +2076,10 @@ class Universe {
 
 				}
 
-				if (classSettings.edges) this.pushEdges();//Для экономии времени не добавляю ребра если на холст вывожу только вершины
+				if (
+					classSettings.edges &&
+					(classSettings.settings.object.geometry.indices.edges.length === 0)//ребер нет
+				) this.pushEdges();//Для экономии времени не добавляю ребра если на холст вывожу только вершины
 				else if (this.classSettings.projectParams) this.project(this.classSettings.projectParams.scene, this.classSettings.projectParams.params);
 				
 				break;

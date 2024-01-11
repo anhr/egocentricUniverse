@@ -25,7 +25,7 @@ class Universe2D extends Universe1D {
 	//base methods
 	
 	newUniverse(options, classSettings) { return new Universe2D(options, classSettings); }
-	get cookieName(){ return '2DUniverse'; }
+	get cookieName(){ return '2DUniverse' + (this.classSettings.cookieName ? '_' + this.classSettings.cookieName : ''); }
 	get probabilityDensity() {
 
 		return {

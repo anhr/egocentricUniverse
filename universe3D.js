@@ -26,7 +26,7 @@ class Universe3D extends Universe2D {
 	//base methods
 
 	newUniverse(options, classSettings) { return new Universe3D(options, classSettings); }
-	get cookieName(){ return '3DUniverse'; }
+	get cookieName(){ return '3DUniverse' + (this.classSettings.cookieName ? '_' + this.classSettings.cookieName : ''); }
 	setW() {
 
 		const classSettings = this.classSettings, w = classSettings.settings.options.scales.w;
