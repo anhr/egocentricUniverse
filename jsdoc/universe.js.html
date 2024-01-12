@@ -88,6 +88,7 @@ class Universe {
 	logUniverse() {
 
 		if (!this.classSettings.debug) return;
+		console.log(this.cookieName);
 		let i = 0, progressBarValue = 0,
 			log = 0;//position log
 		const settings = this.classSettings.settings, geometry = settings.object.geometry, position = geometry.position, edges = geometry.indices.edges,
@@ -149,8 +150,10 @@ class Universe {
 		if (geometry.indices.faces) geometry.indices.faces.test();
 		
 	}
+	boTestVertice = true;
 	TestVertice(vertice, strVerticeId){
-		
+
+		if (!this.boTestVertice) return;
 		if (this.classSettings.edges === false) return;
 		if (vertice.edges.length &lt; (this.verticeEdgesLength - 1))//Допускается количество ребер на одно меньше максимального значения потому что при опреденном количестве вершин для некоротых вершин не хватает противоположных вершин
 			console.error(sUniverse + ': Test(). Invalid ' + strVerticeId + '.edges.length = ' + vertice.edges.length);
@@ -213,7 +216,7 @@ class Universe {
 	}
 	vertice2angles(vertice) {
 
-		//Сейчас эта функция используется дл вычисления middle vertice
+		//Сейчас эта функция используется для вычисления middle vertice
 		//if (!this.classSettings.debug) console.warn(sUniverse + ': Use vertice2angles in debug version only');
 		
 		//https://en.wikipedia.org/wiki/N-sphere#Spherical_coordinates
@@ -243,6 +246,7 @@ class Universe {
 		return φ;
 
 	}
+	//* @param { boolean } [classSettings.edges.boCurve] true - Chain of vertices connected by edges.First vertice is not connected with last vertice.
 
 	/**
 	 * Base class for n dimensional universe.
@@ -274,11 +278,6 @@ class Universe {
 	 *	false - Doesn't create edges to reduce the creation time of the universe
 	 * &lt;/pre>
 	 * @param {boolean} [classSettings.edges.project=true] false - Doesn't project edges onto canvas
-	 * @param {boolean} [classSettings.edges.boCurve]
-	 * &lt;pre>
-	 * true - Chain of vertices connected by edges.
-	 *	First vertice is not connected with last vertice.
-	 * &lt;/pre>
 	 * @param {enum} [classSettings.edges.creationMethod=edgesCreationMethod.NearestVertice] method for creating edges. See &lt;a href="./module-Universe-Universe.html#.edgesCreationMethod" target="_blank">edgesCreationMethod&lt;/a>
 	 * @param {object} [classSettings.settings] The following settings are available
 	 * @param {object} [classSettings.settings.object] Universe object.
@@ -435,11 +434,9 @@ class Universe {
 		if (options.dat) options.dat.cookie.getObject(this.cookieName, cookieOptions);
 
 		let edgesOld = cookieOptions.edgesOld || { project: true, };
-//		if (classSettings.edges instanceof Array === false) {
-		const boCurve = classSettings.edges.boCurve;
+//		const boCurve = classSettings.edges.boCurve;
 		classSettings.edges = cookieOptions.edges === false ? false : cookieOptions.edges || classSettings.edges;
-		if (boCurve) classSettings.edges.boCurve = boCurve;
-//		}
+//		if (boCurve) classSettings.edges.boCurve = boCurve;
 		if (classSettings.edges != false) classSettings.edges = classSettings.edges || {};
 		if ((classSettings.edges != false) &amp;&amp; (classSettings.edges.project === undefined)) classSettings.edges.project = true;
 
@@ -927,13 +924,26 @@ class Universe {
 
 					if (verticeId >= position.length) verticeId = 0;
 					const vertice = position[verticeId];//push random vertice if not exists
-					edge[edgeVerticeId] = verticeId;
+					if (edgeVerticeId != undefined) edge[edgeVerticeId] = verticeId;
 
 					vertice.edges.push(edgeId === undefined ? _edges.length : edgeId, verticeId);
 					
 				}
 				switch (name) {
 
+					case 'setVertices': return () => {
+
+						if (_edges.length > 0) _this.boTestVertice = false;
+						/*пока что это не нужно
+						_edges.forEach((edge, edgeId) => {
+
+							setVertice(edge, undefined, edge[0], edgeId);
+							setVertice(edge, undefined, edge[1], edgeId);
+							
+						})
+						*/
+
+					}
 					case 'push': return (edge=[]) => {
 
 						let vertice0Id = edge[0] === undefined ? _edges.length : edge[0],
@@ -1003,6 +1013,7 @@ class Universe {
 			}
 
 		});
+		indices.edges.setVertices();
 
 		//Эту функцию надо содать до вызова this.pushEdges(); потому что когда используется MyPoints для вывода на холст вершин вместо ребер,
 		//вызывается this.project вместо this.pushEdges()
@@ -1038,12 +1049,6 @@ class Universe {
 
 				if (!nd) return;
 				this.opacityObject3D(nd.object3D, transparent, opacity)
-/*				
-				const object3D = nd.object3D;
-				object3D.material.transparent = transparent;
-				object3D.material.opacity = transparent ? opacity : 1;
-				object3D.material.needsUpdate = true;//for THREE.REVISION = "145dev"
-*/				
 					
 			}
 
@@ -1064,10 +1069,6 @@ class Universe {
 					const child = scene.children[i];
 					this.remove(child);
 					removeObject(child);
-/*					
-					scene.remove(child);
-					if (options.guiSelectPoint) options.guiSelectPoint.removeMesh(child);
-*/					
 
 				}
 
@@ -1077,7 +1078,7 @@ class Universe {
 
 				let object;
 				if (nd &amp;&amp; nd.object3D) object = nd.object3D;
-				if (myPoints) console.error('Under constraction');
+				if (myPoints) object = myPoints;
 				if (nd) nd = undefined;
 				if (myPoints) myPoints = undefined;
 				removeObject(object);
@@ -1085,20 +1086,14 @@ class Universe {
 			}
 			this.updateUniverse = (values) => {
 
-//if (!values) return;
 				let object;
 				if (nd &amp;&amp; nd.object3D) object = nd.object3D;
-				if (myPoints) console.error('Under constraction');
+				else if (myPoints) object = myPoints;
 				object.geometry.attributes.position.count = values.angles.length;
 				values.angles.forEach((angles, i) => {
 					
-//					position[i].angles = angles
-//					angles.forEach((angle, j) => position[i].angles[j] = angle)
 					for (let j = 0; j &lt; (_this.dimension - 1); j++) 
 						settings.object.geometry.angles[i][j] = angles[j] != undefined? angles[j] : 0.0
-//						position[i].angles[j] = angles[j] != undefined? angles[j] : 0.0
-//					position[i].angles.forEach((angle, j) => position[i].angles[j] = angles[j])
-//					angles.forEach((angle, j) => position[i].angles[j] = angle)
 					
 				});
 				object.geometry.attributes.position.needsUpdate = true;
@@ -1154,8 +1149,7 @@ class Universe {
 
 					}
 					
-//					if (aAngleControls.distance) aAngleControls.distance([aAngleControls.verticeId, aAngleControls.oppositeVerticeId]);
-					if (aAngleControls.arc) aAngleControls.distance([aAngleControls.verticeId, aAngleControls.oppositeVerticeId]);
+					if (aAngleControls.arc) aAngleControls.createArc();
 
 				}
 				
@@ -1236,7 +1230,6 @@ class Universe {
 							},
 							reset: (verticeId) => {
 
-//								const cHighlightEdges = aAngleControls.cHighlightEdges,
 								const resetControl = (control) => {
 
 										if (!control) return;
@@ -1351,35 +1344,16 @@ class Universe {
 								}
 								const fAngles = createAnglesControls(fAdvansed, aAngleControls, anglesDefault);
 
-/*								
-								//Restore default local position.
-								const cRestoreDefaultAngles = fAngles.add( {
-					
-									defaultF: () => { aAngleControls.forEach((cAngle, i) => cAngle.setValue(anglesDefault[i])); },
-					
-								}, 'defaultF' );
-								dat.controllerNameAndTitle( cRestoreDefaultAngles, lang.defaultButton, lang.defaultAnglesTitle );
-*/								
 
 								//Edges
 								
-//								let cross;//крестик на противоположной вершине выбранного ребра
 								aAngleControls.cEdges = fAdvansed.add({ Edges: lang.notSelected }, 'Edges', { [lang.notSelected]: -1 }).onChange((edgeId) => {
 
 									edgeId = parseInt(edgeId);
 									_display(fOppositeVertice.domElement, edgeId === -1 ? false : true);
 									aAngleControls.removeArc = () => {
 
-										if (aAngleControls.arc &amp;&amp; aAngleControls.arc.removeUniverse) {
-
-											aAngleControls.arc.removeUniverse();
-//											classSettings.projectParams.scene.remove(aAngleControls.arc);
-											/*
-											classSettings.projectParams.scene.remove(child);
-											if (options.guiSelectPoint) options.guiSelectPoint.removeMesh(child);
-											*/
-
-										}
+										if (aAngleControls.arc &amp;&amp; aAngleControls.arc.removeUniverse) aAngleControls.arc.removeUniverse();
 										aAngleControls.arc = undefined;
 
 									}
@@ -1387,8 +1361,6 @@ class Universe {
 
 										if (aAngleControls.cross) classSettings.projectParams.scene.remove(aAngleControls.cross);
 										aAngleControls.cross = undefined;
-
-//										aAngleControls.removeArc();
 										
 									}
 									if (edgeId === -1) {
@@ -1429,167 +1401,163 @@ class Universe {
 										aAngleControls.cross.position.copy(oppositeVertice);
 										if (aAngleControls.cross.position.z === undefined) aAngleControls.cross.position.z = 0;
 										aAngleControls.oppositeVerticeId = oppositeVerticeId;
-
-										//Distance between edge vertices i.e between vertice and opposite vertice.
-										aAngleControls.distance = (edge) => {
-											
-//											aAngleControls.removeArc();
-											const vertice = position[edge[0]].angles,
-												oppositeVertice = position[edge[1]].angles,
-												angles = [],
-												
-												//если не копировать каждый угол в отделности, то в новой вершине останутся старые ребра
-												copyVertice = (vertice) => {
-
-/*													
-													angles.push([]);
-													const verticeAngles = angles[angles.length - 1];
-*/													
-													const verticeAngles = [];
-													vertice.forEach(angle => verticeAngles.push(angle));
-													angles.push(verticeAngles);
-													
-												};
-											const arcVericesCount = 3,
-												arcVerticeStep = [];//Шаги, с которым изменяются углы при построении дуги
-											for (let k = 0; k &lt; (this.dimension - 1); k++) arcVerticeStep.push((oppositeVertice[k] - vertice[k]) / arcVericesCount);
-											for (let i = 0; i &lt; arcVericesCount; i++) {
-
-												const arcVerice = [];
-												for (let j = 0; j &lt; (this.dimension - 1); j++) arcVerice.push(vertice[j] + arcVerticeStep[j] * i);
-												copyVertice(arcVerice);
-												
-											}
-/*											
-											copyVertice(vertice);
-//angles.push([3.8]);
-//if (aAngleControls.arc) angles.push([4.1]);
-*/											
-											copyVertice(oppositeVertice);
-											if (aAngleControls.arc) aAngleControls.arc.updateUniverse({ angles: angles });
-											else aAngleControls.arc = this.newUniverse(
-												classSettings.settings.options,
-/*												
-												{
-													
-													getLanguageCode: classSettings.settings.options.getLanguageCode,
-													renderer: classSettings.settings.options.renderer,
-													setPalette: classSettings.settings.options.setPalette,
-													setW: classSettings.settings.options.setW,
-													scales: classSettings.settings.options.scales,
-													point: classSettings.settings.options.point,
-													playerOptions: classSettings.settings.options.playerOptions,
-													boOptions: true,
-												
-												},
-*/												
-												{
-
-													boRemove: false,
-													boGui: false,
-													edges: {
-									
-														creationMethod: Universe.edgesCreationMethod.Random,
-														boCurve: true,
-														
-													},
-													//edges: [[0,1]],
-													//edges: false,
-													projectParams:{
-														
-														scene: classSettings.projectParams.scene,
-														/*
-														params: {
-															
-															//center: {x: 0.5, y: 0.3},
-														
-														}
-														 */
-														
-													},
-													//t: 0.5,
-													debug: {
-									
-														probabilityDensity: false,
-														//probabilityDensity: [],
-														//testVertice: false,
-														
-													},
-													//debug: false,
-													//mode: 1,
-													settings: {
-														
-														object: {
 										
-															name: lang.arc,
-															color: 'magenta',//'yellow',
-															//color: 0x0000ff,//blue
-															geometry: {
-									
-																angles: angles,//[vertice, [3.8], oppositeVertice],
-									
-									/*
-																position: [
-																	//[-0.5, 0.5], [0.0, -0.6], [0.5, 0.7]
-																	//[0.0, -1.0], [0.8660254037844388, 0.5], [-0.8660254037844384, 0.5]//Triangle
-																	[-1, 0,], [0, 1], [-0.8660254037844384, 0.5]//Intersection test
-																],
-																position: { count: 3, },
-									*/							
-																/*
-																colors: [
-																	1, 0, 0,//red
-																	0, 1, 0,//green
-																	//0, 0, 1,//blue
-																	//0.6, 1, 0,
-																//	0, 0, 1,	0, 0.6, 1
-																],
-																*/
-																//opacity: [1, 0.5],
-																/*
-																indices: {
-																	
-																	//edges: { count: 5000 }
-																	//edges: [[0,1], [1,2], [2,0]],//triangle
-																
-																}
-																*/
-															
+										//Create arc between edge's vertices i.e between vertice and opposite vertice.
+										aAngleControls.createArc = () => {
+
+											const arcAngles = [],//массив вершин в полярной системе координат, которые образуют дугу
+												//если не копировать каждый угол в отделности, то в новой вершине останутся старые ребра
+												copyVertice = (vertice) => arcAngles.push(_this.vertice2angles(vertice)),
+												π = Math.PI,
+												arcVericesCount = 2,
+												d = π / arcVericesCount,
+												cd = 1 / Math.sin(d),//Поправка для координат вершин что бы они равномерно располагались по дуге
+												//Не получилось равномерно разделить дугу на части.
+												//Если начало и конец дуги расположены напротив друг друга на окружности или на сфере или на 4D hypersphere
+												//то все вершины стягиваются к началу и концу дуги за исключением вершины, расположенной посередине дуги
+												//Поэтому вершины на дуге получаю путем деления дуги на пополам. Полученные половинки снова делю пополам и т.д.
+												maxLevel = 4;//на сколько частей делить дугу.
+													//если maxLevel = 1 то дуга делится на 2 части с одной вершиной посередине
+													//если maxLevel = 2 то дуга делится на 4 части с тремя вершинами посередине
+													//если maxLevel = 3 то дуга делится на 8 частей с 7 вершинами посередине
+													//Таким образом дугу можно разделит только на 2 в степени maxLevel частей
+											let level = 1;//текущий уровень деления дуги
+											const vertice = position[aAngleControls.verticeId], oppositeVertice = position[aAngleControls.oppositeVerticeId];
+											copyVertice(vertice);
+											let i = 0;
+											let halfArcParams = { vertice: vertice, oppositeVertice: oppositeVertice, level: level };
+											if (aAngleControls.progressBar) aAngleControls.progressBar.boStop = true;
+											aAngleControls.progressBar = new ProgressBar(
+												undefined,//settings.options.renderer.domElement.parentElement,
+												(progressBar, index, callback) => {
+
+													if (progressBar.boStop) {
+
+														//Этот процес вычисления дуги нужно остановть потому что начался другой процесс вычисления дуги
+														progressBar.remove();
+														return;
+
+													}
+
+													progressBar.value = i;
+													i++;
+
+													//делить дугу на две части
+
+													if (callback) halfArcParams = callback;
+													const vertice = halfArcParams.vertice,
+														oppositeVertice = halfArcParams.oppositeVertice;
+													let level = halfArcParams.level;
+
+													const arcVerticeStep = [];//Шаги, с которым изменяются углы при построении дуги в полярной системе координат
+													for (let k = 0; k &lt; vertice.length; k++)
+														arcVerticeStep.push((oppositeVertice[k] - vertice[k]) / arcVericesCount);
+													const arcVerice = [];//Координаты вершины в полярной системе координат
+													for (let j = 0; j &lt; vertice.length; j++) arcVerice.push(vertice[j] + arcVerticeStep[j] * cd);
+													level++;
+													if (level &lt;= maxLevel) {
+
+														//если не делать это преобразование,
+														//то когда начало и конец дуги на ходятся на противоположных концах вселенной,
+														//средняя точка попадает в центр окружности или сферы или гиперсферы,
+														//а это находится вне вселенной.
+														//В этом случае все вершины дуги, кроме средней вершины, стягиваются к началу или концу дуги.
+														const halfVertice = _this.angles2Vertice(_this.vertice2angles(arcVerice));
+
+														progressBar.step({
+
+															vertice: vertice, oppositeVertice: halfVertice, level: level,
+															next: { vertice: halfVertice, oppositeVertice: oppositeVertice, level: level, next: halfArcParams.next }
+
+														});
+
+													} else {
+
+														if (halfArcParams.next)
+															progressBar.step(halfArcParams.next);
+														copyVertice(arcVerice);
+														copyVertice(oppositeVertice);
+														if (!halfArcParams.next) {
+
+															if (aAngleControls.arc) aAngleControls.arc.updateUniverse({ angles: arcAngles });
+															else {
+
+																const arcEdges = [];
+																for (let i = 0; i &lt; (arcAngles.length - 1); i++) arcEdges.push([i, i + 1]);
+																aAngleControls.arc = this.newUniverse(
+																	classSettings.settings.options,
+																	{
+
+																		cookieName: 'arc',//если не задать cookieName, то настройки дуги будут браться из настроек вселенной
+																		boRemove: false,
+																		boGui: false,
+																		edges: {
+
+																			project: true,//Если дуга создается в виде ребер, то отображать ребра на холсте
+																			creationMethod: Universe.edgesCreationMethod.Random,
+//																			boCurve: true,
+
+																		},
+																		//edges: false,
+																		projectParams: {
+
+																			scene: classSettings.projectParams.scene,
+
+																		},
+																		debug: {
+
+																			probabilityDensity: false,
+
+																		},
+																		//debug: false,
+																		settings: {
+
+																			object: {
+
+																				name: lang.arc,
+																				color: 'magenta',//'yellow',
+																				geometry: {
+
+																					angles: arcAngles,
+																					//opacity: [1, 0.5],
+																					indices: {
+
+																						/*
+																						edges: {
+																						
+																							count: 3,
+																					
+																						}
+																						*/
+																						edges: arcEdges,
+
+																					}
+
+																				}
+
+																			}
+
+																		},
+
+																	});
 															}
-									
+															progressBar.remove();
+															aAngleControls.progressBar = undefined;
+
 														}
-													
-													},
-													
-												});
-/*											
-											const arcWidth = 0.005;
-											let innerRadius = 1 + arcWidth, outerRadius = 1 - arcWidth,
-												thetaSegments = 360,
-												phiSegments = 1,
-												thetaStart = Math.PI / 2 - vertice.angles[0],
-												thetaLength = vertice.angles[0] > oppositeVertice.angles[0] ? distance : - distance;//Math.PI * 2;
-											aAngleControls.arc = new THREE.Mesh(new THREE.RingGeometry(innerRadius, outerRadius, thetaSegments, phiSegments, thetaStart, thetaLength),
-																		new THREE.MeshBasicMaterial( { color: 'yellow', side: THREE.DoubleSide } ));
-											scene.add(aAngleControls.arc);
-*/											
+
+													}
+//												halfArc(callback ? callback : halfArcParams);
+
+												}, {
+
+												sTitle: 'Long time iteration process',
+												max: maxLevel * maxLevel - 2,
+
+											});
 											
 										}
-										aAngleControls.distance(edge);
-/*										
-										//Distance between edge vertices i.e between vertice and opposite vertice.
-										aAngleControls.removeArc();
-										const vertice = position[aAngleControls.verticeId], distance = vertice.distanceTo(oppositeVertice);
-										const arcWidth = 0.005;
-										let innerRadius = 1 + arcWidth, outerRadius = 1 - arcWidth,
-											thetaSegments = 360,
-											phiSegments = 1,
-											thetaStart = Math.PI / 2 - vertice.angles[0],
-											thetaLength = vertice.angles[0] > oppositeVertice.angles[0] ? distance : - distance;//Math.PI * 2;
-										aAngleControls.arc = new THREE.Mesh(new THREE.RingGeometry(innerRadius, outerRadius, thetaSegments, phiSegments, thetaStart, thetaLength),
-																	new THREE.MeshBasicMaterial( { color: 'yellow', side: THREE.DoubleSide } ));
-										scene.add(aAngleControls.arc);
-*/										
+										aAngleControls.createArc();
 										
 									}
 					
@@ -1720,16 +1688,11 @@ class Universe {
 					} else {
 						
 						settings.scene = scene;
-						if ((settings.object.geometry.indices.edges.length === 0)
-//							&amp;&amp; (classSettings.edges instanceof Array === false)
-						) this.pushEdges();
+						if ((settings.object.geometry.indices.edges.length === 0)) this.pushEdges();
 						else {
 							
 							if ((settings.object.geometry.position[0].length > 3 ) &amp;&amp; (!settings.object.color)) settings.object.color = {};//Color of vertice from palette
-//settings.object.geometry.indices = undefined;
-//settings.object.geometry.indices.boAddIndices = false;
 							nd = new ND(this.dimension, settings);
-//nd.object3D.geometry.index = null;
 			
 							params.center = params.center || {}
 							nd.object3D.position.x = params.center.x || 0;
@@ -1790,7 +1753,6 @@ class Universe {
 						if (
 							(classSettings.settings.object.color != undefined) &amp;&amp;
 							(typeof classSettings.settings.object.color != "object")
-							//&amp;&amp; (classSettings.settings.object.geometry.position[0].length &lt; 4)//цвет для всех вершин одновременно задается только если коодинаты вершин не содержат индекс цвета палитры. Другими словами если нет координаты w
 						) {
 
 							const color = new three.THREE.Color(classSettings.settings.object.color);
@@ -1802,7 +1764,6 @@ class Universe {
 							
 							pointsOptions: {
 								
-								//shaderMaterial: false,
 								name: settings.object.name,
 								color: settings.object.color,
 								colors: settings.object.geometry.colors,
@@ -2075,6 +2036,7 @@ class Universe {
 								let oppositeVerticeId = verticeId + 1;
 								if (oppositeVerticeId >= position.length) {
 
+/*
 									if (classSettings.edges.boCurve) {
 
 										//Это кривая. Не надо соединять последнюю вершину с первой
@@ -2082,6 +2044,7 @@ class Universe {
 										return;
 
 									}
+*/
 									oppositeVerticeId = 0;
 
 								}
@@ -2157,8 +2120,9 @@ class Universe {
 
 				}
 
-				if (classSettings.edges
-//					&amp;&amp; (classSettings.edges instanceof Array === false)
+				if (
+					classSettings.edges &amp;&amp;
+					(classSettings.settings.object.geometry.indices.edges.length === 0)//ребер нет
 				) this.pushEdges();//Для экономии времени не добавляю ребра если на холст вывожу только вершины
 				else if (this.classSettings.projectParams) this.project(this.classSettings.projectParams.scene, this.classSettings.projectParams.params);
 				
@@ -2327,7 +2291,7 @@ const _display = (element, boDisplay) => { element.style.display = boDisplay ===
 <br class="clear">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 3.6.11</a> on Tue Dec 26 2023 12:22:01 GMT+0700 (Красноярск, стандартное время)
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 3.6.11</a> on Fri Jan 12 2024 09:12:36 GMT+0700 (Красноярск, стандартное время)
 </footer>
 
 <script> prettyPrint(); </script>
