@@ -908,12 +908,14 @@ class Universe {
 					case 'setVertices': return () => {
 
 						if (_edges.length > 0) _this.boTestVertice = false;
+						/*пока что это не нужно
 						_edges.forEach((edge, edgeId) => {
 
 							setVertice(edge, undefined, edge[0], edgeId);
 							setVertice(edge, undefined, edge[1], edgeId);
 							
 						})
+						*/
 
 					}
 					case 'push': return (edge=[]) => {
