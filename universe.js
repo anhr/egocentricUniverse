@@ -218,6 +218,7 @@ class Universe {
 		return φ;
 
 	}
+	//* @param { boolean } [classSettings.edges.boCurve] true - Chain of vertices connected by edges.First vertice is not connected with last vertice.
 
 	/**
 	 * Base class for n dimensional universe.
@@ -249,7 +250,6 @@ class Universe {
 	 *	false - Doesn't create edges to reduce the creation time of the universe
 	 * </pre>
 	 * @param {boolean} [classSettings.edges.project=true] false - Doesn't project edges onto canvas
-	 * @param {boolean} [classSettings.edges.boCurve] true - Chain of vertices connected by edges. First vertice is not connected with last vertice.
 	 * @param {enum} [classSettings.edges.creationMethod=edgesCreationMethod.NearestVertice] method for creating edges. See <a href="./module-Universe-Universe.html#.edgesCreationMethod" target="_blank">edgesCreationMethod</a>
 	 * @param {object} [classSettings.settings] The following settings are available
 	 * @param {object} [classSettings.settings.object] Universe object.
@@ -406,11 +406,9 @@ class Universe {
 		if (options.dat) options.dat.cookie.getObject(this.cookieName, cookieOptions);
 
 		let edgesOld = cookieOptions.edgesOld || { project: true, };
-//		if (classSettings.edges instanceof Array === false) {
-		const boCurve = classSettings.edges.boCurve;
+//		const boCurve = classSettings.edges.boCurve;
 		classSettings.edges = cookieOptions.edges === false ? false : cookieOptions.edges || classSettings.edges;
-		if (boCurve) classSettings.edges.boCurve = boCurve;
-//		}
+//		if (boCurve) classSettings.edges.boCurve = boCurve;
 		if (classSettings.edges != false) classSettings.edges = classSettings.edges || {};
 		if ((classSettings.edges != false) && (classSettings.edges.project === undefined)) classSettings.edges.project = true;
 
@@ -1469,7 +1467,7 @@ class Universe {
 
 																			project: true,//Если дуга создается в виде ребер, то отображать ребра на холсте
 																			creationMethod: Universe.edgesCreationMethod.Random,
-																			boCurve: true,
+//																			boCurve: true,
 
 																		},
 																		//edges: false,
@@ -2010,6 +2008,7 @@ class Universe {
 								let oppositeVerticeId = verticeId + 1;
 								if (oppositeVerticeId >= position.length) {
 
+/*
 									if (classSettings.edges.boCurve) {
 
 										//Это кривая. Не надо соединять последнюю вершину с первой
@@ -2017,6 +2016,7 @@ class Universe {
 										return;
 
 									}
+*/
 									oppositeVerticeId = 0;
 
 								}
