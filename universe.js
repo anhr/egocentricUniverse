@@ -1010,7 +1010,8 @@ class Universe {
 			let nd, myPoints;
 			const aAngleControls = [];
 
-			this.opacityObject3D = (object3D, transparent, opacity = 0.3) => {
+			this.objectOpacity = 0.3;
+			this.opacityObject3D = (object3D, transparent, opacity = this.objectOpacity) => {
 
 				object3D.material.transparent = transparent;
 				object3D.material.opacity = transparent ? opacity : 1;
@@ -1019,8 +1020,13 @@ class Universe {
 			}
 			this.opacity = (transparent, opacity) => {
 
-				if (!nd) return;
-				this.opacityObject3D(nd.object3D, transparent, opacity)
+				if (!nd) {
+					
+					myPoints.userData.opacity(transparent ? this.objectOpacity : 1);
+					return;
+
+				}
+				this.opacityObject3D(nd.object3D, transparent, opacity);
 					
 			}
 
@@ -1335,11 +1341,13 @@ class Universe {
 										aAngleControls.cross = undefined;
 										
 									}
+									let boTransparent;
 									if (edgeId === -1) {
 										
 										aAngleControls.removeCross();
 										aAngleControls.removeArc();
 										aEdgeAngleControls.verticeId = undefined;
+										boTransparent = false;
 										
 									} else {
 										
@@ -1470,7 +1478,7 @@ class Universe {
 //																			boCurve: true,
 
 																		},
-																		//edges: false,
+																		edges: false,
 																		projectParams: {
 
 																			scene: classSettings.projectParams.scene,
@@ -1530,8 +1538,11 @@ class Universe {
 											
 										}
 										aAngleControls.createArc();
+										boTransparent = true;
 										
 									}
+									_this.opacity(boTransparent);
+
 					
 								});
 								aAngleControls.cEdges.__select[0].selected = true;
