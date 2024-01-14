@@ -1018,11 +1018,11 @@ class Universe {
 				object3D.material.needsUpdate = true;//for THREE.REVISION = "145dev"
 					
 			}
-			this.opacity = (transparent, opacity) => {
+			this.opacity = (transparent = true, opacity = this.objectOpacity) => {
 
 				if (!nd) {
 					
-					myPoints.userData.opacity(transparent ? this.objectOpacity : 1);
+					myPoints.userData.opacity(transparent ? opacity : 1);
 					return;
 
 				}
@@ -1246,6 +1246,9 @@ class Universe {
 								
 									middleVertice: 'Middle vertice',
 									middleVerticeTitle: 'Find middle vertice between opposite vertices.',
+
+									planes: 'Planes',
+									planesTitle: 'Planes of rotation of angles.',
 									
 									defaultButton: 'Default',
 									defaultAnglesTitle: 'Restore default angles.',
@@ -1277,6 +1280,9 @@ class Universe {
 
 										lang.middleVertice = 'Средняя';
 										lang.middleVerticeTitle = 'Найти среднюю вершину между противоположными вершинами.';
+
+										lang.planes = 'Плоскости';
+										lang.planesTitle = 'Плоскости вращения углов.';
 
 										lang.defaultButton = 'Восстановить';
 										lang.defaultAnglesTitle = 'Восстановить углы по умолчанию';
@@ -1636,6 +1642,103 @@ class Universe {
 									
 								} );
 								dat.controllerNameAndTitle(aAngleControls.cMiddleVertice, lang.middleVertice, lang.middleVerticeTitle);
+
+								//Planes of rotation of angles.
+
+								let boPlanes;
+								aAngleControls.cPlanes = fAdvansed.add({ boPlanes: false }, 'boPlanes').onChange((boPlanes) => {
+
+									if (aAngleControls.planes) aAngleControls.planes.forEach((plane) => plane.removeUniverse())
+									aAngleControls.planes = [];
+									
+									if (!boPlanes) return;
+
+									const π = Math.PI;
+									position.angles[aAngleControls.verticeId].forEach((verticeAngle, verticeAngleId) => {
+
+										const planeAngles = [];
+										for (let i = 0; i < 2 * π; i = i + (π / 20) ) {
+
+											const planeAngle = [];
+											position.angles[aAngleControls.verticeId].forEach((verticeAngle) => planeAngle.push(verticeAngle));
+											planeAngle[verticeAngleId] = i;
+											planeAngles.push(planeAngle);
+/*											
+											planeAngles.push([
+//												verticeAngle,
+											i]);
+*/											
+
+										}
+										if (aAngleControls.planes[verticeAngleId]) aAngleControls.planes[verticeAngleId].updateUniverse({ angles: planeAngles });
+										else {
+
+											const planeEdges = [];
+											for (let i = 0; i < (planeAngles.length - 1); i++) planeEdges.push([i, i + 1]);
+											planeEdges.push([planeAngles.length - 1, 0]);
+											aAngleControls.planes[verticeAngleId] = this.newUniverse(
+												classSettings.settings.options,
+												{
+
+													cookieName: 'plane_' + verticeAngleId,//если не задать cookieName, то настройки дуги будут браться из настроек вселенной
+													boRemove: false,
+													boGui: false,
+													edges: {
+
+														project: true,//Если дуга создается в виде ребер, то отображать ребра на холсте
+														creationMethod: Universe.edgesCreationMethod.Random,
+//																			boCurve: true,
+
+													},
+													//edges: false,
+													projectParams: {
+
+														scene: classSettings.projectParams.scene,
+
+													},
+													debug: {
+
+														probabilityDensity: false,
+
+													},
+													debug: false,
+													settings: {
+
+														object: {
+
+															name: lang.planes + '_' + verticeAngleId,
+															color: 'white',
+															geometry: {
+
+																angles: planeAngles,
+																opacity: 0.3,//[1, 0.5],
+																indices: {
+
+																	/*
+																	edges: {
+																	
+																		count: 3,
+																
+																	}
+																	*/
+																	edges: planeEdges,
+
+																}
+
+															}
+
+														}
+
+													},
+
+												});
+											aAngleControls.planes[verticeAngleId].opacity();
+										}
+										
+									});
+
+								});
+								dat.controllerNameAndTitle(aAngleControls.cPlanes, lang.planes, lang.planesTitle);
 								
 								return fAdvansed;
 	
