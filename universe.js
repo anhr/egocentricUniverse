@@ -1099,7 +1099,7 @@ class Universe {
 				const points = nd && (nd.object3D.visible === true) ? nd.object3D : myPoints,
 					vertice = settings.object.geometry.position[verticeId],
 					itemSize = points.geometry.attributes.position.itemSize;
-				for (let axesId = 0; axesId < itemSize; axesId++)
+				if (verticeId != undefined) for (let axesId = 0; axesId < itemSize; axesId++)
 					points.geometry.attributes.position.array [axesId + verticeId * itemSize] = vertice[axesId] != undefined ? vertice[axesId] : 0.0;
 				points.geometry.attributes.position.needsUpdate = true;
 				if (settings.options.axesHelper)
@@ -1128,6 +1128,8 @@ class Universe {
 					}
 					
 					if (aAngleControls.arc) aAngleControls.createArc();
+					
+					if (aAngleControls.planes) aAngleControls.planes.update(vertice);
 
 				}
 				
@@ -1645,13 +1647,17 @@ class Universe {
 
 								//Planes of rotation of angles.
 
-								let boPlanes;
+//								let boPlanes;
 								aAngleControls.cPlanes = fAdvansed.add({ boPlanes: false }, 'boPlanes').onChange((boPlanes) => {
 
-									if (aAngleControls.planes) aAngleControls.planes.forEach((plane) => plane.removeUniverse())
-									aAngleControls.planes = [];
 									
-									if (!boPlanes) return;
+									if (!boPlanes) {
+										
+										if (aAngleControls.planes) aAngleControls.planes.forEach((plane) => plane.removeUniverse())
+										aAngleControls.planes = undefined;
+										return;
+
+									}
 
 									const π = Math.PI;
 									position.angles[aAngleControls.verticeId].forEach((verticeAngle, verticeAngleId) => {
@@ -1670,12 +1676,22 @@ class Universe {
 */											
 
 										}
-										if (aAngleControls.planes[verticeAngleId]) aAngleControls.planes[verticeAngleId].updateUniverse({ angles: planeAngles });
+										if (aAngleControls.planes && aAngleControls.planes[verticeAngleId]) aAngleControls.planes[verticeAngleId].updateUniverse({ angles: planeAngles });
 										else {
 
 											const planeEdges = [];
 											for (let i = 0; i < (planeAngles.length - 1); i++) planeEdges.push([i, i + 1]);
 											planeEdges.push([planeAngles.length - 1, 0]);
+											if (!aAngleControls.planes) {
+												
+												aAngleControls.planes = [];
+												aAngleControls.planes.update = (vertice) => {
+
+													aAngleControls.planes.forEach((plane, planeId) => plane.updatePlane(vertice));
+													
+												}
+
+											}
 											aAngleControls.planes[verticeAngleId] = this.newUniverse(
 												classSettings.settings.options,
 												{
@@ -1732,7 +1748,30 @@ class Universe {
 													},
 
 												});
-											aAngleControls.planes[verticeAngleId].opacity();
+											const plane = aAngleControls.planes[verticeAngleId];
+											plane.opacity();
+											plane.updatePlane = (vertice) => {
+
+//												plane.isUpdate = false;
+												const planeAngles = [];
+												plane.classSettings.settings.object.geometry.angles.forEach((verticeAngles) => {
+
+													const angles = [];
+													verticeAngles.forEach((angle, angleId) => {
+
+														angles.push(angleId != verticeAngleId ? vertice.angles[angleId] : angle);
+//														if (angleId != verticeAngleId) verticeAngles[angleId] = vertice.angles[angleId];
+														
+													});
+													planeAngles.push(angles);
+													
+												});
+//												plane.isUpdate = true;
+												plane.updateUniverse({ angles: planeAngles });
+//												plane.update();
+												
+											}
+											
 										}
 										
 									});
