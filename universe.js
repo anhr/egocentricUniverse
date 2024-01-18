@@ -1185,7 +1185,7 @@ class Universe {
 
 								for (let i = (aAngleControls.cEdges.__select.length - 1); i > 0; i--)
 									aAngleControls.cEdges.__select.remove(i);
-console.log(typeof fOppositeVertice)
+								_display(aAngleControls.fOppositeVertice.domElement, false);
 
 								const edges = settings.object.geometry.indices.edges;
 								angles.edges.forEach(edgeId => {
@@ -1350,7 +1350,7 @@ console.log(typeof fOppositeVertice)
 								aAngleControls.cEdges = fAdvansed.add({ Edges: lang.notSelected }, 'Edges', { [lang.notSelected]: -1 }).onChange((edgeId) => {
 
 									edgeId = parseInt(edgeId);
-									_display(fOppositeVertice.domElement, edgeId === -1 ? false : true);
+									_display(aAngleControls.fOppositeVertice.domElement, edgeId === -1 ? false : true);
 									aAngleControls.removeArc = () => {
 
 										if (aAngleControls.arc && aAngleControls.arc.removeUniverse) aAngleControls.arc.removeUniverse();
@@ -1570,10 +1570,11 @@ console.log(typeof fOppositeVertice)
 								aAngleControls.cEdges.__select[0].selected = true;
 								dat.controllerNameAndTitle(aAngleControls.cEdges, lang.edges, lang.edgesTitle);
 								const aEdgeAngleControls = [],
-									fOppositeVertice = fAdvansed.addFolder(lang.oppositeVertice),
+//									fOppositeVertice = fAdvansed.addFolder(lang.oppositeVertice),
 									edgeAnglesDefault = [];
-								_display(fOppositeVertice.domElement, false);
-								createAnglesControls(fOppositeVertice, aEdgeAngleControls, edgeAnglesDefault);
+								aAngleControls.fOppositeVertice = fAdvansed.addFolder(lang.oppositeVertice);
+								_display(aAngleControls.fOppositeVertice.domElement, false);
+								createAnglesControls(aAngleControls.fOppositeVertice, aEdgeAngleControls, edgeAnglesDefault);
 
 								let itemSize;
 								const vertices = [],
