@@ -1662,7 +1662,6 @@ class Universe {
 
 								//Planes of rotation of angles.
 
-//								let boPlanes;
 								aAngleControls.cPlanes = fAdvansed.add({ boPlanes: false }, 'boPlanes').onChange((boPlanes) => {
 
 									
