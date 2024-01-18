@@ -518,7 +518,7 @@ class Universe {
 								if (verticeAngles[angleId] != value) {
 
 									verticeAngles[angleId] = value;
-									_this.update(verticeId);
+//									_this.update(verticeId);
 
 								}
 
@@ -1068,13 +1068,18 @@ class Universe {
 				if (nd && nd.object3D) object = nd.object3D;
 				else if (myPoints) object = myPoints;
 				object.geometry.attributes.position.count = values.angles.length;
+				const itemSize = object.geometry.attributes.position.itemSize;
 				values.angles.forEach((angles, i) => {
 					
 					for (let j = 0; j < (_this.dimension - 1); j++) 
-						settings.object.geometry.angles[i][j] = angles[j] != undefined? angles[j] : 0.0
+						settings.object.geometry.angles[i][j] = angles[j] != undefined? angles[j] : 0.0;
+					for (let j = 0; j < itemSize; j++) 
+						object.geometry.attributes.position.array [j + i * itemSize] = settings.object.geometry.position[i][j];
+
 					
 				});
 				object.geometry.attributes.position.needsUpdate = true;
+				_this.logUniverse();
 
 			}
 			this.removeMesh = () => {
@@ -1193,6 +1198,7 @@ class Universe {
 								});
 								
 								aAngleControls.verticeId = verticeId;
+								_this.isUpdate = false;
 								for (let i = 0; i < angles.length; i++){
 
 									const angle = angles[i];
@@ -1200,6 +1206,7 @@ class Universe {
 									anglesDefault.push(angle);
 									
 								}
+								this.isUpdate = true;
 /*непонятно почему не поучается если в массисве углов вершины не хватает угла								
 								angles.forEach((angle, i) => {
 
@@ -1220,6 +1227,7 @@ class Universe {
 									};
 								resetControl(aAngleControls.cHighlightEdges);
 								resetControl(aAngleControls.cMiddleVertice);
+								resetControl(aAngleControls.cPlanes);
 
 								if (aAngleControls.removeCross) aAngleControls.removeCross();
 								
@@ -1310,8 +1318,12 @@ class Universe {
 									dat.folderNameAndTitle(fAngles, lang.angles, lang.anglesTitle);
 									for (let i = 0; i < (_this.dimension - 1); i++) {
 	
-										const cAngle = fAngles.add({ angle: 0, }, 'angle', -Math.PI, Math.PI, 2 * Math.PI / 360).onChange((angle) =>
-											settings.object.geometry.angles[aAngleControls.verticeId][i] = angle);
+										const cAngle = fAngles.add({ angle: 0, }, 'angle', -Math.PI, Math.PI, 2 * Math.PI / 360).onChange((angle) => {
+											
+											settings.object.geometry.angles[aAngleControls.verticeId][i] = angle;
+											_this.update(aAngleControls.verticeId);
+
+										});
 										dat.controllerNameAndTitle(cAngle, lang.angle + ' ' + i);
 										aAngleControls.push(cAngle);
 										
