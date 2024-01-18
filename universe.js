@@ -1683,11 +1683,6 @@ class Universe {
 											position.angles[aAngleControls.verticeId].forEach((verticeAngle) => planeAngle.push(verticeAngle));
 											planeAngle[verticeAngleId] = i;
 											planeAngles.push(planeAngle);
-/*											
-											planeAngles.push([
-//												verticeAngle,
-											i]);
-*/											
 
 										}
 										if (aAngleControls.planes && aAngleControls.planes[verticeAngleId]) aAngleControls.planes[verticeAngleId].updateUniverse({ angles: planeAngles });
