@@ -1185,6 +1185,7 @@ class Universe {
 
 								for (let i = (aAngleControls.cEdges.__select.length - 1); i > 0; i--)
 									aAngleControls.cEdges.__select.remove(i);
+console.log(typeof fOppositeVertice)
 
 								const edges = settings.object.geometry.indices.edges;
 								angles.edges.forEach(edgeId => {
@@ -1230,6 +1231,7 @@ class Universe {
 								resetControl(aAngleControls.cPlanes);
 
 								if (aAngleControls.removeCross) aAngleControls.removeCross();
+								if (aAngleControls.removeArc) aAngleControls.removeArc();
 								
 							},
 							addControllers: (fParent) => {
