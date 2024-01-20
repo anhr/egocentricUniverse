@@ -23,7 +23,28 @@ import three from '../../commonNodeJS/master/three.js'
 class Universe2D extends Universe1D {
 
 	//base methods
-	
+
+	get axes() { return {
+
+			//Меняем местами оси y и z что бы углы поворота вершины совпадали с широтой и долготой земного шара
+			swap: (vertice) => {
+
+				const length = vertice.length, axis = vertice[length - 1];
+				vertice[length - 1] = vertice[length - 2];
+				vertice[length - 2] = axis;
+
+			},
+			restore: (vertice) => {
+
+				const axis = vertice[0];
+				vertice[0] = vertice[1];
+				vertice[1] = axis;
+
+			},
+
+		}
+
+	}
 	newUniverse(options, classSettings) { return new Universe2D(options, classSettings); }
 	get cookieName(){ return '2DUniverse' + (this.classSettings.cookieName ? '_' + this.classSettings.cookieName : ''); }
 	get probabilityDensity() {

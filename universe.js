@@ -169,6 +169,12 @@ class Universe {
 				x.push(axis);
 
 			}
+			if (this.axes) this.axes.swap(x);
+/*			
+			const axis = x[x.length - 1];
+			x[x.length - 1] = x[x.length - 2];
+			x[x.length - 2] = axis;
+*/			
 			return x;
 
 		}
@@ -197,6 +203,12 @@ class Universe {
 
 		//меняем местами оси координат, потому что в 3D последняя кооддината должна указывать на цвет точки
 		for (let k = (vertice.length - 1); k >= 0; k--) x.push(vertice[k]);
+		if (this.axes) this.axes.restore(x);
+/*		
+		const axis = x[0];
+		x[0] = x[1];
+		x[1] = axis;
+*/		
 		
 		for (let i = 0; i < n; i++) {
 

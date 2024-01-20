@@ -25,6 +25,26 @@ class Universe3D extends Universe2D {
 
 	//base methods
 
+	get axes() { return {
+
+			swap: (vertice) => {
+	
+				const length = vertice.length, axis = vertice[length - 2];
+				vertice[length - 2] = vertice[length - 3];
+				vertice[length - 3] = axis;
+				
+			},
+			restore: (vertice) => {
+
+				const axis = vertice[1];
+				vertice[1] = vertice[2];
+				vertice[2] = axis;
+				
+			},
+
+		}
+		
+	}
 	newUniverse(options, classSettings) { return new Universe3D(options, classSettings); }
 	get cookieName(){ return '3DUniverse' + (this.classSettings.cookieName ? '_' + this.classSettings.cookieName : ''); }
 	setW() {
