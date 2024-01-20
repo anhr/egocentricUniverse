@@ -1141,6 +1141,64 @@ class Universe {
 			}
 			this.projectGeometry = () => {
 
+				this.line = (settings) => {
+					
+					return this.newUniverse(
+						classSettings.settings.options,
+						{
+	
+							cookieName: settings.cookieName,
+							boRemove: false,
+							boGui: false,
+							edges: settings.edges === undefined? {
+	
+								project: true,//Если линия создается в виде ребер, то отображать ребра на холсте
+								creationMethod: Universe.edgesCreationMethod.Random,
+	
+							} : settings.edges,
+							projectParams: {
+	
+								scene: classSettings.projectParams.scene,
+	
+							},
+							debug: {
+	
+								probabilityDensity: false,
+	
+							},
+							debug: false,
+							settings: {
+	
+								object: {
+	
+									name: settings.object.name,
+									color: settings.object.color,
+									geometry: {
+	
+										angles: settings.object.geometry.angles,
+										opacity: settings.object.geometry.opacity,
+										indices: {
+	
+											/*
+											edges: {
+											
+												count: 3,
+										
+											}
+											*/
+											edges: settings.object.geometry.indices.edges,
+	
+										}
+	
+									}
+	
+								}
+	
+							},
+	
+						});
+					
+				}
 				const intersection = (parent) => {
 
 					if (!classSettings.intersection) return;
@@ -1486,6 +1544,30 @@ class Universe {
 
 																const arcEdges = [];
 																for (let i = 0; i < (arcAngles.length - 1); i++) arcEdges.push([i, i + 1]);
+																aAngleControls.arc = this.line({
+					
+																	cookieName: 'arc',//если не задать cookieName, то настройки дуги будут браться из настроек вселенной
+																	edges: false,
+																	object : {
+																		
+																		name: lang.arc,
+																		color: 'magenta',//'yellow',
+																		geometry: {
+										
+																			angles: arcAngles,
+																			//opacity: 0.3,
+																			indices: {
+										
+																				edges: arcEdges,
+					
+																			}
+																			
+																		}
+					
+																	},
+																	
+																});
+/*																
 																aAngleControls.arc = this.newUniverse(
 																	classSettings.settings.options,
 																	{
@@ -1524,13 +1606,6 @@ class Universe {
 																					//opacity: [1, 0.5],
 																					indices: {
 
-																						/*
-																						edges: {
-																						
-																							count: 3,
-																					
-																						}
-																						*/
 																						edges: arcEdges,
 
 																					}
@@ -1542,6 +1617,7 @@ class Universe {
 																		},
 
 																	});
+*/																
 															}
 															progressBar.remove();
 															aAngleControls.progressBar = undefined;
@@ -1701,62 +1777,28 @@ class Universe {
 												}
 
 											}
-											aAngleControls.planes[verticeAngleId] = this.newUniverse(
-												classSettings.settings.options,
-												{
+											aAngleControls.planes[verticeAngleId] = this.line({
 
-													cookieName: 'plane_' + verticeAngleId,//если не задать cookieName, то настройки дуги будут браться из настроек вселенной
-													boRemove: false,
-													boGui: false,
-													edges: {
-
-														project: true,//Если дуга создается в виде ребер, то отображать ребра на холсте
-														creationMethod: Universe.edgesCreationMethod.Random,
-//																			boCurve: true,
-
-													},
-													//edges: false,
-													projectParams: {
-
-														scene: classSettings.projectParams.scene,
-
-													},
-													debug: {
-
-														probabilityDensity: false,
-
-													},
-													debug: false,
-													settings: {
-
-														object: {
-
-															name: lang.planes + '_' + verticeAngleId,
-															color: 'white',
-															geometry: {
-
-																angles: planeAngles,
-																opacity: 0.3,//[1, 0.5],
-																indices: {
-
-																	/*
-																	edges: {
-																	
-																		count: 3,
-																
-																	}
-																	*/
-																	edges: planeEdges,
-
-																}
-
-															}
+												cookieName: 'plane_' + verticeAngleId,//если не задать cookieName, то настройки дуги будут браться из настроек вселенной
+												object : {
+													
+													name: lang.planes + '_' + verticeAngleId,
+													color: 'white',
+													geometry: {
+					
+														angles: planeAngles,
+														opacity: 0.3,
+														indices: {
+					
+															edges: planeEdges,
 
 														}
+														
+													}
 
-													},
-
-												});
+												},
+												
+											});
 											const plane = aAngleControls.planes[verticeAngleId];
 											plane.opacity();
 											plane.updatePlane = (vertice) => {
