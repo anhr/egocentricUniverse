@@ -139,10 +139,14 @@ class Universe {
 			const n = this.dimension, φ = angles, x = [], cos = Math.cos, sin = Math.sin;
 
 			//добавляем оси
+			
 			//поменял расположение осей в массиве x
 			//для того что бы в 3D последняя ось указывала на цвет точки
-			for (let i = n - 1; i >= 0; i--) {
+//			for (let i = n - 1; i >= 0; i--)
+//			for (let i = 0; i < n; i++)
+			for (let index = 0; index < n; index++) {
 
+				const i = this.axes.indices[index];
 				let axis = 1.0;
 
 				const mulCount = //количество множителей для данной оси
@@ -169,7 +173,7 @@ class Universe {
 				x.push(axis);
 
 			}
-			if (this.axes.swap) this.axes.swap(x);
+//			if (this.axes.swap) this.axes.swap(x);
 			return x;
 
 		}
@@ -197,8 +201,11 @@ class Universe {
 		const x = [], n = this.dimension - 1, φ = [], atan2 = Math.atan2, sqrt = Math.sqrt;
 
 		//меняем местами оси координат, потому что в 3D последняя кооддината должна указывать на цвет точки
-		for (let k = (vertice.length - 1); k >= 0; k--) x.push(vertice[k]);
-		if (this.axes.restore) this.axes.restore(x);
+//		for (let k = (vertice.length - 1); k >= 0; k--) x.push(vertice[k]);
+//		for (let k = 0; k < vertice.length; k++)
+		for (let index = 0; index < vertice.length; index++) x.push(vertice[this.axes.indices[index]]);
+
+//		if (this.axes.restore) this.axes.restore(x);
 		
 		for (let i = 0; i < n; i++) {
 

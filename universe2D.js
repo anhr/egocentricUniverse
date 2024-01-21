@@ -26,6 +26,10 @@ class Universe2D extends Universe1D {
 
 	get axes() { return {
 
+			//порядок размещения осей в декартовой системе координат
+			//нужно что бы широта была по оси y долгота по оси x
+			indices: [1, 0, 2],
+/*				
 			//Меняем местами оси y и z что бы углы поворота вершины совпадали с широтой и долготой земного шара
 			swap: (vertice) => {
 
@@ -41,6 +45,7 @@ class Universe2D extends Universe1D {
 				vertice[1] = axis;
 
 			},
+*/				
 			name: (i, getLanguageCode) => {
 
 				const lang = super.axes.names(getLanguageCode);
