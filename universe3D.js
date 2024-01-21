@@ -27,6 +27,14 @@ class Universe3D extends Universe2D {
 
 	get axes() { return {
 
+			//порядок размещения осей в декартовой системе координат
+			//нужно что бы широта двигалась по оси y а долгота вращалась вокруг y
+			indices: [3, 1, 2, 0],
+//			indices: [2, 3, 1, 0],//широта и долгота перепутаны. Высота работает
+//			indices: [3, 2, 1, 0],//широта и долгота перепутаны. Высота работает
+//			indices: [0, 1, 2, 3],широта и долгота перепутаны. Высота не работает
+//			indices: [1, 0, 3, 2],широта и долгота правильно. Высота не работает
+/*		
 			swap: (vertice) => {
 	
 				const length = vertice.length, axis = vertice[length - 2];
@@ -41,6 +49,7 @@ class Universe3D extends Universe2D {
 				vertice[2] = axis;
 				
 			},
+*/			
 			name: (i, getLanguageCode) => {
 
 				const lang = super.axes.names(getLanguageCode);
