@@ -18,7 +18,7 @@ import Universe1D from './universe1D.js';
 //import ProgressBar from '../../commonNodeJS/master/ProgressBar/ProgressBar.js'
 import three from '../../commonNodeJS/master/three.js'
 
-//const sUniverse2D = 'Universe2D';
+const sUniverse2D = 'Universe2D';
 
 class Universe2D extends Universe1D {
 
@@ -41,6 +41,42 @@ class Universe2D extends Universe1D {
 				vertice[1] = axis;
 
 			},
+			name: (i, getLanguageCode) => {
+
+				const lang = super.axes.names(getLanguageCode);
+/*				
+				//Localization
+				
+				const lang = {
+		
+					latitude: "latitude",
+					longitude: "longitude",
+		
+				};
+		
+				const _languageCode = getLanguageCode();
+		
+				switch (_languageCode) {
+		
+					case 'ru'://Russian language
+		
+						lang.latitude = 'широта';
+						lang.longitude = 'долгота';
+		
+						break;
+		
+				}
+*/				
+				switch(i) {
+
+					case 0: return lang.latitude;
+					case 1: return lang.longitude;
+					default: console.error(sUniverse2D + '.axes.name(' + i + '): Invalid index.')
+						
+				}
+				
+			},
+			names: (getLanguageCode) => { return super.axes.names(getLanguageCode); }
 
 		}
 

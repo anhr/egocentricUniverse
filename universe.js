@@ -169,7 +169,7 @@ class Universe {
 				x.push(axis);
 
 			}
-			if (this.axes) this.axes.swap(x);
+			if (this.axes.swap) this.axes.swap(x);
 /*			
 			const axis = x[x.length - 1];
 			x[x.length - 1] = x[x.length - 2];
@@ -203,7 +203,7 @@ class Universe {
 
 		//меняем местами оси координат, потому что в 3D последняя кооддината должна указывать на цвет точки
 		for (let k = (vertice.length - 1); k >= 0; k--) x.push(vertice[k]);
-		if (this.axes) this.axes.restore(x);
+		if (this.axes.restore) this.axes.restore(x);
 /*		
 		const axis = x[0];
 		x[0] = x[1];
@@ -1396,7 +1396,7 @@ class Universe {
 											_this.update(aAngleControls.verticeId);
 
 										});
-										dat.controllerNameAndTitle(cAngle, lang.angle + ' ' + i);
+										dat.controllerNameAndTitle(cAngle, _this.axes.name ? _this.axes.name(i, options.getLanguageCode) : lang.angle + ' ' + i);
 										aAngleControls.push(cAngle);
 										
 									}

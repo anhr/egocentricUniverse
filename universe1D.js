@@ -23,6 +23,39 @@ class Universe1D extends Universe {
 
 	//base methods
 
+	get axes() { return {
+
+			names: (getLanguageCode) => {
+
+				//Localization
+				
+				const lang = {
+		
+					latitude: 'latitude',
+					longitude: 'longitude',
+					altitude: 'altitude'
+		
+				};
+		
+				const _languageCode = getLanguageCode();
+		
+				switch (_languageCode) {
+		
+					case 'ru'://Russian language
+		
+						lang.latitude = 'широта';
+						lang.longitude = 'долгота';
+						lang.altitude = 'высота';
+						break;
+		
+				}
+				return lang;
+				
+			},
+
+		}
+
+	}
 	newUniverse(options, classSettings) { return new Universe1D(options, classSettings); }
 	get cookieName(){ return '1DUniverse' + (this.classSettings.cookieName ? '_' + this.classSettings.cookieName : ''); }
 	get probabilityDensity(){

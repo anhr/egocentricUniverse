@@ -19,7 +19,7 @@ import Universe2D from './universe2D.js';
 import three from '../../commonNodeJS/master/three.js'
 import FibonacciSphereGeometry from '../../commonNodeJS/master/FibonacciSphere/FibonacciSphereGeometry.js'
 
-//const sUniverse3D = 'Universe3D';
+const sUniverse3D = 'Universe3D';
 
 class Universe3D extends Universe2D {
 
@@ -39,6 +39,20 @@ class Universe3D extends Universe2D {
 				const axis = vertice[1];
 				vertice[1] = vertice[2];
 				vertice[2] = axis;
+				
+			},
+			name: (i, getLanguageCode) => {
+
+				const lang = super.axes.names(getLanguageCode);
+				
+				switch(i) {
+
+					case 0: return lang.altitude;
+					case 1: return lang.latitude;
+					case 2: return lang.longitude;
+					default: console.error(sUniverse3D + '.axes.name(' + i + '): Invalid index.')
+						
+				}
 				
 			},
 
