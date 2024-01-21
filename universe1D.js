@@ -25,6 +25,9 @@ class Universe1D extends Universe {
 
 	get axes() { return {
 
+			//порядок размещения осей в декартовой системе координат
+			//нужно что бы широта двигалась по оси y а долгота вращалась вокруг y
+			indices: [1, 0],
 			names: (getLanguageCode) => {
 
 				//Localization
