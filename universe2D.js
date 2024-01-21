@@ -44,29 +44,6 @@ class Universe2D extends Universe1D {
 			name: (i, getLanguageCode) => {
 
 				const lang = super.axes.names(getLanguageCode);
-/*				
-				//Localization
-				
-				const lang = {
-		
-					latitude: "latitude",
-					longitude: "longitude",
-		
-				};
-		
-				const _languageCode = getLanguageCode();
-		
-				switch (_languageCode) {
-		
-					case 'ru'://Russian language
-		
-						lang.latitude = 'широта';
-						lang.longitude = 'долгота';
-		
-						break;
-		
-				}
-*/				
 				switch(i) {
 
 					case 0: return lang.latitude;
