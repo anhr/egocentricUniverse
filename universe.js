@@ -680,6 +680,7 @@ class Universe {
 									
 
 							}
+							if (!isNaN(parseInt(name))) return vertice[name] === undefined ? 0 : vertice[name];
 							return vertice[name];
 
 						},
