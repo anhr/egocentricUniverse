@@ -527,7 +527,9 @@ class Universe {
 								if (verticeAngles[angleId] != value) {
 
 									verticeAngles[angleId] = value;
-//									_this.update(verticeId);
+									//если тут обновлять вселенную, то будет тратиться лишнее время, когда одновременно изменяется несколько вершин
+									//Сейчас я сначала изменяю все вершины, а потом обновляю вселенную
+									//_this.update(verticeId);
 
 								}
 
@@ -1078,6 +1080,13 @@ class Universe {
 				if (nd && nd.object3D) object = nd.object3D;
 				else if (myPoints) object = myPoints;
 				object.geometry.attributes.position.count = values.angles.length;
+/*				
+				if (object.geometry.attributes.ca) {
+					
+console.log('color ' + object.geometry.attributes.ca.array[0] + ' ' + object.geometry.attributes.ca.array[1] + ' ' + object.geometry.attributes.ca.array[2] + ' ' + object.geometry.attributes.ca.array[3] + ' ')
+
+				}
+*/				
 				const itemSize = object.geometry.attributes.position.itemSize;
 				values.angles.forEach((angles, i) => {
 					
@@ -1085,10 +1094,20 @@ class Universe {
 						settings.object.geometry.angles[i][j] = angles[j] != undefined? angles[j] : 0.0;
 					for (let j = 0; j < itemSize; j++) 
 						object.geometry.attributes.position.array [j + i * itemSize] = settings.object.geometry.position[i][j];
+					if (object.geometry.attributes.ca) {
+
+						const color = settings.options.palette.toColor(settings.object.geometry.position[i].w, settings.options.scales.w.min, settings.options.scales.w.max),
+							array = object.geometry.attributes.ca.array;
+						array[i * itemSize + 0] = color.r;
+						array[i * itemSize + 1] = color.g;
+						array[i * itemSize + 2] = color.b;
+	
+					}
 
 					
 				});
 				object.geometry.attributes.position.needsUpdate = true;
+				if (object.geometry.attributes.ca) object.geometry.attributes.ca.needsUpdate = true;
 				_this.logUniverse();
 
 			}
@@ -1166,11 +1185,7 @@ class Universe {
 								creationMethod: Universe.edgesCreationMethod.Random,
 	
 							} : settings.edges,
-							projectParams: {
-	
-								scene: classSettings.projectParams.scene,
-	
-							},
+							projectParams: { scene: classSettings.projectParams.scene, },
 							debug: {
 	
 								probabilityDensity: false,
@@ -1255,16 +1270,20 @@ class Universe {
 									aAngleControls.cEdges.__select.remove(i);
 								_display(aAngleControls.fOppositeVertice.domElement, false);
 
-								const edges = settings.object.geometry.indices.edges;
-								angles.edges.forEach(edgeId => {
+								if (angles.edges) {
 									
-									const opt = document.createElement('option'),
-										edge = edges[edgeId];
-									opt.innerHTML = '(' + edgeId + ') ' + verticeId + ', ' + (edge[0] === verticeId ? edge[1] : edge[1] === verticeId ? edge[0] : console.error(sUniverse + ': Vertice edges GUI. Invalid edge vertices: ' + edge));
-									opt.setAttribute('value', edgeId);
-									aAngleControls.cEdges.__select.appendChild(opt);
-									
-								});
+									const edges = settings.object.geometry.indices.edges;
+									angles.edges.forEach(edgeId => {
+										
+										const opt = document.createElement('option'),
+											edge = edges[edgeId];
+										opt.innerHTML = '(' + edgeId + ') ' + verticeId + ', ' + (edge[0] === verticeId ? edge[1] : edge[1] === verticeId ? edge[0] : console.error(sUniverse + ': Vertice edges GUI. Invalid edge vertices: ' + edge));
+										opt.setAttribute('value', edgeId);
+										aAngleControls.cEdges.__select.appendChild(opt);
+										
+									});
+
+								}
 								
 								aAngleControls.verticeId = verticeId;
 								_this.isUpdate = false;
@@ -1561,7 +1580,7 @@ class Universe {
 																	object : {
 																		
 																		name: lang.arc,
-																		color: 'magenta',//'yellow',
+//																		color: 'magenta',//'yellow',
 																		geometry: {
 										
 																			angles: arcAngles,
@@ -1827,9 +1846,7 @@ class Universe {
 													planeAngles.push(angles);
 													
 												});
-//												plane.isUpdate = true;
 												plane.updateUniverse({ angles: planeAngles });
-//												plane.update();
 												
 											}
 											
