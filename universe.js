@@ -1990,7 +1990,7 @@ for(let i = 0; i < points.length; i++) opacity.push(0.1);
 									intersection(points);
 								
 								},
-								shaderMaterial: false,
+								//shaderMaterial: false,
 							
 							},
 							options: settings.options,
