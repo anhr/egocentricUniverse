@@ -1094,20 +1094,26 @@ console.log('color ' + object.geometry.attributes.ca.array[0] + ' ' + object.geo
 						settings.object.geometry.angles[i][j] = angles[j] != undefined? angles[j] : 0.0;
 					for (let j = 0; j < itemSize; j++) 
 						object.geometry.attributes.position.array [j + i * itemSize] = settings.object.geometry.position[i][j];
-					if (object.geometry.attributes.ca) {
+					const attributes = object.geometry.attributes, colorAttribute = attributes.color || attributes.ca;
+					if (colorAttribute) {
 
-						const color = settings.options.palette.toColor(settings.object.geometry.position[i].w, settings.options.scales.w.min, settings.options.scales.w.max),
+						const color = settings.options.palette.toColor(settings.object.geometry.position[i].w, settings.options.scales.w.min, settings.options.scales.w.max);
+/*						
 							array = object.geometry.attributes.ca.array;
 						array[i * itemSize + 0] = color.r;
 						array[i * itemSize + 1] = color.g;
 						array[i * itemSize + 2] = color.b;
+*/						
+						colorAttribute.setX( i, color.r );
+						colorAttribute.setY( i, color.g );
+						colorAttribute.setZ( i, color.b );
 	
 					}
-
+					colorAttribute.needsUpdate = true;
 					
 				});
 				object.geometry.attributes.position.needsUpdate = true;
-				if (object.geometry.attributes.ca) object.geometry.attributes.ca.needsUpdate = true;
+//				if (object.geometry.attributes.ca) object.geometry.attributes.ca.needsUpdate = true;
 				_this.logUniverse();
 
 			}
@@ -1962,7 +1968,12 @@ console.log('color ' + object.geometry.attributes.ca.array[0] + ' ' + object.geo
 							classSettings.settings.options.setPalette(new ColorPicker.palette( { palette: [{ percent: 0, r: color.r * 255, g: color.g * 255, b: color.b * 255, },] } ));
 							
 						}
-				
+/*						
+console.error('debug');
+const opacity = [];
+for(let i = 0; i < points.length; i++) opacity.push(0.1);
+*/
+
 						MyPoints(points, scene, {
 							
 							pointsOptions: {
@@ -1971,13 +1982,15 @@ console.log('color ' + object.geometry.attributes.ca.array[0] + ' ' + object.geo
 								color: settings.object.color,
 								colors: settings.object.geometry.colors,
 								opacity: settings.object.geometry.opacity,
+//opacity: opacity,
 								onReady: (points) => {
 									
 									myPoints = points;
 									gui(myPoints);
 									intersection(points);
 								
-								}
+								},
+								shaderMaterial: false,
 							
 							},
 							options: settings.options,
