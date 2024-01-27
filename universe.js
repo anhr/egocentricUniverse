@@ -1092,11 +1092,9 @@ console.log('color ' + object.geometry.attributes.ca.array[0] + ' ' + object.geo
 					
 					for (let j = 0; j < (_this.dimension - 1); j++) 
 						settings.object.geometry.angles[i][j] = angles[j] != undefined? angles[j] : 0.0;
-/*					
 					for (let j = 0; j < itemSize; j++) 
 						object.geometry.attributes.position.array [j + i * itemSize] = settings.object.geometry.position[i][j];
-*/						
-					object.geometry.attributes.position.set(settings.object.geometry.position[i], i * itemSize);
+//					object.geometry.attributes.position.set(settings.object.geometry.position[i], i * itemSize);
 					const attributes = object.geometry.attributes, colorAttribute = attributes.color || attributes.ca;
 					if (colorAttribute) {
 
