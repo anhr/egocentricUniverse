@@ -1573,7 +1573,7 @@ class Universe {
 																aAngleControls.arc = this.line({
 					
 																	cookieName: 'arc',//если не задать cookieName, то настройки дуги будут браться из настроек вселенной
-																	//edges: false,
+																	edges: false,
 																	object : {
 																		
 																		name: lang.arc,
@@ -1965,7 +1965,7 @@ const opacity = [];
 for(let i = 0; i < points.length; i++) opacity.push(0.1);
 */
 
-						MyPoints(points, scene, {
+						new MyPoints(points, scene, {
 							
 							pointsOptions: {
 								
