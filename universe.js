@@ -1080,18 +1080,13 @@ class Universe {
 				if (nd && nd.object3D) object = nd.object3D;
 				else if (myPoints) object = myPoints;
 				object.geometry.attributes.position.count = values.angles.length;
-/*				
-				if (object.geometry.attributes.ca) {
-					
-console.log('color ' + object.geometry.attributes.ca.array[0] + ' ' + object.geometry.attributes.ca.array[1] + ' ' + object.geometry.attributes.ca.array[2] + ' ' + object.geometry.attributes.ca.array[3] + ' ')
-
-				}
-*/				
 				const itemSize = object.geometry.attributes.position.itemSize;
 				values.angles.forEach((angles, i) => {
 					
 					for (let j = 0; j < (_this.dimension - 1); j++) 
 						settings.object.geometry.angles[i][j] = angles[j] != undefined? angles[j] : 0.0;
+					object.userData.setPositionAttribute(settings.object.geometry.position, i);
+/*					
 					for (let j = 0; j < itemSize; j++) 
 						object.geometry.attributes.position.array [j + i * itemSize] = settings.object.geometry.position[i][j];
 //					object.geometry.attributes.position.set(settings.object.geometry.position[i], i * itemSize);
@@ -1099,18 +1094,13 @@ console.log('color ' + object.geometry.attributes.ca.array[0] + ' ' + object.geo
 					if (colorAttribute) {
 
 						const color = settings.options.palette.toColor(settings.object.geometry.position[i].w, settings.options.scales.w.min, settings.options.scales.w.max);
-/*						
-							array = object.geometry.attributes.ca.array;
-						array[i * itemSize + 0] = color.r;
-						array[i * itemSize + 1] = color.g;
-						array[i * itemSize + 2] = color.b;
-*/						
 						colorAttribute.setX( i, color.r );
 						colorAttribute.setY( i, color.g );
 						colorAttribute.setZ( i, color.b );
+						colorAttribute.needsUpdate = true;
 	
 					}
-					colorAttribute.needsUpdate = true;
+*/					
 					
 				});
 				object.geometry.attributes.position.needsUpdate = true;
