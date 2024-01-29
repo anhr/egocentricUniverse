@@ -1086,7 +1086,7 @@ class Universe {
 					for (let j = 0; j < (_this.dimension - 1); j++) 
 						settings.object.geometry.angles[i][j] = angles[j] != undefined? angles[j] : 0.0;
 //					object.userData.setPositionAttribute(settings.object.geometry.position, i);
-					object.userData.setPositionAttribute(i, settings.object);
+					object.userData.setPositionAttribute(i);
 					
 				});
 				object.geometry.attributes.position.needsUpdate = true;
@@ -1959,7 +1959,6 @@ for(let i = 0; i < points.length; i++) opacity.push(0.1);
 								color: settings.object.color,
 								colors: settings.object.geometry.colors,
 								opacity: settings.object.geometry.opacity,
-//opacity: opacity,
 								onReady: (points) => {
 									
 									myPoints = points;
@@ -1971,6 +1970,7 @@ for(let i = 0; i < points.length; i++) opacity.push(0.1);
 							
 							},
 							options: settings.options,
+							object: settings.object,
 							
 						});
 		
