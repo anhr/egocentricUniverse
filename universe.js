@@ -1085,22 +1085,8 @@ class Universe {
 					
 					for (let j = 0; j < (_this.dimension - 1); j++) 
 						settings.object.geometry.angles[i][j] = angles[j] != undefined? angles[j] : 0.0;
-					object.userData.setPositionAttribute(settings.object.geometry.position, i);
-/*					
-					for (let j = 0; j < itemSize; j++) 
-						object.geometry.attributes.position.array [j + i * itemSize] = settings.object.geometry.position[i][j];
-//					object.geometry.attributes.position.set(settings.object.geometry.position[i], i * itemSize);
-					const attributes = object.geometry.attributes, colorAttribute = attributes.color || attributes.ca;
-					if (colorAttribute) {
-
-						const color = settings.options.palette.toColor(settings.object.geometry.position[i].w, settings.options.scales.w.min, settings.options.scales.w.max);
-						colorAttribute.setX( i, color.r );
-						colorAttribute.setY( i, color.g );
-						colorAttribute.setZ( i, color.b );
-						colorAttribute.needsUpdate = true;
-	
-					}
-*/					
+//					object.userData.setPositionAttribute(settings.object.geometry.position, i);
+					object.userData.setPositionAttribute(i, settings.object);
 					
 				});
 				object.geometry.attributes.position.needsUpdate = true;
