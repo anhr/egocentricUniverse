@@ -1559,7 +1559,7 @@ class Universe {
 																aAngleControls.arc = this.line({
 					
 																	cookieName: 'arc',//если не задать cookieName, то настройки дуги будут браться из настроек вселенной
-																	edges: false,
+																	//edges: false,
 																	object : {
 																		
 																		name: lang.arc,
@@ -1945,11 +1945,6 @@ class Universe {
 							classSettings.settings.options.setPalette(new ColorPicker.palette( { palette: [{ percent: 0, r: color.r * 255, g: color.g * 255, b: color.b * 255, },] } ));
 							
 						}
-/*						
-console.error('debug');
-const opacity = [];
-for(let i = 0; i < points.length; i++) opacity.push(0.1);
-*/
 
 						new MyPoints(points, scene, {
 							
@@ -1970,7 +1965,7 @@ for(let i = 0; i < points.length; i++) opacity.push(0.1);
 							
 							},
 							options: settings.options,
-							object: settings.object,
+//							object: settings.object,
 							
 						});
 		
