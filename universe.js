@@ -1085,8 +1085,8 @@ class Universe {
 					
 					for (let j = 0; j < (_this.dimension - 1); j++) 
 						settings.object.geometry.angles[i][j] = angles[j] != undefined? angles[j] : 0.0;
-//					object.userData.setPositionAttribute(settings.object.geometry.position, i);
-					object.userData.setPositionAttribute(i);
+//					object.userData.setPositionAttribute(i);
+					object.userData.myObject.setPositionAttribute(i);
 					
 				});
 				object.geometry.attributes.position.needsUpdate = true;
@@ -1559,7 +1559,7 @@ class Universe {
 																aAngleControls.arc = this.line({
 					
 																	cookieName: 'arc',//если не задать cookieName, то настройки дуги будут браться из настроек вселенной
-																	//edges: false,
+																	edges: false,
 																	object : {
 																		
 																		name: lang.arc,
