@@ -580,9 +580,12 @@ class Universe {
 				const i = parseInt(name);
 				if (!isNaN(i)) {
 
+/*что то не пойму глубокого смысла этого текста
 					const angle = aAngles[i];
 					Object.keys(angle).forEach((key) => value[key] = angle[key]);
+*/
 					aAngles[i] = value;
+					_this.object().userData.myObject.setPositionAttribute(i);
 					
 				}
 				else aAngles[name] = value;
@@ -1020,6 +1023,7 @@ class Universe {
 			} else scene = _this.classSettings.projectParams.scene;
 			
 			let nd, myPoints;
+			this.object = () => { return  nd && nd.object3D ? nd.object3D : myPoints ? myPoints : undefined; }
 			const aAngleControls = [];
 
 			this.objectOpacity = 0.3;
@@ -1066,9 +1070,12 @@ class Universe {
 			this.remove(scene);
 			this.removeUniverse = () => {
 
+/*				
 				let object;
 				if (nd && nd.object3D) object = nd.object3D;
 				if (myPoints) object = myPoints;
+*/				
+				const object = _this.object();
 				if (nd) nd = undefined;
 				if (myPoints) myPoints = undefined;
 				removeObject(object);
@@ -1076,11 +1083,8 @@ class Universe {
 			}
 			this.updateUniverse = (values) => {
 
-				let object;
-				if (nd && nd.object3D) object = nd.object3D;
-				else if (myPoints) object = myPoints;
+				const object = _this.object();
 				object.geometry.attributes.position.count = values.angles.length;
-				const itemSize = object.geometry.attributes.position.itemSize;
 				values.angles.forEach((angles, i) => {
 					
 					for (let j = 0; j < (_this.dimension - 1); j++) 
@@ -1329,6 +1333,7 @@ class Universe {
 									middleVertice: 'Middle vertice',
 									middleVerticeTitle: 'Find middle vertice between opposite vertices.',
 
+									plane: 'Plane',
 									planes: 'Planes',
 									planesTitle: 'Planes of rotation of angles.',
 									
@@ -1363,6 +1368,7 @@ class Universe {
 										lang.middleVertice = 'Средняя';
 										lang.middleVerticeTitle = 'Найти среднюю вершину между противоположными вершинами.';
 
+										lang.plane = 'Плоскость';
 										lang.planes = 'Плоскости';
 										lang.planesTitle = 'Плоскости вращения углов.';
 
@@ -1477,9 +1483,20 @@ class Universe {
 										//Create arc between edge's vertices i.e between vertice and opposite vertice.
 										aAngleControls.createArc = () => {
 
+											let verticeId = 0;
 											const arcAngles = [],//массив вершин в полярной системе координат, которые образуют дугу
 												//если не копировать каждый угол в отделности, то в новой вершине останутся старые ребра
-												copyVertice = (vertice) => arcAngles.push(_this.vertice2angles(vertice)),
+												copyVertice = (vertice) => {
+
+													const verticeAngles = _this.vertice2angles(vertice)
+													if (aAngleControls.arc) {
+														
+														aAngleControls.arc.classSettings.settings.object.geometry.angles[verticeId] = verticeAngles;
+														verticeId++;
+
+													} else arcAngles.push(verticeAngles);
+													
+												},
 												π = Math.PI,
 												arcVericesCount = 2,
 												d = π / arcVericesCount,
@@ -1551,15 +1568,19 @@ class Universe {
 														copyVertice(oppositeVertice);
 														if (!halfArcParams.next) {
 
-															if (aAngleControls.arc) aAngleControls.arc.updateUniverse({ angles: arcAngles });
-															else {
+															if (aAngleControls.arc) {
+
+																aAngleControls.arc.object().geometry.attributes.position.needsUpdate = true;
+//																aAngleControls.arc.updateUniverse({ angles: arcAngles });
+																
+															} else {
 
 																const arcEdges = [];
 																for (let i = 0; i < (arcAngles.length - 1); i++) arcEdges.push([i, i + 1]);
 																aAngleControls.arc = this.line({
 					
 																	cookieName: 'arc',//если не задать cookieName, то настройки дуги будут браться из настроек вселенной
-																	edges: false,
+																	//edges: false,
 																	object : {
 																		
 																		name: lang.arc,
@@ -1794,7 +1815,7 @@ class Universe {
 												cookieName: 'plane_' + verticeAngleId,//если не задать cookieName, то настройки дуги будут браться из настроек вселенной
 												object : {
 													
-													name: lang.planes + '_' + verticeAngleId,
+													name: lang.plane + '_' + verticeAngleId,
 													color: 'white',
 													geometry: {
 					
@@ -1815,7 +1836,6 @@ class Universe {
 											plane.opacity();
 											plane.updatePlane = (vertice) => {
 
-//												plane.isUpdate = false;
 												const planeAngles = [];
 												plane.classSettings.settings.object.geometry.angles.forEach((verticeAngles) => {
 
