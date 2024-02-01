@@ -1081,6 +1081,7 @@ class Universe {
 				removeObject(object);
 
 			}
+/*
 			this.updateUniverse = (values) => {
 
 				const object = _this.object();
@@ -1098,6 +1099,7 @@ class Universe {
 				_this.logUniverse();
 
 			}
+*/			
 			this.removeMesh = () => {
 
 				settings.object.geometry.indices.edges.length = 0;
@@ -1794,66 +1796,62 @@ class Universe {
 											planeAngles.push(planeAngle);
 
 										}
+/*
 										if (aAngleControls.planes && aAngleControls.planes[verticeAngleId]) aAngleControls.planes[verticeAngleId].updateUniverse({ angles: planeAngles });
 										else {
-
-											const planeEdges = [];
-											for (let i = 0; i < (planeAngles.length - 1); i++) planeEdges.push([i, i + 1]);
-											planeEdges.push([planeAngles.length - 1, 0]);
-											if (!aAngleControls.planes) {
+*/
+										const planeEdges = [];
+										for (let i = 0; i < (planeAngles.length - 1); i++) planeEdges.push([i, i + 1]);
+										planeEdges.push([planeAngles.length - 1, 0]);
+										if (!aAngleControls.planes) {
 												
-												aAngleControls.planes = [];
-												aAngleControls.planes.update = (vertice) => {
+											aAngleControls.planes = [];
+											aAngleControls.planes.update = (vertice) => aAngleControls.planes.forEach((plane) => plane.updatePlane(vertice));
 
-													aAngleControls.planes.forEach((plane, planeId) => plane.updatePlane(vertice));
+										}
+										aAngleControls.planes[verticeAngleId] = this.line({
+
+											cookieName: 'plane_' + verticeAngleId,//если не задать cookieName, то настройки дуги будут браться из настроек вселенной
+											object : {
 													
+												name: lang.plane + '_' + verticeAngleId,
+												color: 'white',
+												geometry: {
+					
+													angles: planeAngles,
+													opacity: 0.3,
+													indices: { edges: planeEdges, }
+														
 												}
 
-											}
-											aAngleControls.planes[verticeAngleId] = this.line({
-
-												cookieName: 'plane_' + verticeAngleId,//если не задать cookieName, то настройки дуги будут браться из настроек вселенной
-												object : {
-													
-													name: lang.plane + '_' + verticeAngleId,
-													color: 'white',
-													geometry: {
-					
-														angles: planeAngles,
-														opacity: 0.3,
-														indices: {
-					
-															edges: planeEdges,
-
-														}
-														
-													}
-
-												},
+											},
 												
-											});
-											const plane = aAngleControls.planes[verticeAngleId];
-											plane.opacity();
-											plane.updatePlane = (vertice) => {
+										});
+										const plane = aAngleControls.planes[verticeAngleId];
+										plane.opacity();
+										plane.updatePlane = (vertice) => {
 
-												const planeAngles = [];
-												plane.classSettings.settings.object.geometry.angles.forEach((verticeAngles) => {
+//												const planeAngles = [];
+											plane.classSettings.settings.object.geometry.angles.forEach((verticeAngles, i) => {
 
-													const angles = [];
-													verticeAngles.forEach((angle, angleId) => {
+												const angles = [];
+												verticeAngles.forEach((angle, angleId) => {
 
-														angles.push(angleId != verticeAngleId ? vertice.angles[angleId] : angle);
+													angles.push(angleId != verticeAngleId ? vertice.angles[angleId] : angle);
 //														if (angleId != verticeAngleId) verticeAngles[angleId] = vertice.angles[angleId];
 														
-													});
-													planeAngles.push(angles);
-													
 												});
-												plane.updateUniverse({ angles: planeAngles });
+//													planeAngles.push(angles);
+												plane.classSettings.settings.object.geometry.angles[i] = angles;
+//													plane.object().userData.myObject.setPositionAttribute(i);
+													
+											});
+											plane.object().geometry.attributes.position.needsUpdate = true;
+//												plane.updateUniverse({ angles: planeAngles });
 												
-											}
-											
 										}
+											
+//										}
 										
 									});
 
