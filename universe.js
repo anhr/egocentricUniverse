@@ -1875,6 +1875,7 @@ class Universe {
 							
 							guiSelectPoint.removeMesh(myPoints, false);
 							myPoints.children.forEach(child => guiSelectPoint.removeMesh(child, false));
+							
 						}
 
 					}
