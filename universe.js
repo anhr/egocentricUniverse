@@ -811,7 +811,9 @@ class Universe {
 												λА = angles[1], λB = anglesTo[1],
 												sin = Math.sin, cos = Math.cos, acos = Math.acos;
 //											return acos(sin(φА) * sin(φB) + cos(φА) * cos(φB) * cos(λА - λB));
-											//сейчас широта равная шулю находится на полюсах
+											//сейчас широта равная нулю находится на северном полюсе 
+											//       широта равная пи/2  находится на экваторе 
+											//       широта равная пи    находится на южном полюсе
 											return acos(cos(φА) * cos(φB) + sin(φА) * sin(φB) * cos(λА - λB));
 											
 										}
