@@ -629,6 +629,22 @@ class Universe {
 
 							switch (name) {
 
+								//расстояние между вершинами по прямой в декартой системе координат
+								//Если надо получить расстояние между вершинами по дуге в полярной системе координат, то надо вызвать 
+								//classSettings.settings.object.geometry.position.angles[verticeId].distanceTo
+								case 'distanceTo': return (verticeTo) => {
+
+									if (verticeTo.length != vertice.length) {
+
+										console.error(sUniverse + ': vertice.distanceTo. Invalid vertice.length.');
+										return;
+										
+									}
+									let distance = 0;
+									vertice.forEach((axis, i) => distance += Math.pow(axis - verticeTo[i], 2));
+									return Math.sqrt(distance);
+									
+								}
 								case 'edges':
 
 									_vertice.edges = _vertice.edges || new Proxy([], {
@@ -783,15 +799,20 @@ class Universe {
 											}
 												
 										});
-										case 'distanceTo': return (vertice) => {
+										//расстояние между вершинами по дуге в полярной системе координат
+										//Если надо получить расстояние между вершинами по прямой в декартой системе координат, то надо вызвать
+										//classSettings.settings.object.geometry.position[verticeId].distanceTo(vertice)
+										case 'distanceTo': return (anglesTo) => {
 
 											console.warn(sUniverse + ': angles. distanceTo. не проверено')
 											//https://osiktakan.ru/geo_koor.htm Определение расстояний на поверхности Земли
 											const
-												φА = angles[1], φB = vertice[1],
-												λА = angles[0], λB = vertice[0],
+												φА = angles[0], φB = anglesTo[0],
+												λА = angles[1], λB = anglesTo[1],
 												sin = Math.sin, cos = Math.cos, acos = Math.acos;
-											return acos(sin(φА) * sin(φB) + cos(φА) * cos(φB) * cos(λА - λB));
+//											return acos(sin(φА) * sin(φB) + cos(φА) * cos(φB) * cos(λА - λB));
+											//сейчас широта равная шулю находится на полюсах
+											return acos(cos(φА) * cos(φB) + sin(φА) * sin(φB) * cos(λА - λB));
 											
 										}
 											
@@ -1653,6 +1674,22 @@ class Universe {
 
 																	});
 */																
+															}
+//															const vertice = position[aAngleControls.verticeId], oppositeVertice = position[aAngleControls.oppositeVerticeId];
+															//const position = classSettings.settings.object.geometry.position;
+															const distance = position.angles[aAngleControls.verticeId].distanceTo(position.angles[aAngleControls.oppositeVerticeId]);
+															if (classSettings.debug) {
+										
+																let vertice, distanceDebug = 0;
+																aAngleControls.arc.classSettings.settings.object.geometry.position.forEach((verticeCur) => {
+										
+																	if (vertice)
+																		distanceDebug += vertice.distanceTo(verticeCur);
+																	vertice = verticeCur;
+																	
+																});
+																console.log('distance: ' + distance + ' distanceDebug: ' + distanceDebug)
+																
 															}
 															progressBar.remove();
 															aAngleControls.progressBar = undefined;
