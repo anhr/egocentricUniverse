@@ -37,7 +37,8 @@ import ProgressBar from '../../commonNodeJS/master/ProgressBar/ProgressBar.js'
 //import WebGPU from '../../WebGPU/master/WebGPU.js';
 import PositionController from '../../commonNodeJS/master/PositionController.js';
 
-const sUniverse = 'Universe', sOverride = sUniverse + ': Please override the %s method in your child class.';
+const sUniverse = 'Universe', sOverride = sUniverse + ': Please override the %s method in your child class.',
+	π = Math.PI;
 //	verticeEdges = true;//Эту константу добавил на случай если захочу не включать индексы ребер в вершину если classSettings.debug != true
 
 class Universe {
@@ -54,7 +55,7 @@ class Universe {
 
 	//base methods
 
-	randomAngle(n=2) { return Math.random() * Math.PI * n; }
+	randomAngle(n = 2) { return Math.random() * π * n; }
 	color() { if (this.classSettings.settings.object.color === undefined) this.classSettings.settings.object.color = 'lime'; }
 	name() { console.error(sOverride.replace('%s', 'name')); }
 	logUniverse() {
@@ -471,7 +472,7 @@ class Universe {
 			let unverseValue = this.probabilityDensity.unverseValue;
 			if (unverseValue === undefined) {
 				
-				unverseValue = Math.PI;
+				unverseValue = π;
 				const r = classSettings.t;//probabilityDensity.options.r;
 				for (let i = 0; i < (_this.dimension - 1); i++) unverseValue *= 2 * r;
 
@@ -504,9 +505,9 @@ class Universe {
 								if (angleId >= verticeAngles.length) return 0.0;
 								let angle = verticeAngles[angleId];
 
-								//Normalize angle to value from -Math.PI to Math.PI
-								while (angle > Math.PI) angle -= 2 * Math.PI;
-								while (angle < - Math.PI) angle += 2 * Math.PI;
+								//Normalize angle to value from -π to π
+								while (angle > π) angle -= 2 * π;
+								while (angle < - π) angle += 2 * π;
 
 								return angle;
 
@@ -1421,7 +1422,7 @@ class Universe {
 									dat.folderNameAndTitle(fAngles, lang.angles, lang.anglesTitle);
 									for (let i = 0; i < (_this.dimension - 1); i++) {
 	
-										const cAngle = fAngles.add({ angle: 0, }, 'angle', -Math.PI, Math.PI, 2 * Math.PI / 360).onChange((angle) => {
+										const cAngle = fAngles.add({ angle: 0, }, 'angle', -π, π, 2 * π / 360).onChange((angle) => {
 											
 											settings.object.geometry.angles[aAngleControls.verticeId][i] = angle;
 											_this.update(aAngleControls.verticeId);
@@ -1522,7 +1523,7 @@ class Universe {
 													} else arcAngles.push(verticeAngles);
 													
 												},
-												π = Math.PI,
+//												π = Math.PI,
 												arcVericesCount = 2,
 												d = π / arcVericesCount,
 												cd = 1 / Math.sin(d),//Поправка для координат вершин что бы они равномерно располагались по дуге
@@ -1771,7 +1772,7 @@ class Universe {
 
 									}
 
-									const π = Math.PI;
+//									const π = Math.PI;
 									position.angles[aAngleControls.verticeId].forEach((verticeAngle, verticeAngleId) => {
 
 										const planeAngles = [];
