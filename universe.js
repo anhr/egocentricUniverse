@@ -616,7 +616,7 @@ class Universe {
 
 							let sum = 0;
 							vertice.forEach(axis => sum += axis * axis);
-							if (Math.abs((sum - 1)) > 4.5e-16) console.error(sUniverse + ': Invalid vertice[' + i + '] sum = ' + sum);
+							if (Math.abs((sum - r)) > 4.5e-16) console.error(sUniverse + ': Invalid vertice[' + i + '] sum = ' + sum);
 							
 						}
 						vertice.forEach((axis, i) => vertice[i] *= r);
@@ -1625,60 +1625,8 @@ class Universe {
 																	},
 																	
 																});
-/*																
-																aAngleControls.arc = this.newUniverse(
-																	classSettings.settings.options,
-																	{
-
-																		cookieName: 'arc',//если не задать cookieName, то настройки дуги будут браться из настроек вселенной
-																		boRemove: false,
-																		boGui: false,
-																		edges: {
-
-																			project: true,//Если дуга создается в виде ребер, то отображать ребра на холсте
-																			creationMethod: Universe.edgesCreationMethod.Random,
-//																			boCurve: true,
-
-																		},
-																		edges: false,
-																		projectParams: {
-
-																			scene: classSettings.projectParams.scene,
-
-																		},
-																		debug: {
-
-																			probabilityDensity: false,
-
-																		},
-																		//debug: false,
-																		settings: {
-
-																			object: {
-
-																				name: lang.arc,
-																				color: 'magenta',//'yellow',
-																				geometry: {
-
-																					angles: arcAngles,
-																					//opacity: [1, 0.5],
-																					indices: {
-
-																						edges: arcEdges,
-
-																					}
-
-																				}
-
-																			}
-
-																		},
-
-																	});
-*/																
+																
 															}
-//															const vertice = position[aAngleControls.verticeId], oppositeVertice = position[aAngleControls.oppositeVerticeId];
-															//const position = classSettings.settings.object.geometry.position;
 															const distance = position.angles[aAngleControls.verticeId].distanceTo(position.angles[aAngleControls.oppositeVerticeId]);
 															if (classSettings.debug) {
 										
