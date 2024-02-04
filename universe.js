@@ -151,6 +151,7 @@ class Universe {
 			for (let index = 0; index < n; index++) {
 
 				const i = this.axes.indices[index];
+//				const i = index;
 				let axis = 1.0;
 
 				const mulCount = //количество множителей для данной оси
@@ -174,6 +175,7 @@ class Universe {
 					axis *= sin(φ[j]);
 
 				}
+				//x[this.axes.indices[index]] = axis;
 				x.push(axis);
 //				x.push(x.length === 1 ? (axis - 0.5) * 2 : axis);
 

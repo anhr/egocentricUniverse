@@ -29,7 +29,10 @@ class Universe2D extends Universe1D {
 
 			//порядок размещения осей в декартовой системе координат
 			//нужно что бы широта двигалась по оси y а долгота вращалась вокруг y
-			indices: [1, 0, 2],
+//			indices: [0, 1, 2],//долгота вращается вокруг оси x. Широта двигается вдоль оси x. Вершины собираются по краям оси x
+			indices: [1, 0, 2],//долгота вращается вокруг оси y. Широта двигается вдоль оси y. Вершины собираются по краям оси y
+//			indices: [0, 1, 2],//долгота вращается вокруг оси x. Широта двигается вдоль оси x. Вершины собираются по краям оси x
+//			indices: [0, 2, 1],//долгота вращается вокруг оси x. Широта двигается вдоль оси x. Вершины собираются по краям оси x
 /*				
 			//Меняем местами оси y и z что бы углы поворота вершины совпадали с широтой и долготой земного шара
 			swap: (vertice) => {
@@ -88,15 +91,17 @@ class Universe2D extends Universe1D {
 	defaultAngles() { return { count: 4, } }//random pyramid
 	pushRandomAngle(verticeAngles) {
 
+		//Широта
 		//добиваемся равномерного распределения вершин по поверхности сферы
-		verticeAngles.push(Math.acos(Math.random() * (Math.random() > 0.5 ? 1: -1)));//θ
+//		verticeAngles.push(Math.acos(Math.random() * (Math.random() > 0.5 ? 1: -1)));//
+		verticeAngles.push(Math.asin(Math.random() * (Math.random() > 0.5 ? 1: -1)));//
 
-		//начало коодринат широты не зависит от этих углов
-//		verticeAngles.push(super.randomAngle());//φ
-//		verticeAngles.push(π * (Math.random() - 0.5));//φ
-//		verticeAngles.push(Math.random() * 2 * π - π / 2);//φ good
-		verticeAngles.push(Math.random() * 2 * π + π / 2);//φ good
-//		verticeAngles.push(Math.random() * 2 * π);//φ
+		//Долгота
+		verticeAngles.push(super.randomAngle());//
+//		verticeAngles.push(π * (Math.random() - 0.5));//
+//		verticeAngles.push(Math.random() * 2 * π - π / 2);// good
+//		verticeAngles.push(Math.random() * 2 * π + π / 2);// good
+//		verticeAngles.push(Math.random() * 2 * π);//
 
 	}
 	name( getLanguageCode ) {
