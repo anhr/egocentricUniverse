@@ -91,9 +91,12 @@ class Universe2D extends Universe1D {
 		//добиваемся равномерного распределения вершин по поверхности сферы
 		verticeAngles.push(Math.acos(Math.random() * (Math.random() > 0.5 ? 1: -1)));//θ
 
-		verticeAngles.push(super.randomAngle());//φ
+		//начало коодринат широты не зависит от этих углов
+//		verticeAngles.push(super.randomAngle());//φ
 //		verticeAngles.push(π * (Math.random() - 0.5));//φ
-//		verticeAngles.push(Math.random() * 2 * π  - π / 2);//φ
+//		verticeAngles.push(Math.random() * 2 * π - π / 2);//φ good
+		verticeAngles.push(Math.random() * 2 * π + π / 2);//φ good
+//		verticeAngles.push(Math.random() * 2 * π);//φ
 
 	}
 	name( getLanguageCode ) {

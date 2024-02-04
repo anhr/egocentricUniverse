@@ -137,9 +137,10 @@ class Universe {
 		const a2v = (angles) => {
 
 			//https://en.wikipedia.org/wiki/N-sphere#Spherical_coordinates
-			const n = this.dimension, φ = angles,
+			const n = this.dimension, φ = [],//angles,
 				x = [], cos = Math.cos, sin = Math.sin;
-//			angles.forEach((angle, i) => φ.push(angle - (i === 0 ? π / 2 : 0)));
+			//нужно для того, чтобы начало координат широты находилось на экваторе
+			angles.forEach((angle, i) => φ.push(angle - (i === 0 ? π / 2 : 0)));
 
 			//добавляем оси
 			
@@ -174,6 +175,7 @@ class Universe {
 
 				}
 				x.push(axis);
+//				x.push(x.length === 1 ? (axis - 0.5) * 2 : axis);
 
 			}
 //			if (this.axes.swap) this.axes.swap(x);
@@ -191,6 +193,7 @@ class Universe {
 			angles2vertice.forEach((axis, i) => { if(Math.abs(axis - value[i]) > d) console.error(sUniverse + ': Set vertice failed. axis = ' + axis + ' is not equal to value[' + i + '] = ' + value[i]) } );
 			
 		}
+		
 		return vertice;
 
 	}
