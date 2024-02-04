@@ -18,7 +18,8 @@ import Universe1D from './universe1D.js';
 //import ProgressBar from '../../commonNodeJS/master/ProgressBar/ProgressBar.js'
 import three from '../../commonNodeJS/master/three.js'
 
-const sUniverse2D = 'Universe2D';
+const sUniverse2D = 'Universe2D',
+	π = Math.PI;
 
 class Universe2D extends Universe1D {
 
@@ -87,11 +88,12 @@ class Universe2D extends Universe1D {
 	defaultAngles() { return { count: 4, } }//random pyramid
 	pushRandomAngle(verticeAngles) {
 
-
 		//добиваемся равномерного распределения вершин по поверхности сферы
 		verticeAngles.push(Math.acos(Math.random() * (Math.random() > 0.5 ? 1: -1)));//θ
-		
+
 		verticeAngles.push(super.randomAngle());//φ
+//		verticeAngles.push(π * (Math.random() - 0.5));//φ
+//		verticeAngles.push(Math.random() * 2 * π  - π / 2);//φ
 
 	}
 	name( getLanguageCode ) {

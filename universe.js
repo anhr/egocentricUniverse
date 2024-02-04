@@ -137,7 +137,9 @@ class Universe {
 		const a2v = (angles) => {
 
 			//https://en.wikipedia.org/wiki/N-sphere#Spherical_coordinates
-			const n = this.dimension, φ = angles, x = [], cos = Math.cos, sin = Math.sin;
+			const n = this.dimension, φ = angles,
+				x = [], cos = Math.cos, sin = Math.sin;
+//			angles.forEach((angle, i) => φ.push(angle - (i === 0 ? π / 2 : 0)));
 
 			//добавляем оси
 			
