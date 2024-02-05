@@ -137,14 +137,14 @@ class Universe {
 		const a2v = (angles) => {
 
 			//https://en.wikipedia.org/wiki/N-sphere#Spherical_coordinates
-/*			
 			const n = this.dimension, φ = [],//angles,
 				x = [], cos = Math.cos, sin = Math.sin;
 			//нужно для того, чтобы начало координат широты находилось на экваторе
 			angles.forEach((angle, i) => φ.push(angle - (i === 0 ? π / 2 : 0)));
-*/			
+/*			
 			const n = this.dimension, φ = angles,
 				x = [], cos = Math.cos, sin = Math.sin;
+*/				
 
 			//добавляем оси
 			
@@ -175,13 +175,15 @@ class Universe {
 						if (i != (n - 1)) {
 							
 							//Это не последняя ось
-							axis *= index === 0 ? sin(φ[j]) : cos(φ[j]);
+//							axis *= index === 0 ? sin(φ[j]) : cos(φ[j]);
+							axis *= cos(φ[j]);
 							continue;
 
 						}
 						
 					}
-					axis *= index === 0 ? cos(φ[j]) : sin(φ[j]);
+//					axis *= index === 0 ? cos(φ[j]) : sin(φ[j]);
+					axis *= sin(φ[j]);
 
 				}
 				//x[this.axes.indices[index]] = axis;
