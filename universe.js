@@ -39,11 +39,17 @@ import PositionController from '../../commonNodeJS/master/PositionController.js'
 
 const sUniverse = 'Universe', sOverride = sUniverse + ': Please override the %s method in your child class.',
 	π = Math.PI;
+//	rotateLatitude = 0;
+//	rotateLatitude = π / 2;//Поворачиваем широту на 90 градусов что бы начало координат широты находилось на экваторе;
 //	verticeEdges = true;//Эту константу добавил на случай если захочу не включать индексы ребер в вершину если classSettings.debug != true
 
 class Universe {
 
 	#verticeEdgesLength;
+	
+	//rotateLatitude = 0;
+	rotateLatitude = π / 2;//Поворачиваем широту на 90 градусов что бы начало координат широты находилось на экваторе;
+	
 	get verticeEdgesLength() { return this.#verticeEdgesLength; }
 	set verticeEdgesLength(length) {
 
@@ -140,7 +146,7 @@ class Universe {
 			const n = this.dimension, φ = [],//angles,
 				x = [], cos = Math.cos, sin = Math.sin;
 			//нужно для того, чтобы начало координат широты находилось на экваторе
-			angles.forEach((angle, i) => φ.push(angle - (i === 0 ? π / 2 : 0)));
+			angles.forEach((angle, i) => φ.push(angle - (i === 0 ? this.rotateLatitude : 0)));
 /*			
 			const n = this.dimension, φ = angles,
 				x = [], cos = Math.cos, sin = Math.sin;
@@ -240,7 +246,7 @@ class Universe {
 				axes.y = sqrt(sum); axes.x = x[i];
 
 			}
-			φ.push(atan2(axes.y, axes.x));
+			φ.push(atan2(axes.y, axes.x) + (i === 0 ? this.rotateLatitude : 0));
 			
 		}
 		return φ;
@@ -824,16 +830,16 @@ class Universe {
 										//classSettings.settings.object.geometry.position[verticeId].distanceTo(vertice)
 										case 'distanceTo': return (anglesTo) => {
 
-											console.warn(sUniverse + ': angles. distanceTo. не проверено')
 											//https://osiktakan.ru/geo_koor.htm Определение расстояний на поверхности Земли
 											const
 												φА = angles[0], φB = anglesTo[0],
 												λА = angles[1], λB = anglesTo[1],
 												sin = Math.sin, cos = Math.cos, acos = Math.acos;
-//											return acos(sin(φА) * sin(φB) + cos(φА) * cos(φB) * cos(λА - λB));
-											//сейчас широта равная нулю находится на северном полюсе 
-											//       широта равная пи/2  находится на экваторе 
-											//       широта равная пи    находится на южном полюсе
+											if (_this.rotateLatitude)
+												return acos(sin(φА) * sin(φB) + cos(φА) * cos(φB) * cos(λА - λB));//широта равная 0 находится на экваторе 
+											//широта равная 0   находится на северном полюсе 
+											//широта равная π/2 находится на экваторе 
+											//широта равная π   находится на южном полюсе
 											return acos(cos(φА) * cos(φB) + sin(φА) * sin(φB) * cos(λА - λB));
 											
 										}
