@@ -527,6 +527,7 @@ class Universe {
 								while (angle > π) angle -= 2 * π;
 								while (angle < - π) angle += 2 * π;
 
+//								if (angleId === 0) return angle - π / 2;//нужно для того, чтобы начало координат широты находилось на экваторе
 								return angle;
 
 							}
