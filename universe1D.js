@@ -34,9 +34,9 @@ class Universe1D extends Universe {
 				
 				const lang = {
 		
-					latitude: 'latitude',
-					longitude: 'longitude',
-					altitude: 'altitude'
+					latitude: 'Latitude',
+					longitude: 'Longitude',
+					altitude: 'Altitude'
 		
 				};
 		
@@ -46,9 +46,9 @@ class Universe1D extends Universe {
 		
 					case 'ru'://Russian language
 		
-						lang.latitude = 'широта';
-						lang.longitude = 'долгота';
-						lang.altitude = 'высота';
+						lang.latitude = 'Широта';
+						lang.longitude = 'Долгота';
+						lang.altitude = 'Высота';
 						break;
 		
 				}
