@@ -107,6 +107,8 @@ class Universe3D extends Universe2D {
 
 	}
 	defaultAngles() { return { count: 5, } }//random pentachoron https://en.wikipedia.org/wiki/5-cell
+
+	get latitudeIndex() { return 1; }
 	pushRandomAngle(verticeAngles) {
 
 		//https://en.wikipedia.org/wiki/3-sphere#Hyperspherical_coordinates
@@ -114,13 +116,14 @@ class Universe3D extends Universe2D {
 		
 		//добиваемся равномерного распределения вершин в объеме шара
 		//исчезло уплотнение в ядре шара
-		this.pushRandomLatitude(verticeAngles);
-//		verticeAngles.push(Math.acos(Math.random() * (Math.random() > 0.5 ? 1: -1)));//ψ
+		verticeAngles.push(Math.acos(Math.random() * (Math.random() > 0.5 ? 1: -1)));//ψ
 		
 		
 		//добиваемся равномерного распределения вершин в объеме шара
 		//исчезло уплотнение на оси через полюса по оси Z
-		verticeAngles.push(Math.acos(Math.random() * (Math.random() > 0.5 ? 1: -1)));//θ
+//		verticeAngles.push(Math.acos(Math.random() * (Math.random() > 0.5 ? 1: -1)));//θ
+		this.pushRandomLatitude(verticeAngles);
+		
 		verticeAngles.push(this.randomAngle());//φ range 0 to 2π,
 
 	}

@@ -39,8 +39,6 @@ import PositionController from '../../commonNodeJS/master/PositionController.js'
 
 const sUniverse = 'Universe', sOverride = sUniverse + ': Please override the %s method in your child class.',
 	π = Math.PI;
-//	rotateLatitude = 0;
-//	rotateLatitude = π / 2;//Поворачиваем широту на 90 градусов что бы начало координат широты находилось на экваторе;
 //	verticeEdges = true;//Эту константу добавил на случай если захочу не включать индексы ребер в вершину если classSettings.debug != true
 
 class Universe {
@@ -49,6 +47,7 @@ class Universe {
 	
 	//rotateLatitude = 0;
 	rotateLatitude = π / 2;//Поворачиваем широту на 90 градусов что бы начало координат широты находилось на экваторе;
+	getRotateLatitude = (i) => i === this.latitudeIndex ? this.rotateLatitude : 0;
 	
 	get verticeEdgesLength() { return this.#verticeEdgesLength; }
 	set verticeEdgesLength(length) {
@@ -146,7 +145,8 @@ class Universe {
 			const n = this.dimension, φ = [],//angles,
 				x = [], cos = Math.cos, sin = Math.sin;
 			//нужно для того, чтобы начало координат широты находилось на экваторе
-			angles.forEach((angle, i) => φ.push(angle - (i === 0 ? this.rotateLatitude : 0)));
+//			angles.forEach((angle, i) => φ.push(angle - (i === 0 ? this.rotateLatitude : 0)));
+			angles.forEach((angle, i) => φ.push(angle - this.getRotateLatitude(i)));
 /*			
 			const n = this.dimension, φ = angles,
 				x = [], cos = Math.cos, sin = Math.sin;
@@ -246,7 +246,9 @@ class Universe {
 				axes.y = sqrt(sum); axes.x = x[i];
 
 			}
-			φ.push(atan2(axes.y, axes.x) + (i === 0 ? this.rotateLatitude : 0));
+//			φ.push(atan2(axes.y, axes.x) + (i === 0 ? this.rotateLatitude : 0));
+			φ.push(atan2(axes.y, axes.x) + this.getRotateLatitude(i));
+			
 			
 		}
 		return φ;
