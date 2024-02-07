@@ -146,7 +146,8 @@ class Universe {
 				x = [], cos = Math.cos, sin = Math.sin;
 			//нужно для того, чтобы начало координат широты находилось на экваторе
 //			angles.forEach((angle, i) => φ.push(angle - (i === 0 ? this.rotateLatitude : 0)));
-			angles.forEach((angle, i) => φ.push(angle - this.getRotateLatitude(i)));
+			//angles.forEach((angle, i) => φ.push(angle - this.getRotateLatitude(i)));//Почемуто не получается скопировать углы если по умолчанию угол не задан
+			for (let i = 0; i < angles.length; i++) φ.push(angles[i] - this.getRotateLatitude(i));
 /*			
 			const n = this.dimension, φ = angles,
 				x = [], cos = Math.cos, sin = Math.sin;
