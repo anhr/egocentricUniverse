@@ -97,7 +97,6 @@ class Universe2D extends Universe1D {
 		
 	}
 	
-	get latitudeIndex() { return 0; }
 	pushRandomAngle(verticeAngles) {
 
 		this.pushRandomLatitude(verticeAngles);

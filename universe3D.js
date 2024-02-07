@@ -108,7 +108,6 @@ class Universe3D extends Universe2D {
 	}
 	defaultAngles() { return { count: 5, } }//random pentachoron https://en.wikipedia.org/wiki/5-cell
 
-	get latitudeIndex() { return 1; }
 	pushRandomAngle(verticeAngles) {
 
 		//https://en.wikipedia.org/wiki/3-sphere#Hyperspherical_coordinates

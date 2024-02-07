@@ -47,7 +47,7 @@ class Universe {
 	
 	//rotateLatitude = 0;
 	rotateLatitude = π / 2;//Поворачиваем широту на 90 градусов что бы начало координат широты находилось на экваторе;
-	getRotateLatitude = (i) => i === this.latitudeIndex ? this.rotateLatitude : 0;
+	getRotateLatitude = (i) => i === (this.dimension - 3) ? this.rotateLatitude : 0;
 	
 	get verticeEdgesLength() { return this.#verticeEdgesLength; }
 	set verticeEdgesLength(length) {
