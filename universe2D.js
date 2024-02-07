@@ -89,12 +89,22 @@ class Universe2D extends Universe1D {
 
 	}
 	defaultAngles() { return { count: 4, } }//random pyramid
+	pushRandomLatitude(verticeAngles) {
+
+		//добиваемся равномерного распределения вершин по поверхности сферы
+		const f = this.rotateLatitude === 0 ? Math.acos : Math.asin;
+		verticeAngles.push(f(Math.random() * (Math.random() > 0.5 ? 1: -1)));
+		
+	}
 	pushRandomAngle(verticeAngles) {
 
+		this.pushRandomLatitude(verticeAngles);
+/*		
 		//Широта
 		//добиваемся равномерного распределения вершин по поверхности сферы
 		const f = this.rotateLatitude === 0 ? Math.acos : Math.asin;
 		verticeAngles.push(f(Math.random() * (Math.random() > 0.5 ? 1: -1)));//
+*/		
 /*		
 		verticeAngles.push(Math.asin(Math.random() * (Math.random() > 0.5 ? 1: -1)));//
 		verticeAngles.push(Math.acos(Math.random() * (Math.random() > 0.5 ? 1: -1)));//

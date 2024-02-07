@@ -114,7 +114,8 @@ class Universe3D extends Universe2D {
 		
 		//добиваемся равномерного распределения вершин в объеме шара
 		//исчезло уплотнение в ядре шара
-		verticeAngles.push(Math.acos(Math.random() * (Math.random() > 0.5 ? 1: -1)));//ψ
+		this.pushRandomLatitude(verticeAngles);
+//		verticeAngles.push(Math.acos(Math.random() * (Math.random() > 0.5 ? 1: -1)));//ψ
 		
 		
 		//добиваемся равномерного распределения вершин в объеме шара
