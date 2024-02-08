@@ -1667,7 +1667,7 @@ class Universe {
 																	vertice = verticeCur;
 																	
 																});
-																console.log('distance: ' + distance + ' distanceDebug: ' + distanceDebug)
+																console.log('distance = ' + distance + ' distanceDebug = ' + distanceDebug + ' error = ' + (distanceDebug - distance));
 																
 															}
 															progressBar.remove();
