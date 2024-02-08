@@ -145,32 +145,16 @@ class Universe {
 			const n = this.dimension, φ = [],//angles,
 				x = [], cos = Math.cos, sin = Math.sin;
 			//нужно для того, чтобы начало координат широты находилось на экваторе
-//			angles.forEach((angle, i) => φ.push(angle - (i === 0 ? this.rotateLatitude : 0)));
 			//angles.forEach((angle, i) => φ.push(angle - this.getRotateLatitude(i)));//Почемуто не получается скопировать углы если по умолчанию угол не задан
 			for (let i = 0; i < angles.length; i++) φ.push(angles[i] - this.getRotateLatitude(i));
-/*			
-			const n = this.dimension, φ = angles,
-				x = [], cos = Math.cos, sin = Math.sin;
-*/				
 
 			//добавляем оси
 			
-			//поменял расположение осей в массиве x
-			//для того что бы в 3D последняя ось указывала на цвет точки
-//			for (let i = n - 1; i >= 0; i--)
-//			for (let i = 0; i < n; i++)
 			for (let index = 0; index < n; index++) {
 
-				const i = this.axes.indices[index];
-/*				
-				//нужно для того, чтобы начало координат широты находилось на экваторе
-				if (index === 0) { cos = Math.sin; sin = Math.cos; } else { cos = Math.cos; sin = Math.sin; }
-*/				
-				
-//				const i = index;
 				let axis = 1.0;
-
-				const mulCount = //количество множителей для данной оси
+				const i = this.axes.indices[index],
+					mulCount = //количество множителей для данной оси
 					i < (n - 1) ?
 						i + 1: //на один больше порядкового номера оси
 						i;//или равно порядковому номеру оси если это последняя ось
@@ -182,23 +166,18 @@ class Universe {
 						if (i != (n - 1)) {
 							
 							//Это не последняя ось
-//							axis *= index === 0 ? sin(φ[j]) : cos(φ[j]);
 							axis *= cos(φ[j]);
 							continue;
 
 						}
 						
 					}
-//					axis *= index === 0 ? cos(φ[j]) : sin(φ[j]);
 					axis *= sin(φ[j]);
 
 				}
-				//x[this.axes.indices[index]] = axis;
 				x.push(axis);
-//				x.push(x.length === 1 ? (axis - 0.5) * 2 : axis);
 
 			}
-//			if (this.axes.swap) this.axes.swap(x);
 			return x;
 
 		}
@@ -226,13 +205,8 @@ class Universe {
 		//тангенс — отношение стороны противолежащего катета vertice[1] к стороне прилежащегоvertice[0], (tg или tan);
 		const x = [], n = this.dimension - 1, φ = [], atan2 = Math.atan2, sqrt = Math.sqrt;
 
-		//меняем местами оси координат, потому что в 3D последняя кооддината должна указывать на цвет точки
-//		for (let k = (vertice.length - 1); k >= 0; k--) x.push(vertice[k]);
-//		for (let k = 0; k < vertice.length; k++)
 		for (let index = 0; index < vertice.length; index++) x.push(vertice[this.axes.indices[index]]);
 
-//		if (this.axes.restore) this.axes.restore(x);
-		
 		for (let i = 0; i < n; i++) {
 
 			const axes = {};
@@ -247,7 +221,6 @@ class Universe {
 				axes.y = sqrt(sum); axes.x = x[i];
 
 			}
-//			φ.push(atan2(axes.y, axes.x) + (i === 0 ? this.rotateLatitude : 0));
 			φ.push(atan2(axes.y, axes.x) + this.getRotateLatitude(i));
 			
 			
@@ -255,7 +228,6 @@ class Universe {
 		return φ;
 
 	}
-	//* @param { boolean } [classSettings.edges.boCurve] true - Chain of vertices connected by edges.First vertice is not connected with last vertice.
 
 	/**
 	 * Base class for n dimensional universe.
@@ -443,9 +415,7 @@ class Universe {
 		if (options.dat) options.dat.cookie.getObject(this.cookieName, cookieOptions);
 
 		let edgesOld = cookieOptions.edgesOld || { project: true, };
-//		const boCurve = classSettings.edges.boCurve;
 		classSettings.edges = cookieOptions.edges === false ? false : cookieOptions.edges || classSettings.edges;
-//		if (boCurve) classSettings.edges.boCurve = boCurve;
 		if (classSettings.edges != false) classSettings.edges = classSettings.edges || {};
 		if ((classSettings.edges != false) && (classSettings.edges.project === undefined)) classSettings.edges.project = true;
 
@@ -536,7 +506,6 @@ class Universe {
 								while (angle > π) angle -= 2 * π;
 								while (angle < - π) angle += 2 * π;
 
-//								if (angleId === 0) return angle - π / 2;//нужно для того, чтобы начало координат широты находилось на экваторе
 								return angle;
 
 							}
@@ -609,10 +578,6 @@ class Universe {
 				const i = parseInt(name);
 				if (!isNaN(i)) {
 
-/*что то не пойму глубокого смысла этого текста
-					const angle = aAngles[i];
-					Object.keys(angle).forEach((key) => value[key] = angle[key]);
-*/
 					aAngles[i] = value;
 					_this.object().userData.myObject.setPositionAttribute(i);
 					
@@ -775,8 +740,6 @@ class Universe {
 
 											//find middle vertice between opposite vertices
 
-//											const muddleVertice = [];
-											
 											//https://wiki5.ru/wiki/Mean_of_circular_quantities#Mean_of_angles Среднее значение углов
 
 											//массив для хранения сумм декартовых координат прпотивоположных вершин
@@ -1122,36 +1085,12 @@ class Universe {
 			this.remove(scene);
 			this.removeUniverse = () => {
 
-/*				
-				let object;
-				if (nd && nd.object3D) object = nd.object3D;
-				if (myPoints) object = myPoints;
-*/				
 				const object = _this.object();
 				if (nd) nd = undefined;
 				if (myPoints) myPoints = undefined;
 				removeObject(object);
 
 			}
-/*
-			this.updateUniverse = (values) => {
-
-				const object = _this.object();
-				object.geometry.attributes.position.count = values.angles.length;
-				values.angles.forEach((angles, i) => {
-					
-					for (let j = 0; j < (_this.dimension - 1); j++) 
-						settings.object.geometry.angles[i][j] = angles[j] != undefined? angles[j] : 0.0;
-//					object.userData.setPositionAttribute(i);
-					object.userData.myObject.setPositionAttribute(i);
-					
-				});
-				object.geometry.attributes.position.needsUpdate = true;
-//				if (object.geometry.attributes.ca) object.geometry.attributes.ca.needsUpdate = true;
-				_this.logUniverse();
-
-			}
-*/			
 			this.removeMesh = () => {
 
 				settings.object.geometry.indices.edges.length = 0;
@@ -1551,7 +1490,6 @@ class Universe {
 													} else arcAngles.push(verticeAngles);
 													
 												},
-//												π = Math.PI,
 												arcVericesCount = 2,
 												d = π / arcVericesCount,
 												cd = 1 / Math.sin(d),//Поправка для координат вершин что бы они равномерно располагались по дуге
@@ -1622,12 +1560,8 @@ class Universe {
 														copyVertice(oppositeVertice);
 														if (!halfArcParams.next) {
 
-															if (aAngleControls.arc) {
-
-																aAngleControls.arc.object().geometry.attributes.position.needsUpdate = true;
-//																aAngleControls.arc.updateUniverse({ angles: arcAngles });
-																
-															} else {
+															if (aAngleControls.arc) aAngleControls.arc.object().geometry.attributes.position.needsUpdate = true;
+															else {
 
 																const arcEdges = [];
 																for (let i = 0; i < (arcAngles.length - 1); i++) arcEdges.push([i, i + 1]);
@@ -1638,7 +1572,6 @@ class Universe {
 																	object : {
 																		
 																		name: lang.arc,
-//																		color: 'magenta',//'yellow',
 																		geometry: {
 										
 																			angles: arcAngles,
@@ -1676,7 +1609,6 @@ class Universe {
 														}
 
 													}
-//												halfArc(callback ? callback : halfArcParams);
 
 												}, {
 
@@ -1697,7 +1629,6 @@ class Universe {
 								aAngleControls.cEdges.__select[0].selected = true;
 								dat.controllerNameAndTitle(aAngleControls.cEdges, lang.edges, lang.edgesTitle);
 								const aEdgeAngleControls = [],
-//									fOppositeVertice = fAdvansed.addFolder(lang.oppositeVertice),
 									edgeAnglesDefault = [];
 								aAngleControls.fOppositeVertice = fAdvansed.addFolder(lang.oppositeVertice);
 								_display(aAngleControls.fOppositeVertice.domElement, false);
@@ -1800,7 +1731,6 @@ class Universe {
 
 									}
 
-//									const π = Math.PI;
 									position.angles[aAngleControls.verticeId].forEach((verticeAngle, verticeAngleId) => {
 
 										const planeAngles = [];
@@ -1812,10 +1742,6 @@ class Universe {
 											planeAngles.push(planeAngle);
 
 										}
-/*
-										if (aAngleControls.planes && aAngleControls.planes[verticeAngleId]) aAngleControls.planes[verticeAngleId].updateUniverse({ angles: planeAngles });
-										else {
-*/
 										const planeEdges = [];
 										for (let i = 0; i < (planeAngles.length - 1); i++) planeEdges.push([i, i + 1]);
 										planeEdges.push([planeAngles.length - 1, 0]);
@@ -1847,27 +1773,16 @@ class Universe {
 										plane.opacity();
 										plane.updatePlane = (vertice) => {
 
-//												const planeAngles = [];
 											plane.classSettings.settings.object.geometry.angles.forEach((verticeAngles, i) => {
 
 												const angles = [];
-												verticeAngles.forEach((angle, angleId) => {
-
-													angles.push(angleId != verticeAngleId ? vertice.angles[angleId] : angle);
-//														if (angleId != verticeAngleId) verticeAngles[angleId] = vertice.angles[angleId];
-														
-												});
-//													planeAngles.push(angles);
+												verticeAngles.forEach((angle, angleId) => { angles.push(angleId != verticeAngleId ? vertice.angles[angleId] : angle); });
 												plane.classSettings.settings.object.geometry.angles[i] = angles;
-//													plane.object().userData.myObject.setPositionAttribute(i);
 													
 											});
 											plane.object().geometry.attributes.position.needsUpdate = true;
-//												plane.updateUniverse({ angles: planeAngles });
 												
 										}
-											
-//										}
 										
 									});
 
@@ -2000,7 +1915,6 @@ class Universe {
 							
 							},
 							options: settings.options,
-//							object: settings.object,
 							
 						});
 		
@@ -2030,7 +1944,7 @@ class Universe {
 					else {
 
 						//нет ручной настройки
-						classSettings.edges = cookieOptions.edgesOld || edgesOld;//{ project: true };
+						classSettings.edges = cookieOptions.edgesOld || edgesOld;
 						_this.projectGeometry();
 
 					}
@@ -2257,20 +2171,7 @@ class Universe {
 								}
 								if (boCompleted) return;
 								let oppositeVerticeId = verticeId + 1;
-								if (oppositeVerticeId >= position.length) {
-
-/*
-									if (classSettings.edges.boCurve) {
-
-										//Это кривая. Не надо соединять последнюю вершину с первой
-										nextVertice();
-										return;
-
-									}
-*/
-									oppositeVerticeId = 0;
-
-								}
+								if (oppositeVerticeId >= position.length) oppositeVerticeId = 0;
 								//Поиск вершины у которой ребер меньше максимального количества ребер и у которой нет нового ребра
 								const oppositeVerticeIdFirst = oppositeVerticeId;
 								while (true) {
