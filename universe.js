@@ -623,6 +623,17 @@ class Universe {
 
 							switch (name) {
 
+								//дуга между вершинами
+								case 'arcTo': return (verticeTo) => {
+
+									//Calculate the arc length between two points over a hyper-sphere
+									//Reference: https://www.physicsforums.com/threads/calculate-the-arc-length-between-two-points-over-a-hyper-sphere.658661/post-4196208
+									const a = vertice, b = verticeTo, R = 1, acos = Math.acos;
+									let ab = 0;//dot product
+									for (let i = 0; i < a.length; i++) ab += a[i] * b[i];
+									return R * acos(ab / (R * R))
+									
+								}
 								//расстояние между вершинами по прямой в декартой системе координат
 								//Если надо получить расстояние между вершинами по дуге в полярной системе координат, то надо вызвать 
 								//classSettings.settings.object.geometry.position.angles[verticeId].distanceTo
@@ -796,7 +807,25 @@ class Universe {
 										//classSettings.settings.object.geometry.position[verticeId].distanceTo(vertice)
 										case 'distanceTo': return (anglesTo) => {
 
+											console.error(sUniverse + ': use arcTo');
+											//Calculate the arc length between two points over a hyper-sphere
+											//https://www.physicsforums.com/threads/calculate-the-arc-length-between-two-points-over-a-hyper-sphere.658661/
+
+/*											
 											//https://osiktakan.ru/geo_koor.htm Определение расстояний на поверхности Земли
+											const
+												φА = angles[0], φB = anglesTo[0],
+												λА = angles[1], λB = anglesTo[1],
+												qА = angles[2], qB = anglesTo[2],
+												sin = Math.sin, cos = Math.cos, acos = Math.acos;
+											if (_this.rotateLatitude)
+												return acos(sin(φА) * sin(φB) + cos(φА) * cos(φB) * cos(λА - λB) * cos(qА - qB));//широта равная 0 находится на экваторе 
+											//широта равная 0   находится на северном полюсе 
+											//широта равная π/2 находится на экваторе 
+											//широта равная π   находится на южном полюсе
+											return acos(cos(φА) * cos(φB) + sin(φА) * sin(φB) * cos(λА - λB));
+*/											
+/*											
 											const
 												φА = angles[0], φB = anglesTo[0],
 												λА = angles[1], λB = anglesTo[1],
@@ -807,6 +836,7 @@ class Universe {
 											//широта равная π/2 находится на экваторе 
 											//широта равная π   находится на южном полюсе
 											return acos(cos(φА) * cos(φB) + sin(φА) * sin(φB) * cos(λА - λB));
+*/											
 											
 										}
 											
@@ -1589,7 +1619,8 @@ class Universe {
 																});
 																
 															}
-															const distance = position.angles[aAngleControls.verticeId].distanceTo(position.angles[aAngleControls.oppositeVerticeId]);
+//															const distance = position.angles[aAngleControls.verticeId].distanceTo(position.angles[aAngleControls.oppositeVerticeId]);
+															const distance = position[aAngleControls.verticeId].arcTo(position[aAngleControls.oppositeVerticeId]);
 															if (classSettings.debug) {
 										
 																let vertice, distanceDebug = 0;
