@@ -99,24 +99,11 @@ class Universe2D extends Universe1D {
 	
 	pushRandomAngle(verticeAngles) {
 
-		this.pushRandomLatitude(verticeAngles);
-/*		
 		//Широта
-		//добиваемся равномерного распределения вершин по поверхности сферы
-		const f = this.rotateLatitude === 0 ? Math.acos : Math.asin;
-		verticeAngles.push(f(Math.random() * (Math.random() > 0.5 ? 1: -1)));//
-*/		
-/*		
-		verticeAngles.push(Math.asin(Math.random() * (Math.random() > 0.5 ? 1: -1)));//
-		verticeAngles.push(Math.acos(Math.random() * (Math.random() > 0.5 ? 1: -1)));//
-*/		
+		this.pushRandomLatitude(verticeAngles);
 
 		//Долгота
 		verticeAngles.push(super.randomAngle());//
-//		verticeAngles.push(π * (Math.random() - 0.5));//
-//		verticeAngles.push(Math.random() * 2 * π - π / 2);// good
-//		verticeAngles.push(Math.random() * 2 * π + π / 2);// good
-//		verticeAngles.push(Math.random() * 2 * π);//
 
 	}
 	name( getLanguageCode ) {

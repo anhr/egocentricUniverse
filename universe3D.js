@@ -30,26 +30,6 @@ class Universe3D extends Universe2D {
 			//порядок размещения осей в декартовой системе координат
 			//нужно что бы широта двигалась по оси y а долгота вращалась вокруг y
 			indices: [3, 1, 2, 0],
-//			indices: [2, 3, 1, 0],//широта и долгота перепутаны. Высота работает
-//			indices: [3, 2, 1, 0],//широта и долгота перепутаны. Высота работает
-//			indices: [0, 1, 2, 3],широта и долгота перепутаны. Высота не работает
-//			indices: [1, 0, 3, 2],широта и долгота правильно. Высота не работает
-/*		
-			swap: (vertice) => {
-	
-				const length = vertice.length, axis = vertice[length - 2];
-				vertice[length - 2] = vertice[length - 3];
-				vertice[length - 3] = axis;
-				
-			},
-			restore: (vertice) => {
-
-				const axis = vertice[1];
-				vertice[1] = vertice[2];
-				vertice[2] = axis;
-				
-			},
-*/			
 			name: (i, getLanguageCode) => {
 
 				const lang = super.axes.names(getLanguageCode);
@@ -115,15 +95,14 @@ class Universe3D extends Universe2D {
 		
 		//добиваемся равномерного распределения вершин в объеме шара
 		//исчезло уплотнение в ядре шара
-		verticeAngles.push(Math.acos(Math.random() * (Math.random() > 0.5 ? 1: -1)));//ψ
+		verticeAngles.push(Math.acos(Math.random() * (Math.random() > 0.5 ? 1: -1)));
 		
 		
 		//добиваемся равномерного распределения вершин в объеме шара
 		//исчезло уплотнение на оси через полюса по оси Z
-//		verticeAngles.push(Math.acos(Math.random() * (Math.random() > 0.5 ? 1: -1)));//θ
 		this.pushRandomLatitude(verticeAngles);
 		
-		verticeAngles.push(this.randomAngle());//φ range 0 to 2π,
+		verticeAngles.push(this.randomAngle());
 
 	}
 	color() {}
