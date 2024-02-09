@@ -512,6 +512,7 @@ class Universe {
 							switch (name) {
 
 								case 'length': return _this.dimension - 1;
+								case 'forEach': console.error(sUniverse + ': Proxy vertice angles. forEach is not available. Please use for');//Почемуто не получается переребрать все углы вершины если количество углов меньше _this.dimension - 1
 
 							}
 							return verticeAngles[name];
@@ -1479,12 +1480,14 @@ class Universe {
 										if (oppositeVerticeAngles.length != aEdgeAngleControls.length) console.error(sUniverse + sChangeVerticeEdge + 'Invalid opposite vertice angles length = ' + oppositeVerticeAngles.length);
 										aEdgeAngleControls.verticeId = oppositeVerticeId;
 										edgeAnglesDefault.length = 0;
-										oppositeVerticeAngles.forEach((angle, i) => {
-											
+//										oppositeVerticeAngles.forEach((angle, i) =>
+										for (let i = 0; i < oppositeVerticeAngles.length; i++){
+
+											const angle = oppositeVerticeAngles[i];
 											aEdgeAngleControls[i].setValue(angle);
 											edgeAnglesDefault.push(angle);
 
-										});
+										}
 
 										//рисуем крестик на противоположной вершине выбранного ребра
 										aAngleControls.removeCross();
@@ -1762,13 +1765,18 @@ class Universe {
 
 									}
 
-									position.angles[aAngleControls.verticeId].forEach((verticeAngle, verticeAngleId) => {
+//									position.angles[aAngleControls.verticeId].forEach((verticeAngle, verticeAngleId) =>
+									const vertice = position.angles[aAngleControls.verticeId];
+									for (let verticeAngleId = 0; verticeAngleId < vertice.length; verticeAngleId++) {
 
+										const verticeAngle =  vertice[verticeAngleId];
 										const planeAngles = [];
 										for (let i = 0; i < 2 * π; i = i + (π / 20) ) {
 
 											const planeAngle = [];
-											position.angles[aAngleControls.verticeId].forEach((verticeAngle) => planeAngle.push(verticeAngle));
+//											position.angles[aAngleControls.verticeId].forEach((verticeAngle) => planeAngle.push(verticeAngle));
+											const vertice = position.angles[aAngleControls.verticeId];
+											for (let verticeAngleId = 0; verticeAngleId < vertice.length; verticeAngleId++) planeAngle.push(vertice[verticeAngleId]);
 											planeAngle[verticeAngleId] = i;
 											planeAngles.push(planeAngle);
 
@@ -1807,7 +1815,8 @@ class Universe {
 											plane.classSettings.settings.object.geometry.angles.forEach((verticeAngles, i) => {
 
 												const angles = [];
-												verticeAngles.forEach((angle, angleId) => { angles.push(angleId != verticeAngleId ? vertice.angles[angleId] : angle); });
+//												verticeAngles.forEach((angle, angleId) => angles.push(angleId != verticeAngleId ? vertice.angles[angleId] : angle);
+												for (let angleId = 0; angleId < verticeAngles.length; angleId++) angles.push(angleId != verticeAngleId ? vertice.angles[angleId] : verticeAngles[angleId]);
 												plane.classSettings.settings.object.geometry.angles[i] = angles;
 													
 											});
@@ -1815,7 +1824,7 @@ class Universe {
 												
 										}
 										
-									});
+									}
 
 								});
 								dat.controllerNameAndTitle(aAngleControls.cPlanes, lang.planes, lang.planesTitle);
