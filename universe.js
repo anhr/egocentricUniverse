@@ -547,6 +547,20 @@ class Universe {
 						const verticeAngles = [];
 						_this.pushRandomAngle(verticeAngles);
 						angles.push(verticeAngles);
+						const latitude = verticeAngles[_this.dimension - 3], range = π / 2;
+						if ((latitude > range) || (latitude < - range)) console.error(sUniverse + ": settings.object.geometry.angles.pushRandomAngle. Angle ' + latitude + ' is out range from - π / 2 to π / 2." );
+/*						
+						const latitudeId = _this.dimension - 3, longitudeId = latitudeId + 1;
+						if (verticeAngles[latitudeId] > π / 2) {
+							
+							console.log('');//сюда никогда не попадает
+							
+						} else if (verticeAngles[latitudeId] < - π / 2) {
+
+							console.log('');//сюда никогда не попадает
+							
+						}
+*/						
 
 					}
 					case 'guiLength': return angles.length;
@@ -1420,7 +1434,13 @@ class Universe {
 									dat.folderNameAndTitle(fAngles, lang.angles, lang.anglesTitle);
 									for (let i = 0; i < (_this.dimension - 1); i++) {
 	
-										const cAngle = fAngles.add({ angle: 0, }, 'angle', -π, π, 2 * π / 360).onChange((angle) => {
+										const latitudeId = _this.dimension - 3,//индекс широты
+											//широта меняется в пределах от π / 2 до -π / 2
+											//долгота меняется в пределах от π до -π
+											min = i === latitudeId ? -π / 2 : -π,
+											max = i === latitudeId ?  π / 2 :  π,
+											
+											cAngle = fAngles.add({ angle: 0, }, 'angle', min, max, 2 * π / 360).onChange((angle) => {
 											
 											settings.object.geometry.angles[aAngleControls.verticeId][i] = angle;
 											_this.update(aAngleControls.verticeId);
