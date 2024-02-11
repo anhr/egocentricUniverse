@@ -288,38 +288,20 @@ class Universe {
 	 *			[Math.PI * 2 *2 / 3]//vertice[2] = [-0.5000000000000004,-0.8660254037844384]
 	 *		]</b>,
 	 *	For <b><a href="module-Universe2D.html" target="_blank">Universe2D</a></b> every item is array of two vertex angle.
-	 *		The first vertex angle <b>θ</b> is a cross section of the 2D universe
-	 *		in the XY plane in the range from <b>0</b> to <b>2 * Math.PI</b>.
+	 *		The first vertex angle is the latitude of the sphere of the Universe in the range from - π / 2 to π / 2.
+	 *		Zero latitude is located at the equator.
 	 *		
-	 *		The second vertex angle <b>φ</b> is a cross section of the 2D universe across the center of the universe
-	 *		in the range from <b>0</b> to <b>2 * Math.PI</b>.
-	 *		The second vertex angle is angle of rotation of the cross section around of Z axis.
-	 *		Cross section is parallel to the XZ plane if second vertex angle is 0 radians.
-	 *		Cross section is parallel to the YZ plane if second vertex angle is <b>Math.PI / 2</b> radians.
-	 *		
-	 *		Position of vertex is array of the three axiz:
-	 *		<b>[
-	 *			Math.sin(θ) * Math.cos(φ),//x
-	 *			Math.sin(θ) * Math.sin(φ),//y
-	 *			Math.cos(θ),//z
-	 *		]</b>
-	 *		as described in [Cartesian coordinates]{@link https://en.wikipedia.org/wiki/Spherical_coordinate_system#Cartesian_coordinates}.
-	 *		<b>θ</b> is first angle of the vertex and <b>φ</b> is second angle of the vertex.
+	 *		The second vertex angle is the longitude of the sphere of the Universe in the range from - π to π.
+	 *		The second vertex angle is angle of rotation of the cross section around of Y axis.
 	 *		
 	 *		Example of 2D universe with 4 vertices is pyramid:
 	 *		<b>classSettings.settings.object.geometry.angles: [
 	 *		
-	 *			//vertice[0] = [0,0,1]
-	 *			[Math.PI * 0 * 1 / 3, Math.PI * 0 * 2 / 3],
+	 *			[ Math.PI / 2, 0                  ],//vertice[0] = [ 0                 , 1                 , 0                 ]
+	 *			[-Math.PI / 6, Math.PI * 2 * 0 / 3],//vertice[1] = [-0.8660254037844387,-0.4999999999999998, 0                 ]
+	 *			[-Math.PI / 6, Math.PI * 2 * 1 / 3],//vertice[2] = [ 0.4330127018922192,-0.4999999999999998,-0.7500000000000001]
+	 *			[-Math.PI / 6, Math.PI * 2 * 2 / 3],//vertice[3] = [ 0.4330127018922195,-0.4999999999999998, 0.7499999999999999]
 	 *			
-	 *			//vertice[1] = [0.8660254037844387,0,-0.4999999999999998]
-	 *			[Math.PI * 2 * 1 / 3, Math.PI * 0 * 2 / 3],
-	 *			
-	 *			//vertice[2] = [-0.4330127018922192,0.7500000000000001,-0.4999999999999998]
-	 *			[Math.PI * 2 * 1 / 3, Math.PI * 1 * 2 / 3],
-	 *			
-	 *			//vertice[3] = [-0.43301270189221974,-0.7499999999999998,-0.4999999999999998]
-	 *			[Math.PI * 2 * 1 / 3, Math.PI * 2 * 2 / 3],
 	 *		]</b>,
 	 *	For <b><a href="module-Universe3D.html" target="_blank">Universe3D</a></b> every item is array of three vertex angle.
 	 *		The first vertex angle <b>ψ</b> defines the sphere that across the 3D universe in the range from <b>0</b> to <b>Math.PI</b>.
