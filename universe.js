@@ -1428,7 +1428,34 @@ class Universe {
 											_this.update(aAngleControls.verticeId);
 
 										});
-										dat.controllerNameAndTitle(cAngle, _this.axes.name ? _this.axes.name(i, options.getLanguageCode) : lang.angle + ' ' + i);
+										const name = (i) => {
+							
+											//Localization
+											
+											const lang = [
+									
+												'Altitude',
+												'Latitude',
+												'Longitude',
+									
+											]
+									
+											switch (options.getLanguageCode()) {
+									
+												case 'ru'://Russian language
+									
+													lang[0] = 'Высота';
+													lang[1] = 'Широта';
+													lang[2] = 'Долгота';
+													break;
+									
+											}
+											return lang[i + 4 - _this.dimension];
+											
+										}
+										dat.controllerNameAndTitle(cAngle, name(i));
+									
+//										dat.controllerNameAndTitle(cAngle, _this.axes.name ? _this.axes.name(i, options.getLanguageCode) : lang.angle + ' ' + i);
 										aAngleControls.push(cAngle);
 										
 									}

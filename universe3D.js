@@ -30,6 +30,7 @@ class Universe3D extends Universe2D {
 			//порядок размещения осей в декартовой системе координат
 			//нужно что бы широта двигалась по оси y а долгота вращалась вокруг y
 			indices: [3, 1, 2, 0],
+/*		
 			name: (i, getLanguageCode) => {
 
 				const lang = super.axes.names(getLanguageCode);
@@ -44,6 +45,7 @@ class Universe3D extends Universe2D {
 				}
 				
 			},
+*/		
 
 		}
 		

@@ -29,27 +29,8 @@ class Universe2D extends Universe1D {
 
 			//порядок размещения осей в декартовой системе координат
 			//нужно что бы широта двигалась по оси y а долгота вращалась вокруг y
-//			indices: [0, 1, 2],//долгота вращается вокруг оси x. Широта двигается вдоль оси x. Вершины собираются по краям оси x
 			indices: [1, 0, 2],//долгота вращается вокруг оси y. Широта двигается вдоль оси y. Вершины собираются по краям оси y
-//			indices: [0, 1, 2],//долгота вращается вокруг оси x. Широта двигается вдоль оси x. Вершины собираются по краям оси x
-//			indices: [0, 2, 1],//долгота вращается вокруг оси x. Широта двигается вдоль оси x. Вершины собираются по краям оси x
-/*				
-			//Меняем местами оси y и z что бы углы поворота вершины совпадали с широтой и долготой земного шара
-			swap: (vertice) => {
-
-				const length = vertice.length, axis = vertice[length - 1];
-				vertice[length - 1] = vertice[length - 2];
-				vertice[length - 2] = axis;
-
-			},
-			restore: (vertice) => {
-
-				const axis = vertice[0];
-				vertice[0] = vertice[1];
-				vertice[1] = axis;
-
-			},
-*/				
+			/*
 			name: (i, getLanguageCode) => {
 
 				const lang = super.axes.names(getLanguageCode);
@@ -62,6 +43,7 @@ class Universe2D extends Universe1D {
 				}
 				
 			},
+			*/
 			names: (getLanguageCode) => { return super.axes.names(getLanguageCode); }
 
 		}
