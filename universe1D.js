@@ -86,7 +86,12 @@ class Universe1D extends Universe {
 		
 	}
 	defaultAngles() { return { count: 3, } }//random triangle
-	pushRandomAngle(verticeAngles) { verticeAngles.push(this.randomAngle()); }
+	pushRandomAngle(verticeAngles) {
+		
+//		verticeAngles.push(this.randomAngle());
+		this.pushRandomLongitude(verticeAngles);
+	
+	}
 	name(getLanguageCode) {
 
 		//Localization

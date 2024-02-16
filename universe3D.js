@@ -56,7 +56,7 @@ class Universe3D extends Universe2D {
 
 		const classSettings = this.classSettings, w = classSettings.settings.options.scales.w;
 		w.max = classSettings.t;
-		w.min = -classSettings.t;
+		w.min = 0;// -classSettings.t;
 		
 	};
 	get probabilityDensity() {
@@ -93,18 +93,24 @@ class Universe3D extends Universe2D {
 	pushRandomAngle(verticeAngles) {
 
 		//https://en.wikipedia.org/wiki/3-sphere#Hyperspherical_coordinates
-		//verticeAngles.push(this.randomAngle());//ψ range 0 to π,
 		
+		//Altitude
 		//добиваемся равномерного распределения вершин в объеме шара
 		//исчезло уплотнение в ядре шара
-		verticeAngles.push(Math.acos(Math.random() * (Math.random() > 0.5 ? 1: -1)));
+//		verticeAngles.push(Math.cos(Math.random()));
+//		verticeAngles.push(Math.asin(Math.random()));//по краям зеленая в центре белые с уплотнением 
+		verticeAngles.push(Math.acos(Math.random()));//по краям зеленая в центре белые равномерное распределение
+//		verticeAngles.push(Math.asin(Math.random() / 2) * 2);
+//		verticeAngles.push(Math.acos(Math.random() * (Math.random() > 0.5 ? 1: -1)));
 		
 		
 		//добиваемся равномерного распределения вершин в объеме шара
-		//исчезло уплотнение на оси через полюса по оси Z
+		//исчезло уплотнение на оси через полюса по оси i
 		this.pushRandomLatitude(verticeAngles);
 		
-		verticeAngles.push(this.randomAngle());
+		this.pushRandomLongitude(verticeAngles);
+		
+//		verticeAngles.push(this.randomAngle());
 
 	}
 	color() {}

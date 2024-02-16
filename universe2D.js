@@ -81,11 +81,11 @@ class Universe2D extends Universe1D {
 	
 	pushRandomAngle(verticeAngles) {
 
-		//Широта
 		this.pushRandomLatitude(verticeAngles);
+		this.pushRandomLongitude(verticeAngles);
 
 		//Долгота
-		verticeAngles.push(super.randomAngle());//
+//		verticeAngles.push(super.randomAngle());//
 
 	}
 	name( getLanguageCode ) {

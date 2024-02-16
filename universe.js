@@ -60,7 +60,14 @@ class Universe {
 
 	//base methods
 
-	randomAngle(n = 2) { return Math.random() * π * n; }
+	//randomAngle(n = 2) { return Math.random() * π * n - π; }
+	pushRandomLongitude(verticeAngles) {
+
+		const ranges = this.classSettings.settings.object.geometry.angles.ranges, longitudeRange = ranges[ranges.length - 1];
+		verticeAngles.push(Math.random() * (longitudeRange.max - longitudeRange.min) + longitudeRange.min);
+//		verticeAngles.push(Math.random() * π * 2 - π);
+		
+	}
 	color() { if (this.classSettings.settings.object.color === undefined) this.classSettings.settings.object.color = 'lime'; }
 	name() { console.error(sOverride.replace('%s', 'name')); }
 	logUniverse() {
@@ -616,8 +623,8 @@ class Universe {
 					break;
 				case 2:
 					range.angleName = 'Altitude';
-					range.min = - π;
-					range.max =   π;
+					range.min = 0;
+					range.max = π / 2;
 					break;
 				default: console.error(sUniverse + ': vertice angles ranges. Invalid angleId = ' + angleId);
 					
@@ -910,9 +917,9 @@ class Universe {
 						if (!classSettings.debug) return;
 //						const angles = settings.object.geometry.angles;//, ranges = [];
 
-						_position.forEach((angle, verticeId) => {
+						_position.forEach((verticeAngles, verticeId) => {
 
-							const verticeAngles = angles[verticeId];
+//							const verticeAngles = angles[verticeId];
 							for (let angleId = 0; angleId < verticeAngles.length; angleId++) {
 
 								const angle = verticeAngles[angleId], range = angles.ranges[angleId];
