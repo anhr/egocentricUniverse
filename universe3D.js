@@ -19,7 +19,8 @@ import Universe2D from './universe2D.js';
 import three from '../../commonNodeJS/master/three.js'
 import FibonacciSphereGeometry from '../../commonNodeJS/master/FibonacciSphere/FibonacciSphereGeometry.js'
 
-const sUniverse3D = 'Universe3D';
+const sUniverse3D = 'Universe3D',
+	π = Math.PI;
 
 class Universe3D extends Universe2D {
 
@@ -30,33 +31,23 @@ class Universe3D extends Universe2D {
 			//порядок размещения осей в декартовой системе координат
 			//нужно что бы широта двигалась по оси y а долгота вращалась вокруг y
 			indices: [3, 1, 2, 0],
-/*		
-			name: (i, getLanguageCode) => {
-
-				const lang = super.axes.names(getLanguageCode);
-				
-				switch(i) {
-
-					case 0: return lang.altitude;
-					case 1: return lang.latitude;
-					case 2: return lang.longitude;
-					default: console.error(sUniverse3D + '.axes.name(' + i + '): Invalid index.')
-						
-				}
-				
-			},
-*/		
 
 		}
 		
 	}
 	newUniverse(options, classSettings) { return new Universe3D(options, classSettings); }
-	get cookieName(){ return '3DUniverse' + (this.classSettings.cookieName ? '_' + this.classSettings.cookieName : ''); }
+	get cookieName() { return '3DUniverse' + (this.classSettings.cookieName ? '_' + this.classSettings.cookieName : ''); }
+	get altitudeRange() { return {
+		angleName: 'Altitude',
+		min: 0, max: π / 2,//Высота меняется в диапазоне 90 градусов. В центре вселенной вершины белого и по краям синего цвета
+		//min: -π, max: π,//Высота меняется в диапазоне 360 градусов. В центре вселенной вершины белого и синего цвета
+	}}
 	setW() {
 
 		const classSettings = this.classSettings, w = classSettings.settings.options.scales.w;
 		w.max = classSettings.t;
-		w.min = 0;// -classSettings.t;
+//		w.min = 0;// -classSettings.t;
+		w.min = this.altitudeRange.min === 0 ? 0 : -classSettings.t;
 		
 	};
 	get probabilityDensity() {
@@ -97,11 +88,12 @@ class Universe3D extends Universe2D {
 		//Altitude
 		//добиваемся равномерного распределения вершин в объеме шара
 		//исчезло уплотнение в ядре шара
+		if (this.altitudeRange.min === 0)
 //		verticeAngles.push(Math.cos(Math.random()));
 //		verticeAngles.push(Math.asin(Math.random()));//по краям зеленая в центре белые с уплотнением 
-		verticeAngles.push(Math.acos(Math.random()));//по краям зеленая в центре белые равномерное распределение
+			verticeAngles.push(Math.acos(Math.random()));//по краям зеленая в центре белые равномерное распределение
 //		verticeAngles.push(Math.asin(Math.random() / 2) * 2);
-//		verticeAngles.push(Math.acos(Math.random() * (Math.random() > 0.5 ? 1: -1)));
+		else verticeAngles.push(Math.acos(Math.random() * (Math.random() > 0.5 ? 1: -1)));
 		
 		
 		//добиваемся равномерного распределения вершин в объеме шара

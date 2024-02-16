@@ -622,9 +622,9 @@ class Universe {
 					range.max = π - this.rotateLatitude;//π / 2;
 					break;
 				case 2:
-					range.angleName = 'Altitude';
-					range.min = 0;
-					range.max = π / 2;
+					range.angleName = this.altitudeRange.angleName;//'Altitude';
+					range.min = this.altitudeRange.min;//0;
+					range.max = this.altitudeRange.max;//π / 2;
 					break;
 				default: console.error(sUniverse + ': vertice angles ranges. Invalid angleId = ' + angleId);
 					
