@@ -464,6 +464,7 @@ class Universe {
 			if (unverseValue != sectorsValue) console.error(sUniverse + ': Unverse value = ' + unverseValue + '. Sectors value = ' + sectorsValue);
 		
 		}
+		settings.object.geometry.angles = settings.object.geometry.angles || this.defaultAngles();
 		if(!(settings.object.geometry.angles instanceof Array)) {
 
 			const angles = [];
