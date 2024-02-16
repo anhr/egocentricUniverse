@@ -60,12 +60,10 @@ class Universe {
 
 	//base methods
 
-	//randomAngle(n = 2) { return Math.random() * π * n - π; }
 	pushRandomLongitude(verticeAngles) {
 
 		const ranges = this.classSettings.settings.object.geometry.angles.ranges, longitudeRange = ranges[ranges.length - 1];
 		verticeAngles.push(Math.random() * (longitudeRange.max - longitudeRange.min) + longitudeRange.min);
-//		verticeAngles.push(Math.random() * π * 2 - π);
 		
 	}
 	color() { if (this.classSettings.settings.object.color === undefined) this.classSettings.settings.object.color = 'lime'; }
@@ -481,7 +479,6 @@ class Universe {
 				const verticeId = parseInt(name);
 				if (!isNaN(verticeId)) {
 
-//					const verticeAnglesProxy =
 					return new Proxy(angles[verticeId], {
 
 						get: (verticeAngles, name) => {
@@ -491,11 +488,6 @@ class Universe {
 
 								if (angleId >= verticeAngles.length) return 0.0;
 								let angle = verticeAngles[angleId];
-
-/*
-								const range = verticeAnglesProxy.angleRange(angleId);
-								if((angle < range.min) || (angle > range.max)) console.error(sUniverse + ': Angle[' + angleId + '] = ' + angle + ' of the vertice ' + verticeId + ' is out of range from ' + range.min + ' to ' + range.max);
-*/
 
 								/*
 								//Normalize angle to value from -π to π
@@ -539,7 +531,6 @@ class Universe {
 						}
 
 					});
-//					return verticeAnglesProxy;
 
 				}
 				switch(name){
@@ -555,7 +546,7 @@ class Universe {
 
 						for (let angleId = 0; angleId < verticeAngles.length; angleId++) {
 							
-							const angle = verticeAngles[angleId], range = angles.ranges[angleId];//.angleRange(angleId);
+							const angle = verticeAngles[angleId], range = angles.ranges[angleId];
 							if((angle < range.min) || (angle > range.max)) console.error(sUniverse + ': Vertice angle[' + angleId + '] = ' + angle + ' is out of range from ' + range.min + ' to ' + range.max);
 
 						}
@@ -847,43 +838,6 @@ class Universe {
 											}
 												
 										});
-										//расстояние между вершинами по дуге в полярной системе координат
-										//Если надо получить расстояние между вершинами по прямой в декартой системе координат, то надо вызвать
-										//classSettings.settings.object.geometry.position[verticeId].distanceTo(vertice)
-										case 'distanceTo': return (anglesTo) => {
-
-											console.error(sUniverse + ': use arcTo');
-											//Calculate the arc length between two points over a hyper-sphere
-											//https://www.physicsforums.com/threads/calculate-the-arc-length-between-two-points-over-a-hyper-sphere.658661/
-
-/*											
-											//https://osiktakan.ru/geo_koor.htm Определение расстояний на поверхности Земли
-											const
-												φА = angles[0], φB = anglesTo[0],
-												λА = angles[1], λB = anglesTo[1],
-												qА = angles[2], qB = anglesTo[2],
-												sin = Math.sin, cos = Math.cos, acos = Math.acos;
-											if (_this.rotateLatitude)
-												return acos(sin(φА) * sin(φB) + cos(φА) * cos(φB) * cos(λА - λB) * cos(qА - qB));//широта равная 0 находится на экваторе 
-											//широта равная 0   находится на северном полюсе 
-											//широта равная π/2 находится на экваторе 
-											//широта равная π   находится на южном полюсе
-											return acos(cos(φА) * cos(φB) + sin(φА) * sin(φB) * cos(λА - λB));
-*/											
-/*											
-											const
-												φА = angles[0], φB = anglesTo[0],
-												λА = angles[1], λB = anglesTo[1],
-												sin = Math.sin, cos = Math.cos, acos = Math.acos;
-											if (_this.rotateLatitude)
-												return acos(sin(φА) * sin(φB) + cos(φА) * cos(φB) * cos(λА - λB));//широта равная 0 находится на экваторе 
-											//широта равная 0   находится на северном полюсе 
-											//широта равная π/2 находится на экваторе 
-											//широта равная π   находится на южном полюсе
-											return acos(cos(φА) * cos(φB) + sin(φА) * sin(φB) * cos(λА - λB));
-*/											
-											
-										}
 											
 									}
 									return angles[name];
@@ -915,11 +869,9 @@ class Universe {
 					case 'test': return () => {
 
 						if (!classSettings.debug) return;
-//						const angles = settings.object.geometry.angles;//, ranges = [];
 
 						_position.forEach((verticeAngles, verticeId) => {
 
-//							const verticeAngles = angles[verticeId];
 							for (let angleId = 0; angleId < verticeAngles.length; angleId++) {
 
 								const angle = verticeAngles[angleId], range = angles.ranges[angleId];
@@ -1361,7 +1313,6 @@ class Universe {
 
 									const angle = verticeAngles[i], cAngle = aAngleControls[i], min = cAngle.__min, max = cAngle.__max;
 									cAngle.setValue(angle);
-//									const newAngle = aAngleControls[i].getValue();
 									if ((angle < min) || (angle > max)) {
 										
 										//Localization
@@ -1393,13 +1344,7 @@ class Universe {
 									anglesDefault.push(angle);
 									
 								}
-/*непонятно почему не поучается если в массисве углов вершины не хватает угла								
-								angles.forEach((angle, i) => {
 
-									console.log(angle);
-									
-								});
-*/		
 							},
 							reset: (verticeId) => {
 
@@ -1541,7 +1486,6 @@ class Universe {
 										}
 										dat.controllerNameAndTitle(cAngle, name(i));
 									
-//										dat.controllerNameAndTitle(cAngle, _this.axes.name ? _this.axes.name(i, options.getLanguageCode) : lang.angle + ' ' + i);
 										aAngleControls.push(cAngle);
 										
 									}
@@ -1595,7 +1539,6 @@ class Universe {
 										if (oppositeVerticeAngles.length != aEdgeAngleControls.length) console.error(sUniverse + sChangeVerticeEdge + 'Invalid opposite vertice angles length = ' + oppositeVerticeAngles.length);
 										aEdgeAngleControls.verticeId = oppositeVerticeId;
 										edgeAnglesDefault.length = 0;
-//										oppositeVerticeAngles.forEach((angle, i) =>
 										for (let i = 0; i < oppositeVerticeAngles.length; i++){
 
 											const angle = oppositeVerticeAngles[i];
@@ -1737,7 +1680,6 @@ class Universe {
 																});
 																
 															}
-//															const distance = position.angles[aAngleControls.verticeId].distanceTo(position.angles[aAngleControls.oppositeVerticeId]);
 															const distance = position[aAngleControls.verticeId].arcTo(position[aAngleControls.oppositeVerticeId]);
 															if (classSettings.debug) {
 										
@@ -1880,7 +1822,6 @@ class Universe {
 
 									}
 
-//									position.angles[aAngleControls.verticeId].forEach((verticeAngle, verticeAngleId) =>
 									const vertice = position.angles[aAngleControls.verticeId];
 									for (let verticeAngleId = 0; verticeAngleId < vertice.length; verticeAngleId++) {
 
@@ -1889,7 +1830,6 @@ class Universe {
 										for (let i = 0; i < 2 * π; i = i + (π / 20) ) {
 
 											const planeAngle = [];
-//											position.angles[aAngleControls.verticeId].forEach((verticeAngle) => planeAngle.push(verticeAngle));
 											const vertice = position.angles[aAngleControls.verticeId];
 											for (let verticeAngleId = 0; verticeAngleId < vertice.length; verticeAngleId++) planeAngle.push(vertice[verticeAngleId]);
 											planeAngle[verticeAngleId] = i;
