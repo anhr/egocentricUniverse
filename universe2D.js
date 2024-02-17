@@ -1,6 +1,7 @@
 /**
  * @module Universe2D
  * @description 2 dimensional universe.
+ * All the vertices of the Universe2D form a sphere.
  *
  * @author [Andrej Hristoliubov]{@link https://github.com/anhr}
  *
@@ -139,6 +140,7 @@ class Universe2D extends Universe1D {
 
 	/**
 	 * 2 dimensional universe.
+	 * All the vertices of the Universe2D form a sphere.
 	 * @param {Options} options See <a href="../../../commonNodeJS/master/jsdoc/Options/Options.html" target="_blank">Options</a>.
 	 * @param {object} [classSettings] <b>Universe1D</b> class settings. See <a href="./module-Universe-Universe.html" target="_blank">Universe classSettings</a>.
 	 **/

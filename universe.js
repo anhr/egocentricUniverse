@@ -278,69 +278,64 @@ class Universe {
 	 * <pre>
 	 * array - array of vertex angles.
 	 *	Every item of array is n-dimensional array of vertex angles.
-	 *	For <b><a href="module-Universe1D.html" target="_blank">Universe1D</a></b> every item is array of one vertex angle.
+	 *	
+	 *	All the vertices of the <b><a href="module-Universe1D.html" target="_blank">Universe1D</a></b> form a circle.
+	 *	For <b><a href="module-Universe1D.html" target="_blank">Universe1D</a></b> every vertice is array of one angle.
 	 *		Vertex angle is angle of rotation around of Z axis in 3D space
-	 *		in the range from <b>0</b> to <b>2 * Math.PI</b>.
-	 *		Angle is begin from X axis.
+	 *		in the range from <b>π</b> to <b>-π</b>.
+	 *		Angle is begin from X = 0, Y = 1.
 	 *		Every vertex is <b>[
 				Math.cos(θ),//x
 				Math.sin(θ)//y
 			]</b> array. <b>θ</b> is vertex angle.
 	 *		Example of 1D universe with three vertices is triangle:
-	 *		<b>classSettings.settings.object.geometry.angles: [
-	 *			[0],//vertice[0] = [1,0]
-	 *			[Math.PI * 2 / 3],//vertice[1] = [-0.4999999999999998,0.8660254037844387]
-	 *			[Math.PI * 2 *2 / 3]//vertice[2] = [-0.5000000000000004,-0.8660254037844384]
+	 *		<b>classSettings.settings.object.geometry.angles: angles: [
+	 *			[],                 //vertice[0] = [0                   ,1]
+	 *			[Math.PI * 2 / 3],  //vertice[1] = [0.8660254037844387	,-0.4999999999999998]
+	 *			[- Math.PI * 2 / 3] //vertice[2] = [-0.8660254037844387	,-0.4999999999999998]
 	 *		]</b>,
-	 *	For <b><a href="module-Universe2D.html" target="_blank">Universe2D</a></b> every item is array of two vertex angle.
-	 *		The first vertex angle is the latitude of the sphere of the Universe in the range from - π / 2 to π / 2.
+	 *		
+	 *	All the vertices of the <b><a href="module-Universe2D.html" target="_blank">Universe2D</a></b> form a sphere.
+	 *	For <b><a href="module-Universe2D.html" target="_blank">Universe2D</a></b> every vertice is array of two angles.
+	 *		The first vertex angle is the latitude of the sphere of the universe in the range from - π / 2 to π / 2.
 	 *		Zero latitude is located at the equator.
 	 *		
-	 *		The second vertex angle is the longitude of the sphere of the Universe in the range from - π to π.
+	 *		The second vertex angle is the longitude of the sphere of the universe in the range from - π to π.
 	 *		The second vertex angle is angle of rotation of the cross section around of Y axis.
 	 *		
 	 *		Example of 2D universe with 4 vertices is pyramid:
 	 *		<b>classSettings.settings.object.geometry.angles: [
 	 *		
-	 *			[ Math.PI / 2, 0                  ],//vertice[0] = [ 0                 , 1                 , 0                 ]
-	 *			[-Math.PI / 6, Math.PI * 2 * 0 / 3],//vertice[1] = [-0.8660254037844387,-0.4999999999999998, 0                 ]
-	 *			[-Math.PI / 6, Math.PI * 2 * 1 / 3],//vertice[2] = [ 0.4330127018922192,-0.4999999999999998,-0.7500000000000001]
-	 *			[-Math.PI / 6, Math.PI * 2 * 2 / 3],//vertice[3] = [ 0.4330127018922195,-0.4999999999999998, 0.7499999999999999]
+	 *			[ Math.PI / 2, 0                  ],//vertice[0] = [ 0                 , 1  , 0   ]
+	 *			[-Math.PI / 6, Math.PI * 2 * 0 / 3],//vertice[1] = [-0.8660254037844387,-0.5, 0   ]
+	 *			[-Math.PI / 6, Math.PI * 2 * 1 / 3],//vertice[2] = [ 0.4330127018922192,-0.5,-0.75]
+	 *			[-Math.PI / 6, Math.PI * 2 * 2 / 3],//vertice[3] = [ 0.4330127018922195,-0.5, 0.75]
 	 *			
 	 *		]</b>,
-	 *	For <b><a href="module-Universe3D.html" target="_blank">Universe3D</a></b> every item is array of three vertex angle.
-	 *		The first vertex angle <b>ψ</b> defines the sphere that across the 3D universe in the range from <b>0</b> to <b>Math.PI</b>.
 	 *		
-	 *		Position of vertex is array of the 4 axiz:
-	 *		<b>[
-	 *			Math.sin(ψ) * Math.sin(θ) * Math.sin(φ),//x
-	 *			Math.sin(ψ) * Math.sin(θ) * Math.cos(φ),//y
-	 *			Math.sin(ψ) * Math.cos(θ),//z
-	 *			Math.cos(ψ),//w
-	 *		]</b>
-	 *		as described in [Hyperspherical coordinates]{@link https://en.wikipedia.org/wiki/3-sphere#Hyperspherical_coordinates}.
-	 *		<b>ψ</b> is first angle of the vertex.
-	 *		<b>θ</b> is second angle of the vertex.
-	 *		<b>φ</b> is third angle of the vertex.
+	 *	All the vertices of the <a href="module-Universe3D.html" target="_blank">Universe3D</a></b> form a [hupersphere]{@link https://en.wikipedia.org/wiki/N-sphere}.
+	 *	For <b><a href="module-Universe3D.html" target="_blank">Universe3D</a></b> every vertice is array of three angles.
+	 *		The first vertex angle is the altitude of the hupersphere of the universe in the range from 0 to π / 2.
+	 *		Zero altitude is located at the center of the hupersphere.
+	 *		
+	 *		The second vertex angle is the latitude of the hupersphere of the universe in the range from - π / 2 to π / 2.
+	 *		Zero latitude is located at the equator.
+	 *		
+	 *		The third vertex angle is the longitude of the hupersphere of the universe in the range from - π to π.
+	 *		The third vertex angle is angle of rotation of the cross section around of Y axis.
 	 *		
 	 *		Example of 3D universe with 5 vertices is [pentahedroid]{@link https://en.wikipedia.org/wiki/5-cell}:
 	 *		<b>classSettings.settings.object.geometry.angles: [
-	 *		
-	 *			//vertice[0] = [0,0,0,1]
 	 *			[],
-	 *			
-	 *			//vertice[1] = [0,0,0.8660254037844387,-0.4999999999999998]
-	 *			[Math.PI * 2 * 1 / 3],
-	 *			
-	 *			//vertice[2] = [0.6495190528383291,-0.3749999999999999,-0.4330127018922192,-0.4999999999999998]
-	 *			[Math.PI * 2 * 1 / 3, Math.PI * 1 * 2 / 3, Math.PI * 2 * 1 / 3],
-	 *			
-	 *			//vertice[3] = [-0.6495190528383288,-0.37499999999999994,-0.43301270189221974,-0.4999999999999998]
-	 *			[Math.PI * 2 * 1 / 3, Math.PI * 2 * 2 / 3, Math.PI * 2 * 1 / 6],
-	 *			
-	 *			//vertice[4] = [-9.184850993605146e-17,0.7499999999999998,-0.43301270189221974,-0.4999999999999998]
-	 *			[Math.PI * 2 * 1 / 3, Math.PI * 2 * 2 / 3, Math.PI * 2 * 3 / 6],
-	 *		]</b>,
+	 *			[Math.PI / 2, Math.PI / 2],
+	 *			[
+	 *				  Math.PI / 2,//Altitude
+	 *				- Math.PI / 6,//Latitude
+	 *				  Math.PI * 0,//Longitude
+	 *			],
+	 *			[Math.PI / 2, - Math.PI / 6,   Math.PI * 2 * 1 / 3],
+	 *			[Math.PI / 2, - Math.PI / 6, - Math.PI * 2 * 1 / 3],
+			]</b>,
 	 * object - see below:
 	 * </pre>
 	 * @param {number} [classSettings.settings.object.geometry.angles.count=3|4|5] Count of vertices with random position.

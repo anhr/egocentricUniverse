@@ -1,6 +1,7 @@
 /**
  * @module Universe1D
  * @description 1 dimensional universe.
+ * All the vertices of the Universe1D form a circle.
  *
  * @author [Andrej Hristoliubov]{@link https://github.com/anhr}
  *
@@ -157,6 +158,7 @@ class Universe1D extends Universe {
 
 	/**
 	 * 1 dimensional universe.
+	 * All the vertices of the Universe1D form a circle.
 	 * @param {Options} options See <a href="../../../commonNodeJS/master/jsdoc/Options/Options.html" target="_blank">Options</a>.
 	 * @param {object} [classSettings] <b>Universe1D</b> class settings. See <a href="./module-Universe-Universe.html" target="_blank">Universe classSettings</a>.
 	 **/

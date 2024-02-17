@@ -88,7 +88,12 @@ class Universe {
 
 	//base methods
 
-	randomAngle(n = 2) { return Math.random() * π * n; }
+	pushRandomLongitude(verticeAngles) {
+
+		const ranges = this.classSettings.settings.object.geometry.angles.ranges, longitudeRange = ranges[ranges.length - 1];
+		verticeAngles.push(Math.random() * (longitudeRange.max - longitudeRange.min) + longitudeRange.min);
+		
+	}
 	color() { if (this.classSettings.settings.object.color === undefined) this.classSettings.settings.object.color = 'lime'; }
 	name() { console.error(sOverride.replace('%s', 'name')); }
 	logUniverse() {
@@ -301,69 +306,64 @@ class Universe {
 	 * &lt;pre>
 	 * array - array of vertex angles.
 	 *	Every item of array is n-dimensional array of vertex angles.
-	 *	For &lt;b>&lt;a href="module-Universe1D.html" target="_blank">Universe1D&lt;/a>&lt;/b> every item is array of one vertex angle.
+	 *	
+	 *	All the vertices of the &lt;b>&lt;a href="module-Universe1D.html" target="_blank">Universe1D&lt;/a>&lt;/b> form a circle.
+	 *	For &lt;b>&lt;a href="module-Universe1D.html" target="_blank">Universe1D&lt;/a>&lt;/b> every vertice is array of one angle.
 	 *		Vertex angle is angle of rotation around of Z axis in 3D space
-	 *		in the range from &lt;b>0&lt;/b> to &lt;b>2 * Math.PI&lt;/b>.
-	 *		Angle is begin from X axis.
+	 *		in the range from &lt;b>π&lt;/b> to &lt;b>-π&lt;/b>.
+	 *		Angle is begin from X = 0, Y = 1.
 	 *		Every vertex is &lt;b>[
 				Math.cos(θ),//x
 				Math.sin(θ)//y
 			]&lt;/b> array. &lt;b>θ&lt;/b> is vertex angle.
 	 *		Example of 1D universe with three vertices is triangle:
-	 *		&lt;b>classSettings.settings.object.geometry.angles: [
-	 *			[0],//vertice[0] = [1,0]
-	 *			[Math.PI * 2 / 3],//vertice[1] = [-0.4999999999999998,0.8660254037844387]
-	 *			[Math.PI * 2 *2 / 3]//vertice[2] = [-0.5000000000000004,-0.8660254037844384]
+	 *		&lt;b>classSettings.settings.object.geometry.angles: angles: [
+	 *			[],                 //vertice[0] = [0                   ,1]
+	 *			[Math.PI * 2 / 3],  //vertice[1] = [0.8660254037844387	,-0.4999999999999998]
+	 *			[- Math.PI * 2 / 3] //vertice[2] = [-0.8660254037844387	,-0.4999999999999998]
 	 *		]&lt;/b>,
-	 *	For &lt;b>&lt;a href="module-Universe2D.html" target="_blank">Universe2D&lt;/a>&lt;/b> every item is array of two vertex angle.
-	 *		The first vertex angle is the latitude of the sphere of the Universe in the range from - π / 2 to π / 2.
+	 *		
+	 *	All the vertices of the &lt;b>&lt;a href="module-Universe2D.html" target="_blank">Universe2D&lt;/a>&lt;/b> form a sphere.
+	 *	For &lt;b>&lt;a href="module-Universe2D.html" target="_blank">Universe2D&lt;/a>&lt;/b> every vertice is array of two angles.
+	 *		The first vertex angle is the latitude of the sphere of the universe in the range from - π / 2 to π / 2.
 	 *		Zero latitude is located at the equator.
 	 *		
-	 *		The second vertex angle is the longitude of the sphere of the Universe in the range from - π to π.
+	 *		The second vertex angle is the longitude of the sphere of the universe in the range from - π to π.
 	 *		The second vertex angle is angle of rotation of the cross section around of Y axis.
 	 *		
 	 *		Example of 2D universe with 4 vertices is pyramid:
 	 *		&lt;b>classSettings.settings.object.geometry.angles: [
 	 *		
-	 *			[ Math.PI / 2, 0                  ],//vertice[0] = [ 0                 , 1                 , 0                 ]
-	 *			[-Math.PI / 6, Math.PI * 2 * 0 / 3],//vertice[1] = [-0.8660254037844387,-0.4999999999999998, 0                 ]
-	 *			[-Math.PI / 6, Math.PI * 2 * 1 / 3],//vertice[2] = [ 0.4330127018922192,-0.4999999999999998,-0.7500000000000001]
-	 *			[-Math.PI / 6, Math.PI * 2 * 2 / 3],//vertice[3] = [ 0.4330127018922195,-0.4999999999999998, 0.7499999999999999]
+	 *			[ Math.PI / 2, 0                  ],//vertice[0] = [ 0                 , 1  , 0   ]
+	 *			[-Math.PI / 6, Math.PI * 2 * 0 / 3],//vertice[1] = [-0.8660254037844387,-0.5, 0   ]
+	 *			[-Math.PI / 6, Math.PI * 2 * 1 / 3],//vertice[2] = [ 0.4330127018922192,-0.5,-0.75]
+	 *			[-Math.PI / 6, Math.PI * 2 * 2 / 3],//vertice[3] = [ 0.4330127018922195,-0.5, 0.75]
 	 *			
 	 *		]&lt;/b>,
-	 *	For &lt;b>&lt;a href="module-Universe3D.html" target="_blank">Universe3D&lt;/a>&lt;/b> every item is array of three vertex angle.
-	 *		The first vertex angle &lt;b>ψ&lt;/b> defines the sphere that across the 3D universe in the range from &lt;b>0&lt;/b> to &lt;b>Math.PI&lt;/b>.
 	 *		
-	 *		Position of vertex is array of the 4 axiz:
-	 *		&lt;b>[
-	 *			Math.sin(ψ) * Math.sin(θ) * Math.sin(φ),//x
-	 *			Math.sin(ψ) * Math.sin(θ) * Math.cos(φ),//y
-	 *			Math.sin(ψ) * Math.cos(θ),//z
-	 *			Math.cos(ψ),//w
-	 *		]&lt;/b>
-	 *		as described in [Hyperspherical coordinates]{@link https://en.wikipedia.org/wiki/3-sphere#Hyperspherical_coordinates}.
-	 *		&lt;b>ψ&lt;/b> is first angle of the vertex.
-	 *		&lt;b>θ&lt;/b> is second angle of the vertex.
-	 *		&lt;b>φ&lt;/b> is third angle of the vertex.
+	 *	All the vertices of the &lt;a href="module-Universe3D.html" target="_blank">Universe3D&lt;/a>&lt;/b> form a [hupersphere]{@link https://en.wikipedia.org/wiki/N-sphere}.
+	 *	For &lt;b>&lt;a href="module-Universe3D.html" target="_blank">Universe3D&lt;/a>&lt;/b> every vertice is array of three angles.
+	 *		The first vertex angle is the altitude of the hupersphere of the universe in the range from 0 to π / 2.
+	 *		Zero altitude is located at the center of the hupersphere.
+	 *		
+	 *		The second vertex angle is the latitude of the hupersphere of the universe in the range from - π / 2 to π / 2.
+	 *		Zero latitude is located at the equator.
+	 *		
+	 *		The third vertex angle is the longitude of the hupersphere of the universe in the range from - π to π.
+	 *		The third vertex angle is angle of rotation of the cross section around of Y axis.
 	 *		
 	 *		Example of 3D universe with 5 vertices is [pentahedroid]{@link https://en.wikipedia.org/wiki/5-cell}:
 	 *		&lt;b>classSettings.settings.object.geometry.angles: [
-	 *		
-	 *			//vertice[0] = [0,0,0,1]
 	 *			[],
-	 *			
-	 *			//vertice[1] = [0,0,0.8660254037844387,-0.4999999999999998]
-	 *			[Math.PI * 2 * 1 / 3],
-	 *			
-	 *			//vertice[2] = [0.6495190528383291,-0.3749999999999999,-0.4330127018922192,-0.4999999999999998]
-	 *			[Math.PI * 2 * 1 / 3, Math.PI * 1 * 2 / 3, Math.PI * 2 * 1 / 3],
-	 *			
-	 *			//vertice[3] = [-0.6495190528383288,-0.37499999999999994,-0.43301270189221974,-0.4999999999999998]
-	 *			[Math.PI * 2 * 1 / 3, Math.PI * 2 * 2 / 3, Math.PI * 2 * 1 / 6],
-	 *			
-	 *			//vertice[4] = [-9.184850993605146e-17,0.7499999999999998,-0.43301270189221974,-0.4999999999999998]
-	 *			[Math.PI * 2 * 1 / 3, Math.PI * 2 * 2 / 3, Math.PI * 2 * 3 / 6],
-	 *		]&lt;/b>,
+	 *			[Math.PI / 2, Math.PI / 2],
+	 *			[
+	 *				  Math.PI / 2,//Altitude
+	 *				- Math.PI / 6,//Latitude
+	 *				  Math.PI * 0,//Longitude
+	 *			],
+	 *			[Math.PI / 2, - Math.PI / 6,   Math.PI * 2 * 1 / 3],
+	 *			[Math.PI / 2, - Math.PI / 6, - Math.PI * 2 * 1 / 3],
+			]&lt;/b>,
 	 * object - see below:
 	 * &lt;/pre>
 	 * @param {number} [classSettings.settings.object.geometry.angles.count=3|4|5] Count of vertices with random position.
@@ -487,6 +487,7 @@ class Universe {
 			if (unverseValue != sectorsValue) console.error(sUniverse + ': Unverse value = ' + unverseValue + '. Sectors value = ' + sectorsValue);
 		
 		}
+		settings.object.geometry.angles = settings.object.geometry.angles || this.defaultAngles();
 		if(!(settings.object.geometry.angles instanceof Array)) {
 
 			const angles = [];
@@ -512,9 +513,11 @@ class Universe {
 								if (angleId >= verticeAngles.length) return 0.0;
 								let angle = verticeAngles[angleId];
 
+								/*
 								//Normalize angle to value from -π to π
 								while (angle > π) angle -= 2 * π;
 								while (angle &lt; - π) angle += 2 * π;
+								*/
 
 								return angle;
 
@@ -522,7 +525,7 @@ class Universe {
 							switch (name) {
 
 								case 'length': return _this.dimension - 1;
-								case 'forEach': console.error(sUniverse + ': Proxy vertice angles. forEach is not available. Please use for');//Почемуто не получается переребрать все углы вершины если количество углов меньше _this.dimension - 1
+								case 'length': return _this.dimension - 1;
 
 							}
 							return verticeAngles[name];
@@ -533,9 +536,13 @@ class Universe {
 							const angleId = parseInt(name);
 							if (!isNaN(angleId)) {
 
-								if (verticeAngles[angleId] != value) {
+								const angle = value;
+								if (verticeAngles[angleId] != angle) {
 
-									verticeAngles[angleId] = value;
+									const range = angles.ranges[angleId];
+									if((angle &lt; range.min) || (angle > range.max)) console.error(sUniverse + ': Set angle[' + angleId + '] = ' + angle + ' of the vertice ' + verticeId + ' is out of range from ' + range.min + ' to ' + range.max);
+									
+									verticeAngles[angleId] = angle;
 									//если тут обновлять вселенную, то будет тратиться лишнее время, когда одновременно изменяется несколько вершин
 									//Сейчас я сначала изменяю все вершины, а потом обновляю вселенную
 									//_this.update(verticeId);
@@ -557,20 +564,17 @@ class Universe {
 						const verticeAngles = [];
 						_this.pushRandomAngle(verticeAngles);
 						angles.push(verticeAngles);
-						const latitude = verticeAngles[_this.dimension - 3], range = π / 2;
-						if ((latitude > range) || (latitude &lt; - range)) console.error(sUniverse + ": settings.object.geometry.angles.pushRandomAngle. Angle ' + latitude + ' is out range from - π / 2 to π / 2." );
-/*						
-						const latitudeId = _this.dimension - 3, longitudeId = latitudeId + 1;
-						if (verticeAngles[latitudeId] > π / 2) {
-							
-							console.log('');//сюда никогда не попадает
-							
-						} else if (verticeAngles[latitudeId] &lt; - π / 2) {
 
-							console.log('');//сюда никогда не попадает
+					}
+					case 'push': return (verticeAngles) => {
+
+						for (let angleId = 0; angleId &lt; verticeAngles.length; angleId++) {
 							
+							const angle = verticeAngles[angleId], range = angles.ranges[angleId];
+							if((angle &lt; range.min) || (angle > range.max)) console.error(sUniverse + ': Vertice angle[' + angleId + '] = ' + angle + ' is out of range from ' + range.min + ' to ' + range.max);
+
 						}
-*/						
+						angles.push(verticeAngles);
 
 					}
 					case 'guiLength': return angles.length;
@@ -614,6 +618,37 @@ class Universe {
 			
 		});
 		const angles = settings.object.geometry.angles;
+
+		//Angles range
+		angles.ranges = [];
+		for (let angleId = 0; angleId &lt; this.dimension - 1; angleId++) {
+			
+			const range = {}
+			switch(this.dimension - 2 - angleId) {
+
+				case 0:
+					range.angleName = 'Longitude';
+					range.min = - π;
+					range.max =   π;
+					break;
+				case 1:
+					range.angleName = 'Latitude';
+					range.min = 0 - this.rotateLatitude;//- π / 2;
+					range.max = π - this.rotateLatitude;//π / 2;
+					break;
+				case 2:
+					range.angleName = this.altitudeRange.angleName;//'Altitude';
+					range.min = this.altitudeRange.min;//0;
+					range.max = this.altitudeRange.max;//π / 2;
+					break;
+				default: console.error(sUniverse + ': vertice angles ranges. Invalid angleId = ' + angleId);
+					
+			}
+			angles.ranges.push(range);
+
+		}
+		
+		//angles[0][0] = 10;//error universe.js:548 Universe: Set angle[0] = 10 of the vertice 0 is out of range from -1.5707963267948966 to 1.5707963267948966
 		if (angles.count != undefined)
 			for (let i = angles.length; i &lt; angles.count; i++) angles.pushRandomAngle();
 		settings.object.geometry.position = new Proxy(angles, {
@@ -827,43 +862,6 @@ class Universe {
 											}
 												
 										});
-										//расстояние между вершинами по дуге в полярной системе координат
-										//Если надо получить расстояние между вершинами по прямой в декартой системе координат, то надо вызвать
-										//classSettings.settings.object.geometry.position[verticeId].distanceTo(vertice)
-										case 'distanceTo': return (anglesTo) => {
-
-											console.error(sUniverse + ': use arcTo');
-											//Calculate the arc length between two points over a hyper-sphere
-											//https://www.physicsforums.com/threads/calculate-the-arc-length-between-two-points-over-a-hyper-sphere.658661/
-
-/*											
-											//https://osiktakan.ru/geo_koor.htm Определение расстояний на поверхности Земли
-											const
-												φА = angles[0], φB = anglesTo[0],
-												λА = angles[1], λB = anglesTo[1],
-												qА = angles[2], qB = anglesTo[2],
-												sin = Math.sin, cos = Math.cos, acos = Math.acos;
-											if (_this.rotateLatitude)
-												return acos(sin(φА) * sin(φB) + cos(φА) * cos(φB) * cos(λА - λB) * cos(qА - qB));//широта равная 0 находится на экваторе 
-											//широта равная 0   находится на северном полюсе 
-											//широта равная π/2 находится на экваторе 
-											//широта равная π   находится на южном полюсе
-											return acos(cos(φА) * cos(φB) + sin(φА) * sin(φB) * cos(λА - λB));
-*/											
-/*											
-											const
-												φА = angles[0], φB = anglesTo[0],
-												λА = angles[1], λB = anglesTo[1],
-												sin = Math.sin, cos = Math.cos, acos = Math.acos;
-											if (_this.rotateLatitude)
-												return acos(sin(φА) * sin(φB) + cos(φА) * cos(φB) * cos(λА - λB));//широта равная 0 находится на экваторе 
-											//широта равная 0   находится на северном полюсе 
-											//широта равная π/2 находится на экваторе 
-											//широта равная π   находится на южном полюсе
-											return acos(cos(φА) * cos(φB) + sin(φА) * sin(φB) * cos(λА - λB));
-*/											
-											
-										}
 											
 									}
 									return angles[name];
@@ -896,8 +894,14 @@ class Universe {
 
 						if (!classSettings.debug) return;
 
-						_position.forEach((angle, verticeId) => {
+						_position.forEach((verticeAngles, verticeId) => {
 
+							for (let angleId = 0; angleId &lt; verticeAngles.length; angleId++) {
+
+								const angle = verticeAngles[angleId], range = angles.ranges[angleId];
+								if((angle &lt; range.min) || (angle > range.max)) console.error(sUniverse + ': ' + range.angleName + ' angle[' + angleId + '] = ' + angle + ' of the vertice ' + verticeId + ' is out of range from ' + range.min + ' to ' + range.max);
+								
+							}
 							const vertice = settings.object.geometry.position[verticeId], strVerticeId = 'vertice[' + verticeId + ']'
 							_this.TestVertice(vertice, strVerticeId);
 							vertice.edges.forEach(edgeId => {
@@ -1298,17 +1302,19 @@ class Universe {
 							get isLocalPositionReadOnly(){ return true; },
 							setValues: (verticeId) => {
 
+								//пользователь выбрал вершину
+								
 								anglesDefault.length = 0;
-								const angles = settings.object.geometry.angles[verticeId];
+								const verticeAngles = angles[verticeId];
 
 								for (let i = (aAngleControls.cEdges.__select.length - 1); i > 0; i--)
 									aAngleControls.cEdges.__select.remove(i);
 								_display(aAngleControls.fOppositeVertice.domElement, false);
 
-								if (angles.edges) {
+								if (verticeAngles.edges) {
 									
 									const edges = settings.object.geometry.indices.edges;
-									angles.edges.forEach(edgeId => {
+									verticeAngles.edges.forEach(edgeId => {
 										
 										const opt = document.createElement('option'),
 											edge = edges[edgeId];
@@ -1321,22 +1327,48 @@ class Universe {
 								}
 								
 								aAngleControls.verticeId = verticeId;
-								_this.isUpdate = false;
-								for (let i = 0; i &lt; angles.length; i++){
 
-									const angle = angles[i];
-									aAngleControls[i].setValue(angle);
+								//если оставить эту линию то если угол выходит за пределы допустимого,
+								//то этот угол автоматически возвращается в пределы допустимого с помощью органа управления gui
+								//Но это не отображается на изображении вселенной
+								//_this.isUpdate = false;
+								
+								for (let i = 0; i &lt; verticeAngles.length; i++){
+
+									const angle = verticeAngles[i], cAngle = aAngleControls[i], min = cAngle.__min, max = cAngle.__max;
+									cAngle.setValue(angle);
+									if ((angle &lt; min) || (angle > max)) {
+										
+										//Localization
+					
+										const lang = {
+					
+											error: '%n = %s  of the %v vertice is out of range from %min to %max',
+					
+										};
+					
+										switch (options.getLanguageCode()) {
+					
+											case 'ru'://Russian language
+					
+												lang.error = '%n = %s вершины %v выходит из допустимого диапазона от %min до %max';
+					
+												break;
+					
+										}
+
+										alert(lang.error.replace('%s', angle).
+											  replace('%n', cAngle.__li.querySelector( ".property-name" ).innerHTML).
+											  replace('%v', verticeId).
+											  replace('%min', min).
+											  replace('%max', max)
+											 );
+
+									}
 									anglesDefault.push(angle);
 									
 								}
-								this.isUpdate = true;
-/*непонятно почему не поучается если в массисве углов вершины не хватает угла								
-								angles.forEach((angle, i) => {
 
-									console.log(angle);
-									
-								});
-*/		
 							},
 							reset: (verticeId) => {
 
@@ -1444,19 +1476,40 @@ class Universe {
 									dat.folderNameAndTitle(fAngles, lang.angles, lang.anglesTitle);
 									for (let i = 0; i &lt; (_this.dimension - 1); i++) {
 	
-										const latitudeId = _this.dimension - 3,//индекс широты
-											//широта меняется в пределах от π / 2 до -π / 2
-											//долгота меняется в пределах от π до -π
-											min = i === latitudeId ? -π / 2 : -π,
-											max = i === latitudeId ?  π / 2 :  π,
+										const range = angles.ranges[i];
+										const cAngle = fAngles.add({ angle: 0, }, 'angle', range.min, range.max, 2 * π / 360).onChange((angle) => {
 											
-											cAngle = fAngles.add({ angle: 0, }, 'angle', min, max, 2 * π / 360).onChange((angle) => {
+												angles[aAngleControls.verticeId][i] = angle;
+												_this.update(aAngleControls.verticeId);
+	
+											});
+										const name = (i) => {
+							
+											//Localization
 											
-											settings.object.geometry.angles[aAngleControls.verticeId][i] = angle;
-											_this.update(aAngleControls.verticeId);
-
-										});
-										dat.controllerNameAndTitle(cAngle, _this.axes.name ? _this.axes.name(i, options.getLanguageCode) : lang.angle + ' ' + i);
+											const lang = [
+									
+												'Altitude',
+												'Latitude',
+												'Longitude',
+									
+											]
+									
+											switch (options.getLanguageCode()) {
+									
+												case 'ru'://Russian language
+									
+													lang[0] = 'Высота';
+													lang[1] = 'Широта';
+													lang[2] = 'Долгота';
+													break;
+									
+											}
+											return lang[i + 4 - _this.dimension];
+											
+										}
+										dat.controllerNameAndTitle(cAngle, name(i));
+									
 										aAngleControls.push(cAngle);
 										
 									}
@@ -1510,7 +1563,6 @@ class Universe {
 										if (oppositeVerticeAngles.length != aEdgeAngleControls.length) console.error(sUniverse + sChangeVerticeEdge + 'Invalid opposite vertice angles length = ' + oppositeVerticeAngles.length);
 										aEdgeAngleControls.verticeId = oppositeVerticeId;
 										edgeAnglesDefault.length = 0;
-//										oppositeVerticeAngles.forEach((angle, i) =>
 										for (let i = 0; i &lt; oppositeVerticeAngles.length; i++){
 
 											const angle = oppositeVerticeAngles[i];
@@ -1652,7 +1704,6 @@ class Universe {
 																});
 																
 															}
-//															const distance = position.angles[aAngleControls.verticeId].distanceTo(position.angles[aAngleControls.oppositeVerticeId]);
 															const distance = position[aAngleControls.verticeId].arcTo(position[aAngleControls.oppositeVerticeId]);
 															if (classSettings.debug) {
 										
@@ -1795,7 +1846,6 @@ class Universe {
 
 									}
 
-//									position.angles[aAngleControls.verticeId].forEach((verticeAngle, verticeAngleId) =>
 									const vertice = position.angles[aAngleControls.verticeId];
 									for (let verticeAngleId = 0; verticeAngleId &lt; vertice.length; verticeAngleId++) {
 
@@ -1804,7 +1854,6 @@ class Universe {
 										for (let i = 0; i &lt; 2 * π; i = i + (π / 20) ) {
 
 											const planeAngle = [];
-//											position.angles[aAngleControls.verticeId].forEach((verticeAngle) => planeAngle.push(verticeAngle));
 											const vertice = position.angles[aAngleControls.verticeId];
 											for (let verticeAngleId = 0; verticeAngleId &lt; vertice.length; verticeAngleId++) planeAngle.push(vertice[verticeAngleId]);
 											planeAngle[verticeAngleId] = i;
@@ -1842,12 +1891,12 @@ class Universe {
 										plane.opacity();
 										plane.updatePlane = (vertice) => {
 
-											plane.classSettings.settings.object.geometry.angles.forEach((verticeAngles, i) => {
+											const planeAngles = plane.classSettings.settings.object.geometry.angles;
+											planeAngles.forEach((verticeAngles, i) => {
 
 												const angles = [];
-//												verticeAngles.forEach((angle, angleId) => angles.push(angleId != verticeAngleId ? vertice.angles[angleId] : angle);
 												for (let angleId = 0; angleId &lt; verticeAngles.length; angleId++) angles.push(angleId != verticeAngleId ? vertice.angles[angleId] : verticeAngles[angleId]);
-												plane.classSettings.settings.object.geometry.angles[i] = angles;
+												planeAngles[i] = angles;
 													
 											});
 											plane.object().geometry.attributes.position.needsUpdate = true;
@@ -2381,11 +2430,11 @@ class Universe {
 			//vertices
 
 			const fVertices = fUniverse.addFolder(lang.vertices);
-			fVertices.add( new PositionController((shift) => { cVerticesCount.setValue(settings.object.geometry.angles.length + shift); },
+			fVertices.add( new PositionController((shift) => { cVerticesCount.setValue(angles.length + shift); },
 				{ settings: { offset: 1, }, min: 1, max: 1000, step: 1, getLanguageCode: options.getLanguageCode}));
 			
 			//Vertices count
-			const cVerticesCount = dat.controllerZeroStep(fVertices, settings.object.geometry.angles, 'guiLength');
+			const cVerticesCount = dat.controllerZeroStep(fVertices, angles, 'guiLength');
 			dat.controllerNameAndTitle(cVerticesCount, lang.verticesCount, lang.verticesCountTitle);
 
 			//vertice edges
@@ -2479,13 +2528,13 @@ const _display = (element, boDisplay) => { element.style.display = boDisplay ===
 </div>
 
 <nav>
-    <h2><a href="index.html">Home</a></h2><h3>Modules</h3><ul><li><a href="module-Universe.html">Universe</a></li><li><a href="module-Universe1D.html">Universe1D</a></li><li><a href="module-Universe2D.html">Universe2D</a></li><li><a href="module-Universe3D.html">Universe3D</a></li></ul><h3>Classes</h3><ul><li><a href="module-Universe1D-Universe1D.html">Universe1D</a></li><li><a href="module-Universe2D-Universe2D.html">Universe2D</a></li><li><a href="module-Universe3D-Universe3D.html">Universe3D</a></li><li><a href="module-Universe-Universe.html">Universe</a></li></ul>
+    <h2><a href="index.html">Home</a></h2><h3>Modules</h3><ul><li><a href="module-Universe.html">Universe</a></li><li><a href="module-Universe1D.html">Universe1D</a></li><li><a href="module-Universe2D.html">Universe2D</a></li></ul><h3>Classes</h3><ul><li><a href="module-Universe1D-Universe1D.html">Universe1D</a></li><li><a href="module-Universe2D-Universe2D.html">Universe2D</a></li><li><a href="module-Universe-Universe.html">Universe</a></li></ul>
 </nav>
 
 <br class="clear">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 3.6.11</a> on Sun Feb 11 2024 11:36:21 GMT+0700 (Красноярск, стандартное время)
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 3.6.11</a> on Sat Feb 17 2024 20:21:53 GMT+0700 (Красноярск, стандартное время)
 </footer>
 
 <script> prettyPrint(); </script>

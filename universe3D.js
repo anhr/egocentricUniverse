@@ -1,6 +1,7 @@
 /**
  * @module Universe3D
  * @description 3 dimensional universe.
+ * All the vertices of the Universe3D form a [hupersphere]{@link https://en.wikipedia.org/wiki/N-sphere}.
  *
  * @author [Andrej Hristoliubov]{@link https://github.com/anhr}
  *
@@ -79,7 +80,7 @@ class Universe3D extends Universe2D {
 		}
 
 	}
-	defaultAngles() { return { count: 5, } }//random pentachoron https://en.wikipedia.org/wiki/5-cell
+	defaultAngles() { return { count: , } }//random pentachoron https://en.wikipedia.org/wiki/5-cell
 
 	pushRandomAngle(verticeAngles) {
 
@@ -171,6 +172,7 @@ class Universe3D extends Universe2D {
 
 	/**
 	 * 3 dimensional universe.
+	 * All the vertices of the Universe3D form a [hupersphere]{@link https://en.wikipedia.org/wiki/N-sphere}.
 	 * @param {Options} options See <a href="../../../commonNodeJS/master/jsdoc/Options/Options.html" target="_blank">Options</a>.
 	 * @param {object} [classSettings] <b>Universe1D</b> class settings. See <a href="./module-Universe-Universe.html" target="_blank">Universe classSettings</a>.
 	 **/
