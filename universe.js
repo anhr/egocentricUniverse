@@ -1210,7 +1210,8 @@ class Universe {
 									name: settings.object.name,
 									color: settings.object.color,
 									geometry: {
-	
+
+										MAX_POINTS: settings.object.geometry.MAX_POINTS,
 										angles: settings.object.geometry.angles,
 										opacity: settings.object.geometry.opacity,
 										indices: {
@@ -1564,6 +1565,9 @@ class Universe {
 										aAngleControls.createArc = () => {
 
 											let verticeId = 0;
+											const MAX_POINTS = 2 * 2 * 2 * 2 * 2 * 2 * 2 + 1;//17;//количество вершин дуги когда угол между крайними вершинами дуги 180 градусов. https://stackoverflow.com/questions/31399856/drawing-a-line-with-three-js-dynamically/31411794#31411794
+											//for (let i = 0; i < maxLevel - 1; i++) MAX_POINTS *= 2;
+											//MAX_POINTS++;
 											const arcAngles = [],//массив вершин в полярной системе координат, которые образуют дугу
 												//если не копировать каждый угол в отделности, то в новой вершине останутся старые ребра
 												copyVertice = (vertice) => {
@@ -1577,20 +1581,30 @@ class Universe {
 													} else arcAngles.push(verticeAngles);
 													
 												},
-												arcVericesCount = 2,
-												d = π / arcVericesCount,
+												arcVerticesCount = 2,
+												d = π / arcVerticesCount,
 												cd = 1 / Math.sin(d),//Поправка для координат вершин что бы они равномерно располагались по дуге
-												//Не получилось равномерно разделить дугу на части.
-												//Если начало и конец дуги расположены напротив друг друга на окружности или на сфере или на 4D hypersphere
-												//то все вершины стягиваются к началу и концу дуги за исключением вершины, расположенной посередине дуги
-												//Поэтому вершины на дуге получаю путем деления дуги на пополам. Полученные половинки снова делю пополам и т.д.
-												maxLevel = 4;//на сколько частей делить дугу.
-													//если maxLevel = 1 то дуга делится на 2 части с одной вершиной посередине
-													//если maxLevel = 2 то дуга делится на 4 части с тремя вершинами посередине
-													//если maxLevel = 3 то дуга делится на 8 частей с 7 вершинами посередине
-													//Таким образом дугу можно разделит только на 2 в степени maxLevel частей
+												vertice = position[aAngleControls.verticeId], oppositeVertice = position[aAngleControls.oppositeVerticeId],
+												distance = vertice.arcTo(oppositeVertice),
+												arcCount = distance * ( MAX_POINTS - 1 ) / π;
+											//Не получилось равномерно разделить дугу на части.
+											//Если начало и конец дуги расположены напротив друг друга на окружности или на сфере или на 4D hypersphere
+											//то все вершины стягиваются к началу и концу дуги за исключением вершины, расположенной посередине дуги
+											//Поэтому вершины на дуге получаю путем деления дуги на пополам. Полученные половинки снова делю пополам и т.д.
+											let maxLevel = 1;//на сколько частей делить дугу.
+												//если maxLevel = 1 то дуга делится на 2 части с одной вершиной посередине
+												//если maxLevel = 2 то дуга делится на 4 части с тремя вершинами посередине
+												//если maxLevel = 3 то дуга делится на 8 частей с 7 вершинами посередине
+												//Таким образом дугу можно разделит только на 2 в степени maxLevel частей
+											let count = 2;
+											while (count < arcCount) {
+
+												count *= 2;
+												maxLevel++;
+												
+											}
+											//console.log('vertice.angles[0] = ' + vertice.angles[0] + ' oppositeVertice.angles[0] = ' + oppositeVertice.angles[0] + ' distance = ' + distance + ' maxLevel = ' + maxLevel + (aAngleControls.arc ? ( ' position.count = ' + aAngleControls.arc.object().geometry.attributes.position.count): ''));
 											let level = 1;//текущий уровень деления дуги
-											const vertice = position[aAngleControls.verticeId], oppositeVertice = position[aAngleControls.oppositeVerticeId];
 											copyVertice(vertice);
 											let i = 0;
 											let halfArcParams = { vertice: vertice, oppositeVertice: oppositeVertice, level: level };
@@ -1619,7 +1633,7 @@ class Universe {
 
 													const arcVerticeStep = [];//Шаги, с которым изменяются углы при построении дуги в полярной системе координат
 													for (let k = 0; k < vertice.length; k++)
-														arcVerticeStep.push((oppositeVertice[k] - vertice[k]) / arcVericesCount);
+														arcVerticeStep.push((oppositeVertice[k] - vertice[k]) / arcVerticesCount);
 													const arcVerice = [];//Координаты вершины в полярной системе координат
 													for (let j = 0; j < vertice.length; j++) arcVerice.push(vertice[j] + arcVerticeStep[j] * cd);
 													level++;
@@ -1647,11 +1661,23 @@ class Universe {
 														copyVertice(oppositeVertice);
 														if (!halfArcParams.next) {
 
-															if (aAngleControls.arc) aAngleControls.arc.object().geometry.attributes.position.needsUpdate = true;
-															else {
+															if (aAngleControls.arc) {
+																
+																const geometry = aAngleControls.arc.object().geometry;
+/*																
+																let count = 2;
+																for (let i = 1; i < maxLevel; i++) count *= 2;
+																count++;
+																geometry.setDrawRange(0, count * geometry.attributes.position.itemSize);
+*/
+																geometry.setDrawRange(0, verticeId * 2 - 1);//geometry.attributes.position.itemSize);//Непонятно почему draw count так вычисляется. Еще смотри class ND.constructor.create3DObject
+																console.log(' maxLevel = ' + maxLevel + ' position.count = ' + aAngleControls.arc.object().geometry.attributes.position.count + ' drawRange.count = ' + aAngleControls.arc.object().geometry.drawRange.count + ' Vertices count = ' + verticeId);
+																geometry.attributes.position.needsUpdate = true;
+																
+															} else {
 
 																const arcEdges = [];
-																for (let i = 0; i < (arcAngles.length - 1); i++) arcEdges.push([i, i + 1]);
+																for (let i = 0; i < (MAX_POINTS - 1); i++) arcEdges.push([i, i + 1]);
 																aAngleControls.arc = this.line({
 					
 																	cookieName: 'arc',//если не задать cookieName, то настройки дуги будут браться из настроек вселенной
@@ -1661,6 +1687,7 @@ class Universe {
 																		name: lang.arc,
 																		geometry: {
 										
+																			MAX_POINTS: MAX_POINTS,
 																			angles: arcAngles,
 																			//opacity: 0.3,
 																			indices: {
@@ -1676,18 +1703,23 @@ class Universe {
 																});
 																
 															}
+															console.log(' maxLevel = ' + maxLevel + ' position.count = ' + aAngleControls.arc.object().geometry.attributes.position.count + ' drawRange.count = ' + aAngleControls.arc.object().geometry.drawRange.count + ' Vertices count = ' + verticeId);
+															//console.log('array =' + aAngleControls.arc.object().geometry.attributes.position.array);
 															const distance = position[aAngleControls.verticeId].arcTo(position[aAngleControls.oppositeVerticeId]);
 															if (classSettings.debug) {
 										
 																let vertice, distanceDebug = 0;
-																aAngleControls.arc.classSettings.settings.object.geometry.position.forEach((verticeCur) => {
+																const position = aAngleControls.arc.classSettings.settings.object.geometry.position;
+//																aAngleControls.arc.classSettings.settings.object.geometry.position.forEach((verticeCur) =>
+																for (let i = 0; i < (verticeId === 0 ? position.length: verticeId); i++) {
 										
+																	const verticeCur = position[i];
 																	if (vertice)
 																		distanceDebug += vertice.distanceTo(verticeCur);
 																	vertice = verticeCur;
 																	
-																});
-																console.log('distance = ' + distance + ' distanceDebug = ' + distanceDebug + ' error = ' + (distanceDebug - distance));
+																}
+																console.log('distance = ' + distance + ' distanceDebug = ' + distanceDebug + ' error = ' + (distanceDebug - distance) + ' arcAngles.length = ' + arcAngles.length);
 																
 															}
 															progressBar.remove();
