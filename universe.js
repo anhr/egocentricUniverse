@@ -1197,12 +1197,15 @@ class Universe {
 	
 							} : settings.edges,
 							projectParams: { scene: classSettings.projectParams.scene, },
+/*							
 							debug: {
 	
 								probabilityDensity: false,
 	
 							},
-							debug: false,
+							//debug: false,
+*/
+							debug: classSettings.debug,
 							settings: {
 	
 								object: {
@@ -1565,7 +1568,7 @@ class Universe {
 										aAngleControls.createArc = () => {
 
 											let verticeId = 0;
-											const MAX_POINTS = 2 * 2 * 2 * 2 * 2 * 2 * 2 + 1;//17;//количество вершин дуги когда угол между крайними вершинами дуги 180 градусов. https://stackoverflow.com/questions/31399856/drawing-a-line-with-three-js-dynamically/31411794#31411794
+											const MAX_POINTS = 1 + 2 * 2 * 2 * 2;// * 2 * 2 * 2;//17;//количество вершин дуги когда угол между крайними вершинами дуги 180 градусов. https://stackoverflow.com/questions/31399856/drawing-a-line-with-three-js-dynamically/31411794#31411794
 											//for (let i = 0; i < maxLevel - 1; i++) MAX_POINTS *= 2;
 											//MAX_POINTS++;
 											const arcAngles = [],//массив вершин в полярной системе координат, которые образуют дугу
@@ -1670,6 +1673,7 @@ class Universe {
 																count++;
 																geometry.setDrawRange(0, count * geometry.attributes.position.itemSize);
 */
+//																geometry.setDrawRange(0, verticeId * 2 - 1);//geometry.attributes.position.itemSize);//Непонятно почему draw count так вычисляется. Еще смотри class ND.constructor.create3DObject
 																geometry.setDrawRange(0, verticeId * 2 - 1);//geometry.attributes.position.itemSize);//Непонятно почему draw count так вычисляется. Еще смотри class ND.constructor.create3DObject
 																console.log(' maxLevel = ' + maxLevel + ' position.count = ' + aAngleControls.arc.object().geometry.attributes.position.count + ' drawRange.count = ' + aAngleControls.arc.object().geometry.drawRange.count + ' Vertices count = ' + verticeId);
 																geometry.attributes.position.needsUpdate = true;
