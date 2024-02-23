@@ -80,7 +80,7 @@ class Universe3D extends Universe2D {
 		}
 
 	}
-	defaultAngles() { return { count: , } }//random pentachoron https://en.wikipedia.org/wiki/5-cell
+	defaultAngles() { return { count: 5, } }//random pentachoron https://en.wikipedia.org/wiki/5-cell
 
 	pushRandomAngle(verticeAngles) {
 
