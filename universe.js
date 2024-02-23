@@ -306,10 +306,10 @@ class Universe {
 	 *		Example of 2D universe with 4 vertices is pyramid:
 	 *		<b>classSettings.settings.object.geometry.angles: [
 	 *		
-	 *			[ Math.PI / 2, 0                  ],//vertice[0] = [ 0                 , 1  , 0   ]
-	 *			[-Math.PI / 6, Math.PI * 2 * 0 / 3],//vertice[1] = [-0.8660254037844387,-0.5, 0   ]
-	 *			[-Math.PI / 6, Math.PI * 2 * 1 / 3],//vertice[2] = [ 0.4330127018922192,-0.5,-0.75]
-	 *			[-Math.PI / 6, Math.PI * 2 * 2 / 3],//vertice[3] = [ 0.4330127018922195,-0.5, 0.75]
+	 *			[ Math.PI / 2,  0                  ],//vertice[0] = [ 0                 , 1  , 0   ]
+	 *			[-Math.PI / 6,  Math.PI * 2 * 0 / 3],//vertice[1] = [-0.8660254037844387,-0.5, 0   ]
+	 *			[-Math.PI / 6,  Math.PI * 2 * 1 / 3],//vertice[2] = [ 0.4330127018922192,-0.5,-0.75]
+	 *			[-Math.PI / 6, -Math.PI * 2 * 1 / 3,//vertice[3] = [ 0.4330127018922195,-0.5, 0.75]
 	 *			
 	 *		]</b>,
 	 *		
