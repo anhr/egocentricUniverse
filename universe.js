@@ -208,7 +208,8 @@ class Universe {
 		
 		//https://en.wikipedia.org/wiki/N-sphere#Spherical_coordinates
 		//тангенс — отношение стороны противолежащего катета vertice[1] к стороне прилежащегоvertice[0], (tg или tan);
-		const x = [], n = this.dimension - 1, φ = [], atan2 = Math.atan2, sqrt = Math.sqrt;
+		const x = [],//для разных размерностей вселенной координаты вершины расположены в разном порядке в соответствии с this.axes.indices
+			n = this.dimension - 1, φ = [], atan2 = Math.atan2, sqrt = Math.sqrt;
 
 		for (let index = 0; index < vertice.length; index++) x.push(vertice[this.axes.indices[index]]);
 
@@ -227,9 +228,42 @@ class Universe {
 
 			}
 			φ.push(atan2(axes.y, axes.x) + this.getRotateLatitude(i));
+/*
+			φ.push(atan2(axes.y, this.getRotateLatitude(i) === 0 ?
+						 axes.x :
+						 Math.abs(axes.x)//для широты Latitude угол должен быть в диапазоне от -π/2 до π/2. Для этого axes.x должен быть в диапазоне от 0 до 1
+						));
+*/
+/*			
+			φ.push(atan2(this.getRotateLatitude(i) === 0 ?
+						 axes.y :
+						 Math.abs(axes.y),//для широты Latitude угол должен быть в диапазоне от -π/2 до π/2. Для этого axes.x должен быть в диапазоне от 0 до 1
+						 axes.x
+						));
+*/						
 			
 			
 		}
+
+		//установить углы так, что бы они влезли допустимый диапазон органов управления углов, когда пользователь захочет посмотреть или изменить эти углы
+		let latitude = φ[0], longitude = φ[1];
+		if (latitude > π / 2) {
+			
+			latitude = π - latitude;
+
+			//долготу развернуть на 180 градусов
+			if (longitude > 0) longitude -= π;
+			else if (longitude < 0) longitude += π;
+			
+		} else if (latitude < - π / 2) {
+			
+			console.error('Under constraction')
+			latitude -= π;
+
+		}
+		φ[0] = latitude;
+		φ[1] = longitude;
+		
 		return φ;
 
 	}
@@ -388,7 +422,6 @@ class Universe {
 				console.log('time: ' + text + ((window.performance.now() - (timestamp ? timestamp : classSettings.debug.timestamp)) / 1000) + ' sec.');
 			if (classSettings.debug.testVertice != false) classSettings.debug.testVertice = true;
 			if (classSettings.debug.middleVertice != false) classSettings.debug.middleVertice = true;
-			
 			
 		}
 		this.classSettings = classSettings;
