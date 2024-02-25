@@ -19,7 +19,7 @@ import Universe1D from './universe1D.js';
 //import ProgressBar from '../../commonNodeJS/master/ProgressBar/ProgressBar.js'
 import three from '../../commonNodeJS/master/three.js'
 
-const sUniverse2D = 'Universe2D',
+const //sUniverse2D = 'Universe2D',
 	π = Math.PI;
 
 class Universe2D extends Universe1D {

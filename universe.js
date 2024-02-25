@@ -1907,6 +1907,7 @@ class Universe {
 
 //										const verticeAngle =  vertice[verticeAngleId];
 										const planeAngles = [];
+										
 										let start, stop;//, step;
 										switch(verticeAngleId){
 												
@@ -1919,9 +1920,10 @@ class Universe {
 											default: console.error(sUniverse + ': Planes of rotation of angles. Invalid verticeAngleId = ' + verticeAngleId);
 												
 										}
+										for (let i = start; i <= stop; i = i + (π / 20) )
 //										for (let i = 0; i < 2 * π; i = i + (π / 20) )
 //										for (let i = -π; i < π; i = i + (π / 20) )
-										for (let i = start; i <= stop; i = i + (π / 20) ) {
+										{
 
 											const planeAngle = [];
 											const vertice = position.angles[aAngleControls.verticeId];
@@ -1967,7 +1969,8 @@ class Universe {
 											cookieName: 'plane_' + verticeAngleId,//если не задать cookieName, то настройки дуги будут браться из настроек вселенной
 											object : {
 													
-												name: lang.plane + '_' + verticeAngleId,
+//												name: lang.plane + '_' + verticeAngleId,
+												name: settings.object.geometry.angles.ranges[verticeAngleId].angleName,
 												color: 'white',
 												geometry: {
 					
