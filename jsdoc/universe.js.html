@@ -236,7 +236,8 @@ class Universe {
 		
 		//https://en.wikipedia.org/wiki/N-sphere#Spherical_coordinates
 		//тангенс — отношение стороны противолежащего катета vertice[1] к стороне прилежащегоvertice[0], (tg или tan);
-		const x = [], n = this.dimension - 1, φ = [], atan2 = Math.atan2, sqrt = Math.sqrt;
+		const x = [],//для разных размерностей вселенной координаты вершины расположены в разном порядке в соответствии с this.axes.indices
+			n = this.dimension - 1, φ = [], atan2 = Math.atan2, sqrt = Math.sqrt;
 
 		for (let index = 0; index &lt; vertice.length; index++) x.push(vertice[this.axes.indices[index]]);
 
@@ -255,9 +256,42 @@ class Universe {
 
 			}
 			φ.push(atan2(axes.y, axes.x) + this.getRotateLatitude(i));
+/*
+			φ.push(atan2(axes.y, this.getRotateLatitude(i) === 0 ?
+						 axes.x :
+						 Math.abs(axes.x)//для широты Latitude угол должен быть в диапазоне от -π/2 до π/2. Для этого axes.x должен быть в диапазоне от 0 до 1
+						));
+*/
+/*			
+			φ.push(atan2(this.getRotateLatitude(i) === 0 ?
+						 axes.y :
+						 Math.abs(axes.y),//для широты Latitude угол должен быть в диапазоне от -π/2 до π/2. Для этого axes.x должен быть в диапазоне от 0 до 1
+						 axes.x
+						));
+*/						
 			
 			
 		}
+
+		//установить углы так, что бы они влезли допустимый диапазон органов управления углов, когда пользователь захочет посмотреть или изменить эти углы
+		let latitude = φ[0], longitude = φ[1];
+		if (latitude > π / 2) {
+			
+			latitude = π - latitude;
+
+			//долготу развернуть на 180 градусов
+			if (longitude > 0) longitude -= π;
+			else if (longitude &lt; 0) longitude += π;
+			
+		} else if (latitude &lt; - π / 2) {
+			
+			console.error('Under constraction')
+			latitude -= π;
+
+		}
+		φ[0] = latitude;
+		φ[1] = longitude;
+		
 		return φ;
 
 	}
@@ -309,9 +343,9 @@ class Universe {
 	 *	
 	 *	All the vertices of the &lt;b>&lt;a href="module-Universe1D.html" target="_blank">Universe1D&lt;/a>&lt;/b> form a circle.
 	 *	For &lt;b>&lt;a href="module-Universe1D.html" target="_blank">Universe1D&lt;/a>&lt;/b> every vertice is array of one angle.
-	 *		Vertex angle is angle of rotation around of Z axis in 3D space
-	 *		in the range from &lt;b>π&lt;/b> to &lt;b>-π&lt;/b>.
-	 *		Angle is begin from X = 0, Y = 1.
+	 *		Vertex angle is the longitude of the circle of the universe in the range from &lt;b>- π&lt;/b> to &lt;b>π&lt;/b>.
+	 *		Vertex angle is angle of rotation around of &lt;b>Z&lt;/b> axis in 3D space.
+	 *		Angle is begin from &lt;b>X = 0, Y = 1&lt;/b>.
 	 *		Every vertex is &lt;b>[
 				Math.cos(θ),//x
 				Math.sin(θ)//y
@@ -325,11 +359,11 @@ class Universe {
 	 *		
 	 *	All the vertices of the &lt;b>&lt;a href="module-Universe2D.html" target="_blank">Universe2D&lt;/a>&lt;/b> form a sphere.
 	 *	For &lt;b>&lt;a href="module-Universe2D.html" target="_blank">Universe2D&lt;/a>&lt;/b> every vertice is array of two angles.
-	 *		The first vertex angle is the latitude of the sphere of the universe in the range from - π / 2 to π / 2.
+	 *		The first vertex angle is the latitude of the sphere of the universe in the range from &lt;b>- π / 2&lt;/b> to &lt;b>π / 2&lt;/b>.
 	 *		Zero latitude is located at the equator.
 	 *		
-	 *		The second vertex angle is the longitude of the sphere of the universe in the range from - π to π.
-	 *		The second vertex angle is angle of rotation of the cross section around of Y axis.
+	 *		The second vertex angle is the longitude of the sphere of the universe in the range from &lt;b>- π&lt;/b> to &lt;b>π&lt;/b>.
+	 *		The second vertex angle is angle of rotation of the cross section around of &lt;b>Y&lt;/b> axis.
 	 *		
 	 *		Example of 2D universe with 4 vertices is pyramid:
 	 *		&lt;b>classSettings.settings.object.geometry.angles: [
@@ -343,14 +377,14 @@ class Universe {
 	 *		
 	 *	All the vertices of the &lt;a href="module-Universe3D.html" target="_blank">Universe3D&lt;/a>&lt;/b> form a [hupersphere]{@link https://en.wikipedia.org/wiki/N-sphere}.
 	 *	For &lt;b>&lt;a href="module-Universe3D.html" target="_blank">Universe3D&lt;/a>&lt;/b> every vertice is array of three angles.
-	 *		The first vertex angle is the altitude of the hupersphere of the universe in the range from 0 to π / 2.
+	 *		The first vertex angle is the altitude of the hupersphere of the universe in the range from &lt;b>0&lt;/b> to &lt;b>π / 2&lt;/b>.
 	 *		Zero altitude is located at the center of the hupersphere.
 	 *		
-	 *		The second vertex angle is the latitude of the hupersphere of the universe in the range from - π / 2 to π / 2.
+	 *		The second vertex angle is the latitude of the hupersphere of the universe in the range from &lt;b>- π / 2&lt;/b> to &lt;b>π / 2&lt;/b>.
 	 *		Zero latitude is located at the equator.
 	 *		
-	 *		The third vertex angle is the longitude of the hupersphere of the universe in the range from - π to π.
-	 *		The third vertex angle is angle of rotation of the cross section around of Y axis.
+	 *		The third vertex angle is the longitude of the hupersphere of the universe in the range from &lt;b>- π&lt;/b> to &lt;b>π&lt;/b>.
+	 *		The third vertex angle is angle of rotation of the cross section around of &lt;b>Y&lt;/b> axis.
 	 *		
 	 *		Example of 3D universe with 5 vertices is [pentahedroid]{@link https://en.wikipedia.org/wiki/5-cell}:
 	 *		&lt;b>classSettings.settings.object.geometry.angles: [
@@ -416,7 +450,6 @@ class Universe {
 				console.log('time: ' + text + ((window.performance.now() - (timestamp ? timestamp : classSettings.debug.timestamp)) / 1000) + ' sec.');
 			if (classSettings.debug.testVertice != false) classSettings.debug.testVertice = true;
 			if (classSettings.debug.middleVertice != false) classSettings.debug.middleVertice = true;
-			
 			
 		}
 		this.classSettings = classSettings;
@@ -2570,7 +2603,7 @@ const _display = (element, boDisplay) => { element.style.display = boDisplay ===
 <br class="clear">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 3.6.11</a> on Fri Feb 23 2024 13:07:49 GMT+0700 (Красноярск, стандартное время)
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 3.6.11</a> on Sat Feb 24 2024 08:44:07 GMT+0700 (Красноярск, стандартное время)
 </footer>
 
 <script> prettyPrint(); </script>
