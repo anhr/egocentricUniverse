@@ -246,23 +246,30 @@ class Universe {
 		}
 
 		//установить углы так, что бы они влезли допустимый диапазон органов управления углов, когда пользователь захочет посмотреть или изменить эти углы
-		let latitude = φ[0], longitude = φ[1];
-		if (latitude > π / 2) {
+		const longitudeId = φ.length - 1, latitudeId = longitudeId - 1;
+		let latitude = φ[latitudeId], longitude = φ[longitudeId];
+		if (latitude != undefined) {//у одномерной вселенной нет широты
 			
-			latitude = π - latitude;
-
-			//долготу развернуть на 180 градусов
-			if (longitude > 0) longitude -= π;
-			else if (longitude < 0) longitude += π;
-			
-		} else if (latitude < - π / 2) {
-			
-			console.error('Under constraction')
-			latitude -= π;
+			const ranges = this.classSettings.settings.object.geometry.angles.ranges,
+				latitudeRange = ranges[latitudeId];//, longitudeRange = ranges[longitudeId];
+			if (latitude > latitudeRange.max) {//π / 2
+				
+				latitude = π - latitude;
+	
+				//долготу развернуть на 180 градусов
+				if (longitude > 0) longitude -= π;
+				else if (longitude < 0) longitude += π;
+				
+			} else if (latitude < latitudeRange.min) {//- π / 2
+				
+				console.error('Under constraction')
+				latitude -= π;
+	
+			}
+			φ[latitudeId] = latitude;
+			φ[longitudeId] = longitude;
 
 		}
-		φ[0] = latitude;
-		φ[1] = longitude;
 		
 		return φ;
 
@@ -315,9 +322,9 @@ class Universe {
 	 *	
 	 *	All the vertices of the <b><a href="module-Universe1D.html" target="_blank">Universe1D</a></b> form a circle.
 	 *	For <b><a href="module-Universe1D.html" target="_blank">Universe1D</a></b> every vertice is array of one angle.
-	 *		Vertex angle is angle of rotation around of Z axis in 3D space
-	 *		in the range from <b>π</b> to <b>-π</b>.
-	 *		Angle is begin from X = 0, Y = 1.
+	 *		Vertex angle is the longitude of the circle of the universe in the range from <b>- π</b> to <b>π</b>.
+	 *		Vertex angle is angle of rotation around of <b>Z</b> axis in 3D space.
+	 *		Angle is begin from <b>X = 0, Y = 1</b>.
 	 *		Every vertex is <b>[
 				Math.cos(θ),//x
 				Math.sin(θ)//y
@@ -331,11 +338,11 @@ class Universe {
 	 *		
 	 *	All the vertices of the <b><a href="module-Universe2D.html" target="_blank">Universe2D</a></b> form a sphere.
 	 *	For <b><a href="module-Universe2D.html" target="_blank">Universe2D</a></b> every vertice is array of two angles.
-	 *		The first vertex angle is the latitude of the sphere of the universe in the range from - π / 2 to π / 2.
+	 *		The first vertex angle is the latitude of the sphere of the universe in the range from <b>- π / 2</b> to <b>π / 2</b>.
 	 *		Zero latitude is located at the equator.
 	 *		
-	 *		The second vertex angle is the longitude of the sphere of the universe in the range from - π to π.
-	 *		The second vertex angle is angle of rotation of the cross section around of Y axis.
+	 *		The second vertex angle is the longitude of the sphere of the universe in the range from <b>- π</b> to <b>π</b>.
+	 *		The second vertex angle is angle of rotation of the cross section around of <b>Y</b> axis.
 	 *		
 	 *		Example of 2D universe with 4 vertices is pyramid:
 	 *		<b>classSettings.settings.object.geometry.angles: [
@@ -349,14 +356,14 @@ class Universe {
 	 *		
 	 *	All the vertices of the <a href="module-Universe3D.html" target="_blank">Universe3D</a></b> form a [hupersphere]{@link https://en.wikipedia.org/wiki/N-sphere}.
 	 *	For <b><a href="module-Universe3D.html" target="_blank">Universe3D</a></b> every vertice is array of three angles.
-	 *		The first vertex angle is the altitude of the hupersphere of the universe in the range from 0 to π / 2.
+	 *		The first vertex angle is the altitude of the hupersphere of the universe in the range from <b>0</b> to <b>π / 2</b>.
 	 *		Zero altitude is located at the center of the hupersphere.
 	 *		
-	 *		The second vertex angle is the latitude of the hupersphere of the universe in the range from - π / 2 to π / 2.
+	 *		The second vertex angle is the latitude of the hupersphere of the universe in the range from <b>- π / 2</b> to <b>π / 2</b>.
 	 *		Zero latitude is located at the equator.
 	 *		
-	 *		The third vertex angle is the longitude of the hupersphere of the universe in the range from - π to π.
-	 *		The third vertex angle is angle of rotation of the cross section around of Y axis.
+	 *		The third vertex angle is the longitude of the hupersphere of the universe in the range from <b>- π</b> to <b>π</b>.
+	 *		The third vertex angle is angle of rotation of the cross section around of <b>Y</b> axis.
 	 *		
 	 *		Example of 3D universe with 5 vertices is [pentahedroid]{@link https://en.wikipedia.org/wiki/5-cell}:
 	 *		<b>classSettings.settings.object.geometry.angles: [
@@ -1215,7 +1222,11 @@ class Universe {
 			this.projectGeometry = () => {
 
 				this.line = (settings) => {
-					
+
+/*					
+					settings.object.geometry.indices = settings.object.geometry.indices || {}
+					settings.object.geometry.indices.edges = settings.object.geometry.indices.edges || {}
+*/					
 					return this.newUniverse(
 						classSettings.settings.options,
 						{
@@ -1887,23 +1898,64 @@ class Universe {
 
 									}
 
-									const vertice = position.angles[aAngleControls.verticeId];
+									const vertice = position.angles[aAngleControls.verticeId],
+//										ranges = settings.object.geometry.angles.ranges,
+//										longitudeId = ranges.length - 1, latitudeId = longitudeId - 1;
+										longitudeId = this.dimension - 2, latitudeId = longitudeId - 1;
+//										longitudeRange = ranges[longitudeId], latitudeRange = ranges[latitudeId];
 									for (let verticeAngleId = 0; verticeAngleId < vertice.length; verticeAngleId++) {
 
-										const verticeAngle =  vertice[verticeAngleId];
+//										const verticeAngle =  vertice[verticeAngleId];
 										const planeAngles = [];
-										for (let i = 0; i < 2 * π; i = i + (π / 20) ) {
+										let start, stop;//, step;
+										switch(verticeAngleId){
+												
+											case latitudeId:
+												start = - π / 2; stop = π / 2;//, step = 1;
+												break;
+											case longitudeId:
+												start = -π; stop = π;//, step = 2;
+												break;
+											default: console.error(sUniverse + ': Planes of rotation of angles. Invalid verticeAngleId = ' + verticeAngleId);
+												
+										}
+//										for (let i = 0; i < 2 * π; i = i + (π / 20) )
+//										for (let i = -π; i < π; i = i + (π / 20) )
+										for (let i = start; i <= stop; i = i + (π / 20) ) {
 
 											const planeAngle = [];
 											const vertice = position.angles[aAngleControls.verticeId];
 											for (let verticeAngleId = 0; verticeAngleId < vertice.length; verticeAngleId++) planeAngle.push(vertice[verticeAngleId]);
 											planeAngle[verticeAngleId] = i;
-											planeAngles.push(planeAngle);
+											
+/*
+											//установить углы так, что бы они влезли допустимый диапазон органов управления углов, когда пользователь захочет посмотреть или изменить эти углы
+											let latitude = planeAngle[latitudeId], longitude = planeAngle[longitudeId];
+											if (latitude > latitudeRange.max) {
+												
+												latitude = π - latitude;
+									
+												//долготу развернуть на 180 градусов
+												if (longitude >= 0) longitude -= π;
+												else if (longitude < 0) longitude += π;
+												
+											}
+											if (latitude < latitudeRange.min) {
 
+												console.error('Under constraction');
+												
+											}
+											planeAngle[latitudeId] = latitude;
+											planeAngle[longitudeId] = longitude;
+											
+											planeAngles.push(planeAngle);
+*/											
+											planeAngles.push(this.vertice2angles(this.angles2Vertice(planeAngle)));
+											
 										}
 										const planeEdges = [];
 										for (let i = 0; i < (planeAngles.length - 1); i++) planeEdges.push([i, i + 1]);
-										planeEdges.push([planeAngles.length - 1, 0]);
+										//planeEdges.push([planeAngles.length - 1, 0]);//сейчас не надо соединять начало круга с концом потому что начало и конец в одной точке
 										if (!aAngleControls.planes) {
 												
 											aAngleControls.planes = [];
