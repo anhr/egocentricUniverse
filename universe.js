@@ -1906,8 +1906,9 @@ class Universe {
 									for (let verticeAngleId = 0; verticeAngleId < vertice.length; verticeAngleId++) {
 
 //										const verticeAngle =  vertice[verticeAngleId];
-										const planeAngles = [];
-										
+										const planeAngles = [],
+											angleName = settings.object.geometry.angles.ranges[verticeAngleId].angleName;
+/*										
 										let start, stop;//, step;
 										switch(verticeAngleId){
 												
@@ -1921,8 +1922,9 @@ class Universe {
 												
 										}
 										for (let i = start; i <= stop; i = i + (π / 20) )
+*/										
 //										for (let i = 0; i < 2 * π; i = i + (π / 20) )
-//										for (let i = -π; i < π; i = i + (π / 20) )
+										for (let i = -π; i < π; i = i + (π / 20) )
 										{
 
 											const planeAngle = [];
@@ -1952,6 +1954,7 @@ class Universe {
 											
 											planeAngles.push(planeAngle);
 */											
+											if (this.classSettings.debug) console.log(sUniverse + ': ' + angleName + '. VerticeId = ' + planeAngles.length);
 											planeAngles.push(this.vertice2angles(this.angles2Vertice(planeAngle)));
 											
 										}
@@ -1970,7 +1973,7 @@ class Universe {
 											object : {
 													
 //												name: lang.plane + '_' + verticeAngleId,
-												name: settings.object.geometry.angles.ranges[verticeAngleId].angleName,
+												name: angleName,
 												color: 'white',
 												geometry: {
 					
