@@ -68,7 +68,6 @@ class Universe3D extends Universe2D {
 
 		const classSettings = this.classSettings, w = classSettings.settings.options.scales.w;
 		w.max = classSettings.t;
-//		w.min = 0;// -classSettings.t;
 		w.min = this.altitudeRange.min === 0 ? 0 : -classSettings.t;
 		
 	};
@@ -111,10 +110,7 @@ class Universe3D extends Universe2D {
 		//добиваемся равномерного распределения вершин в объеме шара
 		//исчезло уплотнение в ядре шара
 		if (this.altitudeRange.min === 0)
-//		verticeAngles.push(Math.cos(Math.random()));
-//		verticeAngles.push(Math.asin(Math.random()));//по краям зеленая в центре белые с уплотнением 
 			verticeAngles.push(Math.acos(Math.random()));//по краям зеленая в центре белые равномерное распределение
-//		verticeAngles.push(Math.asin(Math.random() / 2) * 2);
 		else verticeAngles.push(Math.acos(Math.random() * (Math.random() > 0.5 ? 1: -1)));
 		
 		
@@ -123,8 +119,6 @@ class Universe3D extends Universe2D {
 		this.pushRandomLatitude(verticeAngles);
 		
 		this.pushRandomLongitude(verticeAngles);
-		
-//		verticeAngles.push(this.randomAngle());
 
 	}
 	color() {}

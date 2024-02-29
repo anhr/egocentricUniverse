@@ -30,35 +30,6 @@ class Universe1D extends Universe {
 			//порядок размещения осей в декартовой системе координат
 			//нужно что бы широта двигалась по оси y а долгота вращалась вокруг y
 			indices: [1, 0],
-/*		
-			names: (getLanguageCode) => {
-
-				//Localization
-				
-				const lang = {
-		
-					latitude: 'Latitude',
-					longitude: 'Longitude',
-					altitude: 'Altitude'
-		
-				};
-		
-				const _languageCode = getLanguageCode();
-		
-				switch (_languageCode) {
-		
-					case 'ru'://Russian language
-		
-						lang.latitude = 'Широта';
-						lang.longitude = 'Долгота';
-						lang.altitude = 'Высота';
-						break;
-		
-				}
-				return lang;
-				
-			},
-*/		
 
 		}
 
@@ -90,7 +61,6 @@ class Universe1D extends Universe {
 	defaultAngles() { return { count: 3, } }//random triangle
 	pushRandomAngle(verticeAngles) {
 		
-//		verticeAngles.push(this.randomAngle());
 		this.pushRandomLongitude(verticeAngles);
 	
 	}

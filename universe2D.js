@@ -28,7 +28,6 @@ class Universe2D extends Universe1D {
 
 	planesGeometry(changedAngleId, aAngleControls, planeGeometry, longitudeId){
 
-//		console.log(angleName + ' longitudeId = ' + longitudeId + ' latitudeId = ' + latitudeId + ' verticeAngleId = ' + verticeAngleId)
 		const latitudeId = longitudeId - 1;
 		switch(changedAngleId){
 
@@ -84,9 +83,6 @@ class Universe2D extends Universe1D {
 
 		this.pushRandomLatitude(verticeAngles);
 		this.pushRandomLongitude(verticeAngles);
-
-		//Долгота
-//		verticeAngles.push(super.randomAngle());//
 
 	}
 	name( getLanguageCode ) {

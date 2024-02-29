@@ -232,22 +232,8 @@ class Universe {
 				axes.y = sqrt(sum); axes.x = x[i];
 
 			}
-//			φ.push(atan2(axes.y, axes.x) + this.getRotateLatitude(i));
 			const rotateLatitude = this.getRotateLatitude(i);
 			φ.push((rotateLatitude === 0 ? 1 : -1) * atan2(axes.y, axes.x) - rotateLatitude);//Для широты меняем знак угола что бы положительная широта была в северном полушарии
-/*
-			φ.push(atan2(axes.y, this.getRotateLatitude(i) === 0 ?
-						 axes.x :
-						 Math.abs(axes.x)//для широты Latitude угол должен быть в диапазоне от -π/2 до π/2. Для этого axes.x должен быть в диапазоне от 0 до 1
-						));
-*/
-/*			
-			φ.push(atan2(this.getRotateLatitude(i) === 0 ?
-						 axes.y :
-						 Math.abs(axes.y),//для широты Latitude угол должен быть в диапазоне от -π/2 до π/2. Для этого axes.x должен быть в диапазоне от 0 до 1
-						 axes.x
-						));
-*/						
 			
 			
 		}
@@ -1745,13 +1731,6 @@ class Universe {
 															if (aAngleControls.arc) {
 																
 																const geometry = aAngleControls.arc.object().geometry;
-/*																
-																let count = 2;
-																for (let i = 1; i < maxLevel; i++) count *= 2;
-																count++;
-																geometry.setDrawRange(0, count * geometry.attributes.position.itemSize);
-*/
-//																geometry.setDrawRange(0, verticeId * 2 - 1);//geometry.attributes.position.itemSize);//Непонятно почему draw count так вычисляется. Еще смотри class ND.constructor.create3DObject
 																geometry.setDrawRange(0, verticeId * 2 - 1);//geometry.attributes.position.itemSize);//Непонятно почему draw count так вычисляется. Еще смотри class ND.constructor.create3DObject
 																console.log(' maxLevel = ' + maxLevel + ' position.count = ' + aAngleControls.arc.object().geometry.attributes.position.count + ' drawRange.count = ' + aAngleControls.arc.object().geometry.drawRange.count + ' Vertices count = ' + verticeId);
 																geometry.attributes.position.needsUpdate = true;
@@ -1792,7 +1771,6 @@ class Universe {
 										
 																let vertice, distanceDebug = 0;
 																const position = aAngleControls.arc.classSettings.settings.object.geometry.position;
-//																aAngleControls.arc.classSettings.settings.object.geometry.position.forEach((verticeCur) =>
 																for (let i = 0; i < (verticeId === 0 ? position.length: verticeId); i++) {
 										
 																	const verticeCur = position[i];
@@ -1933,24 +1911,21 @@ class Universe {
 									}
 
 									const vertice = position.angles[aAngleControls.verticeId],
-//										ranges = settings.object.geometry.angles.ranges,
-//										longitudeId = ranges.length - 1, latitudeId = longitudeId - 1;
 										longitudeId = this.dimension - 2, latitudeId = longitudeId - 1, altitudeId = latitudeId - 1;
-//										longitudeRange = ranges[longitudeId], latitudeRange = ranges[latitudeId];
 									const planeGeometry = (verticeAngleId, planeAngles) => {
 										
 										const plane = aAngleControls.planes ? aAngleControls.planes[verticeAngleId] : undefined;
 										planeAngles ||= plane.classSettings.settings.object.geometry.angles;
-										//													const planeAngles = plane.classSettings.settings.object.geometry.angles,
-//										const angleName = settings.object.geometry.angles.ranges[verticeAngleId].angleName;
 										let planeVerticeId = 0;
 
 										let start, stop;//, step;
 										switch (verticeAngleId) {
 
 											case latitudeId:
+												/*
 												start = - π / 2; stop = π / 2;//, step = 1;
 												break;
+												*/
 											case longitudeId:
 											case altitudeId:
 												start = -π; stop = π;//, step = 2;
@@ -1959,7 +1934,7 @@ class Universe {
 
 										}
 										for (let i = start; i <= stop; i = i + (π / 20))
-										//													for (let i = -π; i <= π; i = i + (π / 20))
+										//for (let i = -π; i <= π; i = i + (π / 20))
 										{
 
 											const planeAngle = [];
@@ -1979,58 +1954,14 @@ class Universe {
 										const planeAngles = [],
 											angleName = settings.object.geometry.angles.ranges[verticeAngleId].angleName;
 										planeGeometry(verticeAngleId, planeAngles);
-/*
-										let planeVerticeId = 0;
-										
-										let start, stop;//, step;
-										switch(verticeAngleId){
-												
-											case latitudeId:
-												start = - π / 2; stop = π / 2;//, step = 1;
-												break;
-											case longitudeId:
-											case altitudeId:
-												start = -π; stop = π;//, step = 2;
-												break;
-											default: console.error(sUniverse + ': Planes of rotation of angles. Invalid verticeAngleId = ' + verticeAngleId);
-												
-										}
-										for (let i = start; i <= stop; i = i + (π / 20) )
-//										for (let i = 0; i < 2 * π; i = i + (π / 20) )
-//										for (let i = -π; i <= π; i = i + (π / 20) )
-										{
-
-											const planeAngle = [];
-											const vertice = position.angles[aAngleControls.verticeId];
-											for (let verticeAngleId = 0; verticeAngleId < vertice.length; verticeAngleId++) planeAngle.push(vertice[verticeAngleId]);
-											planeAngle[verticeAngleId] = i;
-										
-											if (this.classSettings.debug) console.log(sUniverse + ': ' + angleName + '. VerticeId = ' + planeAngles.length);
-//											planeAngles.push(this.vertice2angles(this.angles2Vertice(planeAngle)));
-											planeAngles[planeVerticeId++] = this.vertice2angles(this.angles2Vertice(planeAngle));
-											
-										}
-*/
 										const planeEdges = [];
 										for (let i = 0; i < (planeAngles.length - 1); i++) planeEdges.push([i, i + 1]);
-										//planeEdges.push([planeAngles.length - 1, 0]);//сейчас не надо соединять начало круга с концом потому что начало и конец в одной точке
 										if (!aAngleControls.planes) {
 												
 											aAngleControls.planes = [];
 											aAngleControls.planes.update = (changedAngleId) => {
 												
 												this.planesGeometry(changedAngleId, aAngleControls, planeGeometry, longitudeId);
-/*												
-//												console.log(angleName + ' longitudeId = ' + longitudeId + ' latitudeId = ' + latitudeId + ' verticeAngleId = ' + verticeAngleId)
-												switch(changedAngleId){
-
-													case latitudeId:  planeGeometry(longitudeId); break;
-													case longitudeId: planeGeometry(latitudeId); break;
-													default: console.error(sUniverse + ': Update planes. Invalid verticeAngleId = ' + verticeAngleId);
-														
-												}
-*/												
-//												aAngleControls.planes.forEach((plane, verticeAngleId) => planeGeometry(verticeAngleId));
 
 											}
 
@@ -2040,7 +1971,6 @@ class Universe {
 											cookieName: 'plane_' + verticeAngleId,//если не задать cookieName, то настройки дуги будут браться из настроек вселенной
 											object : {
 													
-//												name: lang.plane + '_' + verticeAngleId,
 												name: angleName,
 												color: 'white',
 												geometry: {
@@ -2056,25 +1986,6 @@ class Universe {
 										});
 										const plane = aAngleControls.planes[verticeAngleId];
 										plane.opacity();
-/*										
-										plane.updatePlane = (vertice) => {
-
-											const planeAngles = plane.classSettings.settings.object.geometry.angles;
-											planeAngles.forEach((verticeAngles, i) => {
-
-												const angles = [];
-												for (let angleId = 0; angleId < verticeAngles.length; angleId++) {
-
-													angles.push(angleId != verticeAngleId ? vertice.angles[angleId] : verticeAngles[angleId]);
-												
-												}
-												planeAngles[i] = angles;
-													
-											});
-											plane.object().geometry.attributes.position.needsUpdate = true;
-												
-										}
-*/										
 										
 									}
 
@@ -2521,15 +2432,6 @@ class Universe {
 
 							});
 							break;
-						/*
-						case edgesCreationMethod.NearestVertice: {
-							
-							let verticeId = 0;
-							position[verticeId].edges
-							break;
-
-						}
-						*/
 						default: console.error(sUniverse + ': pushEdges. Invalid classSettings.edges.creationMethod = ' + classSettings.edges.creationMethod);
 
 					}
