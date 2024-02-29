@@ -24,6 +24,7 @@ class Universe1D extends Universe {
 
 	//base methods
 
+	planesGeometry(){}
 	get axes() { return {
 
 			//порядок размещения осей в декартовой системе координат

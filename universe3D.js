@@ -27,6 +27,24 @@ class Universe3D extends Universe2D {
 
 	//base methods
 
+	planesGeometry(changedAngleId, aAngleControls, planeGeometry, longitudeId){
+
+		const latitudeId = longitudeId - 1, altitudeId = latitudeId - 1;
+		switch(changedAngleId){
+
+			case altitudeId:
+				planeGeometry(aAngleControls.planes[longitudeId], longitudeId);
+				planeGeometry(aAngleControls.planes[latitudeId ], latitudeId )
+				break;
+			case latitudeId:
+			case longitudeId:
+				planeGeometry(aAngleControls.planes[altitudeId], altitudeId);
+				super.planesGeometry(changedAngleId, aAngleControls, planeGeometry, longitudeId); break;
+			default: console.error(sUniverse3D + ': Update planes. Invalid changedAngleId = ' + changedAngleId);
+				
+		}
+		
+	}
 	get axes() { return {
 
 			//порядок размещения осей в декартовой системе координат
@@ -40,8 +58,11 @@ class Universe3D extends Universe2D {
 	get cookieName() { return '3DUniverse' + (this.classSettings.cookieName ? '_' + this.classSettings.cookieName : ''); }
 	get altitudeRange() { return {
 		angleName: 'Altitude',
-		min: 0, max: π / 2,//Высота меняется в диапазоне 90 градусов. В центре вселенной вершины белого и по краям синего цвета
-		//min: -π, max: π,//Высота меняется в диапазоне 360 градусов. В центре вселенной вершины белого и синего цвета
+
+		//не удается загнать все углы высоты в заданный диапазон
+		//min: 0, max: π / 2,//Высота меняется в диапазоне 90 градусов. В центре вселенной вершины белого и по краям синего цвета
+		
+		min: -π, max: π,//Высота меняется в диапазоне 360 градусов. В центре вселенной вершины белого и синего цвета
 	}}
 	setW() {
 

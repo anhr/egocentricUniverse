@@ -19,32 +19,32 @@ import Universe1D from './universe1D.js';
 //import ProgressBar from '../../commonNodeJS/master/ProgressBar/ProgressBar.js'
 import three from '../../commonNodeJS/master/three.js'
 
-const //sUniverse2D = 'Universe2D',
+const sUniverse2D = 'Universe2D',
 	π = Math.PI;
 
 class Universe2D extends Universe1D {
 
 	//base methods
 
+	planesGeometry(changedAngleId, aAngleControls, planeGeometry, longitudeId){
+
+//		console.log(angleName + ' longitudeId = ' + longitudeId + ' latitudeId = ' + latitudeId + ' verticeAngleId = ' + verticeAngleId)
+		const latitudeId = longitudeId - 1;
+		switch(changedAngleId){
+
+			case latitudeId: planeGeometry(aAngleControls.planes[longitudeId], longitudeId); break;
+			case longitudeId: planeGeometry(aAngleControls.planes[latitudeId],  latitudeId); break;
+			default: console.error(sUniverse2D + ': Update planes. Invalid changedAngleId = ' + changedAngleId);
+				
+		}
+		
+	}
 	get axes() { return {
 
 			//порядок размещения осей в декартовой системе координат
 			//нужно что бы широта двигалась по оси y а долгота вращалась вокруг y
 			indices: [1, 0, 2],//долгота вращается вокруг оси y. Широта двигается вдоль оси y. Вершины собираются по краям оси y
-			/*
-			name: (i, getLanguageCode) => {
-
-				const lang = super.axes.names(getLanguageCode);
-				switch(i) {
-
-					case 0: return lang.latitude;
-					case 1: return lang.longitude;
-					default: console.error(sUniverse2D + '.axes.name(' + i + '): Invalid index.')
-						
-				}
-				
-			},
-			*/
+//			indices: [0, 1, 2],
 			names: (getLanguageCode) => { return super.axes.names(getLanguageCode); }
 
 		}
