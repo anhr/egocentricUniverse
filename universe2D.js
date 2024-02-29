@@ -32,8 +32,8 @@ class Universe2D extends Universe1D {
 		const latitudeId = longitudeId - 1;
 		switch(changedAngleId){
 
-			case latitudeId: planeGeometry(aAngleControls.planes[longitudeId], longitudeId); break;
-			case longitudeId: planeGeometry(aAngleControls.planes[latitudeId],  latitudeId); break;
+			case latitudeId: planeGeometry(longitudeId); break;
+			case longitudeId: planeGeometry( latitudeId); break;
 			default: console.error(sUniverse2D + ': Update planes. Invalid changedAngleId = ' + changedAngleId);
 				
 		}

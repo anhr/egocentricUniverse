@@ -33,12 +33,12 @@ class Universe3D extends Universe2D {
 		switch(changedAngleId){
 
 			case altitudeId:
-				planeGeometry(aAngleControls.planes[longitudeId], longitudeId);
-				planeGeometry(aAngleControls.planes[latitudeId ], latitudeId )
+				planeGeometry(longitudeId);
+				planeGeometry(latitudeId )
 				break;
 			case latitudeId:
 			case longitudeId:
-				planeGeometry(aAngleControls.planes[altitudeId], altitudeId);
+				planeGeometry(altitudeId);
 				super.planesGeometry(changedAngleId, aAngleControls, planeGeometry, longitudeId); break;
 			default: console.error(sUniverse3D + ': Update planes. Invalid changedAngleId = ' + changedAngleId);
 				

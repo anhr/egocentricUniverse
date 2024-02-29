@@ -1937,8 +1937,10 @@ class Universe {
 //										longitudeId = ranges.length - 1, latitudeId = longitudeId - 1;
 										longitudeId = this.dimension - 2, latitudeId = longitudeId - 1, altitudeId = latitudeId - 1;
 //										longitudeRange = ranges[longitudeId], latitudeRange = ranges[latitudeId];
-									const planeGeometry = (plane, verticeAngleId, planeAngles = plane.classSettings.settings.object.geometry.angles) => {
-
+									const planeGeometry = (verticeAngleId, planeAngles) => {
+										
+										const plane = aAngleControls.planes ? aAngleControls.planes[verticeAngleId] : undefined;
+										planeAngles ||= plane.classSettings.settings.object.geometry.angles;
 										//													const planeAngles = plane.classSettings.settings.object.geometry.angles,
 //										const angleName = settings.object.geometry.angles.ranges[verticeAngleId].angleName;
 										let planeVerticeId = 0;
@@ -1969,19 +1971,14 @@ class Universe {
 											planeAngles[planeVerticeId++] = this.vertice2angles(this.angles2Vertice(planeAngle));
 
 										}
-										if (aAngleControls.planes) {
-
-											const plane = aAngleControls.planes[verticeAngleId];
-											if (plane) plane.object().geometry.attributes.position.needsUpdate = true;
-
-										}
+										if (plane) plane.object().geometry.attributes.position.needsUpdate = true;
 
 									}
 									for (let verticeAngleId = 0; verticeAngleId < vertice.length; verticeAngleId++) {
 
 										const planeAngles = [],
 											angleName = settings.object.geometry.angles.ranges[verticeAngleId].angleName;
-										planeGeometry(undefined, verticeAngleId, planeAngles);
+										planeGeometry(verticeAngleId, planeAngles);
 /*
 										let planeVerticeId = 0;
 										
@@ -2027,13 +2024,13 @@ class Universe {
 //												console.log(angleName + ' longitudeId = ' + longitudeId + ' latitudeId = ' + latitudeId + ' verticeAngleId = ' + verticeAngleId)
 												switch(changedAngleId){
 
-													case latitudeId:  planeGeometry(aAngleControls.planes[longitudeId], longitudeId); break;
-													case longitudeId: planeGeometry(aAngleControls.planes[latitudeId],  latitudeId); break;
+													case latitudeId:  planeGeometry(longitudeId); break;
+													case longitudeId: planeGeometry(latitudeId); break;
 													default: console.error(sUniverse + ': Update planes. Invalid verticeAngleId = ' + verticeAngleId);
 														
 												}
 */												
-//												aAngleControls.planes.forEach((plane, verticeAngleId) => planeGeometry(plane, verticeAngleId));
+//												aAngleControls.planes.forEach((plane, verticeAngleId) => planeGeometry(verticeAngleId));
 
 											}
 
